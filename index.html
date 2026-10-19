@@ -421,7 +421,7 @@ input[type=range]::-moz-range-thumb {
 .loadtxt { margin: 8px 0 0; color: var(--muted); font: 600 11px var(--ui); letter-spacing: .14em; text-transform: uppercase; }
 #menu .menucard > * { opacity: 0; transform: translateY(10px); }
 #menu.in .menucard > * { animation: suit .5s ease forwards; }
-#menu.in .menucard > *:nth-child(2) { animation-delay: .05s; } #menu.in .menucard > *:nth-child(3) { animation-delay: .1s; } #menu.in .menucard > *:nth-child(4) { animation-delay: .16s; } #menu.in .menucard > *:nth-child(5) { animation-delay: .22s; }
+#menu.in .menucard > *:nth-child(2) { animation-delay: .05s; } #menu.in .menucard > *:nth-child(3) { animation-delay: .1s; } #menu.in .menucard > *:nth-child(4) { animation-delay: .16s; } #menu.in .menucard > *:nth-child(5) { animation-delay: .22s; } #menu.in .menucard > *:nth-child(6) { animation-delay: .28s; }
 #menu.shown .menucard > * { opacity: 1; transform: none; animation: none; }
 .profchip { position: absolute; left: 16px; top: 16px; display: flex; align-items: center; gap: 10px; height: 46px; padding: 0 14px 0 5px; border-radius: 999px; background: rgba(16,18,19,.7); border: 1px solid var(--line); color: var(--ink); font: 700 14px var(--ui); z-index: 2; }
 .profchip svg { width: 14px; height: 14px; opacity: .6; display: block; }
@@ -461,6 +461,9 @@ input[type=range]::-moz-range-thumb {
 .sw[aria-checked=true] { background: var(--brass); }
 .sw[aria-checked=true]::after { transform: translateX(20px); }
 .menucard .btn:disabled { opacity: .5; }
+.bank { align-self: center; display: inline-flex; align-items: center; gap: 9px; margin: 6px 0 4px; padding: 8px 16px 8px 10px; border-radius: 999px; background: rgba(16,18,19,.7); border: 1px solid var(--line); font: 600 13px var(--ui); color: var(--muted); }
+.bank b { color: var(--brass); font: 800 18px var(--ui); font-variant-numeric: tabular-nums; letter-spacing: .01em; }
+.bank .bchip { width: 22px; height: 22px; border-radius: 50%; background: radial-gradient(circle, var(--felt2) 0 38%, transparent 40%), repeating-conic-gradient(#f1ece0 0 14deg, #c8372d 14deg 45deg); box-shadow: 0 1px 3px rgba(0,0,0,.5); }
 .menucard small { margin-left: 6px; color: var(--brass); font-weight: 700; }
 #end { position: absolute; inset: 0; z-index: 50; display: grid; place-items: center; background: rgba(10,11,12,.76); padding: 24px; }
 .endcard { width: min(340px, 100%); text-align: center; padding: 28px 24px 24px; border-radius: 20px; background: var(--bg2); border: 1px solid var(--line); box-shadow: 0 24px 60px rgba(0,0,0,.6); }
@@ -561,6 +564,7 @@ input[type=range]::-moz-range-thumb {
       <div class="menulogo" aria-hidden="true"><i>♠</i><i class="r">♥</i><i>♣</i><i class="r">♦</i></div>
       <h1>Pokerrunde</h1>
       <p class="menusub">Texas Hold’em · bis zu 5 Spieler</p>
+      <div class="bank" aria-label="Deine Chips"><i class="bchip"></i><b id="bankVal">1.000</b><span>Chips</span></div>
       <button class="btn primary wide" id="bPlay" type="button">Gegen Bots spielen</button>
       <button class="btn wide" type="button" disabled>Mit Freunden spielen <small>bald</small></button>
     </div>
@@ -621,7 +625,7 @@ input[type=range]::-moz-range-thumb {
   var HAND_NAMES = ['Hohe Karte', 'Paar', 'Zwei Paare', 'Drilling', 'Straße', 'Flush', 'Full House', 'Vierling', 'Straight Flush'];
   var BLINDS = [[10, 20], [20, 40], [30, 60], [50, 100], [100, 200], [200, 400]];
   var HANDS_PER_LEVEL = 8;
-  var START_CHIPS = 1000;
+  var START_CHIPS = 1000, REBUY = 100;
   var N = 5;
   var NAMES = ['Du', 'Svenja', 'Tarek', 'Olga', 'Bruno'];
   var P15_5 = 759375; // 15^5
@@ -932,11 +936,12 @@ input[type=range]::-moz-range-thumb {
       sb: 10, bb: 20, sbIdx: -1, bbIdx: -1, glow: -1, handNo: 0, phase: 'idle', toAct: -1, result: null
     };
 
-    function reset() {
+    function reset(humanChips) {
+      var hc = humanChips > 0 ? Math.round(humanChips) : START_CHIPS;
       var styles = shuffle(STYLES.slice());
       S.players = NAMES.map(function (name, id) {
         return {
-          id: id, name: name, chips: START_CHIPS, hole: [], bet: 0, total: 0,
+          id: id, name: name, chips: id === 0 ? hc : START_CHIPS, hole: [], bet: 0, total: 0,
           folded: false, allIn: false, acted: false, inHand: false, label: '',
           revealed: false, win: 0, value: undefined,
           limped: false, pfRaise: false, pfCall: false, aggr: 0,
@@ -944,7 +949,7 @@ input[type=range]::-moz-range-thumb {
           pers: id === 0 ? makeStyle(STYLES[0]) : makeStyle(styles[id - 1])
         };
       });
-      S.dealer = randInt(N); S.board = []; S.deck = []; S.handNo = 0;
+      S.humanStart = hc; S.dealer = randInt(N); S.board = []; S.deck = []; S.handNo = 0;
       S.sbIdx = -1; S.bbIdx = -1; S.glow = -1; S.phase = 'idle'; S.toAct = -1; S.result = null; S.currentBet = 0; S.lastRaise = 20; S.raises = 0;
     }
 
@@ -1377,7 +1382,11 @@ input[type=range]::-moz-range-thumb {
 
     async function run() {
       while (true) {
-        if (S.players[0].chips <= 0) { H.onEnd(false); return; }
+        if (S.players[0].chips <= 0) {
+          /* pleite: kein neues Spiel, sondern 100 frische Chips und weiter am Tisch */
+          S.players[0].chips = REBUY; S.humanStart += REBUY;
+          if (H.onRebuy) H.onRebuy(REBUY);
+        }
         if (S.players.filter(function (p) { return p.chips > 0; }).length === 1) { H.onEnd(true); return; }
         await playHand();
         await H.waitNext();
@@ -1394,7 +1403,7 @@ input[type=range]::-moz-range-thumb {
   var api = {
     createGame: createGame, SUITS: SUITS, rname: rname, best: best, bestSlow: bestSlow, eval5: eval5, eval7: eval7,
     catOf: catOf, handName: handName, describe: describe, made: made, HAND_NAMES: HAND_NAMES, preflopStrength: preflopStrength, preflopPct: preflopPct,
-    equity: equity, BLINDS: BLINDS, START_CHIPS: START_CHIPS, fmt: fmt
+    equity: equity, BLINDS: BLINDS, START_CHIPS: START_CHIPS, REBUY: REBUY, fmt: fmt
   };
   if (typeof module !== 'undefined' && module.exports) module.exports = api;
   else root.Poker = api;
@@ -1624,6 +1633,7 @@ input[type=range]::-moz-range-thumb {
       });
       if (S.phase === 'result' && snap.phase !== 'result' && S.result) {
         if (S.players[0].inHand) { PROF.hands++; if (S.players[0].win > 0) PROF.wins++; saveProf(); }
+        saveBank();
         if (S.players[0].win > 0) Snd.win(); else Snd.pot();
       }
       if (turn && !snap.turn) Snd.ping();
@@ -1660,7 +1670,13 @@ input[type=range]::-moz-range-thumb {
       });
     },
     react: function (id, emo, delay) { var g = gen; setTimeout(function () { if (g === gen) showReaction(id, emo); }, delay || 0); },
-    onEnd: showEnd
+    onEnd: showEnd,
+    onRebuy: function (n) {
+      var tt = $('#toast'); tt.textContent = '+' + n + ' Chips, du bist wieder dabei';
+      tt.classList.add('on'); clearTimeout(toastTimer);
+      toastTimer = setTimeout(function () { tt.classList.remove('on'); }, 3600);
+      saveBank();
+    }
   });
   var S = game.S;
 
@@ -1851,7 +1867,7 @@ input[type=range]::-moz-range-thumb {
     if (i === 0) {
       /* Gesamtgewinn/-verlust seit Spielbeginn: nur zwischen den Haenden aktualisieren, nicht waehrend Einsaetzen im Pot liegen */
       if (S.handNo === 0 || S.phase === 'result' || S.phase === 'idle') {
-        var np = p.chips - P.START_CHIPS;
+        var np = p.chips - S.humanStart;
         if (np !== profit && S.phase === 'result' && S.handNo > 0) {
           /* kurz anzeigen, wie sich der Gesamtgewinn in dieser Hand geaendert hat */
           var dl = np - profit, pd = document.createElement('span');
@@ -2203,7 +2219,8 @@ input[type=range]::-moz-range-thumb {
     handEl.style.transform = ''; handEl.style.opacity = ''; handEl.style.transition = '';
     lastHand = -1; handEl.dataset.hn = ''; shownBB = 0; flyUntil = 0;
     clearShow();
-    game.reset(); S = game.S; profit = 0; applyProfToSeat();
+    PROF.bank = Math.max(P.REBUY, PROF.bank | 0); saveProf();
+    game.reset(PROF.bank); S = game.S; profit = 0; playing = true; applyProfToSeat();
     snap.hand = -1;
     render();
     game.run();
@@ -2216,13 +2233,14 @@ input[type=range]::-moz-range-thumb {
     $('#fly').innerHTML = '';
     clearShow();
     Snd.stopAll();
+    saveBank(); playing = false; renderBank();
     game.reset(); S = game.S; lastHand = -1; handEl.dataset.hn = ''; snap.hand = -1; shownBB = 0;
     render();
     Snd.stopAll();
     $('#menu').hidden = false;
   }
   /* ---------- Profil, Ladebildschirm, Hauptmenue ---------- */
-  var PROF = { name: 'Spieler', color: AV[0], hands: 0, wins: 0 };
+  var PROF = { name: 'Spieler', color: AV[0], hands: 0, wins: 0, bank: P.START_CHIPS };
   var MORE = ['#b5543f', '#c8873a', '#c4a84a', '#6f9a5a', '#4f9a8a', '#4a86a8', '#5a6fb0', '#8a68b0', '#b0689a', '#a65a6a', '#6b6f75', '#3f4a52'];
   try {
     var rawP = JSON.parse(localStorage.getItem('pr-profile') || 'null');
@@ -2231,8 +2249,18 @@ input[type=range]::-moz-range-thumb {
       if (typeof rawP.color === 'string' && /^#[0-9a-f]{6}$/i.test(rawP.color)) PROF.color = rawP.color;
       else if (rawP.av >= 0 && rawP.av < AV.length) PROF.color = AV[rawP.av | 0];
       PROF.hands = Math.max(0, rawP.hands | 0); PROF.wins = Math.max(0, rawP.wins | 0);
+      if (typeof rawP.bank === 'number' && isFinite(rawP.bank)) PROF.bank = Math.max(P.REBUY, Math.round(rawP.bank));
     }
   } catch (e) {}
+  var playing = false;
+  function renderBank() { var b = $('#bankVal'); if (b) b.textContent = fmt(PROF.bank); }
+  /* Chips am Tisch = Guthaben. Mitten in der Hand zaehlen schon eingesetzte Chips nicht mehr. */
+  function saveBank() {
+    if (!playing || !S.players[0]) return;
+    PROF.bank = Math.max(P.REBUY, Math.round(S.players[0].chips)); saveProf(); renderBank();
+  }
+  document.addEventListener('visibilitychange', function () { if (document.hidden) saveBank(); });
+  window.addEventListener('pagehide', saveBank);
   function saveProf() { try { localStorage.setItem('pr-profile', JSON.stringify(PROF)); } catch (e) {} }
   function profName() { return PROF.name.trim() || 'Spieler'; }
   function profInitial() { return profName().charAt(0).toUpperCase(); }
@@ -2505,6 +2533,7 @@ input[type=range]::-moz-range-thumb {
 
   /* ---------- Spielende ---------- */
   function showEnd(win) {
+    saveBank();
     $('#endTitle').textContent = win ? 'Du hast gewonnen' : 'Du bist raus';
     $('#endText').textContent = win
       ? 'Alle vier Gegner sind ausgeschieden. Du hast die ganze Runde abgeräumt.'
@@ -2515,6 +2544,7 @@ input[type=range]::-moz-range-thumb {
   /* ---------- Start ---------- */
   layout();
   render();
+  renderBank();
 })();
 </script>
 
