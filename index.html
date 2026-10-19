@@ -8,6 +8,7 @@
 <meta name="mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-title" content="Pokerrunde">
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<script src="peerjs.min.js"></script>
 <style>html,body{margin:0;padding:0;background:#17191b}img{max-width:100%}[hidden]{display:none!important}</style>
 <title>Pokerrunde</title>
 <meta name="theme-color" content="#17191b">
@@ -450,6 +451,27 @@ a.btn { text-decoration: none; }
 #frCodeIn { height: 64px; border-radius: 14px; background: var(--bg2); border: 1px solid var(--line); color: var(--brass); font: 800 34px var(--display); letter-spacing: .16em; text-align: center; text-transform: uppercase; padding: 0 0 0 .16em; outline: none; width: 100%; box-sizing: border-box; }
 #frCodeIn:focus { border-color: var(--brass); }
 #frCodeIn::placeholder { color: rgba(236,231,218,.22); }
+#pview { position: absolute; inset: 0; z-index: 75; overflow-y: auto; padding: 16px 20px 28px; background: radial-gradient(ellipse at 50% 0%, var(--felt2), var(--bg) 60%); }
+#pview[hidden] { display: none; }
+#pview .pav { width: 84px; height: 84px; font-size: 38px; padding-bottom: .02em; }
+.pvname { font: 800 26px var(--display); text-align: center; word-break: break-word; }
+.pvrole { color: var(--brass); font: 700 12px var(--ui); letter-spacing: .14em; text-transform: uppercase; min-height: 1em; }
+#friends[data-view="frLobbyV"] #frBack { visibility: hidden; }
+.ov { display: flex; flex-direction: column; border-radius: 14px; background: var(--bg2); border: 1px solid var(--line); margin-top: 8px; overflow: hidden; }
+.ovrow { display: flex; justify-content: space-between; gap: 12px; padding: 12px 14px; font: 600 15px var(--ui); }
+.ovrow + .ovrow { border-top: 1px solid var(--line); }
+.ovrow span { color: var(--muted); }
+.ovrow b { font-weight: 800; font-variant-numeric: tabular-nums; text-align: right; }
+.plist { display: flex; flex-direction: column; gap: 8px; margin-top: 8px; }
+.pl { display: flex; align-items: center; gap: 12px; width: 100%; padding: 9px 14px 9px 10px; border-radius: 14px; background: var(--bg2); border: 1px solid var(--line); color: var(--ink); text-align: left; transition: transform .12s; }
+.pl:active { transform: scale(.98); }
+.pl .pn { flex: 1; min-width: 0; display: flex; flex-direction: column; gap: 2px; }
+.pl .pn b { font: 700 16px var(--ui); overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.pl .pn small { color: var(--muted); font: 500 12px var(--ui); margin: 0; }
+.pl .rl { color: var(--brass); font: 800 11px var(--ui); letter-spacing: .12em; text-transform: uppercase; }
+.pl svg { width: 14px; height: 14px; opacity: .5; flex: none; }
+.dots::after { content: ""; display: inline-block; width: 1.2em; text-align: left; animation: dots 1.4s steps(4, end) infinite; }
+@keyframes dots { 0% { content: ""; } 25% { content: "."; } 50% { content: ".."; } 75% { content: "..."; } }
 #profile { position: absolute; inset: 0; z-index: 70; overflow-y: auto; padding: 16px 20px 28px; background: radial-gradient(ellipse at 50% 0%, var(--felt2), var(--bg) 60%); }
 #profile[hidden] { display: none; }
 .profwrap { width: min(380px, 100%); margin: 0 auto; display: flex; flex-direction: column; gap: 18px; }
@@ -603,6 +625,7 @@ a.btn { text-decoration: none; }
       <div class="frview" id="frMain">
         <button class="frcard hl" id="frCreate" type="button"><b>Tisch erstellen</b><span>Du bekommst einen Code, den du deinen Freunden schickst.</span></button>
         <button class="frcard" id="frJoin" type="button"><b>Tisch beitreten</b><span>Gib den Code ein, den dir ein Freund geschickt hat.</span></button>
+        <p class="frnote warn" id="frMainMsg" hidden></p>
       </div>
 
       <div class="frview" id="frCreateV" hidden>
@@ -614,7 +637,6 @@ a.btn { text-decoration: none; }
             <button class="btn" id="frNew" type="button">Neuer Code</button>
           </div>
         </div>
-        <a class="btn primary wide" id="frWa" href="https://wa.me/" target="_blank" rel="noopener">Per WhatsApp einladen</a>
         <div>
           <div class="psec">Small Blind</div>
           <div class="seg" id="segSb" role="radiogroup" aria-label="Small Blind"></div>
@@ -625,7 +647,30 @@ a.btn { text-decoration: none; }
           <div class="seg" id="segEvery" role="radiogroup" aria-label="Blinds steigen nach Händen"></div>
           <div class="frhint" id="everyHint"></div>
         </div>
-        <p class="frnote warn">Die Online-Verbindung kommt als Nächstes. Code und Einstellungen sind schon bereit.</p>
+        <button class="btn primary wide" id="frMake" type="button">Jetzt erstellen</button>
+        <p class="frnote" id="frMakeMsg">Nach dem Erstellen lassen sich die Einstellungen nicht mehr ändern.</p>
+      </div>
+
+
+      <div class="frview" id="frLobbyV" hidden>
+        <div class="codebox">
+          <div class="psec">Tischcode</div>
+          <div class="code" id="lbCode">-----</div>
+          <div class="codebtns">
+            <button class="btn" id="lbCopy" type="button">Code kopieren</button>
+            <a class="btn" id="lbWa" href="https://wa.me/" target="_blank" rel="noopener">WhatsApp</a>
+          </div>
+        </div>
+        <div>
+          <div class="psec">Einstellungen</div>
+          <div class="ov" id="lbOv"></div>
+        </div>
+        <div>
+          <div class="psec" id="lbPlTitle">Spieler</div>
+          <div class="plist" id="lbPlayers"></div>
+        </div>
+        <p class="frnote" id="lbWait"></p>
+        <button class="btn wide" id="lbLeave" type="button">Tisch schließen</button>
       </div>
 
       <div class="frview" id="frJoinV" hidden>
@@ -635,6 +680,28 @@ a.btn { text-decoration: none; }
         </div>
         <button class="btn primary wide" id="frGo" type="button" disabled>Beitreten</button>
         <p class="frnote" id="frJoinMsg">Den Code bekommst du vom Ersteller, zum Beispiel per WhatsApp.</p>
+      </div>
+    </div>
+  </div>
+
+  <div id="pview" hidden>
+    <div class="profwrap">
+      <div class="proftop">
+        <button class="profback" id="pvBack" type="button" aria-label="Zurück"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M15 5l-7 7 7 7"/></svg></button>
+        <h2>Profil</h2>
+      </div>
+      <div class="profhero">
+        <div class="pav" id="pvAv">S</div>
+        <div class="pvname" id="pvName"></div>
+        <div class="pvrole" id="pvRole"></div>
+      </div>
+      <div>
+        <div class="psec" style="margin-bottom:8px">Statistik</div>
+        <div class="pstats">
+          <div class="pstat"><b id="pvHands">0</b><span>Hände</span></div>
+          <div class="pstat"><b id="pvWins">0</b><span>gewonnen</span></div>
+          <div class="pstat"><b id="pvRate">–</b><span>Quote</span></div>
+        </div>
       </div>
     </div>
   </div>
@@ -2390,6 +2457,7 @@ a.btn { text-decoration: none; }
   var CODE_CHARS = 'ABCDEFGHJKMNPQRSTUVWXYZ23456789';
   var SB_OPTS = [5, 10, 20, 25, 50, 100], EVERY_OPTS = [5, 8, 10, 15, 20, 0];
   var ROOM = { code: '', sb: 10, every: 8 };
+  var NET = { peer: null, role: '', code: '', cfg: null, conns: [], players: [], gen: 0, shown: 0 };
   try {
     var rawR = JSON.parse(localStorage.getItem('pr-room') || 'null');
     if (rawR) {
@@ -2406,8 +2474,8 @@ a.btn { text-decoration: none; }
     return out;
   }
   function frShow(view) {
-    ['frMain', 'frCreateV', 'frJoinV'].forEach(function (id) { $('#' + id).hidden = id !== view; });
-    $('#frTitle').textContent = view === 'frCreateV' ? 'Tisch erstellen' : view === 'frJoinV' ? 'Tisch beitreten' : 'Mit Freunden';
+    ['frMain', 'frCreateV', 'frJoinV', 'frLobbyV'].forEach(function (id) { $('#' + id).hidden = id !== view; });
+    $('#frTitle').textContent = view === 'frCreateV' ? 'Tisch erstellen' : view === 'frJoinV' ? 'Tisch beitreten' : view === 'frLobbyV' ? (NET.role === 'host' ? 'Dein Tisch' : 'Tisch') : 'Mit Freunden';
     $('#friends').dataset.view = view;
     $('#friends').scrollTop = 0;
   }
@@ -2427,8 +2495,6 @@ a.btn { text-decoration: none; }
     seg($('#segEvery'), EVERY_OPTS, ROOM.every, function (v) { return v ? v + ' Hände' : 'Nie'; }, function (v) { ROOM.every = v; saveRoom(); renderRoom(); });
     $('#sbHint').textContent = 'Small Blind ' + fmt(ROOM.sb) + ' · Big Blind ' + fmt(ROOM.sb * 2);
     $('#everyHint').textContent = ROOM.every ? 'Nach jeweils ' + ROOM.every + ' Händen steigen die Blinds.' : 'Die Blinds bleiben während des ganzen Spiels gleich.';
-    var msg = 'Komm an meinen Pokertisch! Code: ' + ROOM.code + '\n' + SITE_URL + '#' + ROOM.code;
-    $('#frWa').href = 'https://wa.me/?text=' + encodeURIComponent(msg);
   }
   function openCreate() {
     if (!ROOM.code) { ROOM.code = newCode(); saveRoom(); }
@@ -2446,7 +2512,7 @@ a.btn { text-decoration: none; }
   }
   function openFriends(view, code) {
     Snd.unlock(); $('#friends').hidden = false;
-    if (view === 'join') openJoin(code); else frShow('frMain');
+    if (view === 'join') openJoin(code); else { $('#frMainMsg').hidden = true; frShow('frMain'); }
   }
   $('#bFriends').addEventListener('click', function () { openFriends(); });
   $('#frBack').addEventListener('click', function () {
@@ -2463,11 +2529,200 @@ a.btn { text-decoration: none; }
   function selectCode() { try { var r = document.createRange(); r.selectNodeContents($('#frCode')); var s = window.getSelection(); s.removeAllRanges(); s.addRange(r); } catch (e) {} }
   $('#frCodeIn').addEventListener('input', syncJoin);
   $('#frCodeIn').addEventListener('keydown', function (e) { if (e.key === 'Enter') $('#frGo').click(); });
-  $('#frGo').addEventListener('click', function () {
-    var m = $('#frJoinMsg');
-    m.textContent = 'Online-Tische sind noch in Arbeit. Sobald sie laufen, kommst du mit dem Code ' + cleanCode($('#frCodeIn').value) + ' direkt an den Tisch.';
-    m.classList.add('warn');
+
+  /* ---------- Online-Tisch (Vermittlung ueber PeerJS, Verbindung direkt von Handy zu Handy) ---------- */
+  var MAX_P = 5, PEER_PREFIX = 'pokerrunde-';
+  var MSG_NOLIB = 'Online-Tische gehen nur über den Link zum Spiel (kortjannis-web.github.io/Pokerrunde), nicht in dieser Vorschau.';
+  function peerOpts() { return window.PR_PEER_OPTS || {}; }
+  function netAvail() { return typeof window.Peer === 'function'; }
+  function myPublic() { return { name: profName(), color: PROF.color, hands: PROF.hands, wins: PROF.wins }; }
+  function cleanProf(p) {
+    p = (p && typeof p === 'object') ? p : {};
+    var nm = String(p.name == null ? '' : p.name).slice(0, 14).trim();
+    return { name: nm || 'Spieler', color: (typeof p.color === 'string' && /^#[0-9a-f]{6}$/i.test(p.color)) ? p.color : AV[0],
+             hands: Math.min(1e7, Math.max(0, p.hands | 0)), wins: Math.min(1e7, Math.max(0, p.wins | 0)) };
+  }
+  function rateOf(p) { return p.hands ? Math.round(p.wins / p.hands * 100) + '%' : '–'; }
+  function initialOf(p) { return p.name.charAt(0).toUpperCase(); }
+  function wipeNet(sayBye) {
+    var peer = NET.peer, conns = NET.conns.slice(), host = NET.role === 'host';
+    NET.gen++; NET.peer = null; NET.role = ''; NET.conns = []; NET.players = []; NET.cfg = null; NET.code = ''; NET.shown = 0;
+    if (!peer) return;
+    if (sayBye && host) conns.forEach(function (c) { try { c.send({ t: 'closed' }); } catch (e) {} });
+    setTimeout(function () { try { peer.destroy(); } catch (e) {} }, sayBye ? 250 : 0);
+  }
+  function backToMain(msg) {
+    $('#pview').hidden = true;
+    var m = $('#frMainMsg'); m.textContent = msg || ''; m.hidden = !msg;
+    frShow('frMain');
+  }
+
+  /* --- Ersteller --- */
+  function createFail(msg) {
+    var b = $('#frMake'); b.disabled = false; b.textContent = 'Jetzt erstellen';
+    var m = $('#frMakeMsg'); m.textContent = msg; m.classList.add('warn');
+  }
+  function netCreate() {
+    var m = $('#frMakeMsg'); m.classList.remove('warn');
+    if (!netAvail()) { createFail(MSG_NOLIB); return; }
+    var b = $('#frMake'); b.disabled = true; b.textContent = 'Erstelle …';
+    wipeNet(false);
+    var g = ++NET.gen, tries = 0;
+    (function attempt() {
+      var done = false, peer;
+      try { peer = new window.Peer(PEER_PREFIX + ROOM.code.toLowerCase(), peerOpts()); }
+      catch (e) { createFail('Verbindung konnte nicht gestartet werden.'); return; }
+      var to = setTimeout(function () {
+        if (done || g !== NET.gen) return; done = true;
+        try { peer.destroy(); } catch (e) {} createFail('Keine Verbindung zum Vermittlungsserver. Prüfe dein Internet und versuche es nochmal.');
+      }, 12000);
+      peer.on('open', function () {
+        if (g !== NET.gen) { try { peer.destroy(); } catch (e) {} return; }
+        done = true; clearTimeout(to);
+        NET.peer = peer; NET.role = 'host'; NET.code = ROOM.code; NET.cfg = { sb: ROOM.sb, every: ROOM.every };
+        NET.players = [Object.assign({ id: 'host', host: true }, cleanProf(myPublic()))]; NET.conns = []; NET.shown = 1;
+        peer.on('connection', hostAccept);
+        showLobby();
+      });
+      peer.on('disconnected', function () { if (g === NET.gen && done) { try { peer.reconnect(); } catch (e) {} } });
+      peer.on('error', function (err) {
+        if (g !== NET.gen) return;
+        if (!done) {
+          done = true; clearTimeout(to); try { peer.destroy(); } catch (e) {}
+          if (err && err.type === 'unavailable-id' && tries < 4) { tries++; ROOM.code = newCode(); saveRoom(); renderRoom(); attempt(); return; }
+          createFail('Der Tisch konnte nicht erstellt werden. Prüfe dein Internet und versuche es nochmal.');
+        }
+      });
+    })();
+  }
+  function hostBroadcast() {
+    var st = { t: 'state', code: NET.code, cfg: NET.cfg, players: NET.players };
+    NET.conns.forEach(function (c) { try { c.send(st); } catch (e) {} });
+  }
+  function hostAccept(conn) {
+    var g = NET.gen;
+    conn.on('data', function (d) {
+      if (g !== NET.gen || !d || typeof d !== 'object' || d.t !== 'hello' || conn._pr) return;
+      if (NET.players.length >= MAX_P) { try { conn.send({ t: 'full' }); } catch (e) {} setTimeout(function () { try { conn.close(); } catch (e) {} }, 400); return; }
+      conn._pr = true; NET.conns.push(conn);
+      NET.players.push(Object.assign({ id: conn.peer, host: false }, cleanProf(d.p)));
+      hostBroadcast(); renderLobby();
+    });
+    function gone() {
+      if (g !== NET.gen || !conn._pr) return; conn._pr = false;
+      NET.conns = NET.conns.filter(function (c) { return c !== conn; });
+      NET.players = NET.players.filter(function (p) { return p.id !== conn.peer; });
+      hostBroadcast(); renderLobby();
+    }
+    conn.on('close', gone); conn.on('error', gone);
+  }
+
+  /* --- Mitspieler --- */
+  function joinMsg(msg, warn) { var m = $('#frJoinMsg'); m.textContent = msg; m.classList.toggle('warn', !!warn); }
+  function joinFail(msg) { var b = $('#frGo'); b.textContent = 'Beitreten'; syncJoin(); joinMsg(msg, true); }
+  function netJoin() {
+    var code = cleanCode($('#frCodeIn').value);
+    if (code.length !== 5) return;
+    if (!netAvail()) { joinMsg(MSG_NOLIB, true); return; }
+    wipeNet(false);
+    var g = ++NET.gen, b = $('#frGo'); b.disabled = true; b.textContent = 'Verbinde …'; joinMsg('Suche den Tisch …', false);
+    var peer, finished = false;
+    try { peer = new window.Peer(undefined, peerOpts()); } catch (e) { joinFail('Verbindung konnte nicht gestartet werden.'); return; }
+    function fail(msg) {
+      if (finished || g !== NET.gen) return; finished = true; clearTimeout(to);
+      try { peer.destroy(); } catch (e) {} joinFail(msg);
+    }
+    var to = setTimeout(function () { fail('Keine Verbindung zum Tisch. Prüfe den Code und dein Internet.'); }, 15000);
+    peer.on('error', function (err) {
+      if (finished || g !== NET.gen) return;
+      fail(err && err.type === 'peer-unavailable' ? 'Diesen Tisch gibt es nicht (mehr). Prüfe den Code.' : 'Verbindung fehlgeschlagen. Prüfe dein Internet und versuche es nochmal.');
+    });
+    peer.on('open', function () {
+      if (finished || g !== NET.gen) return;
+      var conn = peer.connect(PEER_PREFIX + code.toLowerCase(), { serialization: 'json', reliable: true });
+      conn.on('open', function () { try { conn.send({ t: 'hello', p: myPublic() }); } catch (e) {} });
+      conn.on('data', function (d) {
+        if (g !== NET.gen || !d || typeof d !== 'object') return;
+        if (d.t === 'full') { fail('Der Tisch ist voll (höchstens ' + MAX_P + ' Spieler).'); return; }
+        if (d.t === 'closed') { if (!finished) { fail('Der Tisch wurde geschlossen.'); } else { wipeNet(false); backToMain('Der Ersteller hat den Tisch geschlossen.'); } return; }
+        if (d.t === 'state' && d.cfg && Array.isArray(d.players)) {
+          var cfg = { sb: SB_OPTS.indexOf(d.cfg.sb) >= 0 ? d.cfg.sb : 10, every: EVERY_OPTS.indexOf(d.cfg.every) >= 0 ? d.cfg.every : 8 };
+          var list = d.players.slice(0, MAX_P).map(function (p, i) { return Object.assign({ id: String(p && p.id || i), host: !!(p && p.host) }, cleanProf(p)); });
+          NET.cfg = cfg; NET.players = list;
+          if (!finished) {
+            finished = true; clearTimeout(to);
+            NET.peer = peer; NET.role = 'guest'; NET.code = code; NET.shown = list.length;
+            b.textContent = 'Beitreten'; syncJoin();
+            showLobby();
+          } else renderLobby();
+        }
+      });
+      function lost() {
+        if (g !== NET.gen) return;
+        if (!finished) fail('Verbindung zum Tisch fehlgeschlagen.');
+        else { wipeNet(false); backToMain('Die Verbindung zum Tisch ist abgebrochen.'); }
+      }
+      conn.on('close', lost); conn.on('error', lost);
+    });
+  }
+
+  /* --- Wartebereich --- */
+  function showLobby() { frShow('frLobbyV'); renderLobby(); }
+  function renderLobby() {
+    if (!NET.cfg) return;
+    var host = NET.role === 'host', pl = NET.players, cfg = NET.cfg;
+    $('#lbCode').textContent = NET.code;
+    $('#lbWa').hidden = !host;
+    $('#lbWa').href = 'https://wa.me/?text=' + encodeURIComponent('Komm an meinen Pokertisch! Code: ' + NET.code + '\n' + SITE_URL + '#' + NET.code);
+    var rows = [['Spiel', 'Texas Hold’em'], ['Small Blind', fmt(cfg.sb)], ['Big Blind', fmt(cfg.sb * 2)],
+                ['Blinds steigen', cfg.every ? 'alle ' + cfg.every + ' Hände' : 'nie'], ['Plätze', String(MAX_P)]];
+    var ov = $('#lbOv'); ov.innerHTML = '';
+    rows.forEach(function (r) {
+      var d = document.createElement('div'); d.className = 'ovrow';
+      var a = document.createElement('span'); a.textContent = r[0]; var b = document.createElement('b'); b.textContent = r[1];
+      d.appendChild(a); d.appendChild(b); ov.appendChild(d);
+    });
+    $('#lbPlTitle').textContent = 'Spieler (' + pl.length + '/' + MAX_P + ')';
+    var me = NET.peer && NET.peer.id, list = $('#lbPlayers'); list.innerHTML = '';
+    pl.forEach(function (p) {
+      var isMe = host ? p.id === 'host' : p.id === me;
+      var b = document.createElement('button'); b.type = 'button'; b.className = 'pl';
+      var av = document.createElement('span'); av.className = 'pav'; av.style.setProperty('--av', p.color); av.textContent = initialOf(p);
+      var pn = document.createElement('span'); pn.className = 'pn';
+      var nm = document.createElement('b'); nm.textContent = p.name + (isMe ? ' (Du)' : '');
+      var sm = document.createElement('small'); sm.textContent = p.hands ? fmt(p.hands) + ' Hände · ' + rateOf(p) + ' Quote' : 'Noch keine Hände';
+      pn.appendChild(nm); pn.appendChild(sm);
+      b.appendChild(av); b.appendChild(pn);
+      if (p.host) { var rl = document.createElement('span'); rl.className = 'rl'; rl.textContent = 'Ersteller'; b.appendChild(rl); }
+      b.insertAdjacentHTML('beforeend', '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M9 5l7 7-7 7"/></svg>');
+      b.addEventListener('click', function () { openPView(p); });
+      list.appendChild(b);
+    });
+    var w = $('#lbWait');
+    w.classList.remove('dots');
+    w.innerHTML = '';
+    w.textContent = host ? (pl.length < 2 ? 'Warte auf Mitspieler' : 'Warte auf weitere Mitspieler') : 'Du bist dabei. Warte auf den Ersteller';
+    w.classList.toggle('dots', host ? pl.length < MAX_P : true);
+    $('#lbLeave').textContent = host ? 'Tisch schließen' : 'Tisch verlassen';
+    if (pl.length > NET.shown) { try { Snd.ping(); } catch (e) {} }
+    NET.shown = pl.length;
+  }
+  function openPView(p) {
+    $('#pvAv').style.setProperty('--av', p.color); $('#pvAv').textContent = initialOf(p);
+    $('#pvName').textContent = p.name; $('#pvRole').textContent = p.host ? 'Ersteller' : '';
+    $('#pvHands').textContent = fmt(p.hands); $('#pvWins').textContent = fmt(p.wins); $('#pvRate').textContent = rateOf(p);
+    $('#pview').hidden = false;
+  }
+  $('#pvBack').addEventListener('click', function () { $('#pview').hidden = true; });
+  $('#frMake').addEventListener('click', netCreate);
+  $('#frGo').addEventListener('click', netJoin);
+  $('#lbLeave').addEventListener('click', function () { var host = NET.role === 'host'; wipeNet(host); backToMain(''); });
+  $('#lbCopy').addEventListener('click', function () {
+    var b = $('#lbCopy'), code = NET.code, done = function (t) { b.textContent = t; setTimeout(function () { b.textContent = 'Code kopieren'; }, 1600); };
+    try { navigator.clipboard.writeText(code).then(function () { done('Kopiert'); }, function () { done('Code oben markieren'); }); }
+    catch (e) { done('Code oben markieren'); }
   });
+  window.addEventListener('pagehide', function () { if (NET.peer) { try { NET.peer.destroy(); } catch (e) {} } });
   /* Einladungslink: ...#K7M2P oeffnet gleich das Beitreten mit dem Code */
   (function () {
     var m = /^#([A-Za-z0-9]{5})$/.exec(location.hash || '');
