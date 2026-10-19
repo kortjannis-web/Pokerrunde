@@ -2548,5 +2548,5 @@ input[type=range]::-moz-range-thumb {
 })();
 </script>
 
-<script>if('serviceWorker' in navigator&&location.protocol.startsWith('http')){addEventListener('load',function(){navigator.serviceWorker.register('sw.js').catch(function(){})})}</script>
+<script>if('serviceWorker' in navigator&&location.protocol.startsWith('http')){addEventListener('load',function(){navigator.serviceWorker.register('sw.js',{updateViaCache:'none'}).catch(function(){})})}</script>
 </body></html>
