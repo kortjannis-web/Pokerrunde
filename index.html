@@ -451,6 +451,27 @@ a.btn { text-decoration: none; }
 #frCodeIn { height: 64px; border-radius: 14px; background: var(--bg2); border: 1px solid var(--line); color: var(--brass); font: 800 34px var(--display); letter-spacing: .16em; text-align: center; text-transform: uppercase; padding: 0 0 0 .16em; outline: none; width: 100%; box-sizing: border-box; }
 #frCodeIn:focus { border-color: var(--brass); }
 #frCodeIn::placeholder { color: rgba(236,231,218,.22); }
+.bpick { display: flex; flex-direction: column; gap: 12px; text-align: left; }
+.bpnum { width: 100%; box-sizing: border-box; height: 58px; border-radius: 14px; background: var(--bg2); border: 1px solid var(--line); color: var(--brass); font: 800 30px var(--display); text-align: center; outline: none; font-variant-numeric: tabular-nums; padding: 0 12px; }
+.bpnum:focus { border-color: var(--brass); }
+.endcard .bpnum { background: var(--bg); }
+.bprange { height: 24px; }
+input.bprange[type=range]::-webkit-slider-runnable-track { height: 6px; }
+input.bprange[type=range]::-webkit-slider-thumb { width: 20px; height: 20px; margin-top: -7px; border-radius: 50%; background: var(--ink); border: 0; box-shadow: 0 1px 4px rgba(0,0,0,.55); }
+input.bprange[type=range]::-moz-range-track { height: 6px; }
+input.bprange[type=range]::-moz-range-progress { height: 6px; }
+input.bprange[type=range]::-moz-range-thumb { width: 20px; height: 20px; border-radius: 50%; background: var(--ink); border: 0; box-shadow: 0 1px 4px rgba(0,0,0,.55); }
+.bprange:disabled { opacity: .35; }
+.bppre { display: flex; flex-wrap: wrap; justify-content: center; gap: 6px; }
+.bppre button { height: 36px; padding: 0 13px; border-radius: 999px; background: var(--bg2); border: 1px solid var(--line); color: var(--ink); font: 700 14px var(--ui); font-variant-numeric: tabular-nums; }
+.endcard .bppre button { background: var(--bg); }
+.bppre button.on { background: var(--brass); color: var(--brass-ink); border-color: transparent; }
+.bphint { color: var(--muted); font: 500 13px var(--ui); text-align: center; }
+.bphint.warn { color: var(--brass); font-weight: 700; }
+#chipdlg { z-index: 80; }
+#chipdlg .endcard { display: flex; flex-direction: column; gap: 14px; }
+#chipdlg .endcard h2, #chipdlg .endcard p { margin: 0; }
+#chipdlg .btn + .btn { margin-top: -4px; }
 #pview { position: absolute; inset: 0; z-index: 75; overflow-y: auto; padding: 16px 20px 28px; background: radial-gradient(ellipse at 50% 0%, var(--felt2), var(--bg) 60%); }
 #pview[hidden] { display: none; }
 #pview .pav { width: 84px; height: 84px; font-size: 38px; padding-bottom: .02em; }
@@ -468,6 +489,7 @@ a.btn { text-decoration: none; }
 .pl .pn { flex: 1; min-width: 0; display: flex; flex-direction: column; gap: 2px; }
 .pl .pn b { font: 700 16px var(--ui); overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
 .pl .pn small { color: var(--muted); font: 500 12px var(--ui); margin: 0; }
+.pl .pn small.by { color: var(--brass); font-weight: 700; }
 .pl .rl { color: var(--brass); font: 800 11px var(--ui); letter-spacing: .12em; text-transform: uppercase; }
 .pl svg { width: 14px; height: 14px; opacity: .5; flex: none; }
 .dots::after { content: ""; display: inline-block; width: 1.2em; text-align: left; animation: dots 1.4s steps(4, end) infinite; }
@@ -522,6 +544,7 @@ a.btn { text-decoration: none; }
     <span class="brand">Pokerrunde</span>
     <div class="right">
       <span id="info">Hand 1 · Blinds 10/20</span>
+      <button class="iconbtn" id="topBtn" type="button" aria-label="Chips aufladen"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path d="M12 8v8M8 12h8"/></svg></button>
       <button class="iconbtn" id="mute" type="button" aria-label="Ton an oder aus">
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 9v6h4l5 4V5L8 9H4z" fill="currentColor" stroke="none"/><path class="w" d="M16.5 8.5a5 5 0 010 7M19 6a8.5 8.5 0 010 12"/><path class="x" d="M3 3l18 18"/></svg>
       </button>
@@ -580,6 +603,18 @@ a.btn { text-decoration: none; }
     </div>
     <button class="btn primary wide" id="bNext" type="button" hidden>Nächste Hand</button>
   </footer>
+
+  <div id="chipdlg" class="overlay" hidden>
+    <div class="endcard">
+      <h2 id="cdTitle">Chips mitbringen</h2>
+      <p id="cdText"></p>
+      <div id="cdPick"></div>
+      <div>
+        <button class="btn primary wide" id="cdGo" type="button">Spielen</button>
+        <button class="btn wide" id="cdCancel" type="button" style="margin-top:10px">Abbrechen</button>
+      </div>
+    </div>
+  </div>
 
   <div id="pause" class="overlay" hidden>
     <div class="endcard">
@@ -647,6 +682,10 @@ a.btn { text-decoration: none; }
           <div class="seg" id="segEvery" role="radiogroup" aria-label="Blinds steigen nach Händen"></div>
           <div class="frhint" id="everyHint"></div>
         </div>
+        <div>
+          <div class="psec">Chips mitbringen</div>
+          <div id="pkCreate" style="margin-top:8px"></div>
+        </div>
         <button class="btn primary wide" id="frMake" type="button">Jetzt erstellen</button>
         <p class="frnote" id="frMakeMsg">Nach dem Erstellen lassen sich die Einstellungen nicht mehr ändern.</p>
       </div>
@@ -678,6 +717,10 @@ a.btn { text-decoration: none; }
           <label for="frCodeIn">Code</label>
           <input id="frCodeIn" type="text" inputmode="text" maxlength="5" autocomplete="off" autocapitalize="characters" spellcheck="false" placeholder="•••••">
         </div>
+        <div>
+          <div class="psec">Chips mitbringen</div>
+          <div id="pkJoin" style="margin-top:8px"></div>
+        </div>
         <button class="btn primary wide" id="frGo" type="button" disabled>Beitreten</button>
         <p class="frnote" id="frJoinMsg">Den Code bekommst du vom Ersteller, zum Beispiel per WhatsApp.</p>
       </div>
@@ -703,6 +746,7 @@ a.btn { text-decoration: none; }
           <div class="pstat"><b id="pvRate">–</b><span>Quote</span></div>
         </div>
       </div>
+      <div class="ov" id="pvBuyBox" style="margin-top:0"><div class="ovrow"><span>Chips am Tisch</span><b id="pvBuy">–</b></div></div>
     </div>
   </div>
 
@@ -1085,7 +1129,7 @@ a.btn { text-decoration: none; }
           pers: id === 0 ? makeStyle(STYLES[0]) : makeStyle(styles[id - 1])
         };
       });
-      S.humanStart = hc; S.dealer = randInt(N); S.board = []; S.deck = []; S.handNo = 0;
+      S.humanStart = hc; S.pendingAdd = 0; S.dealer = randInt(N); S.board = []; S.deck = []; S.handNo = 0;
       S.sbIdx = -1; S.bbIdx = -1; S.glow = -1; S.phase = 'idle'; S.toAct = -1; S.result = null; S.currentBet = 0; S.lastRaise = 20; S.raises = 0;
     }
 
@@ -1518,10 +1562,15 @@ a.btn { text-decoration: none; }
 
     async function run() {
       while (true) {
-        if (S.players[0].chips <= 0) {
-          /* pleite: kein neues Spiel, sondern 100 frische Chips und weiter am Tisch */
-          S.players[0].chips = REBUY; S.humanStart += REBUY;
-          if (H.onRebuy) H.onRebuy(REBUY);
+        var me = S.players[0];
+        /* aufgeladene Chips kommen immer zwischen zwei Haenden an den Tisch */
+        if (S.pendingAdd > 0) { me.chips += S.pendingAdd; S.humanStart += S.pendingAdd; S.pendingAdd = 0; }
+        if (me.chips <= 0) {
+          /* pleite: die Oberflaeche entscheidet, wie viele Chips nachkommen (sonst 100 gratis) */
+          var n = REBUY;
+          if (H.onBroke) { n = Math.round(await H.onBroke()); if (!(n > 0)) n = REBUY; }
+          else if (H.onRebuy) H.onRebuy(REBUY);
+          me.chips = n; S.humanStart += n;
         }
         if (S.players.filter(function (p) { return p.chips > 0; }).length === 1) { H.onEnd(true); return; }
         await playHand();
@@ -1531,7 +1580,7 @@ a.btn { text-decoration: none; }
 
     reset();
     return {
-      S: S, reset: reset, run: run, playHand: playHand, botDecide: botDecide,
+      S: S, reset: reset, run: run, addChips: function (n) { n = Math.round(n); if (n > 0) S.pendingAdd += n; }, playHand: playHand, botDecide: botDecide,
       handsPerLevel: HANDS_PER_LEVEL, totalPot: totalPot, collected: collected, roundBets: roundBets, fmt: fmt
     };
   }
@@ -1807,11 +1856,9 @@ a.btn { text-decoration: none; }
     },
     react: function (id, emo, delay) { var g = gen; setTimeout(function () { if (g === gen) showReaction(id, emo); }, delay || 0); },
     onEnd: showEnd,
-    onRebuy: function (n) {
-      var tt = $('#toast'); tt.textContent = '+' + n + ' Chips, du bist wieder dabei';
-      tt.classList.add('on'); clearTimeout(toastTimer);
-      toastTimer = setTimeout(function () { tt.classList.remove('on'); }, 3600);
-      saveBank();
+    onBroke: function () {
+      if (wallet <= 0) { toastMsg('+' + P.REBUY + ' Chips, du bist wieder dabei'); return Promise.resolve(P.REBUY); }
+      return new Promise(function (res) { openDlg('broke', res); });
     }
   });
   var S = game.S;
@@ -2346,7 +2393,7 @@ a.btn { text-decoration: none; }
     var r = nextResolve;
     if (r) { nextResolve = null; r(); }
   });
-  function startGame() {
+  function startGame(buyin) {
     gen++;
     clearTimeout(turnTimer); clearTimeout(nextTimer); clearTimeout(tossTimer);
     humanResolve = null; nextResolve = null; raiseMode = false; flashMsg = ''; tossed = [];
@@ -2355,8 +2402,11 @@ a.btn { text-decoration: none; }
     handEl.style.transform = ''; handEl.style.opacity = ''; handEl.style.transition = '';
     lastHand = -1; handEl.dataset.hn = ''; shownBB = 0; flyUntil = 0;
     clearShow();
-    PROF.bank = Math.max(P.REBUY, PROF.bank | 0); saveProf();
-    game.reset(PROF.bank); S = game.S; profit = 0; playing = true; applyProfToSeat();
+    PROF.bank = Math.max(P.REBUY, PROF.bank | 0);
+    var total = PROF.bank, bi = Math.round(+buyin || total);
+    bi = Math.max(Math.min(P.REBUY, total), Math.min(total, bi));
+    wallet = total - bi; PROF.buyin = bi; saveProf();
+    game.reset(bi); S = game.S; profit = 0; playing = true; applyProfToSeat();
     snap.hand = -1;
     render();
     game.run();
@@ -2369,14 +2419,14 @@ a.btn { text-decoration: none; }
     $('#fly').innerHTML = '';
     clearShow();
     Snd.stopAll();
-    saveBank(); playing = false; renderBank();
+    saveBank(); playing = false; wallet = 0; renderBank(); $('#chipdlg').hidden = true; cdState = null;
     game.reset(); S = game.S; lastHand = -1; handEl.dataset.hn = ''; snap.hand = -1; shownBB = 0;
     render();
     Snd.stopAll();
     $('#menu').hidden = false;
   }
   /* ---------- Profil, Ladebildschirm, Hauptmenue ---------- */
-  var PROF = { name: 'Spieler', color: AV[0], hands: 0, wins: 0, bank: P.START_CHIPS };
+  var PROF = { name: 'Spieler', color: AV[0], hands: 0, wins: 0, bank: P.START_CHIPS, buyin: P.START_CHIPS };
   var MORE = ['#b5543f', '#c8873a', '#c4a84a', '#6f9a5a', '#4f9a8a', '#4a86a8', '#5a6fb0', '#8a68b0', '#b0689a', '#a65a6a', '#6b6f75', '#3f4a52'];
   try {
     var rawP = JSON.parse(localStorage.getItem('pr-profile') || 'null');
@@ -2386,14 +2436,20 @@ a.btn { text-decoration: none; }
       else if (rawP.av >= 0 && rawP.av < AV.length) PROF.color = AV[rawP.av | 0];
       PROF.hands = Math.max(0, rawP.hands | 0); PROF.wins = Math.max(0, rawP.wins | 0);
       if (typeof rawP.bank === 'number' && isFinite(rawP.bank)) PROF.bank = Math.max(P.REBUY, Math.round(rawP.bank));
+      if (typeof rawP.buyin === 'number' && isFinite(rawP.buyin)) PROF.buyin = Math.max(P.REBUY, Math.round(rawP.buyin));
     }
   } catch (e) {}
-  var playing = false;
+  var playing = false, wallet = 0, cdState = null;
+  function toastMsg(t) {
+    var tt = $('#toast'); tt.textContent = t; tt.classList.add('on'); clearTimeout(toastTimer);
+    toastTimer = setTimeout(function () { tt.classList.remove('on'); }, 3600);
+  }
   function renderBank() { var b = $('#bankVal'); if (b) b.textContent = fmt(PROF.bank); }
   /* Chips am Tisch = Guthaben. Mitten in der Hand zaehlen schon eingesetzte Chips nicht mehr. */
   function saveBank() {
     if (!playing || !S.players[0]) return;
-    PROF.bank = Math.max(P.REBUY, Math.round(S.players[0].chips)); saveProf(); renderBank();
+    /* Gesamtguthaben = Chips im Beutel + am Tisch + schon vorgemerkte Aufladung */
+    PROF.bank = Math.max(P.REBUY, Math.round(wallet + S.players[0].chips + (S.pendingAdd || 0))); saveProf(); renderBank();
   }
   document.addEventListener('visibilitychange', function () { if (document.hidden) saveBank(); });
   window.addEventListener('pagehide', saveBank);
@@ -2452,6 +2508,98 @@ a.btn { text-decoration: none; }
   })();
 
 
+
+  /* ---------- Chips-Auswahl (Einsatz mitbringen / aufladen) ---------- */
+  function Picker(root, getMin, getMax, onChange) {
+    root.classList.add('bpick');
+    root.innerHTML = '<input class="bpnum" type="text" inputmode="numeric" autocomplete="off" aria-label="Anzahl Chips"><input class="bprange" type="range" aria-label="Anzahl Chips"><div class="bppre"></div><div class="bphint"></div>';
+    var num = root.querySelector('.bpnum'), rng = root.querySelector('.bprange'), pre = root.querySelector('.bppre'), hint = root.querySelector('.bphint');
+    var val = 0, flash = 0;
+    function clamp(v) { return Math.max(getMin(), Math.min(getMax(), Math.round(+v || 0))); }
+    function paint(keepText) {
+      var mn = getMin(), mx = getMax();
+      if (!keepText) num.value = val;
+      rng.min = mn; rng.max = Math.max(mn, mx); rng.step = 1; rng.value = val; rng.disabled = mx <= mn;
+      rng.style.setProperty('--fill', mx > mn ? ((val - mn) / (mx - mn) * 100) + '%' : '100%');
+      var c = [mn]; [500, 1000, 2000, 5000, 10000].forEach(function (v) { if (v > mn && v < mx && c.length < 3) c.push(v); });
+      if (mx > mn) c.push(mx);
+      pre.innerHTML = '';
+      c.forEach(function (v, i) {
+        var b = document.createElement('button'); b.type = 'button';
+        b.textContent = (i === c.length - 1 && c.length > 1) ? 'Alles' : fmt(v);
+        b.classList.toggle('on', v === val);
+        b.addEventListener('click', function () { val = v; paint(); onChange && onChange(val); });
+        pre.appendChild(b);
+      });
+      if (!flash) { hint.textContent = 'Guthaben ' + fmt(mx) + ' · mindestens ' + fmt(mn); hint.classList.remove('warn'); }
+    }
+    function warn(t) { flash++; hint.textContent = t; hint.classList.add('warn'); setTimeout(function () { if (--flash === 0) paint(true); }, 1800); }
+    num.addEventListener('focus', function () { setTimeout(function () { try { num.select(); } catch (e) {} }, 0); });
+    num.addEventListener('input', function () {
+      var d = num.value.replace(/\D/g, '').slice(0, 9); if (num.value !== d) num.value = d;
+      if (!d) return;
+      var t = +d; val = clamp(t); paint(true); onChange && onChange(val);
+      if (t > getMax()) warn('Mehr als dein Guthaben geht nicht (' + fmt(getMax()) + ')'); else if (t < getMin()) warn('Mindestens ' + fmt(getMin()));
+    });
+    function commit() { num.value = val; }
+    num.addEventListener('blur', commit);
+    num.addEventListener('keydown', function (e) { if (e.key === 'Enter') { commit(); num.blur(); } });
+    rng.addEventListener('input', function () {
+      var v = Math.round(+rng.value / 10) * 10, mx = getMax(); if (mx - v < 10) v = mx;
+      val = clamp(v); paint(); onChange && onChange(val);
+    });
+    return {
+      get: function () { return clamp(val); },
+      set: function (v) { val = clamp(v); paint(); },
+      refresh: function () { val = clamp(val); paint(); }
+    };
+  }
+  function maxBuy() { return Math.max(P.REBUY, PROF.bank | 0); }
+  function minBuy() { return Math.min(P.REBUY, maxBuy()); }
+  function maxTop() { return Math.max(0, wallet | 0); }
+  function minTop() { return Math.min(P.REBUY, maxTop()); }
+  var cdPick = Picker($('#cdPick'), function () { return cdState && cdState.mode !== 'buyin' ? minTop() : minBuy(); },
+                                     function () { return cdState && cdState.mode !== 'buyin' ? maxTop() : maxBuy(); });
+  function openDlg(mode, resolve) {
+    cdState = { mode: mode, resolve: resolve || null };
+    var t = $('#cdTitle'), x = $('#cdText'), go = $('#cdGo'), cn = $('#cdCancel');
+    if (mode === 'buyin') {
+      t.textContent = 'Chips mitbringen'; x.textContent = 'Mit wie vielen Chips setzt du dich an den Tisch? Den Rest behältst du im Guthaben.';
+      go.textContent = 'Spielen'; cn.textContent = 'Abbrechen'; go.disabled = false;
+      cdPick.set(PROF.buyin || P.START_CHIPS);
+    } else if (mode === 'topup') {
+      t.textContent = 'Chips aufladen';
+      x.textContent = maxTop() > 0 ? 'Die Chips kommen aus deinem Guthaben und sind ab der nächsten Hand am Tisch.' : 'Dein Guthaben ist aufgebraucht, es gibt nichts zum Aufladen.';
+      go.textContent = 'Aufladen'; cn.textContent = 'Abbrechen'; go.disabled = maxTop() <= 0;
+      cdPick.set(Math.min(maxTop(), Math.max(minTop(), P.START_CHIPS)));
+    } else {
+      t.textContent = 'Du bist pleite'; x.textContent = 'Lade Chips aus deinem Guthaben nach, um weiterzuspielen.';
+      go.textContent = 'Nachladen'; cn.textContent = 'Zum Hauptmenü'; go.disabled = false;
+      cdPick.set(Math.min(maxTop(), Math.max(minTop(), P.START_CHIPS)));
+    }
+    $('#chipdlg').hidden = false;
+  }
+  $('#cdGo').addEventListener('click', function () {
+    var st = cdState; if (!st) return;
+    var v = cdPick.get();
+    $('#chipdlg').hidden = true; cdState = null;
+    if (st.mode === 'buyin') { PROF.buyin = v; saveProf(); startGame(v); }
+    else if (st.mode === 'topup') {
+      if (v <= 0 || v > wallet) return;
+      wallet -= v; game.addChips(v); saveBank();
+      toastMsg('+' + fmt(v) + ' Chips kommen mit der nächsten Hand');
+    } else { wallet -= v; if (st.resolve) st.resolve(v); }
+  });
+  $('#cdCancel').addEventListener('click', function () {
+    var st = cdState; if (!st) return;
+    if (st.mode === 'broke') { toMenu(); return; }
+    $('#chipdlg').hidden = true; cdState = null;
+  });
+  $('#topBtn').addEventListener('click', function () { if (playing && !cdState) openDlg('topup'); });
+  var pkCreate = Picker($('#pkCreate'), minBuy, maxBuy, function (v) { PROF.buyin = v; saveProf(); });
+  var pkJoin = Picker($('#pkJoin'), minBuy, maxBuy, function (v) { PROF.buyin = v; saveProf(); });
+  pkCreate.set(PROF.buyin || P.START_CHIPS); pkJoin.set(PROF.buyin || P.START_CHIPS);
+
   /* ---------- Mit Freunden: Tisch erstellen / beitreten ---------- */
   var SITE_URL = 'https://kortjannis-web.github.io/Pokerrunde/';
   var CODE_CHARS = 'ABCDEFGHJKMNPQRSTUVWXYZ23456789';
@@ -2498,10 +2646,10 @@ a.btn { text-decoration: none; }
   }
   function openCreate() {
     if (!ROOM.code) { ROOM.code = newCode(); saveRoom(); }
-    renderRoom(); frShow('frCreateV');
+    renderRoom(); pkCreate.refresh(); frShow('frCreateV');
   }
   function openJoin(code) {
-    var inp = $('#frCodeIn'); inp.value = code || ''; syncJoin(); frShow('frJoinV');
+    var inp = $('#frCodeIn'); inp.value = code || ''; syncJoin(); pkJoin.refresh(); frShow('frJoinV');
     $('#frJoinMsg').textContent = 'Den Code bekommst du vom Ersteller, zum Beispiel per WhatsApp.'; $('#frJoinMsg').classList.remove('warn');
   }
   function cleanCode(v) { return String(v || '').toUpperCase().replace(/[^A-Z0-9]/g, '').slice(0, 5); }
@@ -2535,12 +2683,13 @@ a.btn { text-decoration: none; }
   var MSG_NOLIB = 'Online-Tische gehen nur über den Link zum Spiel (kortjannis-web.github.io/Pokerrunde), nicht in dieser Vorschau.';
   function peerOpts() { return window.PR_PEER_OPTS || {}; }
   function netAvail() { return typeof window.Peer === 'function'; }
-  function myPublic() { return { name: profName(), color: PROF.color, hands: PROF.hands, wins: PROF.wins }; }
+  function myPublic(buyin) { return { name: profName(), color: PROF.color, hands: PROF.hands, wins: PROF.wins, buyin: buyin || 0 }; }
   function cleanProf(p) {
     p = (p && typeof p === 'object') ? p : {};
     var nm = String(p.name == null ? '' : p.name).slice(0, 14).trim();
     return { name: nm || 'Spieler', color: (typeof p.color === 'string' && /^#[0-9a-f]{6}$/i.test(p.color)) ? p.color : AV[0],
-             hands: Math.min(1e7, Math.max(0, p.hands | 0)), wins: Math.min(1e7, Math.max(0, p.wins | 0)) };
+             hands: Math.min(1e7, Math.max(0, p.hands | 0)), wins: Math.min(1e7, Math.max(0, p.wins | 0)),
+             buyin: Math.min(1e9, Math.max(0, Math.round(+p.buyin || 0))) };
   }
   function rateOf(p) { return p.hands ? Math.round(p.wins / p.hands * 100) + '%' : '–'; }
   function initialOf(p) { return p.name.charAt(0).toUpperCase(); }
@@ -2580,7 +2729,7 @@ a.btn { text-decoration: none; }
         if (g !== NET.gen) { try { peer.destroy(); } catch (e) {} return; }
         done = true; clearTimeout(to);
         NET.peer = peer; NET.role = 'host'; NET.code = ROOM.code; NET.cfg = { sb: ROOM.sb, every: ROOM.every };
-        NET.players = [Object.assign({ id: 'host', host: true }, cleanProf(myPublic()))]; NET.conns = []; NET.shown = 1;
+        NET.players = [Object.assign({ id: 'host', host: true }, cleanProf(myPublic(pkCreate.get())))]; NET.conns = []; NET.shown = 1;
         peer.on('connection', hostAccept);
         showLobby();
       });
@@ -2640,7 +2789,7 @@ a.btn { text-decoration: none; }
     peer.on('open', function () {
       if (finished || g !== NET.gen) return;
       var conn = peer.connect(PEER_PREFIX + code.toLowerCase(), { serialization: 'json', reliable: true });
-      conn.on('open', function () { try { conn.send({ t: 'hello', p: myPublic() }); } catch (e) {} });
+      conn.on('open', function () { try { conn.send({ t: 'hello', p: myPublic(pkJoin.get()) }); } catch (e) {} });
       conn.on('data', function (d) {
         if (g !== NET.gen || !d || typeof d !== 'object') return;
         if (d.t === 'full') { fail('Der Tisch ist voll (höchstens ' + MAX_P + ' Spieler).'); return; }
@@ -2691,7 +2840,9 @@ a.btn { text-decoration: none; }
       var pn = document.createElement('span'); pn.className = 'pn';
       var nm = document.createElement('b'); nm.textContent = p.name + (isMe ? ' (Du)' : '');
       var sm = document.createElement('small'); sm.textContent = p.hands ? fmt(p.hands) + ' Hände · ' + rateOf(p) + ' Quote' : 'Noch keine Hände';
-      pn.appendChild(nm); pn.appendChild(sm);
+      pn.appendChild(nm);
+      if (p.buyin) { var by = document.createElement('small'); by.className = 'by'; by.textContent = 'Bringt ' + fmt(p.buyin) + ' Chips'; pn.appendChild(by); }
+      pn.appendChild(sm);
       b.appendChild(av); b.appendChild(pn);
       if (p.host) { var rl = document.createElement('span'); rl.className = 'rl'; rl.textContent = 'Ersteller'; b.appendChild(rl); }
       b.insertAdjacentHTML('beforeend', '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M9 5l7 7-7 7"/></svg>');
@@ -2710,7 +2861,7 @@ a.btn { text-decoration: none; }
   function openPView(p) {
     $('#pvAv').style.setProperty('--av', p.color); $('#pvAv').textContent = initialOf(p);
     $('#pvName').textContent = p.name; $('#pvRole').textContent = p.host ? 'Ersteller' : '';
-    $('#pvHands').textContent = fmt(p.hands); $('#pvWins').textContent = fmt(p.wins); $('#pvRate').textContent = rateOf(p);
+    $('#pvHands').textContent = fmt(p.hands); $('#pvWins').textContent = fmt(p.wins); $('#pvRate').textContent = rateOf(p); $('#pvBuy').textContent = p.buyin ? fmt(p.buyin) : '–';
     $('#pview').hidden = false;
   }
   $('#pvBack').addEventListener('click', function () { $('#pview').hidden = true; });
@@ -2729,8 +2880,8 @@ a.btn { text-decoration: none; }
     if (m) openFriends('join', cleanCode(m[1]));
   })();
 
-  $('#bAgain').addEventListener('click', startGame);
-  $('#bPlay').addEventListener('click', startGame);
+  $('#bAgain').addEventListener('click', function () { openDlg('buyin'); });
+  $('#bPlay').addEventListener('click', function () { openDlg('buyin'); });
   $('#pauseBtn').addEventListener('click', function () { $('#pause').hidden = false; });
   $('#bResume').addEventListener('click', function () { $('#pause').hidden = true; });
   $('#bMenu').addEventListener('click', toMenu);
