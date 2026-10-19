@@ -444,6 +444,7 @@ input[type=range]::-moz-range-thumb {
 a.btn { text-decoration: none; }
 .seg { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; margin-top: 8px; }
 .seg button { min-width: 0; height: 44px; padding: 0 8px; border-radius: 12px; background: var(--bg2); border: 1px solid var(--line); color: var(--ink); font: 700 15px var(--ui); font-variant-numeric: tabular-nums; }
+.seg button:disabled { opacity: .3; }
 .seg button.on { background: var(--brass); color: var(--brass-ink); border-color: transparent; }
 .frhint { margin-top: 8px; color: var(--muted); font: 500 13px var(--ui); }
 .frnote { margin: 0; color: var(--muted); font: 500 13px/1.45 var(--ui); text-align: center; }
@@ -489,6 +490,11 @@ input.bprange[type=range]::-moz-range-thumb { width: 20px; height: 20px; border-
 .pl .pn { flex: 1; min-width: 0; display: flex; flex-direction: column; gap: 2px; }
 .pl .pn b { font: 700 16px var(--ui); overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
 .pl .pn small { color: var(--muted); font: 500 12px var(--ui); margin: 0; }
+.pl.plx, .pl.plf { cursor: default; }
+.pl.plx .rl { margin-right: 4px; }
+.pl.plf { background: transparent; border-style: dashed; color: var(--muted); }
+.pl.plf .pav { background: transparent; box-shadow: inset 0 0 0 1.5px var(--line); color: var(--muted); font: 600 20px var(--ui); padding-bottom: 0; }
+.pl.plf .pn b { font-weight: 600; }
 .pl .pn small.by { color: var(--brass); font-weight: 700; }
 .pl .rl { color: var(--brass); font: 800 11px var(--ui); letter-spacing: .12em; text-transform: uppercase; }
 .pl svg { width: 14px; height: 14px; opacity: .5; flex: none; }
@@ -683,6 +689,16 @@ input.bprange[type=range]::-moz-range-thumb { width: 20px; height: 20px; border-
           <div class="frhint" id="everyHint"></div>
         </div>
         <div>
+          <div class="psec">Plätze</div>
+          <div class="seg" id="segSeats" role="radiogroup" aria-label="Anzahl Plätze"></div>
+          <div class="frhint" id="seatsHint"></div>
+        </div>
+        <div>
+          <div class="psec">Bots</div>
+          <div class="seg" id="segBots" role="radiogroup" aria-label="Anzahl Bots"></div>
+          <div class="frhint" id="botsHint"></div>
+        </div>
+        <div>
           <div class="psec">Chips mitbringen</div>
           <div id="pkCreate" style="margin-top:8px"></div>
         </div>
@@ -709,6 +725,7 @@ input.bprange[type=range]::-moz-range-thumb { width: 20px; height: 20px; border-
           <div class="plist" id="lbPlayers"></div>
         </div>
         <p class="frnote" id="lbWait"></p>
+        <button class="btn primary wide" id="lbStart" type="button" disabled>Spiel starten</button>
         <button class="btn wide" id="lbLeave" type="button">Tisch schließen</button>
       </div>
 
@@ -2603,8 +2620,9 @@ input.bprange[type=range]::-moz-range-thumb { width: 20px; height: 20px; border-
   /* ---------- Mit Freunden: Tisch erstellen / beitreten ---------- */
   var SITE_URL = 'https://kortjannis-web.github.io/Pokerrunde/';
   var CODE_CHARS = 'ABCDEFGHJKMNPQRSTUVWXYZ23456789';
-  var SB_OPTS = [5, 10, 20, 25, 50, 100], EVERY_OPTS = [5, 8, 10, 15, 20, 0];
-  var ROOM = { code: '', sb: 10, every: 8 };
+  var SB_OPTS = [5, 10, 20, 25, 50, 100], EVERY_OPTS = [5, 8, 10, 15, 20, 0], SEAT_OPTS = [2, 3, 4, 5], BOT_OPTS = [0, 1, 2, 3, 4];
+  var BOT_NAMES = ['Svenja', 'Tarek', 'Olga', 'Bruno'];
+  var ROOM = { code: '', sb: 10, every: 8, seats: 5, bots: 0 };
   var NET = { peer: null, role: '', code: '', cfg: null, conns: [], players: [], gen: 0, shown: 0 };
   try {
     var rawR = JSON.parse(localStorage.getItem('pr-room') || 'null');
@@ -2612,6 +2630,8 @@ input.bprange[type=range]::-moz-range-thumb { width: 20px; height: 20px; border-
       if (typeof rawR.code === 'string' && /^[A-Z2-9]{5}$/.test(rawR.code)) ROOM.code = rawR.code;
       if (SB_OPTS.indexOf(rawR.sb) >= 0) ROOM.sb = rawR.sb;
       if (EVERY_OPTS.indexOf(rawR.every) >= 0) ROOM.every = rawR.every;
+      if (SEAT_OPTS.indexOf(rawR.seats) >= 0) ROOM.seats = rawR.seats;
+      if (BOT_OPTS.indexOf(rawR.bots) >= 0) ROOM.bots = Math.min(rawR.bots, ROOM.seats - 1);
     }
   } catch (e) {}
   function saveRoom() { try { localStorage.setItem('pr-room', JSON.stringify(ROOM)); } catch (e) {} }
@@ -2627,12 +2647,14 @@ input.bprange[type=range]::-moz-range-thumb { width: 20px; height: 20px; border-
     $('#friends').dataset.view = view;
     $('#friends').scrollTop = 0;
   }
-  function seg(el, opts, cur, label, onPick) {
+  function seg(el, opts, cur, label, onPick, isOff) {
     el.innerHTML = '';
+    el.style.gridTemplateColumns = opts.length === 5 ? 'repeat(5, 1fr)' : opts.length === 4 ? 'repeat(4, 1fr)' : '';
     opts.forEach(function (v) {
       var b = document.createElement('button');
       b.type = 'button'; b.setAttribute('role', 'radio'); b.textContent = label(v);
       var on = v === cur; b.classList.toggle('on', on); b.setAttribute('aria-checked', on ? 'true' : 'false');
+      if (isOff && isOff(v)) b.disabled = true;
       b.addEventListener('click', function () { onPick(v); });
       el.appendChild(b);
     });
@@ -2641,6 +2663,12 @@ input.bprange[type=range]::-moz-range-thumb { width: 20px; height: 20px; border-
     $('#frCode').textContent = ROOM.code;
     seg($('#segSb'), SB_OPTS, ROOM.sb, function (v) { return fmt(v); }, function (v) { ROOM.sb = v; saveRoom(); renderRoom(); });
     seg($('#segEvery'), EVERY_OPTS, ROOM.every, function (v) { return v ? v + ' Hände' : 'Nie'; }, function (v) { ROOM.every = v; saveRoom(); renderRoom(); });
+    if (ROOM.bots > ROOM.seats - 1) ROOM.bots = ROOM.seats - 1;
+    seg($('#segSeats'), SEAT_OPTS, ROOM.seats, function (v) { return String(v); }, function (v) { ROOM.seats = v; if (ROOM.bots > v - 1) ROOM.bots = v - 1; saveRoom(); renderRoom(); });
+    seg($('#segBots'), BOT_OPTS, ROOM.bots, function (v) { return v ? String(v) : 'Keine'; }, function (v) { ROOM.bots = v; saveRoom(); renderRoom(); }, function (v) { return v > ROOM.seats - 1; });
+    var humanSeats = ROOM.seats - ROOM.bots;
+    $('#seatsHint').textContent = ROOM.seats + ' Plätze am Tisch. Gestartet werden kann schon ab 2 Spielern.';
+    $('#botsHint').textContent = ROOM.bots ? ROOM.bots + (ROOM.bots === 1 ? ' Bot spielt' : ' Bots spielen') + ' mit. Für dich und Freunde bleiben ' + humanSeats + (humanSeats === 1 ? ' Platz.' : ' Plätze.') : 'Nur echte Spieler. Alle ' + ROOM.seats + ' Plätze sind für dich und Freunde.';
     $('#sbHint').textContent = 'Small Blind ' + fmt(ROOM.sb) + ' · Big Blind ' + fmt(ROOM.sb * 2);
     $('#everyHint').textContent = ROOM.every ? 'Nach jeweils ' + ROOM.every + ' Händen steigen die Blinds.' : 'Die Blinds bleiben während des ganzen Spiels gleich.';
   }
@@ -2679,7 +2707,7 @@ input.bprange[type=range]::-moz-range-thumb { width: 20px; height: 20px; border-
   $('#frCodeIn').addEventListener('keydown', function (e) { if (e.key === 'Enter') $('#frGo').click(); });
 
   /* ---------- Online-Tisch (Vermittlung ueber PeerJS, Verbindung direkt von Handy zu Handy) ---------- */
-  var MAX_P = 5, PEER_PREFIX = 'pokerrunde-';
+  var PEER_PREFIX = 'pokerrunde-';
   var MSG_NOLIB = 'Online-Tische gehen nur über den Link zum Spiel (kortjannis-web.github.io/Pokerrunde), nicht in dieser Vorschau.';
   function peerOpts() { return window.PR_PEER_OPTS || {}; }
   function netAvail() { return typeof window.Peer === 'function'; }
@@ -2728,7 +2756,7 @@ input.bprange[type=range]::-moz-range-thumb { width: 20px; height: 20px; border-
       peer.on('open', function () {
         if (g !== NET.gen) { try { peer.destroy(); } catch (e) {} return; }
         done = true; clearTimeout(to);
-        NET.peer = peer; NET.role = 'host'; NET.code = ROOM.code; NET.cfg = { sb: ROOM.sb, every: ROOM.every };
+        NET.peer = peer; NET.role = 'host'; NET.code = ROOM.code; NET.cfg = { sb: ROOM.sb, every: ROOM.every, seats: ROOM.seats, bots: Math.min(ROOM.bots, ROOM.seats - 1) };
         NET.players = [Object.assign({ id: 'host', host: true }, cleanProf(myPublic(pkCreate.get())))]; NET.conns = []; NET.shown = 1;
         peer.on('connection', hostAccept);
         showLobby();
@@ -2744,6 +2772,7 @@ input.bprange[type=range]::-moz-range-thumb { width: 20px; height: 20px; border-
       });
     })();
   }
+  function humanCap(cfg) { return Math.max(1, cfg.seats - cfg.bots); }
   function hostBroadcast() {
     var st = { t: 'state', code: NET.code, cfg: NET.cfg, players: NET.players };
     NET.conns.forEach(function (c) { try { c.send(st); } catch (e) {} });
@@ -2752,7 +2781,7 @@ input.bprange[type=range]::-moz-range-thumb { width: 20px; height: 20px; border-
     var g = NET.gen;
     conn.on('data', function (d) {
       if (g !== NET.gen || !d || typeof d !== 'object' || d.t !== 'hello' || conn._pr) return;
-      if (NET.players.length >= MAX_P) { try { conn.send({ t: 'full' }); } catch (e) {} setTimeout(function () { try { conn.close(); } catch (e) {} }, 400); return; }
+      if (NET.players.length >= humanCap(NET.cfg)) { try { conn.send({ t: 'full' }); } catch (e) {} setTimeout(function () { try { conn.close(); } catch (e) {} }, 400); return; }
       conn._pr = true; NET.conns.push(conn);
       NET.players.push(Object.assign({ id: conn.peer, host: false }, cleanProf(d.p)));
       hostBroadcast(); renderLobby();
@@ -2792,11 +2821,13 @@ input.bprange[type=range]::-moz-range-thumb { width: 20px; height: 20px; border-
       conn.on('open', function () { try { conn.send({ t: 'hello', p: myPublic(pkJoin.get()) }); } catch (e) {} });
       conn.on('data', function (d) {
         if (g !== NET.gen || !d || typeof d !== 'object') return;
-        if (d.t === 'full') { fail('Der Tisch ist voll (höchstens ' + MAX_P + ' Spieler).'); return; }
+        if (d.t === 'full') { fail('Der Tisch ist voll.'); return; }
         if (d.t === 'closed') { if (!finished) { fail('Der Tisch wurde geschlossen.'); } else { wipeNet(false); backToMain('Der Ersteller hat den Tisch geschlossen.'); } return; }
         if (d.t === 'state' && d.cfg && Array.isArray(d.players)) {
-          var cfg = { sb: SB_OPTS.indexOf(d.cfg.sb) >= 0 ? d.cfg.sb : 10, every: EVERY_OPTS.indexOf(d.cfg.every) >= 0 ? d.cfg.every : 8 };
-          var list = d.players.slice(0, MAX_P).map(function (p, i) { return Object.assign({ id: String(p && p.id || i), host: !!(p && p.host) }, cleanProf(p)); });
+          var cfg = { sb: SB_OPTS.indexOf(d.cfg.sb) >= 0 ? d.cfg.sb : 10, every: EVERY_OPTS.indexOf(d.cfg.every) >= 0 ? d.cfg.every : 8,
+                      seats: SEAT_OPTS.indexOf(d.cfg.seats) >= 0 ? d.cfg.seats : 5, bots: BOT_OPTS.indexOf(d.cfg.bots) >= 0 ? d.cfg.bots : 0 };
+          cfg.bots = Math.min(cfg.bots, cfg.seats - 1);
+          var list = d.players.slice(0, humanCap(cfg)).map(function (p, i) { return Object.assign({ id: String(p && p.id || i), host: !!(p && p.host) }, cleanProf(p)); });
           NET.cfg = cfg; NET.players = list;
           if (!finished) {
             finished = true; clearTimeout(to);
@@ -2824,14 +2855,16 @@ input.bprange[type=range]::-moz-range-thumb { width: 20px; height: 20px; border-
     $('#lbWa').hidden = !host;
     $('#lbWa').href = 'https://wa.me/?text=' + encodeURIComponent('Komm an meinen Pokertisch! Code: ' + NET.code + '\n' + SITE_URL + '#' + NET.code);
     var rows = [['Spiel', 'Texas Hold’em'], ['Small Blind', fmt(cfg.sb)], ['Big Blind', fmt(cfg.sb * 2)],
-                ['Blinds steigen', cfg.every ? 'alle ' + cfg.every + ' Hände' : 'nie'], ['Plätze', String(MAX_P)]];
+                ['Blinds steigen', cfg.every ? 'alle ' + cfg.every + ' Hände' : 'nie'], ['Plätze', String(cfg.seats)],
+                ['Bots', cfg.bots ? String(cfg.bots) : 'keine']];
     var ov = $('#lbOv'); ov.innerHTML = '';
     rows.forEach(function (r) {
       var d = document.createElement('div'); d.className = 'ovrow';
       var a = document.createElement('span'); a.textContent = r[0]; var b = document.createElement('b'); b.textContent = r[1];
       d.appendChild(a); d.appendChild(b); ov.appendChild(d);
     });
-    $('#lbPlTitle').textContent = 'Spieler (' + pl.length + '/' + MAX_P + ')';
+    var total = pl.length + cfg.bots;
+    $('#lbPlTitle').textContent = 'Spieler (' + total + '/' + cfg.seats + ')';
     var me = NET.peer && NET.peer.id, list = $('#lbPlayers'); list.innerHTML = '';
     pl.forEach(function (p) {
       var isMe = host ? p.id === 'host' : p.id === me;
@@ -2849,13 +2882,24 @@ input.bprange[type=range]::-moz-range-thumb { width: 20px; height: 20px; border-
       b.addEventListener('click', function () { openPView(p); });
       list.appendChild(b);
     });
+    for (var bi = 0; bi < cfg.bots; bi++) {
+      var bd = document.createElement('div'); bd.className = 'pl plx';
+      bd.innerHTML = '<span class="pav" style="--av:#4a5159">B</span><span class="pn"><b></b><small>Spielt automatisch</small></span><span class="rl" style="color:var(--muted)">Bot</span>';
+      bd.querySelector('b').textContent = BOT_NAMES[bi % BOT_NAMES.length]; list.appendChild(bd);
+    }
+    for (var fi = total; fi < cfg.seats; fi++) {
+      var fd = document.createElement('div'); fd.className = 'pl plf';
+      fd.innerHTML = '<span class="pav">+</span><span class="pn"><b>Platz frei</b></span>'; list.appendChild(fd);
+    }
     var w = $('#lbWait');
     w.classList.remove('dots');
     w.innerHTML = '';
-    w.textContent = host ? (pl.length < 2 ? 'Warte auf Mitspieler' : 'Warte auf weitere Mitspieler') : 'Du bist dabei. Warte auf den Ersteller';
-    w.classList.toggle('dots', host ? pl.length < MAX_P : true);
+    w.classList.remove('warn');
+    w.textContent = host ? (total < 2 ? 'Warte auf mindestens einen Mitspieler' : total < cfg.seats ? 'Du kannst schon starten oder auf weitere Spieler warten' : 'Alle Plätze sind besetzt') : 'Du bist dabei. Warte auf den Ersteller';
+    w.classList.toggle('dots', host ? total < 2 : true);
+    $('#lbStart').hidden = !host; $('#lbStart').disabled = total < 2;
     $('#lbLeave').textContent = host ? 'Tisch schließen' : 'Tisch verlassen';
-    if (pl.length > NET.shown) { try { Snd.ping(); } catch (e) {} }
+    if (pl.length > NET.shown && NET.shown > 0) { try { Snd.ping(); } catch (e) {} }
     NET.shown = pl.length;
   }
   function openPView(p) {
@@ -2865,6 +2909,10 @@ input.bprange[type=range]::-moz-range-thumb { width: 20px; height: 20px; border-
     $('#pview').hidden = false;
   }
   $('#pvBack').addEventListener('click', function () { $('#pview').hidden = true; });
+  $('#lbStart').addEventListener('click', function () {
+    var w = $('#lbWait'); w.classList.remove('dots'); w.classList.add('warn');
+    w.textContent = 'Der gemeinsame Spielstart kommt als Nächstes. Die Regeln dafür stehen schon: ab 2 Spielern geht es los.';
+  });
   $('#frMake').addEventListener('click', netCreate);
   $('#frGo').addEventListener('click', netJoin);
   $('#lbLeave').addEventListener('click', function () { var host = NET.role === 'host'; wipeNet(host); backToMain(''); });
