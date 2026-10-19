@@ -308,6 +308,7 @@ button { font: inherit; color: inherit; cursor: pointer; }
 .seat.me .pill { margin: 0; display: flex; gap: 8px; align-items: baseline; padding: 5px 12px; }
 .seat.me .tag { margin: 0; }
 .seat.me .dbtn { right: -8px; top: auto; bottom: -4px; }
+.seat.gone { display: none !important; }
 
 /* Einsätze */
 .bet { position: absolute; transform: translate(-50%, -50%); display: none; flex-direction: column; align-items: center; gap: 3px; pointer-events: none; z-index: 4; }
@@ -1128,26 +1129,50 @@ input.bprange[type=range]::-moz-range-thumb { width: 20px; height: 20px; border-
       fastThink: false
     }, H || {});
 
+    var N = 5;   // Anzahl Sitze (2-5), wird beim Reset gesetzt
     var S = {
       players: [], dealer: 0, board: [], deck: [], currentBet: 0, lastRaise: 20, raises: 0,
       sb: 10, bb: 20, sbIdx: -1, bbIdx: -1, glow: -1, handNo: 0, phase: 'idle', toAct: -1, result: null
     };
 
+    function mkPlayer(id, name, chips, kind, color, pers) {
+      return {
+        id: id, name: name, kind: kind, color: color || null, chips: chips, start: chips, pend: 0, out: false, hole: [], bet: 0, total: 0,
+        folded: false, allIn: false, acted: false, inHand: false, label: '',
+        revealed: false, win: 0, value: undefined,
+        limped: false, pfRaise: false, pfCall: false, aggr: 0,
+        ag: 0, pa: 0, pfrN: 0, hands: 0, bluffs: 0, pers: pers
+      };
+    }
+    function resetCommon() {
+      N = S.players.length;
+      S.pendingAdd = 0; S.dealer = randInt(N); S.board = []; S.deck = []; S.handNo = 0;
+      S.sbIdx = -1; S.bbIdx = -1; S.glow = -1; S.phase = 'idle'; S.toAct = -1; S.result = null; S.currentBet = 0; S.raises = 0;
+      S.humanStart = S.players[0].chips;
+      S.sbMult = S.sb0 / 10; S.every = S.every0;
+      S.sb = Math.round(BLINDS[0][0] * S.sbMult); S.bb = Math.round(BLINDS[0][1] * S.sbMult); S.lastRaise = S.bb;
+      G.handsPerLevel = S.every;
+    }
     function reset(humanChips) {
       var hc = humanChips > 0 ? Math.round(humanChips) : START_CHIPS;
       var styles = shuffle(STYLES.slice());
       S.players = NAMES.map(function (name, id) {
-        return {
-          id: id, name: name, chips: id === 0 ? hc : START_CHIPS, hole: [], bet: 0, total: 0,
-          folded: false, allIn: false, acted: false, inHand: false, label: '',
-          revealed: false, win: 0, value: undefined,
-          limped: false, pfRaise: false, pfCall: false, aggr: 0,
-          ag: 0, pa: 0, pfrN: 0, hands: 0, bluffs: 0,
-          pers: id === 0 ? makeStyle(STYLES[0]) : makeStyle(styles[id - 1])
-        };
+        return mkPlayer(id, name, id === 0 ? hc : START_CHIPS, id === 0 ? 'human' : 'bot', null,
+          id === 0 ? makeStyle(STYLES[0]) : makeStyle(styles[id - 1]));
       });
-      S.humanStart = hc; S.pendingAdd = 0; S.dealer = randInt(N); S.board = []; S.deck = []; S.handNo = 0;
-      S.sbIdx = -1; S.bbIdx = -1; S.glow = -1; S.phase = 'idle'; S.toAct = -1; S.result = null; S.currentBet = 0; S.lastRaise = 20; S.raises = 0;
+      S.sb0 = 10; S.every0 = HANDS_PER_LEVEL;
+      resetCommon();
+    }
+    /* Mehrspieler: o = { seats: [{name, color, kind: 'human'|'bot', chips}], sb, every } – Sitz 0 ist immer der Host */
+    function resetMulti(o) {
+      var styles = shuffle(STYLES.slice()), bi = 0;
+      S.players = o.seats.map(function (st, id) {
+        var bot = st.kind === 'bot';
+        return mkPlayer(id, st.name, Math.max(1, Math.round(st.chips) || START_CHIPS), bot ? 'bot' : 'human', st.color,
+          bot ? makeStyle(styles[(bi++) % styles.length]) : makeStyle(STYLES[0]));
+      });
+      S.sb0 = o.sb > 0 ? o.sb : 10; S.every0 = o.every === 0 ? 1e9 : (o.every > 0 ? o.every : HANDS_PER_LEVEL);
+      resetCommon();
     }
 
     function sum(a, f) { return a.reduce(function (t, x) { return t + f(x); }, 0); }
@@ -1349,8 +1374,7 @@ input.bprange[type=range]::-moz-range-thumb { width: 20px; height: 20px; border-
       }
       var toCall = Math.max(0, S.currentBet - p.bet);
       if (toCall > totalPot() * 0.6 && a.kind !== 'fold') base += 500 + randInt(700);
-      var m = S.players[0];
-      var away = !m.inHand || m.folded || m.allIn;
+      var away = S.players.every(function (m) { return m.kind !== 'human' || m.out || !m.inHand || m.folded || m.allIn; });
       return away ? Math.round(base * 0.45) : base;
     }
 
@@ -1358,7 +1382,7 @@ input.bprange[type=range]::-moz-range-thumb { width: 20px; height: 20px; border-
       var toCall = Math.max(0, S.currentBet - p.bet);
       var t = a.type;
       var pre = S.board.length === 0;
-      if (t === 'fold' && toCall === 0 && p.id !== 0) t = 'check';
+      if (t === 'fold' && toCall === 0 && p.kind !== 'human') t = 'check';
       if (t === 'check' && toCall > 0) t = 'call';
       if (t === 'raise') {
         var maxTo = p.bet + p.chips;
@@ -1380,7 +1404,7 @@ input.bprange[type=range]::-moz-range-thumb { width: 20px; height: 20px; border-
           });
           p.label = p.allIn ? 'All-in' : (was === 0 ? 'Setzt ' : 'Erhöht auf ') + fmt(to);
           if (p.allIn && p.total >= START_CHIPS * 0.2) {
-            var others = S.players.filter(function (q) { return q.id > 0 && q !== p && q.inHand && !q.folded; });
+            var others = S.players.filter(function (q) { return q.kind === 'bot' && q !== p && q.inHand && !q.folded; });
             if (others.length) react(pick(others).id, '😱', 0.5);
           }
         }
@@ -1414,15 +1438,17 @@ input.bprange[type=range]::-moz-range-thumb { width: 20px; height: 20px; border-
       return -1;
     }
     async function turn(p) {
+      S.turnSeq = (S.turnSeq || 0) + 1;
       S.toAct = p.id; S.glow = p.id; S.phase = 'bet'; H.render();
       var a;
-      if (p.id === 0 && H.humanAction) a = await H.humanAction(S, p);
+      if (p.out) a = { type: 'fold' };
+      else if (p.kind === 'human' && H.humanAction) a = await H.humanAction(S, p);
       else { a = botDecide(p); await H.sleep(thinkFor(a, p)); }
       S.toAct = -1;
       applyAction(p, a);
       S.glow = peekNext(p);   // Leuchten wandert sofort zum Naechsten, ohne Luecke
       H.render();
-      await H.sleep(p.id === 0 ? 250 : 450);
+      await H.sleep(p.kind === 'human' ? 250 : 450);
     }
 
     async function bettingRound(start) {
@@ -1468,21 +1494,23 @@ input.bprange[type=range]::-moz-range-thumb { width: 20px; height: 20px; border-
       H.react(id, emo, 700 + randInt(900));
     }
     function botReactions(lv, won, showdown) {
-      var human = S.players[0];
+      var humans = S.players.filter(function (q) { return q.kind === 'human'; });
+      var caught = humans.filter(function (h) { return h.inHand && !h.folded && h.aggr > 0 && h.value !== undefined && catOf(h.value) <= 1; })[0];
       S.players.forEach(function (w) {
-        if (w.id === 0 || !(won[w.id] > 0)) return;
+        if (w.kind !== 'bot' || !(won[w.id] > 0)) return;
         var strong = w.hole.length === 2 && preflopPct(w.hole) < 0.5;
         if (!showdown && (w.aggr > 0 || w.pfRaise) && !strong) return react(w.id, pick(['😂', '🤑']), 0.85);   // Bluff geglueckt
-        if (showdown && human.inHand && !human.folded && human.aggr > 0 && human.value !== undefined && catOf(human.value) <= 1) return react(w.id, '😂', 0.8);  // Bluff des Spielers ertappt
+        if (showdown && caught) return react(w.id, '😂', 0.8);  // Bluff des Spielers ertappt
         if (won[w.id] >= START_CHIPS * 0.15) return react(w.id, '🤑', 0.5);
       });
       // Spieler gewinnt beim Showdown mit schwacher Hand nach Druck: ein Verlierer-Bot ist geschockt
-      if (showdown && won[0] > 0 && human.aggr > 0 && human.value !== undefined && catOf(human.value) <= 1) {
-        var losers = lv.filter(function (q) { return q.id > 0 && !(won[q.id] > 0); });
+      var weakWinner = humans.filter(function (h) { return won[h.id] > 0 && h.aggr > 0 && h.value !== undefined && catOf(h.value) <= 1; })[0];
+      if (showdown && weakWinner) {
+        var losers = lv.filter(function (q) { return q.kind === 'bot' && !(won[q.id] > 0); });
         if (losers.length) react(pick(losers).id, '😱', 0.7);
       }
       S.players.forEach(function (l) {
-        if (l.id === 0 || won[l.id] > 0 || l.total < START_CHIPS * 0.15) return;
+        if (l.kind !== 'bot' || won[l.id] > 0 || l.total < START_CHIPS * 0.15) return;
         react(l.id, '😭', 0.5);
       });
     }
@@ -1532,9 +1560,10 @@ input.bprange[type=range]::-moz-range-thumb { width: 20px; height: 20px; border-
 
     async function playHand() {
       S.handNo++;
-      var lvl = Math.min(Math.floor((S.handNo - 1) / HANDS_PER_LEVEL), BLINDS.length - 1);
-      S.sb = BLINDS[lvl][0]; S.bb = BLINDS[lvl][1];
+      var lvl = Math.min(Math.floor((S.handNo - 1) / S.every), BLINDS.length - 1);
+      S.sb = Math.round(BLINDS[lvl][0] * S.sbMult); S.bb = Math.round(BLINDS[lvl][1] * S.sbMult);
       S.players.forEach(function (p) {
+        if (p.out) p.chips = 0;
         p.inHand = p.chips > 0; p.hole = []; p.bet = 0; p.total = 0; p.folded = !p.inHand;
         p.allIn = false; p.acted = false; p.label = ''; p.revealed = false; p.win = 0; p.value = undefined;
         p.limped = false; p.pfRaise = false; p.pfCall = false; p.aggr = 0;
@@ -1579,27 +1608,34 @@ input.bprange[type=range]::-moz-range-thumb { width: 20px; height: 20px; border-
 
     async function run() {
       while (true) {
-        var me = S.players[0];
+        var hs = S.players.filter(function (p) { return p.kind === 'human' && !p.out; });
+        if (!hs.length) { H.onEnd(false); return; }
         /* aufgeladene Chips kommen immer zwischen zwei Haenden an den Tisch */
-        if (S.pendingAdd > 0) { me.chips += S.pendingAdd; S.humanStart += S.pendingAdd; S.pendingAdd = 0; }
-        if (me.chips <= 0) {
-          /* pleite: die Oberflaeche entscheidet, wie viele Chips nachkommen (sonst 100 gratis) */
-          var n = REBUY;
-          if (H.onBroke) { n = Math.round(await H.onBroke()); if (!(n > 0)) n = REBUY; }
-          else if (H.onRebuy) H.onRebuy(REBUY);
-          me.chips = n; S.humanStart += n;
-        }
-        if (S.players.filter(function (p) { return p.chips > 0; }).length === 1) { H.onEnd(true); return; }
+        hs.forEach(function (p) {
+          var add = p.id === 0 ? S.pendingAdd : p.pend;
+          if (add > 0) { p.chips += add; p.start += add; if (p.id === 0) { S.humanStart += add; S.pendingAdd = 0; } else p.pend = 0; }
+        });
+        /* pleite: die Oberflaeche entscheidet, wie viele Chips nachkommen (Host sonst 100 gratis, Gaeste scheiden sonst aus) */
+        await Promise.all(hs.filter(function (p) { return p.chips <= 0; }).map(async function (p) {
+          var n = p.id === 0 ? REBUY : 0;
+          if (H.onBroke) { n = Math.round(await H.onBroke(p)); if (!(n > 0)) n = p.id === 0 ? REBUY : 0; }
+          else if (p.id === 0 && H.onRebuy) H.onRebuy(REBUY);
+          if (n > 0) { p.chips = n; p.start += n; if (p.id === 0) S.humanStart += n; }
+          else p.out = true;
+        }));
+        if (S.players.filter(function (p) { return p.chips > 0 && !p.out; }).length <= 1) { H.onEnd(true); return; }
         await playHand();
         await H.waitNext();
       }
     }
 
-    reset();
-    return {
-      S: S, reset: reset, run: run, addChips: function (n) { n = Math.round(n); if (n > 0) S.pendingAdd += n; }, playHand: playHand, botDecide: botDecide,
+    var G = {
+      S: S, reset: reset, resetMulti: resetMulti, run: run, playHand: playHand, botDecide: botDecide,
+      addChips: function (n, id) { n = Math.round(n); if (!(n > 0)) return; if (!id) S.pendingAdd += n; else if (S.players[id]) S.players[id].pend += n; },
       handsPerLevel: HANDS_PER_LEVEL, totalPot: totalPot, collected: collected, roundBets: roundBets, fmt: fmt
     };
+    reset();
+    return G;
   }
 
   var api = {
@@ -1621,7 +1657,9 @@ input.bprange[type=range]::-moz-range-thumb { width: 20px; height: 20px; border-
 
   var stage = $('#stage'), table = $('#table'), zone = $('#zone'), handEl = $('#hand');
   var AV = ['#7f776a', '#6e8a78', '#8f6e5e', '#5e7a8e', '#8b6f8e'];
-  var ANG = [90, 152, 222, 318, 28];
+  var ANG = [90, 152, 222, 318, 28, 270];
+  var POSMAP = { 2: [0, 5], 3: [0, 2, 3], 4: [0, 1, 5, 4], 5: [0, 1, 2, 3, 4] };   // Sitz (aus Sicht des Betrachters) -> Platz am Tisch
+  var NSEATS = 5;
   var INWARD = [0, 54, 36, 36, 54];
 
   var humanResolve = null, nextResolve = null, nextTimer = 0;
@@ -1846,11 +1884,13 @@ input.bprange[type=range]::-moz-range-thumb { width: 20px; height: 20px; border-
     snap.label = S.players.map(function (p) { return p.label; });
   }
 
+  var MP = { on: false };   // laufendes Online-Spiel (siehe unten)
   var gen = 0;   // zaehlt Spielstarts: aeltere, abgebrochene Spiele laufen nicht weiter
   var game = P.createGame({
     render: render,
     sleep: function (ms) { var g = gen; return new Promise(function (r) { setTimeout(function () { if (g === gen) r(); }, ms); }); },
-    humanAction: function () {
+    humanAction: function (S0, pl) {
+      if (pl && pl.id !== 0 && MP.on) return remoteAction(pl);
       return new Promise(function (res) {
         humanResolve = res; raiseMode = false;
         seats[0].el.classList.remove('timed'); void seats[0].el.offsetWidth;
@@ -1871,14 +1911,19 @@ input.bprange[type=range]::-moz-range-thumb { width: 20px; height: 20px; border-
         }, ms);
       });
     },
-    react: function (id, emo, delay) { var g = gen; setTimeout(function () { if (g === gen) showReaction(id, emo); }, delay || 0); },
-    onEnd: showEnd,
-    onBroke: function () {
-      if (wallet <= 0) { toastMsg('+' + P.REBUY + ' Chips, du bist wieder dabei'); return Promise.resolve(P.REBUY); }
-      return new Promise(function (res) { openDlg('broke', res); });
+    react: function (id, emo, delay) { var g = gen; setTimeout(function () { if (g === gen) showReaction(id, emo); }, delay || 0); if (MP.on) mpReact(id, emo, delay, -1); },
+    onEnd: function (w) { if (MP.on && MP.role === 'host') mpHostEnd(); else showEnd(w); },
+    onBroke: function (pl) {
+      if (pl && pl.id !== 0 && MP.on) return remoteBroke(pl);
+      return uiBroke();
     }
   });
   var S = game.S;
+  var realGame = game;
+  function uiBroke() {
+    if (wallet <= 0) { toastMsg('+' + P.REBUY + ' Chips, du bist wieder dabei'); return Promise.resolve(P.REBUY); }
+    return new Promise(function (res) { openDlg('broke', res); });
+  }
 
   /* ---------- Bausteine ---------- */
   function cardEl(cls) {
@@ -2011,22 +2056,34 @@ input.bprange[type=range]::-moz-range-thumb { width: 20px; height: 20px; border-
     var pot = $('#pot'); pot.style.left = cx + 'px'; pot.style.top = (cy - ry * 0.26) + 'px';
     var board = $('#board'); board.style.left = cx + 'px'; board.style.top = (cy + ry * 0.2) + 'px';
     var winC = $('#win'); winC.style.left = cx + 'px'; winC.style.top = (cy + ry * 0.62) + 'px';
-    deckEl.style.left = cx + 'px'; deckEl.style.top = (cy - ry * 0.66) + 'px';
+    var topSeat = (POSMAP[NSEATS] || POSMAP[5]).indexOf(5) >= 0;
+    if (topSeat) { deckEl.style.left = (cx - rx * 0.62) + 'px'; deckEl.style.top = (cy - ry * 0.4) + 'px'; }
+    else { deckEl.style.left = cx + 'px'; deckEl.style.top = (cy - ry * 0.66) + 'px'; }
 
+    var pm = POSMAP[NSEATS] || POSMAP[5];
     for (var i = 0; i < 5; i++) {
-      var bx, by;
+      var bx, by, pos = pm[i];
+      if (pos === undefined) continue;
       if (i === 0) { bx = cx; by = cy + ry * 0.6; }
       else {
-        var a = ANG[i] * Math.PI / 180;
+        var a = ANG[pos] * Math.PI / 180;
         var x = cx + rx * Math.cos(a), y = cy + ry * Math.sin(a);
+        if (pos === 5) y = cy - ry + 34;
         x = Math.max(44, Math.min(w - 44, x));
         seats[i].el.style.left = x + 'px'; seats[i].el.style.top = y + 'px';
-        var dx = cx - x, dy = cy - y, d = Math.sqrt(dx * dx + dy * dy) || 1;
-        if (i === 1 || i === 4) { bx = x + (dx > 0 ? 66 : -66); by = y - 2; }
+        var dx = cx - x, dy = cy - y;
+        if (pos === 1 || pos === 4) { bx = x + (dx > 0 ? 66 : -66); by = y - 2; }
+        else if (pos === 5) { bx = x + 66; by = y + 34; }
         else { bx = x + (dx > 0 ? 58 : -58); by = y + 66; }
       }
       bets[i].el.style.left = bx + 'px'; bets[i].el.style.top = by + 'px';
     }
+  }
+  function setSeatCount(n) {
+    if (n === NSEATS || n < 2 || n > 5) return;
+    NSEATS = n;
+    seats.forEach(function (sd, i) { sd.el.classList.toggle('gone', i >= n); bets[i].el.style.display = i >= n ? 'none' : ''; });
+    layout();
   }
   if (window.ResizeObserver) new ResizeObserver(layout).observe(stage);
   window.addEventListener('resize', layout);
@@ -2050,6 +2107,14 @@ input.bprange[type=range]::-moz-range-thumb { width: 20px; height: 20px; border-
     var r = seats[i], el = r.el;
     r.name.textContent = p.name;
     r.chips.textContent = fmt(p.chips);
+    if (i > 0) {
+      var wc = p.color || AV[i], wi = (p.name || '?').charAt(0).toUpperCase();
+      if (r.look !== wc + wi) {
+        r.look = wc + wi;
+        var avEl = el.querySelector('.avatar'); avEl.style.setProperty('--av', wc);
+        var avSp = avEl.querySelector('span'); if (avSp) avSp.textContent = wi;
+      }
+    }
     var result = S.phase === 'result';
     var out = p.chips === 0 && (!p.inHand || result);
     el.classList.toggle('out', out);
@@ -2368,8 +2433,9 @@ input.bprange[type=range]::-moz-range-thumb { width: 20px; height: 20px; border-
   function render() {
     if (!geo.w) layout();
     soundDiff();
+    if (S.players.length !== NSEATS) setSeatCount(S.players.length);
     var hpl = game.handsPerLevel, hn = Math.max(1, S.handNo);
-    var lastLevel = S.bb >= P.BLINDS[P.BLINDS.length - 1][1];
+    var lastLevel = hpl >= 1e6 || Math.floor((hn - 1) / hpl) >= P.BLINDS.length - 1;
     var left = hpl - ((hn - 1) % hpl);
     $('#info').innerHTML = 'Hand ' + hn + ' · Blinds ' + S.sb + '/' + S.bb + (lastLevel ? '' : '<br><span class="sub">steigen in ' + left + (left === 1 ? ' Hand' : ' Händen') + '</span>');
     if (S.handNo > 1 && S.handNo !== lastHand && S.bb !== shownBB && shownBB > 0) {
@@ -2383,6 +2449,7 @@ input.bprange[type=range]::-moz-range-thumb { width: 20px; height: 20px; border-
     S.players.forEach(renderSeat);
     renderBoard(); renderBets(); renderPot(); renderHand(); renderShow(); renderControls();
     lastHand = S.handNo;
+    if (MP.on && MP.role === 'host') { try { mpBroadcast(); } catch (e) {} }
   }
 
   function flash(msg) {
@@ -2410,7 +2477,7 @@ input.bprange[type=range]::-moz-range-thumb { width: 20px; height: 20px; border-
     var r = nextResolve;
     if (r) { nextResolve = null; r(); }
   });
-  function startGame(buyin) {
+  function prepTable() {
     gen++;
     clearTimeout(turnTimer); clearTimeout(nextTimer); clearTimeout(tossTimer);
     humanResolve = null; nextResolve = null; raiseMode = false; flashMsg = ''; tossed = [];
@@ -2420,6 +2487,9 @@ input.bprange[type=range]::-moz-range-thumb { width: 20px; height: 20px; border-
     lastHand = -1; handEl.dataset.hn = ''; shownBB = 0; flyUntil = 0;
     clearShow();
     PROF.bank = Math.max(P.REBUY, PROF.bank | 0);
+  }
+  function startGame(buyin) {
+    prepTable();
     var total = PROF.bank, bi = Math.round(+buyin || total);
     bi = Math.max(Math.min(P.REBUY, total), Math.min(total, bi));
     wallet = total - bi; PROF.buyin = bi; saveProf();
@@ -2437,6 +2507,7 @@ input.bprange[type=range]::-moz-range-thumb { width: 20px; height: 20px; border-
     clearShow();
     Snd.stopAll();
     saveBank(); playing = false; wallet = 0; renderBank(); $('#chipdlg').hidden = true; cdState = null;
+    mpCleanup();
     game.reset(); S = game.S; lastHand = -1; handEl.dataset.hn = ''; snap.hand = -1; shownBB = 0;
     render();
     Snd.stopAll();
@@ -2723,7 +2794,7 @@ input.bprange[type=range]::-moz-range-thumb { width: 20px; height: 20px; border-
   function initialOf(p) { return p.name.charAt(0).toUpperCase(); }
   function wipeNet(sayBye) {
     var peer = NET.peer, conns = NET.conns.slice(), host = NET.role === 'host';
-    NET.gen++; NET.peer = null; NET.role = ''; NET.conns = []; NET.players = []; NET.cfg = null; NET.code = ''; NET.shown = 0;
+    NET.gen++; NET.peer = null; NET.role = ''; NET.conn = null; NET.locked = false; NET.conns = []; NET.players = []; NET.cfg = null; NET.code = ''; NET.shown = 0;
     if (!peer) return;
     if (sayBye && host) conns.forEach(function (c) { try { c.send({ t: 'closed' }); } catch (e) {} });
     setTimeout(function () { try { peer.destroy(); } catch (e) {} }, sayBye ? 250 : 0);
@@ -2780,7 +2851,10 @@ input.bprange[type=range]::-moz-range-thumb { width: 20px; height: 20px; border-
   function hostAccept(conn) {
     var g = NET.gen;
     conn.on('data', function (d) {
-      if (g !== NET.gen || !d || typeof d !== 'object' || d.t !== 'hello' || conn._pr) return;
+      if (g !== NET.gen || !d || typeof d !== 'object') return;
+      if (conn._pr) { if (MP.on) hostMsg(conn, d); return; }
+      if (d.t !== 'hello') return;
+      if (NET.locked) { try { conn.send({ t: 'started' }); } catch (e) {} setTimeout(function () { try { conn.close(); } catch (e) {} }, 400); return; }
       if (NET.players.length >= humanCap(NET.cfg)) { try { conn.send({ t: 'full' }); } catch (e) {} setTimeout(function () { try { conn.close(); } catch (e) {} }, 400); return; }
       conn._pr = true; NET.conns.push(conn);
       NET.players.push(Object.assign({ id: conn.peer, host: false }, cleanProf(d.p)));
@@ -2788,6 +2862,7 @@ input.bprange[type=range]::-moz-range-thumb { width: 20px; height: 20px; border-
     });
     function gone() {
       if (g !== NET.gen || !conn._pr) return; conn._pr = false;
+      if (MP.on) { mpDropPeer(conn.peer); return; }
       NET.conns = NET.conns.filter(function (c) { return c !== conn; });
       NET.players = NET.players.filter(function (p) { return p.id !== conn.peer; });
       hostBroadcast(); renderLobby();
@@ -2818,11 +2893,19 @@ input.bprange[type=range]::-moz-range-thumb { width: 20px; height: 20px; border-
     peer.on('open', function () {
       if (finished || g !== NET.gen) return;
       var conn = peer.connect(PEER_PREFIX + code.toLowerCase(), { serialization: 'json', reliable: true });
+      NET.conn = conn;
       conn.on('open', function () { try { conn.send({ t: 'hello', p: myPublic(pkJoin.get()) }); } catch (e) {} });
       conn.on('data', function (d) {
         if (g !== NET.gen || !d || typeof d !== 'object') return;
+        if (d.t === 'start' || d.t === 'snap' || d.t === 'react' || d.t === 'broke' || d.t === 'ack' || d.t === 'end') { guestMsg(d); return; }
         if (d.t === 'full') { fail('Der Tisch ist voll.'); return; }
-        if (d.t === 'closed') { if (!finished) { fail('Der Tisch wurde geschlossen.'); } else { wipeNet(false); backToMain('Der Ersteller hat den Tisch geschlossen.'); } return; }
+        if (d.t === 'started') { fail('Das Spiel an diesem Tisch läuft schon.'); return; }
+        if (d.t === 'closed') {
+          if (!finished) { fail('Der Tisch wurde geschlossen.'); }
+          else if (MP.on) { mpEndCard('Spiel beendet', 'Der Ersteller hat den Tisch verlassen. Deine Chips bleiben in deinem Guthaben.'); }
+          else { wipeNet(false); backToMain('Der Ersteller hat den Tisch geschlossen.'); }
+          return;
+        }
         if (d.t === 'state' && d.cfg && Array.isArray(d.players)) {
           var cfg = { sb: SB_OPTS.indexOf(d.cfg.sb) >= 0 ? d.cfg.sb : 10, every: EVERY_OPTS.indexOf(d.cfg.every) >= 0 ? d.cfg.every : 8,
                       seats: SEAT_OPTS.indexOf(d.cfg.seats) >= 0 ? d.cfg.seats : 5, bots: BOT_OPTS.indexOf(d.cfg.bots) >= 0 ? d.cfg.bots : 0 };
@@ -2840,10 +2923,271 @@ input.bprange[type=range]::-moz-range-thumb { width: 20px; height: 20px; border-
       function lost() {
         if (g !== NET.gen) return;
         if (!finished) fail('Verbindung zum Tisch fehlgeschlagen.');
+        else if (MP.on) { if (!MP.dead) mpEndCard('Verbindung weg', 'Die Verbindung zum Tisch ist abgebrochen. Deine Chips bleiben in deinem Guthaben.'); }
         else { wipeNet(false); backToMain('Die Verbindung zum Tisch ist abgebrochen.'); }
       }
       conn.on('close', lost); conn.on('error', lost);
     });
+  }
+
+
+  /* ---------- Gemeinsames Spiel: der Ersteller rechnet, jeder Mitspieler sieht seine eigene Sicht ---------- */
+  var guestGame = {
+    S: { players: [], dealer: 0, board: [], currentBet: 0, lastRaise: 20, sb: 10, bb: 20, sbIdx: -1, bbIdx: -1, glow: -1, handNo: 0, phase: 'idle', toAct: -1, result: null, humanStart: 0, pendingAdd: 0 },
+    handsPerLevel: 8, fmt: fmt,
+    totalPot: function () { return guestGame.S.players.reduce(function (t, p) { return t + p.total; }, 0); },
+    roundBets: function () { return guestGame.S.players.reduce(function (t, p) { return t + p.bet; }, 0); },
+    collected: function () { return guestGame.totalPot() - guestGame.roundBets(); },
+    reset: function () {}, run: function () {},
+    addChips: function (n) {
+      n = Math.round(n); if (!(n > 0) || !MP.on) return;
+      MP.unacked += n; guestGame.S.pendingAdd = (MP.pend | 0) + MP.unacked;
+      try { MP.conn.send({ t: 'topup', n: n }); } catch (e) {}
+    }
+  };
+  var BOT_COL = '#4a5159';
+  var wakeLock = null;
+  function wantWake() {
+    try {
+      if (!navigator.wakeLock || !MP.on || document.hidden) return;
+      navigator.wakeLock.request('screen').then(function (l) { wakeLock = l; l.addEventListener('release', function () { if (wakeLock === l) wakeLock = null; }); }, function () {});
+    } catch (e) {}
+  }
+  function releaseWake() { try { if (wakeLock) wakeLock.release(); } catch (e) {} wakeLock = null; }
+  document.addEventListener('visibilitychange', function () { if (!document.hidden && MP.on && !wakeLock) wantWake(); });
+
+  /* --- Ersteller: Spiel starten --- */
+  function mpHostStart() {
+    if (NET.role !== 'host' || !NET.cfg || MP.on) return;
+    var cfg = NET.cfg;
+    var hum = NET.players.filter(function (p) { return p.host || NET.conns.some(function (c) { return c.peer === p.id && c.open !== false; }); });
+    var n = hum.length + cfg.bots;
+    if (n < 2 || n > 5) return;
+    $('#lbStart').disabled = true;
+    NET.locked = true;
+    var bank = Math.max(P.REBUY, PROF.bank | 0);
+    var buys = hum.map(function (p, i) {
+      var b = Math.round(p.buyin) || P.START_CHIPS;
+      if (i === 0) b = Math.max(Math.min(P.REBUY, bank), Math.min(bank, b));
+      return Math.max(10, Math.min(1e9, b));
+    });
+    var avg = Math.max(100, Math.round(buys.reduce(function (t, x) { return t + x; }, 0) / buys.length / 10) * 10);
+    var seatsArr = [], used = {};
+    function uniq(nm) { var k = nm, c = 1; while (used[k.toLowerCase()]) { c++; k = nm + ' ' + c; } used[k.toLowerCase()] = 1; return k; }
+    hum.forEach(function (p, i) {
+      seatsArr.push({ name: uniq(p.name), color: p.color, peer: p.host ? '' : p.id, conn: p.host ? null : NET.conns.filter(function (c) { return c.peer === p.id; })[0], chips: buys[i], kind: 'human', gone: false, last: '' });
+    });
+    for (var bi = 0; bi < cfg.bots; bi++) seatsArr.push({ name: uniq(BOT_NAMES[bi % BOT_NAMES.length]), color: BOT_COL, peer: '', conn: null, chips: avg, kind: 'bot', gone: false, last: '' });
+    prepTable();
+    wallet = bank - buys[0]; PROF.buyin = buys[0]; saveProf();
+    MP = { on: true, role: 'host', n: n, seats: seatsArr, wait: null, brokes: [] };
+    game.resetMulti({
+      seats: seatsArr.map(function (st, i) { return { name: i === 0 ? 'Du' : st.name, color: i === 0 ? null : st.color, kind: st.kind, chips: st.chips }; }),
+      sb: cfg.sb, every: cfg.every
+    });
+    S = game.S; profit = 0; playing = true; applyProfToSeat();
+    snap.hand = -1;
+    seatsArr.forEach(function (st, g) { if (g > 0 && st.conn) { try { st.conn.send({ t: 'start', seat: g, n: n, chips: st.chips }); } catch (e) {} } });
+    $('#friends').hidden = true; $('#pview').hidden = true;
+    wantWake();
+    render();
+    game.run();
+  }
+  function mpView(g) {
+    var n = S.players.length;
+    function tv(i) { return i < 0 ? i : (i - g + n) % n; }
+    var pl = [];
+    for (var v = 0; v < n; v++) {
+      var r = (g + v) % n, p = S.players[r], st = MP.seats[r];
+      var open = v === 0 || p.revealed;
+      pl.push({
+        name: v === 0 ? 'Du' : st.name, color: st.color, chips: p.chips, bet: p.bet, total: p.total, folded: p.folded, allIn: p.allIn, inHand: p.inHand,
+        label: p.label, win: p.win, revealed: p.revealed,
+        hole: open ? p.hole : p.hole.map(function () { return { r: 2, s: 0 }; }),
+        value: p.revealed ? p.value : undefined
+      });
+    }
+    var R = S.result, rv = null;
+    if (R) {
+      var won = {};
+      Object.keys(R.won).forEach(function (k) { won[tv(+k)] = R.won[k]; });
+      rv = { showdown: R.showdown, won: won, ids: R.ids.map(tv), topId: tv(R.topId), hand: R.hand };
+    }
+    var me = S.players[g];
+    return {
+      t: 'snap', n: n, hn: S.handNo, ph: S.phase, dl: tv(S.dealer), sbI: tv(S.sbIdx), bbI: tv(S.bbIdx), gl: tv(S.glow), ta: tv(S.toAct),
+      sb: S.sb, bb: S.bb, cb: S.currentBet, lr: S.lastRaise, ev: game.handsPerLevel, bd: S.board, pl: pl, rs: rv, st: me.start, pe: me.pend, tk: S.turnSeq || 0
+    };
+  }
+  function mpBroadcast() {
+    if (!MP.on || MP.role !== 'host') return;
+    MP.seats.forEach(function (st, g) {
+      if (g === 0 || st.kind !== 'human' || st.gone || !st.conn) return;
+      var v = mpView(g), js = JSON.stringify(v);
+      if (js === st.last) return;
+      st.last = js;
+      try { st.conn.send(v); } catch (e) {}
+    });
+  }
+  function mpReact(real, emo, delay, except) {
+    if (!MP.on || MP.role !== 'host') return;
+    MP.seats.forEach(function (st, g) {
+      if (g === 0 || g === except || st.gone || !st.conn) return;
+      try { st.conn.send({ t: 'react', s: (real - g + MP.n) % MP.n, e: emo, d: delay || 0 }); } catch (e) {}
+    });
+  }
+  function remoteAction(p) {
+    return new Promise(function (res) {
+      var st = MP.seats[p.id];
+      if (!st || st.gone) { res({ type: 'fold' }); return; }
+      var w = { seat: p.id, tk: S.turnSeq };
+      w.res = function (a) { clearTimeout(w.t); if (MP.wait === w) MP.wait = null; res(a); };
+      w.t = setTimeout(function () { w.res({ type: Math.max(0, S.currentBet - p.bet) > 0 ? 'fold' : 'check' }); }, TURN_MS + 5000);
+      MP.wait = w;
+      mpBroadcast();
+    });
+  }
+  function remoteBroke(p) {
+    return new Promise(function (res) {
+      var st = MP.seats[p.id];
+      if (!st || st.gone || !st.conn) { res(0); return; }
+      var b = {};
+      b.res = function (n) { clearTimeout(b.t); if (MP.brokes[p.id] === b) MP.brokes[p.id] = null; res(n); };
+      b.t = setTimeout(function () { b.res(0); }, 60000);
+      MP.brokes[p.id] = b;
+      toastMsg(st.name + ' lädt Chips nach …');
+      try { st.conn.send({ t: 'broke' }); } catch (e) { b.res(0); }
+    });
+  }
+  function cleanAct(a) {
+    a = (a && typeof a === 'object') ? a : {};
+    var t = a.type;
+    if (t !== 'fold' && t !== 'check' && t !== 'call' && t !== 'raise') t = 'fold';
+    return { type: t, to: Math.max(0, Math.min(1e9, Math.round(+a.to || 0))) };
+  }
+  function hostMsg(conn, d) {
+    var seat = -1;
+    MP.seats.forEach(function (st, i) { if (i > 0 && st.peer === conn.peer) seat = i; });
+    if (seat < 1 || MP.seats[seat].gone) return;
+    if (d.t === 'act') {
+      var w = MP.wait;
+      if (w && w.seat === seat && d.tk === w.tk) w.res(cleanAct(d.a));
+    } else if (d.t === 'leave') {
+      mpDrop(seat);
+    } else if (d.t === 'topup') {
+      var n = Math.round(+d.n);
+      if (n > 0 && n <= 1e9) {
+        game.addChips(n, seat);
+        try { conn.send({ t: 'ack', n: n }); } catch (e) {}
+        MP.seats[seat].last = ''; mpBroadcast();
+      }
+    } else if (d.t === 'rebuy') {
+      var b = MP.brokes[seat]; if (b) b.res(Math.max(0, Math.min(1e9, Math.round(+d.n) || 0)));
+    } else if (d.t === 'react') {
+      if (typeof d.e === 'string' && d.e.length > 0 && d.e.length <= 8) {
+        var g = gen; showReaction(seat, d.e);
+        mpReact(seat, d.e, 0, seat);
+      }
+    }
+  }
+  function mpDrop(seat) {
+    var st = MP.seats[seat]; if (!st || st.gone) return;
+    st.gone = true;
+    var p = S.players[seat]; if (p) p.out = true;
+    if (MP.wait && MP.wait.seat === seat) MP.wait.res({ type: 'fold' });
+    var b = MP.brokes[seat]; if (b) b.res(0);
+    toastMsg(st.name + ' hat den Tisch verlassen');
+    render();
+  }
+  function mpDropPeer(peer) {
+    MP.seats.forEach(function (st, i) { if (i > 0 && st.peer === peer) mpDrop(i); });
+  }
+  function mpHostEnd() {
+    var w = S.players.filter(function (p) { return p.chips > 0 && !p.out; })[0], wr = w ? w.id : -1;
+    MP.seats.forEach(function (st, g) {
+      if (g === 0 || st.gone || !st.conn) return;
+      try { st.conn.send({ t: 'end', w: wr < 0 ? -1 : (wr - g + MP.n) % MP.n, name: wr < 0 ? '' : MP.seats[wr].name }); } catch (e) {}
+    });
+    showEnd(wr === 0, wr > 0 ? MP.seats[wr].name : '');
+  }
+
+  /* --- Mitspieler --- */
+  function guestMsg(d) {
+    if (d.t === 'start') { mpGuestStart(d); return; }
+    if (!MP.on || MP.role !== 'guest') return;
+    if (d.t === 'snap') mpApplySnap(d);
+    else if (d.t === 'react') {
+      var sIdx = d.s | 0;
+      if (sIdx > 0 && sIdx < MP.n && typeof d.e === 'string' && d.e.length <= 8) {
+        var g = gen; setTimeout(function () { if (g === gen) showReaction(sIdx, d.e); }, Math.max(0, Math.min(3000, +d.d || 0)));
+      }
+    }
+    else if (d.t === 'broke') {
+      uiBroke().then(function (n) { try { MP.conn.send({ t: 'rebuy', n: n }); } catch (e) {} });
+    }
+    else if (d.t === 'ack') { MP.unacked = Math.max(0, MP.unacked - (d.n | 0)); guestGame.S.pendingAdd = (MP.pend | 0) + MP.unacked; }
+    else if (d.t === 'end') showEnd(d.w === 0, String(d.name || '').slice(0, 14));
+  }
+  function mpGuestStart(d) {
+    if (MP.on || NET.role !== 'guest') return;
+    var n = d.n | 0, seat = d.seat | 0;
+    if (n < 2 || n > 5 || seat < 1 || seat >= n) return;
+    prepTable();
+    var bank = Math.max(P.REBUY, PROF.bank | 0);
+    var bi = Math.max(Math.min(P.REBUY, bank), Math.min(bank, Math.round(+d.chips) || bank));
+    wallet = bank - bi; PROF.buyin = bi; saveProf();
+    MP = { on: true, role: 'guest', n: n, seat: seat, conn: NET.conn, unacked: 0, pend: 0, doneTk: -1, dead: false };
+    var G = guestGame.S;
+    G.players = []; for (var i = 0; i < n; i++) G.players.push({ id: i, name: i === 0 ? 'Du' : '', color: null, chips: 0, bet: 0, total: 0, folded: false, allIn: false, inHand: false, label: '', win: 0, revealed: false, hole: [] });
+    G.board = []; G.handNo = 0; G.phase = 'idle'; G.toAct = -1; G.glow = -1; G.result = null; G.sbIdx = -1; G.bbIdx = -1; G.dealer = 0; G.humanStart = bi; G.pendingAdd = 0;
+    game = guestGame; S = G; profit = 0; playing = true; applyProfToSeat();
+    snap.hand = -1;
+    $('#friends').hidden = true; $('#pview').hidden = true;
+    wantWake();
+    render();
+  }
+  function mpApplySnap(d) {
+    if (!d || !Array.isArray(d.pl) || d.pl.length !== MP.n) return;
+    var G = guestGame.S;
+    G.players = d.pl.map(function (p, i) {
+      return { id: i, name: String(p.name || '').slice(0, 14), color: p.color, chips: p.chips | 0, bet: p.bet | 0, total: p.total | 0, folded: !!p.folded, allIn: !!p.allIn,
+               inHand: !!p.inHand, label: String(p.label || ''), win: p.win | 0, revealed: !!p.revealed, hole: Array.isArray(p.hole) ? p.hole : [], value: p.value };
+    });
+    G.board = Array.isArray(d.bd) ? d.bd : []; G.phase = d.ph; G.dealer = d.dl; G.sbIdx = d.sbI; G.bbIdx = d.bbI; G.glow = d.gl; G.toAct = d.ta;
+    G.sb = d.sb; G.bb = d.bb; G.currentBet = d.cb; G.lastRaise = d.lr; G.handNo = d.hn; G.result = d.rs; G.humanStart = d.st;
+    guestGame.handsPerLevel = d.ev || 8;
+    MP.pend = d.pe | 0; G.pendingAdd = MP.pend + MP.unacked;
+    var mine = d.ta === 0 && d.ph === 'bet';
+    if (mine && !humanResolve && d.tk !== MP.doneTk) {
+      var tk = d.tk;
+      humanResolve = function (a) { MP.doneTk = tk; try { MP.conn.send({ t: 'act', tk: tk, a: a }); } catch (e) {} };
+      raiseMode = false;
+      seats[0].el.classList.remove('timed'); void seats[0].el.offsetWidth;
+      clearTimeout(turnTimer);
+      turnTimer = setTimeout(function () { act({ type: toCallNow() > 0 ? 'fold' : 'check' }); }, TURN_MS);
+    } else if (!mine && humanResolve) {
+      clearTimeout(turnTimer); humanResolve = null; raiseMode = false; seats[0].el.classList.remove('timed');
+    }
+    render();
+  }
+  function mpEndCard(title, text) {
+    MP.dead = true;
+    clearTimeout(turnTimer); humanResolve = null; raiseMode = false;
+    saveBank();
+    $('#endTitle').textContent = title; $('#endText').textContent = text; $('#bAgain').textContent = 'Zum Hauptmenü'; $('#end').hidden = false;
+    var peer = NET.peer; if (peer) { try { peer.destroy(); } catch (e) {} }
+  }
+  function mpCleanup() {
+    if (MP.on) {
+      if (MP.role === 'guest' && !MP.dead) { try { MP.conn.send({ t: 'leave' }); } catch (e) {} }
+      if (MP.wait) clearTimeout(MP.wait.t);
+      (MP.brokes || []).forEach(function (b) { if (b) clearTimeout(b.t); });
+    }
+    var was = MP.on, host = was && MP.role === 'host';
+    MP = { on: false };
+    if (was) wipeNet(host);
+    game = realGame; S = game.S;
+    releaseWake();
   }
 
   /* --- Wartebereich --- */
@@ -2909,10 +3253,7 @@ input.bprange[type=range]::-moz-range-thumb { width: 20px; height: 20px; border-
     $('#pview').hidden = false;
   }
   $('#pvBack').addEventListener('click', function () { $('#pview').hidden = true; });
-  $('#lbStart').addEventListener('click', function () {
-    var w = $('#lbWait'); w.classList.remove('dots'); w.classList.add('warn');
-    w.textContent = 'Der gemeinsame Spielstart kommt als Nächstes. Die Regeln dafür stehen schon: ab 2 Spielern geht es los.';
-  });
+  $('#lbStart').addEventListener('click', function () { mpHostStart(); });
   $('#frMake').addEventListener('click', netCreate);
   $('#frGo').addEventListener('click', netJoin);
   $('#lbLeave').addEventListener('click', function () { var host = NET.role === 'host'; wipeNet(host); backToMain(''); });
@@ -2928,7 +3269,7 @@ input.bprange[type=range]::-moz-range-thumb { width: 20px; height: 20px; border-
     if (m) openFriends('join', cleanCode(m[1]));
   })();
 
-  $('#bAgain').addEventListener('click', function () { openDlg('buyin'); });
+  $('#bAgain').addEventListener('click', function () { if (MP.on) toMenu(); else openDlg('buyin'); });
   $('#bPlay').addEventListener('click', function () { openDlg('buyin'); });
   $('#pauseBtn').addEventListener('click', function () { $('#pause').hidden = false; });
   $('#bResume').addEventListener('click', function () { $('#pause').hidden = true; });
@@ -3109,7 +3450,11 @@ input.bprange[type=range]::-moz-range-thumb { width: 20px; height: 20px; border-
   function sendReaction(emo) {
     if (reactLocked()) { updateReactLock(); return; }
     reactTimes.push(Date.now());
-    showReaction(0, emo);   // bei Online-Runden wird hier zusaetzlich an die Mitspieler gesendet
+    showReaction(0, emo);
+    if (MP.on) {
+      if (MP.role === 'host') mpReact(0, emo, 0, -1);
+      else { try { MP.conn.send({ t: 'react', e: emo }); } catch (e) {} }
+    }
     updateReactLock();
   }
   /* Der Smiley-Kreis ist versteckt: Pfeil antippen oder nach rechts wischen blendet ihn ein; Pfeil (zeigt dann nach links) antippen oder nach links wischen versteckt ihn wieder */
@@ -3145,12 +3490,14 @@ input.bprange[type=range]::-moz-range-thumb { width: 20px; height: 20px; border-
   });
 
   /* ---------- Spielende ---------- */
-  function showEnd(win) {
+  function showEnd(win, wname) {
     saveBank();
-    $('#endTitle').textContent = win ? 'Du hast gewonnen' : 'Du bist raus';
+    var mp = !!MP.on;
+    $('#endTitle').textContent = win ? 'Du hast gewonnen' : mp ? (wname ? wname + ' hat gewonnen' : 'Spiel beendet') : 'Du bist raus';
     $('#endText').textContent = win
-      ? 'Alle vier Gegner sind ausgeschieden. Du hast die ganze Runde abgeräumt.'
-      : 'Deine Chips sind aufgebraucht. Neues Spiel, neues Glück.';
+      ? (mp ? 'Alle anderen sind ausgeschieden. Du hast die ganze Runde abgeräumt.' : 'Alle vier Gegner sind ausgeschieden. Du hast die ganze Runde abgeräumt.')
+      : mp ? 'Die Runde ist vorbei. Deine Chips bleiben in deinem Guthaben.' : 'Deine Chips sind aufgebraucht. Neues Spiel, neues Glück.';
+    $('#bAgain').textContent = mp ? 'Zum Hauptmenü' : 'Neues Spiel';
     $('#end').hidden = false;
   }
 
