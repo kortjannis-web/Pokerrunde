@@ -2857,7 +2857,7 @@ input.bprange[type=range]::-moz-range-thumb { width: 20px; height: 20px; border-
       if (NET.locked) { try { conn.send({ t: 'started' }); } catch (e) {} setTimeout(function () { try { conn.close(); } catch (e) {} }, 400); return; }
       if (NET.players.length >= humanCap(NET.cfg)) { try { conn.send({ t: 'full' }); } catch (e) {} setTimeout(function () { try { conn.close(); } catch (e) {} }, 400); return; }
       conn._pr = true; NET.conns.push(conn);
-      NET.players.push(Object.assign({ id: conn.peer, host: false }, cleanProf(d.p)));
+      NET.players.push(Object.assign({ id: conn.peer, host: false }, cleanProf(d.p), { old: !(d.v >= 2) }));
       hostBroadcast(); renderLobby();
     });
     function gone() {
@@ -2894,7 +2894,7 @@ input.bprange[type=range]::-moz-range-thumb { width: 20px; height: 20px; border-
       if (finished || g !== NET.gen) return;
       var conn = peer.connect(PEER_PREFIX + code.toLowerCase(), { serialization: 'json', reliable: true });
       NET.conn = conn;
-      conn.on('open', function () { try { conn.send({ t: 'hello', p: myPublic(pkJoin.get()) }); } catch (e) {} });
+      conn.on('open', function () { try { conn.send({ t: 'hello', v: 2, p: myPublic(pkJoin.get()) }); } catch (e) {} });
       conn.on('data', function (d) {
         if (g !== NET.gen || !d || typeof d !== 'object') return;
         if (d.t === 'start' || d.t === 'snap' || d.t === 'react' || d.t === 'broke' || d.t === 'ack' || d.t === 'end') { guestMsg(d); return; }
@@ -2963,6 +2963,8 @@ input.bprange[type=range]::-moz-range-thumb { width: 20px; height: 20px; border-
     var hum = NET.players.filter(function (p) { return p.host || NET.conns.some(function (c) { return c.peer === p.id && c.open !== false; }); });
     var n = hum.length + cfg.bots;
     if (n < 2 || n > 5) return;
+    var oldP = hum.filter(function (p) { return p.old; })[0];
+    if (oldP) { var w = $('#lbWait'); w.classList.remove('dots'); w.classList.add('warn'); w.textContent = oldP.name + ' hat noch eine alte Version der Seite. Bitte die Seite neu laden (Tab schließen und Link neu öffnen), dann wieder beitreten.'; return; }
     $('#lbStart').disabled = true;
     NET.locked = true;
     var bank = Math.max(P.REBUY, PROF.bank | 0);
@@ -2992,6 +2994,10 @@ input.bprange[type=range]::-moz-range-thumb { width: 20px; height: 20px; border-
     wantWake();
     render();
     game.run();
+    setTimeout(function () {
+      if (!MP.on || MP.role !== 'host') return;
+      MP.seats.forEach(function (st, i) { if (i > 0 && st.kind === 'human' && !st.gone && !st.ready) { toastMsg(st.name + ' ist nicht eingestiegen'); mpDrop(i); } });
+    }, 8000);
   }
   function mpView(g) {
     var n = S.players.length;
@@ -3069,6 +3075,7 @@ input.bprange[type=range]::-moz-range-thumb { width: 20px; height: 20px; border-
     var seat = -1;
     MP.seats.forEach(function (st, i) { if (i > 0 && st.peer === conn.peer) seat = i; });
     if (seat < 1 || MP.seats[seat].gone) return;
+    if (d.t === 'ready') { MP.seats[seat].ready = true; return; }
     if (d.t === 'act') {
       var w = MP.wait;
       if (w && w.seat === seat && d.tk === w.tk) w.res(cleanAct(d.a));
@@ -3144,6 +3151,7 @@ input.bprange[type=range]::-moz-range-thumb { width: 20px; height: 20px; border-
     snap.hand = -1;
     $('#friends').hidden = true; $('#pview').hidden = true;
     wantWake();
+    try { MP.conn.send({ t: 'ready' }); } catch (e) {}
     render();
   }
   function mpApplySnap(d) {
@@ -3218,6 +3226,7 @@ input.bprange[type=range]::-moz-range-thumb { width: 20px; height: 20px; border-
       var nm = document.createElement('b'); nm.textContent = p.name + (isMe ? ' (Du)' : '');
       var sm = document.createElement('small'); sm.textContent = p.hands ? fmt(p.hands) + ' Hände · ' + rateOf(p) + ' Quote' : 'Noch keine Hände';
       pn.appendChild(nm);
+      if (p.old && host) { var ol = document.createElement('small'); ol.className = 'by'; ol.style.color = '#e07a5f'; ol.textContent = 'Alte Version – Seite neu laden lassen'; pn.appendChild(ol); }
       if (p.buyin) { var by = document.createElement('small'); by.className = 'by'; by.textContent = 'Bringt ' + fmt(p.buyin) + ' Chips'; pn.appendChild(by); }
       pn.appendChild(sm);
       b.appendChild(av); b.appendChild(pn);
