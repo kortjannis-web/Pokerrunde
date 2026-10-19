@@ -427,6 +427,29 @@ input[type=range]::-moz-range-thumb {
 .profchip svg { width: 14px; height: 14px; opacity: .6; display: block; }
 .profchip #pnameMenu { display: block; line-height: 1; }
 .pav { width: 36px; height: 36px; border-radius: 50%; display: grid; place-items: center; background: var(--av, #7f776a); color: #fff; font: 800 17px/1 var(--display); padding-bottom: .06em; box-sizing: border-box; box-shadow: inset 0 0 0 2px rgba(255,255,255,.14); flex: none; }
+#friends { position: absolute; inset: 0; z-index: 70; overflow-y: auto; padding: 16px 20px 28px; background: radial-gradient(ellipse at 50% 0%, var(--felt2), var(--bg) 60%); }
+#friends[hidden] { display: none; }
+.frview { display: flex; flex-direction: column; gap: 16px; }
+.frview[hidden] { display: none; }
+.frcard { display: flex; flex-direction: column; gap: 4px; align-items: flex-start; text-align: left; padding: 18px 18px; border-radius: 16px; background: var(--bg2); border: 1px solid var(--line); color: var(--ink); transition: transform .12s, border-color .2s; }
+.frcard:active { transform: scale(.98); }
+.frcard b { font: 800 20px var(--display); }
+.frcard span { color: var(--muted); font: 500 13px var(--ui); }
+.frcard.hl { border-color: rgba(224,170,74,.55); }
+.codebox { display: flex; flex-direction: column; align-items: center; gap: 10px; padding: 18px 14px 14px; border-radius: 16px; background: var(--bg2); border: 1px solid var(--line); }
+.codebox .code { font: 800 44px/1 var(--display); letter-spacing: .16em; padding-left: .16em; color: var(--brass); user-select: all; }
+.codebtns { display: flex; gap: 8px; width: 100%; }
+.codebtns .btn { flex: 1; height: 42px; font-size: 14px; }
+a.btn { text-decoration: none; }
+.seg { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; margin-top: 8px; }
+.seg button { min-width: 0; height: 44px; padding: 0 8px; border-radius: 12px; background: var(--bg2); border: 1px solid var(--line); color: var(--ink); font: 700 15px var(--ui); font-variant-numeric: tabular-nums; }
+.seg button.on { background: var(--brass); color: var(--brass-ink); border-color: transparent; }
+.frhint { margin-top: 8px; color: var(--muted); font: 500 13px var(--ui); }
+.frnote { margin: 0; color: var(--muted); font: 500 13px/1.45 var(--ui); text-align: center; }
+.frnote.warn { color: var(--brass); }
+#frCodeIn { height: 64px; border-radius: 14px; background: var(--bg2); border: 1px solid var(--line); color: var(--brass); font: 800 34px var(--display); letter-spacing: .16em; text-align: center; text-transform: uppercase; padding: 0 0 0 .16em; outline: none; width: 100%; box-sizing: border-box; }
+#frCodeIn:focus { border-color: var(--brass); }
+#frCodeIn::placeholder { color: rgba(236,231,218,.22); }
 #profile { position: absolute; inset: 0; z-index: 70; overflow-y: auto; padding: 16px 20px 28px; background: radial-gradient(ellipse at 50% 0%, var(--felt2), var(--bg) 60%); }
 #profile[hidden] { display: none; }
 .profwrap { width: min(380px, 100%); margin: 0 auto; display: flex; flex-direction: column; gap: 18px; }
@@ -566,7 +589,53 @@ input[type=range]::-moz-range-thumb {
       <h1>Pokerrunde</h1>
       <p class="menusub">Texas Hold’em · bis zu 5 Spieler</p>
       <button class="btn primary wide" id="bPlay" type="button">Gegen Bots spielen</button>
-      <button class="btn wide" type="button" disabled>Mit Freunden spielen <small>bald</small></button>
+      <button class="btn wide" id="bFriends" type="button">Mit Freunden spielen</button>
+    </div>
+  </div>
+
+  <div id="friends" hidden>
+    <div class="profwrap">
+      <div class="proftop">
+        <button class="profback" id="frBack" type="button" aria-label="Zurück"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M15 5l-7 7 7 7"/></svg></button>
+        <h2 id="frTitle">Mit Freunden</h2>
+      </div>
+
+      <div class="frview" id="frMain">
+        <button class="frcard hl" id="frCreate" type="button"><b>Tisch erstellen</b><span>Du bekommst einen Code, den du deinen Freunden schickst.</span></button>
+        <button class="frcard" id="frJoin" type="button"><b>Tisch beitreten</b><span>Gib den Code ein, den dir ein Freund geschickt hat.</span></button>
+      </div>
+
+      <div class="frview" id="frCreateV" hidden>
+        <div class="codebox">
+          <div class="psec">Dein Code</div>
+          <div class="code" id="frCode">-----</div>
+          <div class="codebtns">
+            <button class="btn" id="frCopy" type="button">Code kopieren</button>
+            <button class="btn" id="frNew" type="button">Neuer Code</button>
+          </div>
+        </div>
+        <a class="btn primary wide" id="frWa" href="https://wa.me/" target="_blank" rel="noopener">Per WhatsApp einladen</a>
+        <div>
+          <div class="psec">Small Blind</div>
+          <div class="seg" id="segSb" role="radiogroup" aria-label="Small Blind"></div>
+          <div class="frhint" id="sbHint"></div>
+        </div>
+        <div>
+          <div class="psec">Blinds steigen</div>
+          <div class="seg" id="segEvery" role="radiogroup" aria-label="Blinds steigen nach Händen"></div>
+          <div class="frhint" id="everyHint"></div>
+        </div>
+        <p class="frnote warn">Die Online-Verbindung kommt als Nächstes. Code und Einstellungen sind schon bereit.</p>
+      </div>
+
+      <div class="frview" id="frJoinV" hidden>
+        <div class="pfield">
+          <label for="frCodeIn">Code</label>
+          <input id="frCodeIn" type="text" inputmode="text" maxlength="5" autocomplete="off" autocapitalize="characters" spellcheck="false" placeholder="•••••">
+        </div>
+        <button class="btn primary wide" id="frGo" type="button" disabled>Beitreten</button>
+        <p class="frnote" id="frJoinMsg">Den Code bekommst du vom Ersteller, zum Beispiel per WhatsApp.</p>
+      </div>
     </div>
   </div>
 
@@ -2313,6 +2382,96 @@ input[type=range]::-moz-range-thumb {
     }
     var ready = (document.fonts && document.fonts.ready) ? document.fonts.ready : Promise.resolve();
     ready.then(finish, finish); setTimeout(finish, 4000);
+  })();
+
+
+  /* ---------- Mit Freunden: Tisch erstellen / beitreten ---------- */
+  var SITE_URL = 'https://kortjannis-web.github.io/Pokerrunde/';
+  var CODE_CHARS = 'ABCDEFGHJKMNPQRSTUVWXYZ23456789';
+  var SB_OPTS = [5, 10, 20, 25, 50, 100], EVERY_OPTS = [5, 8, 10, 15, 20, 0];
+  var ROOM = { code: '', sb: 10, every: 8 };
+  try {
+    var rawR = JSON.parse(localStorage.getItem('pr-room') || 'null');
+    if (rawR) {
+      if (typeof rawR.code === 'string' && /^[A-Z2-9]{5}$/.test(rawR.code)) ROOM.code = rawR.code;
+      if (SB_OPTS.indexOf(rawR.sb) >= 0) ROOM.sb = rawR.sb;
+      if (EVERY_OPTS.indexOf(rawR.every) >= 0) ROOM.every = rawR.every;
+    }
+  } catch (e) {}
+  function saveRoom() { try { localStorage.setItem('pr-room', JSON.stringify(ROOM)); } catch (e) {} }
+  function newCode() {
+    var out = '', a = new Uint8Array(5);
+    try { (window.crypto || window.msCrypto).getRandomValues(a); } catch (e) { for (var i = 0; i < 5; i++) a[i] = Math.floor(Math.random() * 256); }
+    for (var j = 0; j < 5; j++) out += CODE_CHARS[a[j] % CODE_CHARS.length];
+    return out;
+  }
+  function frShow(view) {
+    ['frMain', 'frCreateV', 'frJoinV'].forEach(function (id) { $('#' + id).hidden = id !== view; });
+    $('#frTitle').textContent = view === 'frCreateV' ? 'Tisch erstellen' : view === 'frJoinV' ? 'Tisch beitreten' : 'Mit Freunden';
+    $('#friends').dataset.view = view;
+    $('#friends').scrollTop = 0;
+  }
+  function seg(el, opts, cur, label, onPick) {
+    el.innerHTML = '';
+    opts.forEach(function (v) {
+      var b = document.createElement('button');
+      b.type = 'button'; b.setAttribute('role', 'radio'); b.textContent = label(v);
+      var on = v === cur; b.classList.toggle('on', on); b.setAttribute('aria-checked', on ? 'true' : 'false');
+      b.addEventListener('click', function () { onPick(v); });
+      el.appendChild(b);
+    });
+  }
+  function renderRoom() {
+    $('#frCode').textContent = ROOM.code;
+    seg($('#segSb'), SB_OPTS, ROOM.sb, function (v) { return fmt(v); }, function (v) { ROOM.sb = v; saveRoom(); renderRoom(); });
+    seg($('#segEvery'), EVERY_OPTS, ROOM.every, function (v) { return v ? v + ' Hände' : 'Nie'; }, function (v) { ROOM.every = v; saveRoom(); renderRoom(); });
+    $('#sbHint').textContent = 'Small Blind ' + fmt(ROOM.sb) + ' · Big Blind ' + fmt(ROOM.sb * 2);
+    $('#everyHint').textContent = ROOM.every ? 'Nach jeweils ' + ROOM.every + ' Händen steigen die Blinds.' : 'Die Blinds bleiben während des ganzen Spiels gleich.';
+    var msg = 'Komm an meinen Pokertisch! Code: ' + ROOM.code + '\n' + SITE_URL + '#' + ROOM.code;
+    $('#frWa').href = 'https://wa.me/?text=' + encodeURIComponent(msg);
+  }
+  function openCreate() {
+    if (!ROOM.code) { ROOM.code = newCode(); saveRoom(); }
+    renderRoom(); frShow('frCreateV');
+  }
+  function openJoin(code) {
+    var inp = $('#frCodeIn'); inp.value = code || ''; syncJoin(); frShow('frJoinV');
+    $('#frJoinMsg').textContent = 'Den Code bekommst du vom Ersteller, zum Beispiel per WhatsApp.'; $('#frJoinMsg').classList.remove('warn');
+  }
+  function cleanCode(v) { return String(v || '').toUpperCase().replace(/[^A-Z0-9]/g, '').slice(0, 5); }
+  function syncJoin() {
+    var inp = $('#frCodeIn'), c = cleanCode(inp.value);
+    if (inp.value !== c) inp.value = c;
+    $('#frGo').disabled = c.length !== 5;
+  }
+  function openFriends(view, code) {
+    Snd.unlock(); $('#friends').hidden = false;
+    if (view === 'join') openJoin(code); else frShow('frMain');
+  }
+  $('#bFriends').addEventListener('click', function () { openFriends(); });
+  $('#frBack').addEventListener('click', function () {
+    if ($('#friends').dataset.view && $('#friends').dataset.view !== 'frMain') frShow('frMain'); else $('#friends').hidden = true;
+  });
+  $('#frCreate').addEventListener('click', openCreate);
+  $('#frJoin').addEventListener('click', function () { openJoin(''); });
+  $('#frNew').addEventListener('click', function () { ROOM.code = newCode(); saveRoom(); renderRoom(); });
+  $('#frCopy').addEventListener('click', function () {
+    var b = $('#frCopy'), done = function (t) { b.textContent = t; setTimeout(function () { b.textContent = 'Code kopieren'; }, 1600); };
+    try { navigator.clipboard.writeText(ROOM.code).then(function () { done('Kopiert'); }, function () { selectCode(); done('Zum Kopieren markiert'); }); }
+    catch (e) { selectCode(); done('Zum Kopieren markiert'); }
+  });
+  function selectCode() { try { var r = document.createRange(); r.selectNodeContents($('#frCode')); var s = window.getSelection(); s.removeAllRanges(); s.addRange(r); } catch (e) {} }
+  $('#frCodeIn').addEventListener('input', syncJoin);
+  $('#frCodeIn').addEventListener('keydown', function (e) { if (e.key === 'Enter') $('#frGo').click(); });
+  $('#frGo').addEventListener('click', function () {
+    var m = $('#frJoinMsg');
+    m.textContent = 'Online-Tische sind noch in Arbeit. Sobald sie laufen, kommst du mit dem Code ' + cleanCode($('#frCodeIn').value) + ' direkt an den Tisch.';
+    m.classList.add('warn');
+  });
+  /* Einladungslink: ...#K7M2P oeffnet gleich das Beitreten mit dem Code */
+  (function () {
+    var m = /^#([A-Za-z0-9]{5})$/.exec(location.hash || '');
+    if (m) openFriends('join', cleanCode(m[1]));
   })();
 
   $('#bAgain').addEventListener('click', startGame);
