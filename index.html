@@ -1,0 +1,2522 @@
+<!doctype html>
+<html lang="de"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<link rel="manifest" href="manifest.webmanifest">
+<link rel="icon" href="icon-192.png">
+<link rel="apple-touch-icon" href="icon-180.png">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-title" content="Pokerrunde">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<style>html,body{margin:0;padding:0;background:#17191b}img{max-width:100%}[hidden]{display:none!important}</style>
+<title>Pokerrunde</title>
+<meta name="theme-color" content="#17191b">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Familjen+Grotesk:wght@400;500;600;700&family=Fraunces:opsz,wght@9..144,600;9..144,800&display=swap" rel="stylesheet">
+<style>
+/* Layout: ein Hochformat-Bildschirm. Ovaler Tisch im oberen Teil, vier Gegner auf der Holzkante,
+   die eigenen Karten schweben unterhalb des Tisches, darunter die Bedienleiste. */
+:root {
+  --bg: #17191b;
+  --bg2: #212426;
+  --line: #31353a;
+  --ink: #ece7da;
+  --muted: #a29d91;
+  --oak1: #c39459;
+  --oak2: #8d6535;
+  --oak3: #5c4023;
+  --felt1: #37695b;
+  --felt2: #244a40;
+  --felt3: #16322a;
+  --brass: #e0aa4a;
+  --brass-ink: #2a1c06;
+  --card: #f1ebdd;
+  --card-ink: #202326;
+  --card-red: #b53a2c;
+  --backpat: repeating-linear-gradient(45deg, rgba(195,148,89,.34) 0 1.5px, transparent 1.5px 6px), repeating-linear-gradient(-45deg, rgba(195,148,89,.34) 0 1.5px, transparent 1.5px 6px), #2a2d30;
+  --display: 'Fraunces', Georgia, 'Times New Roman', serif;
+  --ui: 'Familjen Grotesk', system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif;
+  color-scheme: dark;
+}
+* { box-sizing: border-box; }
+html, body { height: 100%; }
+body {
+  margin: 0;
+  background: radial-gradient(120% 70% at 50% 30%, #25292c, var(--bg) 70%);
+  background-color: var(--bg);
+  color: var(--ink);
+  font-family: var(--ui);
+  overflow: hidden;
+  overscroll-behavior: none;
+  -webkit-user-select: none;
+  user-select: none;
+  -webkit-tap-highlight-color: transparent;
+  display: flex;
+  justify-content: center;
+  padding-left: max(16px, env(safe-area-inset-left, 0px));
+  padding-right: max(16px, env(safe-area-inset-right, 0px));
+}
+button { font: inherit; color: inherit; cursor: pointer; }
+:focus-visible { outline: 2px solid var(--brass); outline-offset: 2px; }
+
+#app {
+  position: relative;
+  width: 100%;
+  max-width: 560px;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  container-type: inline-size;
+}
+
+/* ---------- Kopfzeile ---------- */
+#bar {
+  flex: 0 0 auto;
+  height: 44px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+.brand { font: 800 17px var(--display); letter-spacing: .01em; }
+#info { text-align: right; line-height: 1.35; font: 600 11px/1.35 var(--ui); letter-spacing: .12em; text-transform: uppercase; color: var(--muted); font-variant-numeric: tabular-nums; }
+.sub { opacity: .7; letter-spacing: .06em; }
+.right { display: flex; align-items: center; gap: 12px; }
+.iconbtn { width: 36px; height: 36px; border-radius: 50%; border: 1px solid var(--line); background: var(--bg2); display: grid; place-items: center; padding: 0; color: var(--ink); }
+.iconbtn svg { width: 18px; height: 18px; }
+.iconbtn .x { display: none; }
+.iconbtn.off .x { display: block; }
+.iconbtn.off .w { opacity: .3; }
+
+/* Kartenstapel in der Mitte */
+#deck { position: absolute; width: 28px; height: 39px; transform: translate(-50%, -50%) rotate(-4deg); pointer-events: none; }
+#app { --dd: 1.6s; }
+#deck { transition: scale .3s ease, translate .3s ease; z-index: 3; }
+#deck.shuf { }
+#deck i { position: absolute; inset: 0; border-radius: 4px; background: var(--backpat); border: 2px solid var(--card); box-shadow: 0 1px 2px rgba(0,0,0,.55); }
+
+/* ---------- Bühne ---------- */
+#stage { position: relative; flex: 1 1 auto; min-height: 0; }
+#table { position: absolute; }
+.rail {
+  position: absolute; inset: 0; border-radius: 50%;
+  background:
+    repeating-linear-gradient(97deg, rgba(0,0,0,.07) 0 2px, rgba(255,255,255,.035) 2px 5px, transparent 5px 12px),
+    linear-gradient(170deg, var(--oak1), var(--oak2) 58%, var(--oak3));
+  box-shadow: 0 22px 44px rgba(0,0,0,.55), inset 0 2px 0 rgba(255,255,255,.2), inset 0 -8px 14px rgba(0,0,0,.35);
+}
+.felt {
+  position: absolute; inset: 3.4% 4.8%; border-radius: 50%;
+  background: radial-gradient(ellipse at 50% 38%, var(--felt1), var(--felt2) 62%, var(--felt3));
+  box-shadow: inset 0 0 40px rgba(0,0,0,.5), inset 0 0 0 2px rgba(0,0,0,.35);
+}
+.felt::before {
+  content: ''; position: absolute; inset: 11%; border-radius: 50%;
+  border: 1.5px dashed rgba(236,231,218,.13);
+}
+
+/* Ablage-Zone zum Passen */
+#zone {
+  position: absolute; border-radius: 50%;
+  border: 2px dashed rgba(224,170,74,0);
+  background: rgba(224,170,74,0);
+  transition: border-color .2s, background .2s;
+  display: flex; align-items: flex-end; justify-content: center;
+  pointer-events: none;
+}
+#zone span {
+  margin-bottom: -42px; font: 700 10px var(--ui); letter-spacing: .1em; text-transform: uppercase;
+  color: var(--brass); opacity: 0; transition: opacity .2s; text-align: center; padding: 5px 12px;
+  position: relative; z-index: 30; background: rgba(20,22,24,.82); border-radius: 999px; white-space: nowrap;
+}
+#zone.show { border-color: rgba(224,170,74,.55); background: rgba(224,170,74,.06); }
+#zone.show span { opacity: 1; }
+#zone.hot { border-color: var(--brass); background: rgba(224,170,74,.2); }
+
+/* Pot */
+#pot { position: absolute; transform: translate(-50%, -50%); text-align: center; pointer-events: none; width: 170px; }
+#potchips { position: relative; width: 132px; height: 46px; margin: 0 auto; }
+.pchip {
+  position: absolute; width: 28px; height: 28px; margin: -14px 0 0 -14px; border-radius: 50%;
+  background: repeating-conic-gradient(#efe8d8 0 13deg, var(--cc) 13deg 45deg);
+  box-shadow: 0 2px 3px rgba(0,0,0,.55); display: grid; place-items: center;
+  transform: rotate(var(--rot, 0deg));
+  transition: left .5s cubic-bezier(.2,.9,.3,1), top .5s cubic-bezier(.2,.9,.3,1), opacity .25s;
+}
+.pchip::before { content: ''; position: absolute; inset: 4px; border-radius: 50%; background: var(--cc); border: 1.5px solid rgba(239,232,216,.75); }
+.pchip b { position: relative; font: 800 8.5px var(--ui); color: #f7f1e3; letter-spacing: -.02em; transform: rotate(calc(var(--rot, 0deg) * -1)); }
+#potlabel { font: 600 11px var(--ui); letter-spacing: .14em; text-transform: uppercase; color: rgba(236,231,218,.85); margin-top: 3px; font-variant-numeric: tabular-nums; }
+#toast { position: absolute; left: 50%; top: 6px; transform: translate(-50%, -12px); z-index: 9; padding: 7px 16px; border-radius: 999px; background: var(--brass); color: var(--brass-ink); font: 800 13px var(--ui); letter-spacing: .02em; opacity: 0; pointer-events: none; transition: opacity .35s, transform .35s; white-space: nowrap; box-shadow: 0 6px 18px rgba(0,0,0,.5); }
+#toast.on { opacity: 1; transform: translate(-50%, 0); }
+#win { position: absolute; transform: translate(-50%, -50%); display: flex; gap: 6px; pointer-events: none; z-index: 5; }
+#win .card { --w: clamp(36px, 10.4cqw, 58px); transition: opacity .4s, filter .4s; }
+#win .card .inner { transition: none; }
+#win .card .face { box-shadow: 0 8px 16px rgba(0,0,0,.5); }
+#win .card.hl .face { box-shadow: 0 0 0 2.5px var(--brass), 0 0 18px 4px rgba(224,170,74,.85); }
+.hl .face, .slot .card.hl .face { box-shadow: 0 0 0 2.5px var(--brass), 0 0 18px 4px rgba(224,170,74,.85); }
+.card.dim, .slot.shown .card.dim { opacity: .5; }
+.seat.moved .minis { opacity: 0 !important; }
+#fly { position: absolute; inset: 0; pointer-events: none; z-index: 8; }
+#potlabel b { font: 800 17px var(--display); letter-spacing: 0; color: var(--ink); margin-left: 4px; }
+#potlabel.result { font: 800 16px var(--display); letter-spacing: 0; text-transform: none; color: var(--brass); line-height: 1.15; }
+#potsub { font: 600 12px var(--ui); color: rgba(236,231,218,.8); margin-top: 2px; min-height: 15px; }
+
+/* Board */
+#board { position: absolute; transform: translate(-50%, -50%); display: flex; gap: 5px; }
+.slot {
+  --w: clamp(36px, 10.4cqw, 58px);
+  position: relative; width: var(--w); height: calc(var(--w) * 1.4);
+  border-radius: calc(var(--w) * .09);
+  border: 1.5px dashed rgba(236,231,218,.16);
+}
+.slot .card { position: absolute; inset: 0; opacity: 0; transform: translateY(-16px) scale(.82); transition: opacity .3s, transform .4s cubic-bezier(.2,.9,.3,1); }
+.slot.shown { border-color: transparent; }
+.slot.shown .card { opacity: 1; transform: none; }
+
+/* ---------- Karten ---------- */
+.card { position: relative; width: var(--w); height: calc(var(--w) * 1.4); font-size: calc(var(--w) * .3); perspective: 700px; }
+.card .inner { position: absolute; inset: 0; transform-style: preserve-3d; transition: transform .55s cubic-bezier(.3,.7,.2,1); }
+.card.down .inner { transform: rotateY(180deg); }
+.face, .back {
+  position: absolute; inset: 0; border-radius: calc(var(--w) * .09);
+  backface-visibility: hidden; -webkit-backface-visibility: hidden; overflow: hidden;
+}
+.face {
+  background: linear-gradient(160deg, #f7f2e6, #e6dec9);
+  color: var(--card-ink);
+  box-shadow: 0 6px 14px rgba(0,0,0,.4), inset 0 0 0 1px rgba(0,0,0,.08);
+}
+.face.red { color: var(--card-red); }
+.back {
+  transform: rotateY(180deg);
+  background: var(--backpat);
+  border: calc(var(--w) * .06) solid var(--card);
+  box-shadow: 0 6px 14px rgba(0,0,0,.4);
+}
+.corner { position: absolute; display: flex; flex-direction: column; align-items: center; line-height: 1; font-family: var(--display); font-weight: 800; }
+.corner b { font-weight: 800; letter-spacing: -.04em; }
+.corner i { font-style: normal; font-size: .82em; margin-top: .06em; }
+.corner.tl { top: .26em; left: .28em; }
+.corner.br { bottom: .26em; right: .28em; transform: rotate(180deg); }
+.pip { position: absolute; inset: 0; display: grid; place-items: center; font-size: 2.2em; opacity: .9; padding-top: .1em; }
+
+/* Gegner-Karten */
+.mini { --w: 34px; }
+.mini .pip, .mini .corner.br { display: none; }
+.mini .corner.tl { top: 50%; left: 50%; transform: translate(-50%, -50%); font-size: 1.3em; }
+
+/* Eigene Karten, schwebend */
+#handwrap {
+  position: absolute; left: 0; right: 0; bottom: 54px;
+  display: flex; flex-direction: column; align-items: center; pointer-events: none;
+}
+#hand {
+  --w: clamp(84px, 26cqw, 128px);
+  position: relative; display: flex; isolation: isolate; pointer-events: auto; touch-action: none;
+  transition: opacity .35s; cursor: grab;
+}
+#hand.dragging { cursor: grabbing; }
+#hand.folded, #hand.none { opacity: 0; pointer-events: none; }
+#hand::after {
+  content: ''; position: absolute; left: 8%; right: 8%; bottom: -20px; height: 22px; z-index: -1;
+  background: radial-gradient(closest-side, rgba(0,0,0,.55), transparent);
+  filter: blur(4px); animation: shadow 3.4s ease-in-out infinite;
+}
+#hand.dragging::after { animation-play-state: paused; opacity: .5; }
+.hslot { width: var(--w); animation: dealin .6s cubic-bezier(.2,.9,.3,1) var(--dd) backwards; transition: transform .2s; }
+.hslot:nth-child(2) { margin-left: calc(var(--w) * -.12); animation-delay: calc(var(--dd) + .14s); }
+.hslot .card { transform: rotate(-6deg); }
+.hslot:nth-child(2) .card { transform: rotate(6deg); }
+.hslot .face { box-shadow: 0 16px 28px rgba(0,0,0,.5), inset 0 0 0 1px rgba(0,0,0,.08); }
+.hslot { position: relative; touch-action: none; }
+.hslot.lifted { z-index: 5; }
+.hslot.lifted .card { animation-play-state: paused; }
+.hslot.lifted .face { box-shadow: 0 26px 40px rgba(0,0,0,.55), inset 0 0 0 1px rgba(0,0,0,.08); }
+@keyframes shadow { 0%, 100% { transform: scale(1); opacity: .9; } 50% { transform: scale(.88); opacity: .55; } }
+@keyframes dealin { from { transform: translate(0, -340px) scale(.5) rotate(28deg); opacity: 0; } to { transform: none; opacity: 1; } }
+@keyframes pop { from { transform: scale(.4) translateY(-20px); opacity: 0; } to { transform: none; opacity: 1; } }
+
+/* ---------- Sitze ---------- */
+.seat {
+  position: absolute; width: 86px; transform: translate(-50%, -50%);
+  display: flex; flex-direction: column; align-items: center; transition: opacity .3s, filter .3s;
+}
+.minis { display: flex; height: 48px; margin-bottom: -20px; position: relative; z-index: 0; transition: opacity .3s, transform .4s; opacity: 0; }
+.seat.cards .minis { opacity: 1; }
+.seat.reveal .minis { transform: translateY(-8px); }
+.minis .card:nth-child(1) { transform: rotate(-11deg); margin-right: -6px; }
+.minis .card:nth-child(2) { transform: rotate(11deg); }
+.minis.pop .card { animation: pop .45s cubic-bezier(.2,.9,.3,1) backwards; }
+.minis.pop .card { animation-delay: var(--dd); }
+.minis.pop .card:nth-child(2) { animation-delay: calc(var(--dd) + .1s); }
+.avatar {
+  position: relative; z-index: 1; width: 46px; height: 46px; border-radius: 50%;
+  background: var(--av, #777); display: grid; place-items: center;
+  font: 800 19px var(--display); color: rgba(255,248,235,.92);
+  box-shadow: 0 0 0 3px #131516, 0 6px 14px rgba(0,0,0,.45);
+}
+.seat.turn .avatar { box-shadow: 0 0 0 2.5px var(--brass), 0 0 15px 3px rgba(224,170,74,.6); }
+.seat.turn.timed .avatar { box-shadow: 0 0 0 3px #131516, 0 0 15px 3px rgba(224,170,74,.5); }
+/* 15-Sekunden-Timer: der gelbe Ring schrumpft wie eine Uhr */
+.timer { display: none; position: absolute; left: -5px; top: -5px; width: calc(100% + 10px); height: calc(100% + 10px); transform: rotate(-90deg); pointer-events: none; overflow: visible; }
+.seat.timed .timer { display: block; }
+.timer circle { fill: none; stroke: var(--brass); stroke-width: 4.5; stroke-dasharray: 295.31 295.31; stroke-dashoffset: 0; }
+.seat.timed .timer circle { animation: drain 15s linear forwards; }
+@keyframes drain { from { stroke-dashoffset: 0; } to { stroke-dashoffset: 295.31; } }
+.seat.win .avatar { box-shadow: 0 0 0 3px var(--brass), 0 0 26px rgba(224,170,74,.85); }
+.dbtn {
+  display: none; position: absolute; right: -10px; top: -6px; z-index: 6; width: 22px; height: 22px; border-radius: 50%;
+  background: var(--card); color: var(--card-ink); font: 800 11px var(--ui); font-style: normal; place-items: center;
+  box-shadow: 0 2px 5px rgba(0,0,0,.5);
+}
+.seat.dealer .dbtn { display: grid; }
+.bbtn {
+  display: none; position: absolute; left: -16px; top: -6px; z-index: 6; box-sizing: border-box;
+  min-width: 28px; height: 20px; padding: 0 7px; border-radius: 10px; white-space: nowrap; overflow: visible;
+  font: 800 11px/20px var(--ui); font-style: normal; letter-spacing: .03em; text-align: center; color: #fff;
+  box-shadow: 0 0 0 2px #131516, 0 2px 5px rgba(0,0,0,.5);
+}
+.seat.sb .bbtn { display: block; background: #3e7f9c; }
+.seat.bb .bbtn { display: block; background: #b4503f; }
+.seat.me .bbtn { left: -16px; top: auto; bottom: -6px; }
+.pill {
+  position: relative; z-index: 2; margin-top: -9px; padding: 3px 9px 4px; border-radius: 10px;
+  background: rgba(16,18,19,.88); border: 1px solid var(--line); text-align: center; min-width: 66px;
+}
+.pill b { display: block; font: 700 12px var(--ui); line-height: 1.2; }
+.pl { font: 700 12px var(--ui); font-variant-numeric: tabular-nums; line-height: 1.2; padding-left: 8px; border-left: 1px solid var(--line); color: var(--muted); }
+.pl { position: relative; }
+.pld { position: absolute; right: -8px; top: 100%; margin-top: 3px; font: 800 13px var(--ui); font-variant-numeric: tabular-nums; white-space: nowrap; pointer-events: none; z-index: 20; padding: 0; background: none; border: 0; text-shadow: 0 1px 3px rgba(0,0,0,.9); animation: pld 2.4s ease-out both; }
+.pld.neg { color: #ff8a76; }
+.pld.pos { color: #8fcf9a; }
+@keyframes pld { 0% { opacity: 0; transform: translate(6px,-5px) scale(.85); } 12% { opacity: 1; transform: translate(0,0) scale(1.05); } 22% { transform: scale(1); } 75% { opacity: 1; transform: translate(0,0); } 100% { opacity: 0; transform: translate(0,7px); } }
+.pl.pos { color: #8fcf9a; }
+.pl.neg { color: #e5826f; }
+.pill em { display: block; font: 600 12px var(--ui); font-style: normal; color: var(--muted); font-variant-numeric: tabular-nums; line-height: 1.2; }
+.tag {
+  margin-top: 4px; padding: 2px 8px; border-radius: 999px; background: rgba(16,18,19,.85); border: 1px solid var(--line);
+  font: 600 11px var(--ui); white-space: nowrap; font-variant-numeric: tabular-nums;
+}
+.tag:empty { display: none; }
+.tag.win { background: var(--brass); color: var(--brass-ink); border-color: transparent; font-weight: 700; }
+.seat.folded { opacity: .45; filter: saturate(.5); }
+.seat.out { opacity: .3; filter: grayscale(1); }
+.seat.me { left: 50%; top: auto; bottom: 6px; transform: translateX(-50%); width: auto; flex-direction: row; gap: 10px; }
+.seat.me .minis { display: none; }
+.seat.me .avatar { width: 36px; height: 36px; font-size: 16px; }
+.seat.me .pill { margin: 0; display: flex; gap: 8px; align-items: baseline; padding: 5px 12px; }
+.seat.me .tag { margin: 0; }
+.seat.me .dbtn { right: -8px; top: auto; bottom: -4px; }
+
+/* Einsätze */
+.bet { position: absolute; transform: translate(-50%, -50%); display: none; flex-direction: column; align-items: center; gap: 3px; pointer-events: none; z-index: 4; }
+.bet.on { display: flex; }
+.bet .amt {
+  font: 800 14px var(--ui); color: var(--ink); background: rgba(16,18,19,.94); padding: 2px 9px 3px; border-radius: 999px;
+  border: 1px solid rgba(224,170,74,.55); font-variant-numeric: tabular-nums; box-shadow: 0 2px 6px rgba(0,0,0,.5);
+  transition: background .25s, color .25s, box-shadow .25s;
+}
+.bet.fresh .amt { background: var(--brass); color: var(--brass-ink); border-color: transparent; box-shadow: 0 0 0 3px rgba(224,170,74,.35), 0 0 18px rgba(224,170,74,.85); }
+.stack { position: relative; display: inline-block; vertical-align: bottom; filter: drop-shadow(0 2px 3px rgba(0,0,0,.5)); }
+.ch {
+  position: absolute; width: 26px; height: 14px; border-radius: 50%; background: var(--cc);
+  border: 2px dashed rgba(241,235,221,.88); box-shadow: 0 2px 0 rgba(0,0,0,.55);
+}
+.c1 { --cc: #8a8f94; } .c5 { --cc: #7a5a9a; } .c10 { --cc: #b4503f; } .c50 { --cc: #3f7d62; } .c100 { --cc: #2b2f33; } .c500 { --cc: #5d6f93; } .c1000 { --cc: #b98d2d; }
+
+/* ---------- Bedienleiste ---------- */
+#controls { flex: 0 0 auto; height: 138px; padding: 6px 0 12px; display: flex; flex-direction: column; justify-content: flex-end; gap: 8px; }
+#status { text-align: center; font: 500 13px var(--ui); color: var(--muted); min-height: 18px; font-variant-numeric: tabular-nums; }
+#status b { color: var(--ink); font-weight: 700; }
+.btns { display: grid; grid-template-columns: 1fr 1.4fr 1fr; gap: 10px; }
+.btn {
+  height: 58px; border-radius: 14px; border: 1px solid var(--line); background: var(--bg2); color: var(--ink);
+  font: 700 15px var(--ui); display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 1px;
+  transition: transform .12s, opacity .2s; font-variant-numeric: tabular-nums;
+}
+.btn small { font: 500 11px var(--ui); opacity: .75; }
+.btn.primary { background: var(--brass); color: var(--brass-ink); border-color: transparent; }
+.btn.raise { background: linear-gradient(180deg, var(--oak1), var(--oak2)); color: #1d1307; border-color: transparent; }
+.btn:disabled { opacity: .32; cursor: default; }
+.btn:active:not(:disabled) { transform: scale(.97); }
+.btn.wide { width: 100%; height: 58px; }
+#rpanel { display: flex; flex-direction: column; gap: 8px; }
+.presets { display: flex; gap: 6px; }
+.preset { flex: 1; height: 30px; border-radius: 999px; background: var(--bg2); border: 1px solid var(--line); font: 600 12px var(--ui); padding: 0; }
+.rrow { display: flex; align-items: center; gap: 14px; }
+#ramt { width: 96px; flex: none; text-align: right; font: 800 22px var(--display); font-variant-numeric: tabular-nums; color: var(--ink); background: rgba(255,255,255,.05); border: 1px solid var(--line); border-radius: 10px; padding: 4px 10px; margin: 0; outline: none; }
+#ramt:focus { border-color: var(--brass); background: rgba(224,170,74,.1); }
+#ramt:disabled { opacity: .6; }
+#rlim { margin-top: -4px; text-align: right; font: 600 11px var(--ui); color: var(--muted); font-variant-numeric: tabular-nums; transition: color .2s; }
+#rlim.flash { color: var(--brass); font-weight: 700; }
+.rbtns { display: grid; grid-template-columns: 1fr 2.2fr; gap: 10px; }
+.rbtns .btn { height: 46px; flex-direction: row; }
+input[type=range] { -webkit-appearance: none; appearance: none; flex: 1; min-width: 0; height: 30px; background: transparent; margin: 0; cursor: pointer; touch-action: none; }
+input[type=range]::-webkit-slider-runnable-track { height: 8px; border-radius: 999px; background: linear-gradient(90deg, var(--oak1) var(--fill, 0%), #34383c var(--fill, 0%)); }
+input[type=range]::-moz-range-track { height: 8px; border-radius: 999px; background: #34383c; }
+input[type=range]::-moz-range-progress { height: 8px; border-radius: 999px; background: var(--oak1); }
+input[type=range]::-webkit-slider-thumb {
+  -webkit-appearance: none; width: 30px; height: 30px; border-radius: 50%; margin-top: -11px;
+  background: radial-gradient(circle, var(--card) 0 26%, #b4503f 28%); border: 3px dashed rgba(241,235,221,.85); box-shadow: 0 3px 8px rgba(0,0,0,.5);
+}
+input[type=range]::-moz-range-thumb {
+  width: 24px; height: 24px; border-radius: 50%;
+  background: radial-gradient(circle, var(--card) 0 26%, #b4503f 28%); border: 3px dashed rgba(241,235,221,.85); box-shadow: 0 3px 8px rgba(0,0,0,.5);
+}
+
+/* Lautstaerke-Schieber: schlicht, runder heller Knopf ohne Chip-Muster */
+#volGame, #volProf { height: 24px; }
+#volGame::-webkit-slider-runnable-track, #volProf::-webkit-slider-runnable-track { height: 6px; }
+#volGame::-webkit-slider-thumb, #volProf::-webkit-slider-thumb {
+  width: 20px; height: 20px; margin-top: -7px; border-radius: 50%; background: var(--ink); border: 0; box-shadow: 0 1px 4px rgba(0,0,0,.55);
+}
+#volGame::-moz-range-track, #volProf::-moz-range-track { height: 6px; }
+#volGame::-moz-range-progress, #volProf::-moz-range-progress { height: 6px; }
+#volGame::-moz-range-thumb, #volProf::-moz-range-thumb { width: 20px; height: 20px; border-radius: 50%; background: var(--ink); border: 0; box-shadow: 0 1px 4px rgba(0,0,0,.55); }
+
+/* ---------- Spielende ---------- */
+#reactBtn { position: absolute; left: 32px; bottom: 6px; width: 42px; height: 42px; border-radius: 50%; border: 1px solid var(--line); background: var(--bg2); font-size: 22px; line-height: 1; padding: 0; z-index: 12; display: grid; place-items: center; }
+#reactBtn { color: var(--ink); transform: translateX(-70px); opacity: 0; pointer-events: none; transition: transform .28s cubic-bezier(.2,.9,.3,1), opacity .2s; }
+#reactBtn.show { transform: none; opacity: 1; pointer-events: auto; }
+#reactBtn.show.cool { opacity: .45; }
+#reactTab { position: absolute; left: 0; bottom: 8px; width: 26px; height: 46px; padding: 0; border: 1px solid var(--line); border-left: 0; border-radius: 0 14px 14px 0; background: var(--bg2); color: var(--muted); display: grid; place-items: center; z-index: 14; touch-action: none; }
+#reactTab svg { width: 16px; height: 16px; }
+#reactTab svg { transition: transform .28s; }
+#reactTab.open svg { transform: rotate(180deg); }
+#reactBtn svg { width: 24px; height: 24px; }
+#reactPanel { position: absolute; left: 32px; bottom: 54px; z-index: 13; display: flex; gap: 2px; padding: 5px 6px; border-radius: 999px; background: var(--bg2); border: 1px solid var(--line); box-shadow: 0 10px 28px rgba(0,0,0,.55); align-items: center; }
+#reactPanel[hidden] { display: none; }
+#reactPanel button { width: 40px; height: 40px; border-radius: 50%; border: 0; background: transparent; font-size: 24px; line-height: 1; padding: 0; }
+#reactPanel button:active { background: rgba(255,255,255,.08); }
+#reactPanel.locked button { opacity: .35; pointer-events: none; }
+#reactWait { display: none; font: 600 12px var(--ui); color: var(--muted); padding: 0 8px; white-space: nowrap; }
+#reactPanel.locked #reactWait { display: block; }
+.react { position: absolute; left: 50%; bottom: calc(100% + 2px); transform: translateX(-50%); z-index: 9; font-size: 30px; line-height: 1; padding: 5px 9px; border-radius: 16px; background: rgba(16,18,19,.92); border: 1px solid var(--line); box-shadow: 0 6px 16px rgba(0,0,0,.5); pointer-events: none; white-space: nowrap; }
+.react::after { content: ''; position: absolute; left: 50%; bottom: -5px; width: 9px; height: 9px; background: rgba(16,18,19,.92); border: 0 solid var(--line); border-width: 0 1px 1px 0; transform: translateX(-50%) rotate(45deg); }
+#bar { position: relative; }
+#pauseBtn { position: absolute; right: 0; top: 46px; width: 32px; height: 32px; z-index: 12; }
+#pauseBtn svg { width: 15px; height: 15px; }
+#volPop { position: absolute; right: 0; top: 44px; z-index: 20; width: min(250px, 100%); display: flex; align-items: center; gap: 10px; padding: 6px 12px 6px 6px; border-radius: 999px; background: var(--bg2); border: 1px solid var(--line); box-shadow: 0 10px 28px rgba(0,0,0,.55); }
+#volPop[hidden] { display: none; }
+#volPop output, .vrow output { min-width: 38px; text-align: right; font: 700 12px var(--ui); color: var(--muted); font-variant-numeric: tabular-nums; }
+.vrow input[type=range] { flex: 1; max-width: 150px; }
+.overlay { position: absolute; inset: 0; z-index: 55; display: grid; place-items: center; background: rgba(10,11,12,.76); padding: 24px; }
+#menu { position: absolute; inset: 0; z-index: 60; display: grid; place-items: center; padding: 24px; background: radial-gradient(ellipse at 50% 30%, var(--felt2), var(--bg) 70%); }
+#menu[hidden] { display: none; }
+.menucard { width: min(340px, 100%); text-align: center; display: flex; flex-direction: column; gap: 12px; }
+.menucard h1 { margin: 6px 0 0; font: 800 40px var(--display); letter-spacing: .01em; }
+.menusub { margin: 0 0 14px; color: var(--muted); font: 600 12px var(--ui); letter-spacing: .14em; text-transform: uppercase; }
+.menunote { margin: 14px 0 0; color: var(--muted); font-size: 12px; }
+.menulogo { display: flex; justify-content: center; gap: 10px; font-size: 34px; color: var(--ink); }
+.menulogo i { font-style: normal; } .menulogo i.r { color: #c5604f; }
+#splash { position: absolute; inset: 0; z-index: 90; display: grid; place-items: center; padding: 24px; background: radial-gradient(ellipse at 50% 30%, var(--felt2), var(--bg) 70%); transition: opacity .5s ease; }
+#splash.out { opacity: 0; pointer-events: none; }
+#splash .menulogo i { opacity: 0; animation: suit .6s ease forwards; }
+#splash .menulogo i:nth-child(2) { animation-delay: .15s; } #splash .menulogo i:nth-child(3) { animation-delay: .3s; } #splash .menulogo i:nth-child(4) { animation-delay: .45s; }
+@keyframes suit { from { opacity: 0; transform: translateY(8px) scale(.8); } to { opacity: 1; transform: none; } }
+#splash h1 { animation: suit .7s .1s ease both; }
+.loadbar { margin: 22px auto 0; width: 170px; height: 4px; border-radius: 999px; background: rgba(236,231,218,.12); overflow: hidden; }
+.loadbar i { display: block; height: 100%; width: 100%; border-radius: inherit; background: var(--brass); transform-origin: left; animation: load 1.7s cubic-bezier(.3,.1,.2,1) forwards; }
+@keyframes load { from { transform: scaleX(.04); } 70% { transform: scaleX(.85); } to { transform: scaleX(1); } }
+.loadtxt { margin: 8px 0 0; color: var(--muted); font: 600 11px var(--ui); letter-spacing: .14em; text-transform: uppercase; }
+#menu .menucard > * { opacity: 0; transform: translateY(10px); }
+#menu.in .menucard > * { animation: suit .5s ease forwards; }
+#menu.in .menucard > *:nth-child(2) { animation-delay: .05s; } #menu.in .menucard > *:nth-child(3) { animation-delay: .1s; } #menu.in .menucard > *:nth-child(4) { animation-delay: .16s; } #menu.in .menucard > *:nth-child(5) { animation-delay: .22s; }
+#menu.shown .menucard > * { opacity: 1; transform: none; animation: none; }
+.profchip { position: absolute; left: 16px; top: 16px; display: flex; align-items: center; gap: 10px; height: 46px; padding: 0 14px 0 5px; border-radius: 999px; background: rgba(16,18,19,.7); border: 1px solid var(--line); color: var(--ink); font: 700 14px var(--ui); z-index: 2; }
+.profchip svg { width: 14px; height: 14px; opacity: .6; display: block; }
+.profchip #pnameMenu { display: block; line-height: 1; }
+.pav { width: 36px; height: 36px; border-radius: 50%; display: grid; place-items: center; background: var(--av, #7f776a); color: #fff; font: 800 17px/1 var(--display); padding-bottom: .06em; box-sizing: border-box; box-shadow: inset 0 0 0 2px rgba(255,255,255,.14); flex: none; }
+#profile { position: absolute; inset: 0; z-index: 70; overflow-y: auto; padding: 16px 20px 28px; background: radial-gradient(ellipse at 50% 0%, var(--felt2), var(--bg) 60%); }
+#profile[hidden] { display: none; }
+.profwrap { width: min(380px, 100%); margin: 0 auto; display: flex; flex-direction: column; gap: 18px; }
+.proftop { display: flex; align-items: center; gap: 12px; }
+.proftop h2 { margin: 0; font: 800 26px var(--display); }
+.profback { width: 40px; height: 40px; border-radius: 50%; background: rgba(16,18,19,.7); border: 1px solid var(--line); color: var(--ink); display: grid; place-items: center; padding: 0; }
+.profback svg { width: 16px; height: 16px; }
+.profhero { display: flex; flex-direction: column; align-items: center; gap: 12px; }
+.profhero .pav { width: 84px; height: 84px; font-size: 38px; padding-bottom: .02em; }
+.swatches { display: flex; gap: 10px; }
+.swatches button { width: 30px; height: 30px; border-radius: 50%; background: var(--c); border: 2px solid transparent; padding: 0; box-shadow: 0 0 0 1px var(--line); }
+.swatches button.on { border-color: var(--ink); }
+.swatches { flex-wrap: wrap; justify-content: center; max-width: 100%; }
+.swatches .more { background: transparent; border: 2px dashed rgba(236,231,218,.5); box-shadow: none; color: var(--ink); display: grid; place-items: center; transition: transform .2s; }
+.swatches .more svg { width: 16px; height: 16px; display: block; }
+.swatches .more.open { transform: rotate(45deg); border-color: var(--brass); color: var(--brass); }
+#swMore { display: flex; flex-wrap: wrap; justify-content: center; gap: 10px; }
+#swMore[hidden] { display: none; }
+#swMore button { width: 30px; height: 30px; border-radius: 50%; background: var(--c); border: 2px solid transparent; padding: 0; box-shadow: 0 0 0 1px var(--line); }
+#swMore button.on { border-color: var(--ink); }
+.pfield { display: flex; flex-direction: column; gap: 6px; }
+.pfield label, .psec { color: var(--muted); font: 700 11px var(--ui); letter-spacing: .14em; text-transform: uppercase; }
+#pName { height: 48px; border-radius: 12px; background: var(--bg2); border: 1px solid var(--line); color: var(--ink); font: 700 17px var(--ui); padding: 0 14px; outline: none; }
+#pName:focus { border-color: var(--brass); }
+.pstats { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; }
+.pstat { padding: 12px 6px; border-radius: 12px; background: var(--bg2); border: 1px solid var(--line); text-align: center; }
+.pstat b { display: block; font: 800 22px var(--display); font-variant-numeric: tabular-nums; }
+.pstat span { color: var(--muted); font: 600 11px var(--ui); }
+.prow { display: flex; align-items: center; justify-content: space-between; gap: 12px; padding: 12px 14px; border-radius: 12px; background: var(--bg2); border: 1px solid var(--line); font: 600 15px var(--ui); }
+.sw { position: relative; width: 48px; height: 28px; border-radius: 999px; background: #3b3f43; border: 0; padding: 0; transition: background .2s; flex: none; }
+.sw::after { content: ''; position: absolute; top: 3px; left: 3px; width: 22px; height: 22px; border-radius: 50%; background: #ece7da; transition: transform .2s; }
+.sw[aria-checked=true] { background: var(--brass); }
+.sw[aria-checked=true]::after { transform: translateX(20px); }
+.menucard .btn:disabled { opacity: .5; }
+.menucard small { margin-left: 6px; color: var(--brass); font-weight: 700; }
+#end { position: absolute; inset: 0; z-index: 50; display: grid; place-items: center; background: rgba(10,11,12,.76); padding: 24px; }
+.endcard { width: min(340px, 100%); text-align: center; padding: 28px 24px 24px; border-radius: 20px; background: var(--bg2); border: 1px solid var(--line); box-shadow: 0 24px 60px rgba(0,0,0,.6); }
+.endcard h2 { margin: 0 0 8px; font: 800 28px var(--display); }
+.endcard p { margin: 0 0 22px; color: var(--muted); font-size: 15px; line-height: 1.45; }
+
+</style>
+
+<div id="app">
+  <header id="bar">
+    <span class="brand">Pokerrunde</span>
+    <div class="right">
+      <span id="info">Hand 1 · Blinds 10/20</span>
+      <button class="iconbtn" id="mute" type="button" aria-label="Ton an oder aus">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 9v6h4l5 4V5L8 9H4z" fill="currentColor" stroke="none"/><path class="w" d="M16.5 8.5a5 5 0 010 7M19 6a8.5 8.5 0 010 12"/><path class="x" d="M3 3l18 18"/></svg>
+      </button>
+    </div>
+    <div id="volPop" hidden>
+      <button class="iconbtn" id="volMute" type="button" aria-label="Ton an oder aus"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 9v6h4l5 4V5L8 9H4z" fill="currentColor" stroke="none"/><path class="w" d="M16.5 8.5a5 5 0 010 7M19 6a8.5 8.5 0 010 12"/><path class="x" d="M3 3l18 18"/></svg></button>
+      <input type="range" id="volGame" min="0" max="100" step="1" aria-label="Lautstärke">
+      <output id="volGameN">100%</output>
+    </div>
+    <button class="iconbtn" id="pauseBtn" type="button" aria-label="Pause">
+      <svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><rect x="6" y="5" width="4" height="14" rx="1.2"/><rect x="14" y="5" width="4" height="14" rx="1.2"/></svg>
+    </button>
+  </header>
+
+  <main id="stage">
+    <div id="table"><div class="rail"></div><div class="felt"></div></div>
+    <div id="zone"><span>Zum Passen hier ablegen</span></div>
+    <div id="deck"></div>
+    <div id="pot">
+      <div id="potchips"></div>
+      <div id="potlabel"></div>
+      <div id="potsub"></div>
+    </div>
+    <div id="board"></div>
+    <div id="bets"></div>
+    <div id="seats"></div>
+    <button id="reactTab" type="button" aria-label="Reaktionen einblenden"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M9 5l7 7-7 7"/></svg></button>
+    <button id="reactBtn" type="button" aria-label="Reaktion senden"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path d="M8.2 14.2c1 1.5 2.3 2.2 3.8 2.2s2.8-.7 3.8-2.2"/><circle cx="9" cy="9.7" r=".6" fill="currentColor"/><circle cx="15" cy="9.7" r=".6" fill="currentColor"/></svg></button>
+    <div id="reactPanel" hidden>
+      <button type="button" data-e="😂">😂</button><button type="button" data-e="😱">😱</button><button type="button" data-e="😭">😭</button><button type="button" data-e="🤑">🤑</button><button type="button" data-e="👍">👍</button><button type="button" data-e="🔥">🔥</button>
+      <span id="reactWait">Kurz warten …</span>
+    </div>
+    <div id="handwrap">
+      <div id="hand" class="none"></div>
+    </div>
+  </main>
+
+  <footer id="controls">
+    <div id="status" aria-live="polite"></div>
+    <div class="btns" id="btns">
+      <button class="btn" id="bFold" type="button"><span>Passen</span></button>
+      <button class="btn primary" id="bCall" type="button"><span>Check</span><small></small></button>
+      <button class="btn raise" id="bRaise" type="button"><span>Erhöhen</span></button>
+    </div>
+    <div id="rpanel" hidden>
+      <div class="presets" id="presets"></div>
+      <div class="rrow">
+        <input type="range" id="rslider" aria-label="Einsatz">
+        <input id="ramt" type="text" inputmode="numeric" pattern="[0-9]*" autocomplete="off" enterkeyhint="done" aria-label="Einsatz eintippen">
+      </div>
+      <div id="rlim"></div>
+      <div class="rbtns">
+        <button class="btn" id="rBack" type="button">Zurück</button>
+        <button class="btn raise" id="rGo" type="button">Erhöhen</button>
+      </div>
+    </div>
+    <button class="btn primary wide" id="bNext" type="button" hidden>Nächste Hand</button>
+  </footer>
+
+  <div id="pause" class="overlay" hidden>
+    <div class="endcard">
+      <h2>Pause</h2>
+      <p>Das Spiel läuft im Hintergrund weiter, wie bei einer Online-Runde.</p>
+      <button class="btn primary wide" id="bResume" type="button">Weiterspielen</button>
+      <button class="btn wide" id="bMenu" type="button" style="margin-top:10px">Zum Hauptmenü</button>
+    </div>
+  </div>
+
+  <div id="splash">
+    <div class="menucard">
+      <div class="menulogo" aria-hidden="true"><i>♠</i><i class="r">♥</i><i>♣</i><i class="r">♦</i></div>
+      <h1>Pokerrunde</h1>
+      <p class="menusub">Texas Hold’em · bis zu 5 Spieler</p>
+      <div class="loadbar"><i></i></div>
+      <p class="loadtxt">Lädt …</p>
+    </div>
+  </div>
+
+  <div id="menu">
+    <button class="profchip" id="profBtn" type="button" aria-label="Profil und Einstellungen öffnen">
+      <span class="pav" id="pavMenu">S</span><span id="pnameMenu">Spieler</span>
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M9 5l7 7-7 7"/></svg>
+    </button>
+    <div class="menucard">
+      <div class="menulogo" aria-hidden="true"><i>♠</i><i class="r">♥</i><i>♣</i><i class="r">♦</i></div>
+      <h1>Pokerrunde</h1>
+      <p class="menusub">Texas Hold’em · bis zu 5 Spieler</p>
+      <button class="btn primary wide" id="bPlay" type="button">Gegen Bots spielen</button>
+      <button class="btn wide" type="button" disabled>Mit Freunden spielen <small>bald</small></button>
+    </div>
+  </div>
+
+  <div id="profile" hidden>
+    <div class="profwrap">
+      <div class="proftop">
+        <button class="profback" id="profBack" type="button" aria-label="Zurück zum Hauptmenü"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M15 5l-7 7 7 7"/></svg></button>
+        <h2>Profil</h2>
+      </div>
+      <div class="profhero">
+        <div class="pav" id="pavBig">S</div>
+        <div class="swatches" id="swatches" role="radiogroup" aria-label="Profilfarbe"></div>
+        <div id="swMore" hidden role="radiogroup" aria-label="Mehr Farben"></div>
+      </div>
+      <div class="pfield">
+        <label for="pName">Name</label>
+        <input id="pName" type="text" maxlength="14" autocomplete="off" placeholder="Dein Name">
+      </div>
+      <div>
+        <div class="psec" style="margin-bottom:8px">Statistik</div>
+        <div class="pstats">
+          <div class="pstat"><b id="stHands">0</b><span>Hände</span></div>
+          <div class="pstat"><b id="stWins">0</b><span>gewonnen</span></div>
+          <div class="pstat"><b id="stRate">–</b><span>Quote</span></div>
+        </div>
+      </div>
+      <div>
+        <div class="psec" style="margin-bottom:8px">Einstellungen</div>
+        <div style="display:flex;flex-direction:column;gap:8px">
+          <div class="prow vrow"><span>Lautstärke</span><input type="range" id="volProf" min="0" max="100" step="1" aria-label="Lautstärke"><output id="volProfN">100%</output></div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div id="end" hidden>
+    <div class="endcard">
+      <h2 id="endTitle"></h2>
+      <p id="endText"></p>
+      <button class="btn primary wide" id="bAgain" type="button">Neues Spiel</button>
+    </div>
+  </div>
+</div>
+
+<script>
+/* Pokerrunde – Spiel-Engine (Texas Hold'em, 5 Plätze, No-Limit)
+   Die Bots sehen nur ihre eigenen Karten, das Board und das, was alle am Tisch sehen
+   (Einsätze, Positionen, wer gepasst oder erhöht hat). Fremde Karten und den Kartenstapel
+   benutzen sie nie. */
+(function (root) {
+  'use strict';
+
+  var SUITS = ['♠', '♥', '♦', '♣'];
+  var RNAME = { 11: 'J', 12: 'Q', 13: 'K', 14: 'A' };
+  function rname(r) { return RNAME[r] || String(r); }
+  var HAND_NAMES = ['Hohe Karte', 'Paar', 'Zwei Paare', 'Drilling', 'Straße', 'Flush', 'Full House', 'Vierling', 'Straight Flush'];
+  var BLINDS = [[10, 20], [20, 40], [30, 60], [50, 100], [100, 200], [200, 400]];
+  var HANDS_PER_LEVEL = 8;
+  var START_CHIPS = 1000;
+  var N = 5;
+  var NAMES = ['Du', 'Svenja', 'Tarek', 'Olga', 'Bruno'];
+  var P15_5 = 759375; // 15^5
+  var P15_4 = 50625;  // 15^4
+
+  function randInt(n) {
+    try {
+      var a = new Uint32Array(1);
+      root.crypto.getRandomValues(a);
+      return a[0] % n;
+    } catch (e) {
+      return Math.floor(Math.random() * n);
+    }
+  }
+
+  function newDeck() {
+    var d = [];
+    for (var s = 0; s < 4; s++) for (var r = 2; r <= 14; r++) d.push({ r: r, s: s });
+    return d;
+  }
+  function shuffle(d) {
+    for (var i = d.length - 1; i > 0; i--) {
+      var j = randInt(i + 1);
+      var t = d[i]; d[i] = d[j]; d[j] = t;
+    }
+    return d;
+  }
+
+  /* ---------- Handbewertung ---------- */
+  function eval5(c) {
+    var rs = c.map(function (x) { return x.r; }).sort(function (a, b) { return b - a; });
+    var flush = c.every(function (x) { return x.s === c[0].s; });
+    var uniq = rs.filter(function (r, i) { return rs.indexOf(r) === i; });
+    var straightHigh = 0;
+    if (uniq.length === 5) {
+      if (rs[0] - rs[4] === 4) straightHigh = rs[0];
+      else if (rs[0] === 14 && rs[1] === 5 && rs[4] === 2) straightHigh = 5;
+    }
+    var cnt = {};
+    rs.forEach(function (r) { cnt[r] = (cnt[r] || 0) + 1; });
+    var groups = Object.keys(cnt).map(function (r) { return [cnt[r], +r]; })
+      .sort(function (a, b) { return b[0] - a[0] || b[1] - a[1]; });
+    var cat, tb;
+    if (straightHigh && flush) { cat = 8; tb = [straightHigh]; }
+    else if (groups[0][0] === 4) { cat = 7; tb = [groups[0][1], groups[1][1]]; }
+    else if (groups[0][0] === 3 && groups[1][0] === 2) { cat = 6; tb = [groups[0][1], groups[1][1]]; }
+    else if (flush) { cat = 5; tb = rs; }
+    else if (straightHigh) { cat = 4; tb = [straightHigh]; }
+    else if (groups[0][0] === 3) { cat = 3; tb = groups.map(function (g) { return g[1]; }); }
+    else if (groups[0][0] === 2 && groups[1][0] === 2) { cat = 2; tb = groups.map(function (g) { return g[1]; }); }
+    else if (groups[0][0] === 2) { cat = 1; tb = groups.map(function (g) { return g[1]; }); }
+    else { cat = 0; tb = rs; }
+    var v = cat;
+    for (var i = 0; i < 5; i++) v = v * 15 + (tb[i] || 0);
+    return v;
+  }
+  function bestSlow(cards) {
+    var n = cards.length;
+    if (n === 5) return eval5(cards);
+    var top = -1, pick = [];
+    (function rec(start) {
+      if (pick.length === 5) { var v = eval5(pick); if (v > top) top = v; return; }
+      for (var i = start; i < n; i++) { pick.push(cards[i]); rec(i + 1); pick.pop(); }
+    })(0);
+    return top;
+  }
+
+  /* Schnelle Bewertung für 5 bis 7 Karten, gleiche Kodierung wie eval5 */
+  function pack(cat, tb) {
+    var v = cat;
+    for (var i = 0; i < 5; i++) v = v * 15 + (tb[i] || 0);
+    return v;
+  }
+  function straightHighFrom(has) {
+    for (var h = 14; h >= 5; h--) {
+      if (has[h] && has[h - 1] && has[h - 2] && has[h - 3] && has[h - 4]) return h;
+    }
+    return 0;
+  }
+  function topRanks(rc, ex1, ex2, n) {
+    var out = [];
+    for (var r = 14; r >= 2 && out.length < n; r--) if (rc[r] > 0 && r !== ex1 && r !== ex2) out.push(r);
+    return out;
+  }
+  function eval7(cards) {
+    var rc = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0], sc = [0, 0, 0, 0], i, c, r;
+    for (i = 0; i < cards.length; i++) { c = cards[i]; rc[c.r]++; sc[c.s]++; }
+    var fs = -1;
+    for (i = 0; i < 4; i++) if (sc[i] >= 5) fs = i;
+    var quad = 0, trips = [], pairs = [];
+    for (r = 14; r >= 2; r--) {
+      if (rc[r] === 4) { if (!quad) quad = r; }
+      else if (rc[r] === 3) trips.push(r);
+      else if (rc[r] === 2) pairs.push(r);
+    }
+    var fh = null;
+    if (fs >= 0) {
+      fh = [false, false, false, false, false, false, false, false, false, false, false, false, false, false, false];
+      for (i = 0; i < cards.length; i++) if (cards[i].s === fs) fh[cards[i].r] = true;
+      fh[1] = fh[14];
+      var sf = straightHighFrom(fh);
+      if (sf) return pack(8, [sf]);
+    }
+    if (quad) return pack(7, [quad, topRanks(rc, quad, 0, 1)[0]]);
+    if (trips.length && (trips.length > 1 || pairs.length)) {
+      var pr = Math.max(trips[1] || 0, pairs[0] || 0);
+      return pack(6, [trips[0], pr]);
+    }
+    if (fs >= 0) {
+      var tb = [];
+      for (r = 14; r >= 2 && tb.length < 5; r--) if (fh[r]) tb.push(r);
+      return pack(5, tb);
+    }
+    var has = [false, false, false, false, false, false, false, false, false, false, false, false, false, false, false];
+    for (r = 2; r <= 14; r++) has[r] = rc[r] > 0;
+    has[1] = has[14];
+    var sh = straightHighFrom(has);
+    if (sh) return pack(4, [sh]);
+    if (trips.length) return pack(3, [trips[0]].concat(topRanks(rc, trips[0], 0, 2)));
+    if (pairs.length >= 2) return pack(2, [pairs[0], pairs[1]].concat(topRanks(rc, pairs[0], pairs[1], 1)));
+    if (pairs.length === 1) return pack(1, [pairs[0]].concat(topRanks(rc, pairs[0], 0, 3)));
+    return pack(0, topRanks(rc, 0, 0, 5));
+  }
+  function best(cards) { return cards.length === 5 ? eval5(cards) : eval7(cards); }
+  function catOf(v) { return Math.floor(v / P15_5); }
+  var PLURAL = { 2: 'Zweier', 3: 'Dreier', 4: 'Vierer', 5: 'Fünfer', 6: 'Sechser', 7: 'Siebener', 8: 'Achter', 9: 'Neuner', 10: 'Zehner', 11: 'Buben', 12: 'Damen', 13: 'Könige', 14: 'Asse' };
+  var SING = { 2: 'Zwei', 3: 'Drei', 4: 'Vier', 5: 'Fünf', 6: 'Sechs', 7: 'Sieben', 8: 'Acht', 9: 'Neun', 10: 'Zehn', 11: 'Bube', 12: 'Dame', 13: 'König', 14: 'Ass' };
+  function tbOf(v, i) { return Math.floor(v / Math.pow(15, 4 - i)) % 15; }
+  function describe(v) {
+    var c = catOf(v), t0 = tbOf(v, 0), t1 = tbOf(v, 1);
+    switch (c) {
+      case 0: return SING[t0] + ' hoch';
+      case 1: return 'Paar ' + PLURAL[t0];
+      case 2: return 'Zwei Paar: ' + PLURAL[t0] + ' und ' + PLURAL[t1];
+      case 3: return 'Drilling ' + PLURAL[t0];
+      case 4: return 'Straße bis ' + SING[t0];
+      case 5: return 'Flush, ' + SING[t0] + ' hoch';
+      case 6: return 'Full House: ' + PLURAL[t0] + ' über ' + PLURAL[t1];
+      case 7: return 'Vierling ' + PLURAL[t0];
+      default: return t0 === 14 ? 'Royal Flush' : 'Straight Flush bis ' + SING[t0];
+    }
+  }
+  /* Welche der Karten bilden die Hand (ohne Kicker)? */
+  function made(cards, v) {
+    var c = catOf(v), t0 = tbOf(v, 0), t1 = tbOf(v, 1), out = [], i;
+    function ofRank(r, max) { var n = 0; cards.forEach(function (x) { if (x.r === r && (!max || n < max)) { out.push(x); n++; } }); }
+    function seq(h, suit) {
+      for (var k = 0; k < 5; k++) {
+        var r = h - k; if (r === 1) r = 14;
+        for (i = 0; i < cards.length; i++) if (cards[i].r === r && (suit < 0 || cards[i].s === suit)) { out.push(cards[i]); break; }
+      }
+    }
+    var fs = -1, sc = [0, 0, 0, 0];
+    cards.forEach(function (x) { sc[x.s]++; });
+    for (i = 0; i < 4; i++) if (sc[i] >= 5) fs = i;
+    if (c === 0) ofRank(t0, 1);
+    else if (c === 1 || c === 3 || c === 7) ofRank(t0);
+    else if (c === 2) { ofRank(t0); ofRank(t1); }
+    else if (c === 4) seq(t0, -1);
+    else if (c === 5) { var tb = []; for (i = 0; i < 5; i++) tb.push(tbOf(v, i)); cards.forEach(function (x) { if (x.s === fs && tb.indexOf(x.r) >= 0) out.push(x); }); }
+    else if (c === 6) { ofRank(t0, 3); ofRank(t1, 2); }
+    else seq(t0, fs);
+    return out;
+  }
+  function handName(v) {
+    var c = catOf(v);
+    if (c === 8 && Math.floor(v / P15_4) % 15 === 14) return 'Royal Flush';
+    return HAND_NAMES[c];
+  }
+
+  /* ---------- Startkarten: Rang in Prozent (0 = beste Hand, 1 = schlechteste) ---------- */
+  function chenPts(hi, lo, suited) {
+    function pts(r) { return r === 14 ? 10 : r === 13 ? 8 : r === 12 ? 7 : r === 11 ? 6 : r / 2; }
+    var s = pts(hi);
+    if (hi === lo) return Math.max(5, s * 2);
+    if (suited) s += 2;
+    var gap = hi - lo - 1;
+    if (gap === 1) s -= 1; else if (gap === 2) s -= 2; else if (gap === 3) s -= 4; else if (gap >= 4) s -= 5;
+    if (gap <= 1 && hi < 12) s += 1;
+    return s;
+  }
+  function preflopStrength(h) {
+    var hi = Math.max(h[0].r, h[1].r), lo = Math.min(h[0].r, h[1].r);
+    var s = chenPts(hi, lo, h[0].s === h[1].s && hi !== lo);
+    return Math.max(0, Math.min(1, (Math.ceil(s) + 1) / 21));
+  }
+  var PCT = null;
+  function buildPct() {
+    var list = [];
+    for (var hi = 2; hi <= 14; hi++) {
+      for (var lo = 2; lo <= hi; lo++) {
+        if (hi === lo) list.push({ k: hi + '-' + lo + '-0', w: 6, sc: Math.ceil(chenPts(hi, lo, false)) + hi * 0.02 + lo * 0.005 });
+        else {
+          list.push({ k: hi + '-' + lo + '-1', w: 4, sc: Math.ceil(chenPts(hi, lo, true)) + hi * 0.02 + lo * 0.005 + 0.01 });
+          list.push({ k: hi + '-' + lo + '-0', w: 12, sc: Math.ceil(chenPts(hi, lo, false)) + hi * 0.02 + lo * 0.005 });
+        }
+      }
+    }
+    list.sort(function (a, b) { return b.sc - a.sc; });
+    PCT = {};
+    var cum = 0;
+    list.forEach(function (x) { PCT[x.k] = (cum + x.w / 2) / 1326; cum += x.w; });
+  }
+  function pctOf(a, b) {
+    if (!PCT) buildPct();
+    var hi = Math.max(a.r, b.r), lo = Math.min(a.r, b.r);
+    return PCT[hi + '-' + lo + '-' + (a.s === b.s && hi !== lo ? 1 : 0)];
+  }
+  function preflopPct(h) { return pctOf(h[0], h[1]); }
+
+  /* ---------- Gewinnchance per Simulation (nur mit eigenen Karten + Board) ---------- */
+  function equity(hole, board, caps, sims) {
+    var rest = [], known = {}, s, r, k, j, t;
+    hole.concat(board).forEach(function (c) { known[c.r * 4 + c.s] = true; });
+    for (s = 0; s < 4; s++) for (r = 2; r <= 14; r++) if (!known[r * 4 + s]) rest.push({ r: r, s: s });
+    var n = rest.length, need = 5 - board.length, nOpp = caps.length, score = 0, oppHands = [];
+    function rnd(m) { return Math.floor(Math.random() * m); }
+    for (var it = 0; it < sims; it++) {
+      var pos = 0;
+      oppHands.length = 0;
+      for (k = 0; k < nOpp; k++) {
+        var a = 0, b = 0, tries = 0;
+        do {
+          a = pos + rnd(n - pos);
+          b = pos + rnd(n - pos - 1);
+          if (b >= a) b++;
+          tries++;
+        } while (tries < 14 && pctOf(rest[a], rest[b]) > caps[k]);
+        t = rest[pos]; rest[pos] = rest[a]; rest[a] = t;
+        if (b === pos) b = a;
+        t = rest[pos + 1]; rest[pos + 1] = rest[b]; rest[b] = t;
+        oppHands.push([rest[pos], rest[pos + 1]]);
+        pos += 2;
+      }
+      var full = board;
+      if (need > 0) {
+        full = board.slice();
+        for (j = 0; j < need; j++) {
+          var idx = pos + j + rnd(n - pos - j);
+          t = rest[pos + j]; rest[pos + j] = rest[idx]; rest[idx] = t;
+          full.push(rest[pos + j]);
+        }
+      }
+      var mine = eval7(hole.concat(full)), beaten = true, tied = 1;
+      for (k = 0; k < nOpp; k++) {
+        var ov = eval7(oppHands[k].concat(full));
+        if (ov > mine) { beaten = false; break; }
+        if (ov === mine) tied++;
+      }
+      if (beaten) score += 1 / tied;
+    }
+    return score / sims;
+  }
+  function drawInfo(hole, board) {
+    if (board.length >= 5) return false;
+    var all = hole.concat(board), su, r, st;
+    for (su = 0; su < 4; su++) {
+      var n = all.filter(function (c) { return c.s === su; }).length;
+      if (n >= 4 && hole.some(function (c) { return c.s === su; })) return true;
+    }
+    var set = [];
+    all.forEach(function (c) { set[c.r] = 1; });
+    if (set[14]) set[1] = 1;
+    for (st = 1; st <= 10; st++) {
+      var k = 0;
+      for (r = st; r < st + 5; r++) if (set[r]) k++;
+      var mine = hole.some(function (c) { return (c.r >= st && c.r < st + 5) || (c.r === 14 && st === 1); });
+      if (k === 4 && mine) return true;
+    }
+    return false;
+  }
+
+  function fmt(n) {
+    try { return n.toLocaleString('de-DE'); } catch (e) { return String(n); }
+  }
+  function round10(v) { return Math.round(v / 10) * 10; }
+
+  /* Spielstile der Gegner (agg = wie oft sie setzen/erhöhen, tight = wie wählerisch, bluff, limp = wie oft sie nur mitgehen,
+     L = Spielbreite, station = ruft auch mit schwächeren Händen) */
+  var STYLES = [
+    { id: 'solide', agg: 0.6, tight: 0.65, bluff: 0.05, limp: 0.25, L: -0.02, station: 0 },
+    { id: 'wild', agg: 0.82, tight: 0.3, bluff: 0.13, limp: 0.35, L: 0.1, station: 0 },
+    { id: 'anrufer', agg: 0.25, tight: 0.35, bluff: 0.03, limp: 0.8, L: 0.08, station: 0.05 },
+    { id: 'vorsichtig', agg: 0.4, tight: 0.85, bluff: 0.02, limp: 0.2, L: -0.07, station: 0 }
+  ];
+  function makeStyle(base) {
+    function j(v, a) { return v + (Math.random() - 0.5) * a; }
+    return {
+      id: base.id, agg: j(base.agg, 0.1), tight: j(base.tight, 0.1), bluff: Math.max(0.01, j(base.bluff, 0.03)),
+      limp: Math.max(0.05, Math.min(0.95, j(base.limp, 0.1))), L: j(base.L, 0.04), station: base.station
+    };
+  }
+
+  /* ---------- Spiel ---------- */
+  function createGame(H) {
+    H = Object.assign({
+      render: function () {},
+      sleep: function () { return Promise.resolve(); },
+      humanAction: null,
+      waitNext: function () { return Promise.resolve(); },
+      onEnd: function () {},
+      sims: 220,
+      fastThink: false
+    }, H || {});
+
+    var S = {
+      players: [], dealer: 0, board: [], deck: [], currentBet: 0, lastRaise: 20, raises: 0,
+      sb: 10, bb: 20, sbIdx: -1, bbIdx: -1, glow: -1, handNo: 0, phase: 'idle', toAct: -1, result: null
+    };
+
+    function reset() {
+      var styles = shuffle(STYLES.slice());
+      S.players = NAMES.map(function (name, id) {
+        return {
+          id: id, name: name, chips: START_CHIPS, hole: [], bet: 0, total: 0,
+          folded: false, allIn: false, acted: false, inHand: false, label: '',
+          revealed: false, win: 0, value: undefined,
+          limped: false, pfRaise: false, pfCall: false, aggr: 0,
+          ag: 0, pa: 0, pfrN: 0, hands: 0, bluffs: 0,
+          pers: id === 0 ? makeStyle(STYLES[0]) : makeStyle(styles[id - 1])
+        };
+      });
+      S.dealer = randInt(N); S.board = []; S.deck = []; S.handNo = 0;
+      S.sbIdx = -1; S.bbIdx = -1; S.glow = -1; S.phase = 'idle'; S.toAct = -1; S.result = null; S.currentBet = 0; S.lastRaise = 20; S.raises = 0;
+    }
+
+    function sum(a, f) { return a.reduce(function (t, x) { return t + f(x); }, 0); }
+    function totalPot() { return sum(S.players, function (p) { return p.total; }); }
+    function roundBets() { return sum(S.players, function (p) { return p.bet; }); }
+    function collected() { return totalPot() - roundBets(); }
+    function live() { return S.players.filter(function (p) { return p.inHand && !p.folded; }); }
+    function canActList() { return live().filter(function (p) { return !p.allIn; }); }
+    function nextIn(i) {
+      for (var k = 1; k <= N; k++) { var j = (i + k) % N; if (S.players[j].inHand) return j; }
+      return i;
+    }
+    function pay(p, amt) {
+      amt = Math.max(0, Math.min(amt, p.chips));
+      p.chips -= amt; p.bet += amt; p.total += amt;
+      if (p.chips === 0) p.allIn = true;
+      return amt;
+    }
+    function collectRound() {
+      S.players.forEach(function (p) {
+        p.bet = 0; p.acted = false;
+        if (!p.folded && !p.allIn) p.label = '';
+      });
+      S.currentBet = 0; S.lastRaise = S.bb; S.raises = 0;
+    }
+
+    /* ----- Bot-Denken: nur öffentliche Infos + eigene Karten ----- */
+    function posOf(p) {
+      var n = S.players.filter(function (q) { return q.inHand; }).length;
+      var d = 0, i = S.dealer;
+      while (i !== p.id) { i = (i + 1) % N; if (S.players[i].inHand) d++; }
+      if (n === 2) return d === 0 ? 'SB' : 'BB';
+      if (d === 0) return 'BTN';
+      if (d === 1) return 'SB';
+      if (d === 2) return 'BB';
+      if (n === 4) return 'CO';
+      return d === 3 ? 'UTG' : 'CO';
+    }
+    /* Beobachtbares Verhalten eines Gegners (nur oeffentliche Infos): Aggressivitaet, Vorflop-Raise-Quote, ertappte Bluffs */
+    function af(q) { return (q.ag + 2) / (q.ag + q.pa + 5); }
+    function pfr(q) { return (q.pfrN + 1.5) / (q.hands + 5); }
+    function oppCap(q) {
+      var c = 1, a = af(q), wide = Math.max(0, a - 0.4);
+      if (q.pfRaise) c = Math.max(0.28, Math.min(0.65, pfr(q) * 1.2));
+      else if (q.pfCall) c = 0.45;
+      else if (q.limped) c = 0.75;
+      if (q.aggr > 0) c *= 0.75 + wide * 0.4;
+      if (q.aggr > 1) c *= 0.7 + wide * 0.35;
+      c += Math.min(0.12, q.bluffs * 0.04);
+      if (q.allIn && q.total > S.bb * 12) c = Math.min(c, 0.5);
+      return Math.min(1, Math.max(c, 0.08));
+    }
+    function act(kind, type, to) { return { kind: kind, type: type, to: to }; }
+
+    function decideRaw(p) {
+      var toCall = Math.max(0, S.currentBet - p.bet);
+      var maxTo = p.bet + p.chips;
+      var minTo = Math.min(maxTo, S.currentBet + S.lastRaise);
+      var canRaise = p.chips > toCall && maxTo > S.currentBet;
+      function raiseTo(to, kind) {
+        to = Math.max(minTo, Math.min(round10(to), maxTo));
+        if (maxTo - to < S.bb * 2) to = maxTo;
+        return act(to >= maxTo ? 'shove' : (kind || 'raise'), 'raise', to);
+      }
+      var CHECK = act('check', 'check'), CALL = act('call', 'call'), FOLD = act('fold', 'fold');
+      var pre = S.board.length === 0;
+      var pers = p.pers;
+
+      /* ----- vor dem Flop ----- */
+      if (pre) {
+        var pos = posOf(p), bb = S.bb;
+        var pct = Math.max(0, preflopPct(p.hole) + (Math.random() - 0.5) * 0.04);
+        var stackBB = (p.chips + p.bet) / bb, R = S.currentBet / bb;
+        var hu = S.players.filter(function (q) { return q.inHand; }).length === 2;
+        var L = pers.L;
+        var pot = totalPot();
+        var big = toCall >= 0.4 * p.chips;
+        if (stackBB <= 12) {
+          if (S.raises === 0) {
+            var st = { UTG: 0.22, CO: 0.3, BTN: 0.42, SB: 0.45, BB: 0.35 }[pos] + L;
+            if (hu) st = 0.6;
+            if (pct <= st && canRaise) return raiseTo(maxTo);
+            return toCall === 0 ? CHECK : (toCall <= bb * 0.5 && pct <= 0.55 ? CALL : FOLD);
+          }
+          if (pct <= 0.15 + L * 0.5 || (toCall <= bb * 3 && pct <= 0.4)) return CALL;
+          return toCall === 0 ? CHECK : FOLD;
+        }
+        if (S.raises === 0) {
+          var limpers = live().filter(function (q) { return q.limped; }).length;
+          var thr = ({ UTG: 0.22, CO: 0.3, BTN: 0.45, SB: 0.38, BB: 0.3 })[pos] + L;
+          if (hu) thr = 0.7;
+          if (limpers) thr -= 0.04;
+          var openSize = function () { return (2 + Math.random() * 0.5 + limpers * 0.8) * bb; };
+          if (pos === 'BB' && toCall === 0) {
+            if (pct <= 0.1 + L * 0.5 && canRaise && Math.random() < 0.35) return raiseTo(openSize(), 'raise');
+            return CHECK;
+          }
+          if (pct <= thr && canRaise && (pct <= 0.06 ? Math.random() < 0.85 : Math.random() < 0.12 + pers.agg * 0.4)) return raiseTo(openSize(), 'raise');
+          if (toCall > 0 && toCall <= bb) {
+            if (pos === 'SB' && pct <= 0.6 && Math.random() < 0.6) return CALL;
+            if (pct <= thr + 0.22 && Math.random() < pers.limp) return CALL;
+          }
+          return toCall === 0 ? CHECK : FOLD;
+        }
+        if (S.raises === 1) {
+          var three = function () { return raiseTo(S.currentBet * (2.2 + Math.random() * 0.4), 'raise'); };
+          if (pct <= 0.04) return (canRaise && Math.random() < 0.55) ? three() : CALL;
+          if (pct <= 0.09 + L * 0.5) return (canRaise && !big && Math.random() < 0.15) ? three() : CALL;
+          var ct = (R <= 3.3 ? 0.36 : R <= 5 ? 0.27 : 0.17) + L;
+          if (pos === 'BTN') ct += 0.06;
+          if (pos === 'BB' && R <= 3.6) ct += 0.14;
+          if (pos === 'SB') ct -= 0.03;
+          if (hu) ct += 0.15;
+          if (big) ct = Math.min(ct, 0.1);
+          if (pct <= ct) return CALL;
+          if (canRaise && !big && pct <= 0.35 && (pos === 'BTN' || pos === 'SB' || pos === 'CO') && Math.random() < pers.agg * 0.02) return three();
+          if (toCall / (pot + toCall) < 0.18 && pct <= 0.55) return CALL;
+          return FOLD;
+        }
+        if (pct <= 0.03) return (canRaise && Math.random() < 0.5) ? raiseTo(maxTo, 'raise') : CALL;
+        if (pct <= 0.07 + L * 0.5 && toCall < 0.6 * p.chips) return CALL;
+        return FOLD;
+      }
+
+      /* ----- nach dem Flop ----- */
+      var opps = live().filter(function (q) { return q !== p; });
+      var nOpp = Math.max(1, opps.length);
+      var eq = equity(p.hole, S.board, opps.map(oppCap), H.sims) + (Math.random() - 0.5) * 0.05;
+      var potNow = totalPot(), street = S.board.length;
+      var draw = drawInfo(p.hole, S.board);
+      function sized(f) {
+        var to = S.currentBet + Math.max(S.lastRaise, round10((potNow + toCall) * f));
+        return Math.max(minTo, Math.min(round10(to), maxTo));
+      }
+      function bet(f) { return raiseTo(sized(f), 'raise'); }
+
+      if (toCall === 0) {
+        var vt = 0.52 + 0.06 * (nOpp - 1) + (pers.tight - 0.5) * 0.08;
+        if (canRaise) {
+          if (eq >= vt + 0.2) {
+            if (eq > 0.9 && Math.random() < 0.22 * (1 - pers.agg)) return CHECK;
+            return bet(eq > 0.82 ? 0.65 + Math.random() * 0.3 : 0.45 + Math.random() * 0.25);
+          }
+          if (eq >= vt && Math.random() < 0.55 + pers.agg * 0.4) return bet(0.4 + Math.random() * 0.3);
+          if (p.pfRaise && street === 3 && nOpp <= 2 && Math.random() < 0.4 + pers.agg * 0.3) return bet(0.4 + Math.random() * 0.15);
+          if (draw && Math.random() < pers.agg * 0.5) return bet(0.45 + Math.random() * 0.2);
+          if (nOpp <= 2 && Math.random() < pers.bluff * (street === 5 ? 1.3 : 1)) return bet(0.5 + Math.random() * 0.25);
+        }
+        return CHECK;
+      }
+      var odds = toCall / (potNow + toCall);
+      var need = odds + 0.03 + (pers.tight - 0.5) * 0.1 - pers.station;
+      if (draw) need -= 0.05;
+      // Wer setzt? Wer oft bettet oder schon beim Bluffen erwischt wurde, wird weniger respektiert.
+      var bettor = null;
+      opps.forEach(function (q) { if (q.bet === S.currentBet && (!bettor || q.total > bettor.total)) bettor = q; });
+      var bAf = bettor ? af(bettor) : 0.4;
+      var susp = bettor ? Math.min(0.045, Math.max(0, (bAf - 0.4) * 0.2)) + Math.min(0.03, bettor.bluffs * 0.015) : 0;
+      need -= susp;
+      if (eq < need && eq >= need - 0.1 && odds <= 0.42 && Math.random() < Math.min(0.5, 0.2 + (bAf - 0.4) * 0.4 + pers.station)) return CALL;
+      var small = toCall <= S.bb * 3 || toCall <= p.chips * 0.07 || odds < 0.2;
+      if (small) need -= 0.08;
+      if (eq >= need || (small && eq > 0.1 && Math.random() < 0.85) || (toCall <= potNow * 0.05 && eq > 0.15)) {
+        var rt = Math.max(need + 0.2, 0.68);
+        if (canRaise && eq >= rt && Math.random() < 0.3 + pers.agg * 0.55) return bet(0.7 + Math.random() * 0.4);
+        return CALL;
+      }
+      if (canRaise && draw && Math.random() < pers.agg * 0.15) return bet(0.65);
+      if (canRaise && nOpp <= 2 && Math.random() < pers.bluff * 0.25) return bet(0.7);
+      return FOLD;
+    }
+
+
+    /* Vor dem Flop passt niemand ohne Grund: nur wirklich schlechte Haende (Perzentil >= .85,
+       z. B. 7-2) und auch die nur manchmal. Gegen sehr grosse Einsaetze bleibt Passen erlaubt. */
+    function botDecide(p) {
+      var a = decideRaw(p);
+      if (S.board.length !== 0 || a.type !== 'fold') return a;
+      var toCall = Math.max(0, S.currentBet - p.bet);
+      if (toCall === 0) return act('check', 'check');
+      var pct = preflopPct(p.hole);
+      if (toCall >= 0.35 * p.chips && pct > 0.6) return a;
+      if (pct >= 0.85) {
+        var pf = Math.min(0.65, 0.2 + (pct - 0.85) * 2.5);
+        if (Math.random() < pf) return a;
+      }
+      return act('call', 'call');
+    }
+
+    function thinkFor(a, p) {
+      var base;
+      if (H.fastThink) return 0;
+      switch (a.kind) {
+        case 'fold': base = 700 + randInt(900); break;
+        case 'check': base = 800 + randInt(900); break;
+        case 'call': base = 1000 + randInt(1200); break;
+        case 'shove': base = 2000 + randInt(1800); break;
+        default: base = 1500 + randInt(1500);
+      }
+      var toCall = Math.max(0, S.currentBet - p.bet);
+      if (toCall > totalPot() * 0.6 && a.kind !== 'fold') base += 500 + randInt(700);
+      var m = S.players[0];
+      var away = !m.inHand || m.folded || m.allIn;
+      return away ? Math.round(base * 0.45) : base;
+    }
+
+    function applyAction(p, a) {
+      var toCall = Math.max(0, S.currentBet - p.bet);
+      var t = a.type;
+      var pre = S.board.length === 0;
+      if (t === 'fold' && toCall === 0 && p.id !== 0) t = 'check';
+      if (t === 'check' && toCall > 0) t = 'call';
+      if (t === 'raise') {
+        var maxTo = p.bet + p.chips;
+        var to = Math.min(a.to || 0, maxTo);
+        var minTo = Math.min(S.currentBet + S.lastRaise, maxTo);
+        if (to < minTo) to = minTo;
+        if (to <= S.currentBet) t = 'call';
+        else {
+          var was = S.currentBet;
+          var size = to - S.currentBet;
+          pay(p, to - p.bet);
+          if (size >= S.lastRaise) S.lastRaise = size;
+          S.currentBet = to;
+          S.raises++;
+          p.ag++;
+          if (pre) { p.pfRaise = true; p.pfrN++; } else p.aggr++;
+          S.players.forEach(function (q) {
+            if (q !== p && q.inHand && !q.folded && !q.allIn) q.acted = false;
+          });
+          p.label = p.allIn ? 'All-in' : (was === 0 ? 'Setzt ' : 'Erhöht auf ') + fmt(to);
+          if (p.allIn && p.total >= START_CHIPS * 0.2) {
+            var others = S.players.filter(function (q) { return q.id > 0 && q !== p && q.inHand && !q.folded; });
+            if (others.length) react(pick(others).id, '😱', 0.5);
+          }
+        }
+      }
+      if (t === 'call') {
+        if (toCall === 0) { t = 'check'; p.label = 'Check'; p.pa++; }
+        else {
+          p.pa++;
+          if (pre) { if (S.raises === 0) p.limped = true; else p.pfCall = true; }
+          pay(p, toCall);
+          p.label = p.allIn ? 'All-in' : 'Mitgehen';
+        }
+      } else if (t === 'check') {
+        p.label = 'Check'; p.pa++;
+      } else if (t === 'fold') {
+        p.folded = true; p.label = 'Passt';
+      }
+      p.acted = true;
+    }
+
+    function peekNext(p) {
+      if (live().length <= 1) return -1;
+      var ca = canActList();
+      if (ca.length === 0) return -1;
+      if (ca.every(function (q) { return q.acted && q.bet >= S.currentBet; })) return -1;
+      if (ca.length === 1 && ca[0].bet >= S.currentBet) return -1;
+      for (var d = 1; d <= N; d++) {
+        var q = S.players[(p.id + d) % N];
+        if (q.inHand && !q.folded && !q.allIn && (!q.acted || q.bet < S.currentBet)) return q.id;
+      }
+      return -1;
+    }
+    async function turn(p) {
+      S.toAct = p.id; S.glow = p.id; S.phase = 'bet'; H.render();
+      var a;
+      if (p.id === 0 && H.humanAction) a = await H.humanAction(S, p);
+      else { a = botDecide(p); await H.sleep(thinkFor(a, p)); }
+      S.toAct = -1;
+      applyAction(p, a);
+      S.glow = peekNext(p);   // Leuchten wandert sofort zum Naechsten, ohne Luecke
+      H.render();
+      await H.sleep(p.id === 0 ? 250 : 450);
+    }
+
+    async function bettingRound(start) {
+      var i = start, guard = 0;
+      while (guard++ < 600) {
+        if (live().length <= 1) return;
+        var ca = canActList();
+        if (ca.length === 0) return;
+        if (ca.every(function (p) { return p.acted && p.bet >= S.currentBet; })) return;
+        if (ca.length === 1 && ca[0].bet >= S.currentBet) return;
+        var p = S.players[i];
+        if (p.inHand && !p.folded && !p.allIn && (!p.acted || p.bet < S.currentBet)) await turn(p);
+        i = (i + 1) % N;
+      }
+    }
+
+    function buildPots() {
+      var lv = live();
+      var levels = lv.map(function (p) { return p.total; })
+        .filter(function (v, i, a) { return a.indexOf(v) === i; })
+        .sort(function (a, b) { return a - b; });
+      var pots = [], prev = 0;
+      levels.forEach(function (L) {
+        var amount = 0;
+        S.players.forEach(function (p) { amount += Math.max(0, Math.min(p.total, L) - prev); });
+        var eligible = lv.filter(function (p) { return p.total >= L; });
+        if (amount > 0) pots.push({ amount: amount, eligible: eligible });
+        prev = L;
+      });
+      var paid = sum(pots, function (x) { return x.amount; });
+      var extra = totalPot() - paid;
+      if (extra > 0 && pots.length) pots[pots.length - 1].amount += extra;
+      return pots;
+    }
+
+    /* Bots zeigen nur selten Reaktionen, und nur wenn wirklich etwas passiert ist */
+    var lastReactHand = -9;
+    function pick(a) { return a[randInt(a.length)]; }
+    function react(id, emo, p) {
+      if (!H.react || Math.random() > p) return;
+      if (S.handNo - lastReactHand < 2) return;       // hoechstens alle paar Haende
+      lastReactHand = S.handNo;
+      H.react(id, emo, 700 + randInt(900));
+    }
+    function botReactions(lv, won, showdown) {
+      var human = S.players[0];
+      S.players.forEach(function (w) {
+        if (w.id === 0 || !(won[w.id] > 0)) return;
+        var strong = w.hole.length === 2 && preflopPct(w.hole) < 0.5;
+        if (!showdown && (w.aggr > 0 || w.pfRaise) && !strong) return react(w.id, pick(['😂', '🤑']), 0.85);   // Bluff geglueckt
+        if (showdown && human.inHand && !human.folded && human.aggr > 0 && human.value !== undefined && catOf(human.value) <= 1) return react(w.id, '😂', 0.8);  // Bluff des Spielers ertappt
+        if (won[w.id] >= START_CHIPS * 0.15) return react(w.id, '🤑', 0.5);
+      });
+      // Spieler gewinnt beim Showdown mit schwacher Hand nach Druck: ein Verlierer-Bot ist geschockt
+      if (showdown && won[0] > 0 && human.aggr > 0 && human.value !== undefined && catOf(human.value) <= 1) {
+        var losers = lv.filter(function (q) { return q.id > 0 && !(won[q.id] > 0); });
+        if (losers.length) react(pick(losers).id, '😱', 0.7);
+      }
+      S.players.forEach(function (l) {
+        if (l.id === 0 || won[l.id] > 0 || l.total < START_CHIPS * 0.15) return;
+        react(l.id, '😭', 0.5);
+      });
+    }
+
+    async function finishHand() {
+      var rb0 = roundBets();
+      collectRound();
+      S.phase = 'showdown';
+      var lv = live();
+      if (lv.length > 1) {
+        lv.forEach(function (p) {
+          p.value = best(p.hole.concat(S.board)); p.revealed = true;
+          if (p.aggr > 0 && catOf(p.value) <= 1) p.bluffs++;
+        });
+      }
+      H.render();
+      await H.sleep(Math.max(lv.length > 1 ? 900 : 0, rb0 > 0 ? 1100 : 0));
+      var pots = lv.length === 1 ? [{ amount: totalPot(), eligible: [lv[0]] }] : buildPots();
+      var won = {};
+      pots.forEach(function (pot) {
+        var bestV = -1;
+        pot.eligible.forEach(function (p) { if (p.value !== undefined && p.value > bestV) bestV = p.value; });
+        var winners = lv.length === 1 ? pot.eligible : pot.eligible.filter(function (p) { return p.value === bestV; });
+        winners.sort(function (a, b) {
+          return ((a.id - S.dealer - 1 + N) % N) - ((b.id - S.dealer - 1 + N) % N);
+        });
+        var units = Math.round(pot.amount);
+        var base = Math.floor(units / winners.length);
+        var rem = units - base * winners.length;
+        winners.forEach(function (p, k) {
+          var amt = base + (k < rem ? 1 : 0);
+          p.chips += amt;
+          won[p.id] = (won[p.id] || 0) + amt;
+        });
+      });
+      S.players.forEach(function (p) { p.win = won[p.id] || 0; if (!p.folded) p.label = ''; });
+      var ids = Object.keys(won).map(Number).sort(function (a, b) { return won[b] - won[a]; });
+      var tp = S.players[ids[0]];
+      S.result = {
+        showdown: lv.length > 1, won: won, ids: ids, topId: ids[0],
+        hand: (lv.length > 1 && tp.value !== undefined) ? describe(tp.value) : ''
+      };
+      S.phase = 'result'; S.toAct = -1; S.glow = -1;
+      botReactions(lv, won, lv.length > 1);
+      H.render();
+    }
+
+    async function playHand() {
+      S.handNo++;
+      var lvl = Math.min(Math.floor((S.handNo - 1) / HANDS_PER_LEVEL), BLINDS.length - 1);
+      S.sb = BLINDS[lvl][0]; S.bb = BLINDS[lvl][1];
+      S.players.forEach(function (p) {
+        p.inHand = p.chips > 0; p.hole = []; p.bet = 0; p.total = 0; p.folded = !p.inHand;
+        p.allIn = false; p.acted = false; p.label = ''; p.revealed = false; p.win = 0; p.value = undefined;
+        p.limped = false; p.pfRaise = false; p.pfCall = false; p.aggr = 0;
+        if (p.inHand) p.hands++;
+      });
+      S.board = []; S.result = null; S.deck = shuffle(newDeck()); S.raises = 0;
+      S.dealer = nextIn(S.dealer);
+      var hu = S.players.filter(function (p) { return p.inHand; }).length === 2;
+      var sbI = hu ? S.dealer : nextIn(S.dealer);
+      var bbI = nextIn(sbI);
+      S.sbIdx = sbI; S.bbIdx = bbI;
+      pay(S.players[sbI], S.sb);
+      pay(S.players[bbI], S.bb);
+      S.currentBet = S.bb; S.lastRaise = S.bb;
+      for (var r = 0; r < 2; r++) {
+        var i = S.dealer;
+        for (var k = 0; k < N; k++) {
+          i = (i + 1) % N;
+          if (S.players[i].inHand) S.players[i].hole.push(S.deck.pop());
+        }
+      }
+      S.phase = 'deal'; S.toAct = -1; S.glow = -1; H.render();
+      await H.sleep(2900);
+      S.phase = 'bet';
+      await bettingRound(hu ? sbI : nextIn(bbI));
+      var streets = [3, 1, 1];
+      for (var si = 0; si < streets.length; si++) {
+        if (live().length <= 1) break;
+        var rb = roundBets();
+        collectRound();
+        if (rb > 0) { H.render(); await H.sleep(1100); }
+        if (canActList().length < 2) live().forEach(function (p) { p.revealed = true; });
+        for (var j = 0; j < streets[si]; j++) S.board.push(S.deck.pop());
+        var betting = canActList().length >= 2;
+        S.phase = betting ? 'bet' : 'runout'; S.toAct = -1; S.glow = -1;
+        H.render();
+        await H.sleep(betting ? 550 : 1100);
+        if (betting) await bettingRound(nextIn(S.dealer));
+      }
+      await finishHand();
+    }
+
+    async function run() {
+      while (true) {
+        if (S.players[0].chips <= 0) { H.onEnd(false); return; }
+        if (S.players.filter(function (p) { return p.chips > 0; }).length === 1) { H.onEnd(true); return; }
+        await playHand();
+        await H.waitNext();
+      }
+    }
+
+    reset();
+    return {
+      S: S, reset: reset, run: run, playHand: playHand, botDecide: botDecide,
+      handsPerLevel: HANDS_PER_LEVEL, totalPot: totalPot, collected: collected, roundBets: roundBets, fmt: fmt
+    };
+  }
+
+  var api = {
+    createGame: createGame, SUITS: SUITS, rname: rname, best: best, bestSlow: bestSlow, eval5: eval5, eval7: eval7,
+    catOf: catOf, handName: handName, describe: describe, made: made, HAND_NAMES: HAND_NAMES, preflopStrength: preflopStrength, preflopPct: preflopPct,
+    equity: equity, BLINDS: BLINDS, START_CHIPS: START_CHIPS, fmt: fmt
+  };
+  if (typeof module !== 'undefined' && module.exports) module.exports = api;
+  else root.Poker = api;
+})(typeof window !== 'undefined' ? window : globalThis);
+
+</script>
+<script>
+(function () {
+  'use strict';
+  var P = window.Poker;
+  var fmt = P.fmt;
+  function $(s) { return document.querySelector(s); }
+
+  var stage = $('#stage'), table = $('#table'), zone = $('#zone'), handEl = $('#hand');
+  var AV = ['#7f776a', '#6e8a78', '#8f6e5e', '#5e7a8e', '#8b6f8e'];
+  var ANG = [90, 152, 222, 318, 28];
+  var INWARD = [0, 54, 36, 36, 54];
+
+  var humanResolve = null, nextResolve = null, nextTimer = 0;
+  var raiseMode = false, raiseCfg = null, lastHand = -1, flashMsg = '', flashTimer = 0;
+  var geo = { w: 0, h: 0 };
+  var deckEl = $('#deck');
+  for (var di = 6; di >= 0; di--) {
+    var dk = document.createElement('i');
+    dk.style.transform = 'translate(' + (-di * 0.9) + 'px,' + (-di * 1.3) + 'px)';
+    deckEl.appendChild(dk);
+  }
+
+  /* ---------- Sounds (alles live erzeugt, keine Dateien) ---------- */
+  var Snd = (function () {
+    var ctx = null, master = null, bus = null, noiseBuf = null, on = true, vol = 1;
+    try { on = localStorage.getItem('pr-sound') !== '0'; var sv = parseFloat(localStorage.getItem('pr-vol')); if (sv >= 0 && sv <= 1) vol = sv; } catch (e) {}
+    function gainOf(v) { return 0.8 * v * v; }   /* quadratisch = klingt gleichmaessiger; 100 % = bisherige Lautstaerke */
+    function unlock() {
+      try {
+        if (!ctx) {
+          var AC = window.AudioContext || window.webkitAudioContext;
+          if (!AC) return;
+          ctx = new AC();
+          master = ctx.createGain(); master.gain.value = gainOf(vol); master.connect(ctx.destination);
+          bus = ctx.createGain(); bus.connect(master);
+          var len = Math.floor(ctx.sampleRate * 0.6);
+          noiseBuf = ctx.createBuffer(1, len, ctx.sampleRate);
+          var d = noiseBuf.getChannelData(0);
+          for (var i = 0; i < len; i++) d[i] = Math.random() * 2 - 1;
+        }
+        if (ctx.state === 'suspended') ctx.resume();
+      } catch (e) {}
+    }
+    function ready() { return on && ctx && ctx.state === 'running'; }
+    function now(delay) { return ctx.currentTime + (delay || 0) / 1000; }
+    function noise(t, dur, type, freq, q, vol, attack) {
+      var s = ctx.createBufferSource(); s.buffer = noiseBuf; s.playbackRate.value = 0.8 + Math.random() * 0.4;
+      var f = ctx.createBiquadFilter(); f.type = type; f.frequency.value = freq; f.Q.value = q;
+      var g = ctx.createGain();
+      g.gain.setValueAtTime(0.0001, t); g.gain.exponentialRampToValueAtTime(vol, t + attack); g.gain.exponentialRampToValueAtTime(0.0001, t + dur);
+      s.connect(f); f.connect(g); g.connect(bus); s.start(t, Math.random() * 0.3); s.stop(t + dur + 0.05);
+    }
+    function tone(t, freq, dur, vol, type, slideTo) {
+      var o = ctx.createOscillator(); o.type = type || 'sine';
+      o.frequency.setValueAtTime(freq, t);
+      if (slideTo) o.frequency.exponentialRampToValueAtTime(slideTo, t + dur);
+      var g = ctx.createGain();
+      g.gain.setValueAtTime(0.0001, t); g.gain.exponentialRampToValueAtTime(vol, t + 0.004); g.gain.exponentialRampToValueAtTime(0.0001, t + dur);
+      o.connect(g); g.connect(bus); o.start(t); o.stop(t + dur + 0.05);
+    }
+    // sauberer Kartenschnipp: sehr kurzer, heller Impuls ohne Rauschschweif
+    function snap(t, vol) {
+      noise(t, 0.028, 'bandpass', 3400 + Math.random() * 900, 1.3, vol, 0.0015);
+      noise(t, 0.02, 'lowpass', 1300, 0.7, vol * 0.4, 0.001);
+    }
+    // Poker-Chip auf Chip: trockener, holziger Klick mit kurzem dumpfem Anschlag darunter
+    function clay(t, vol, bright) {
+      var r = (0.95 + Math.random() * 0.1) * (bright || 1); /* bright 1.8 = doppelt so hell (Chips fliegen in den Pot) */
+      noise(t, 0.016, 'bandpass', 3600 * r, 3, vol * 1.3, 0.0006);
+      tone(t, 2300 * r, 0.03, vol * 0.5, 'triangle', 1800 * (bright || 1));
+      tone(t, 520 * r, 0.04, vol * 0.3, 'sine', 380 * (bright || 1));
+      tone(t + 0.003, 3900 * r, 0.05, vol * 0.18, 'sine');
+      // zweiter, leiserer heller Anschlag direkt danach (Chip kippt auf den Stapel)
+      noise(t + 0.02, 0.012, 'bandpass', 4600 * r, 2.5, vol * 0.6, 0.0006);
+      tone(t + 0.02, 2900 * r, 0.025, vol * 0.25, 'triangle', 2300 * (bright || 1));
+    }
+    function guard(fn) { return function () { if (!ready()) return; try { fn.apply(null, arguments); } catch (e) {} }; }
+    return {
+      unlock: unlock,
+      // sofort Ruhe: alle bereits eingeplanten Klaenge werden abgeklemmt
+      stopAll: function () {
+        if (!ctx || !bus) return;
+        try { bus.disconnect(); } catch (e) {}
+        try { bus = ctx.createGain(); bus.connect(master); } catch (e) {}
+      },
+      isOn: function () { return on; },
+      getVol: function () { return vol; },
+      setVol: function (v) {
+        vol = Math.max(0, Math.min(1, v));
+        try { localStorage.setItem('pr-vol', String(vol)); } catch (e) {}
+        if (vol > 0 && !on) { on = true; try { localStorage.setItem('pr-sound', '1'); } catch (e) {} }
+        try { if (master) master.gain.value = gainOf(vol); } catch (e) {}
+      },
+      toggle: function () {
+        on = !on;
+        try { localStorage.setItem('pr-sound', on ? '1' : '0'); } catch (e) {}
+        return on;
+      },
+      card: guard(function (delay) {
+        var t = now(delay);
+        noise(t, 0.07, 'bandpass', 2600, 0.9, 0.5, 0.004);
+        noise(t + 0.012, 0.05, 'highpass', 5200, 0.5, 0.16, 0.003);
+      }),
+      shuffle: guard(function () {
+        var t = now(0), k;
+        for (k = 0; k < 14; k++) {
+          var a = t + 0.28 + k * 0.072;
+          snap(a, 0.3 + (k % 2) * 0.04);          // Karte loest sich vom Stapel
+          snap(a + 0.3, 0.2);                      // und mischt sich wieder ein
+        }
+        snap(t + 1.72, 0.34); snap(t + 1.79, 0.26);  // Stapel wird zusammengestossen
+        tone(t + 1.72, 190, 0.07, 0.22, 'sine', 120);
+      }),
+      flip: guard(function (delay) {
+        var t = now(delay);
+        noise(t, 0.1, 'bandpass', 1800, 0.8, 0.45, 0.012);
+        noise(t + 0.07, 0.05, 'bandpass', 3300, 1.2, 0.28, 0.003);
+      }),
+      chip: guard(function (n, delay, bright) {
+        var t = now(delay);
+        for (var k = 0; k < n; k++) clay(t + k * (0.055 + Math.random() * 0.05), 0.34 - Math.min(k, 3) * 0.03, bright);
+      }),
+      knock: guard(function () {
+        var t = now(0);
+        tone(t, 170, 0.14, 0.24, 'sine', 70); noise(t, 0.05, 'lowpass', 500, 0.7, 0.14, 0.003);
+        tone(t + 0.15, 160, 0.14, 0.2, 'sine', 65); noise(t + 0.15, 0.05, 'lowpass', 500, 0.7, 0.12, 0.003);
+      }),
+      fold: guard(function () { noise(now(0), 0.24, 'bandpass', 900, 0.6, 0.26, 0.05); }),
+      ping: guard(function () { var t = now(0); tone(t, 880, 0.18, 0.1, 'sine'); tone(t + 0.09, 1175, 0.24, 0.08, 'sine'); }),
+      win: guard(function () {
+        var t = now(0), f = [1047, 1319, 1568, 2093];
+        for (var i = 0; i < f.length; i++) tone(t + i * 0.09, f[i], 0.55, 0.14, 'sine');
+        for (var k = 0; k < 7; k++) {
+          var t0 = t + 0.1 + k * 0.06;
+          tone(t0, 2300 + Math.random() * 500, 0.055, 0.18, 'triangle', 1500);
+          noise(t0, 0.03, 'bandpass', 4200, 1.5, 0.22, 0.002);
+        }
+      }),
+      pot: guard(function () {
+        var t = now(0);
+        for (var k = 0; k < 5; k++) {
+          var t0 = t + k * 0.06;
+          tone(t0, 2300 + Math.random() * 500, 0.055, 0.16, 'triangle', 1500);
+          noise(t0, 0.03, 'bandpass', 4200, 1.5, 0.2, 0.002);
+        }
+      }),
+      card0: function (t, vol) { try { noise(t, 0.07, 'bandpass', 2600, 0.9, vol, 0.004); noise(t + 0.012, 0.05, 'highpass', 5200, 0.5, vol * 0.3, 0.003); } catch (e) {} }
+    };
+  })();
+  document.addEventListener('pointerdown', Snd.unlock, true);
+  document.addEventListener('keydown', Snd.unlock, true);
+  /* Lautstaerke: Schieber im Spiel (Popover unter dem Lautsprecher) und im Profil, beide immer gleich */
+  function syncMute() {
+    var v = Math.round(Snd.getVol() * 100), muted = !Snd.isOn() || v === 0;
+    $('#mute').classList.toggle('off', muted); $('#volMute').classList.toggle('off', muted);
+    ['volGame', 'volProf'].forEach(function (id) {
+      var el = $('#' + id); el.value = v; el.style.setProperty('--fill', v + '%');
+      $('#' + id + 'N').textContent = muted && v > 0 ? 'Aus' : v + '%';
+    });
+  }
+  var volPopT = 0;
+  function volPopKeep() { clearTimeout(volPopT); volPopT = setTimeout(function () { $('#volPop').hidden = true; }, 4500); }
+  $('#mute').addEventListener('click', function (e) {
+    Snd.unlock(); var p = $('#volPop'); p.hidden = !p.hidden; syncMute();
+    if (!p.hidden) volPopKeep(); else clearTimeout(volPopT);
+  });
+  $('#volMute').addEventListener('click', function () { Snd.unlock(); if (Snd.getVol() === 0) Snd.setVol(0.8); else Snd.toggle(); syncMute(); volPopKeep(); Snd.ping(); });
+  function onVol(e) { Snd.unlock(); Snd.setVol(+e.target.value / 100); syncMute(); volPopKeep(); }
+  function onVolEnd() { Snd.ping(); }
+  ['volGame', 'volProf'].forEach(function (id) { $('#' + id).addEventListener('input', onVol); $('#' + id).addEventListener('change', onVolEnd); });
+  document.addEventListener('pointerdown', function (e) {
+    if (!$('#volPop').hidden && !e.target.closest('#volPop') && !e.target.closest('#mute')) $('#volPop').hidden = true;
+  });
+  syncMute();
+
+  var snap = { hand: -1, board: 0, bets: [0, 0, 0, 0, 0], folded: [0, 0, 0, 0, 0], label: ['', '', '', '', ''], phase: '', turn: false };
+  function chipCount(delta) { return Math.min(5, 1 + Math.floor(Math.log(delta / S.bb + 1) / Math.LN2)); }
+  var SH_N = 14, SH_STEP = 72, SH_DUR = 420, SH_START = 280;
+  function shuffleAnim() {
+    deckEl.classList.add('shuf');
+    clearTimeout(shufTimer);
+    shufTimer = setTimeout(function () { deckEl.classList.remove('shuf'); }, SH_START + SH_N * SH_STEP + SH_DUR + 150);
+    // Wie beim echten Mischen: Karten kommen oben, aus der Mitte UND von ganz unten aus dem Stapel, gleiten zur Seite und werden an anderer Stelle (oben, mitte, unten) wieder eingeschoben
+    var kids = deckEl.querySelectorAll('i:not(.shc)'), NL = kids.length; /* 7 Lagen, Index 0 = unterste */
+    function off(d) { return 'translate(' + (-d * 0.9) + 'px,' + (-d * 1.3) + 'px)'; }
+    for (var k = 0; k < SH_N; k++) (function (k) {
+      var dir = k % 2 === 0 ? 1 : -1;
+      var src = [0, NL - 1, 3, NL - 1, 1, 0][k % 6];            /* Tiefe, aus der die Karte kommt (0 = oben, 6 = unten) */
+      var dst = (src + 2 + Math.floor(Math.random() * (NL - 3))) % NL; /* Tiefe, in die sie zurueckgeht */
+      var c = document.createElement('i');
+      c.className = 'shc'; c.style.opacity = '0';
+      deckEl.insertBefore(c, kids[NL - 1 - dst] || deckEl.firstChild);
+      if (!c.animate) { setTimeout(function () { c.remove(); }, 10); return; }
+      var anim = c.animate([
+        { transform: off(src) + ' rotate(0deg)', opacity: 1, zIndex: 10, offset: 0 },
+        { transform: off(src) + ' translate(' + (dir * 17) + 'px,' + (-2) + 'px) rotate(' + (dir * 9) + 'deg)', opacity: 1, zIndex: 10, offset: .4 },
+        { transform: off(dst) + ' translate(' + (dir * 7) + 'px,' + (-1) + 'px) rotate(' + (dir * 3) + 'deg)', opacity: 1, zIndex: 10, offset: .75 },
+        { transform: off(dst) + ' rotate(0deg)', opacity: 1, zIndex: 'auto', offset: 1 }
+      ], { duration: SH_DUR, delay: SH_START + k * SH_STEP, easing: 'ease-in-out', fill: 'both' });
+      anim.onfinish = function () { c.remove(); };
+    })(k);
+  }
+  var shufTimer = 0;
+  function soundDiff() {
+    var turn = !!humanResolve;
+    if (S.handNo !== snap.hand) {
+      if (S.handNo > 0 && S.phase === 'deal') {
+        shuffleAnim();
+        Snd.shuffle();
+        for (var k = 0; k < 10; k++) Snd.card(1650 + k * 90);
+        Snd.chip(2, 2600);
+      }
+    } else {
+      if (S.board.length > snap.board) {
+        for (var j = 0; j < S.board.length - snap.board; j++) Snd.flip(j * 120);
+      }
+      S.players.forEach(function (p, i) {
+        if (p.bet > snap.bets[i]) Snd.chip(chipCount(p.bet - snap.bets[i]));
+        if (p.folded && p.inHand && !snap.folded[i]) Snd.fold();
+        if (p.label === 'Check' && snap.label[i] !== 'Check') Snd.knock();
+      });
+      if (S.phase === 'result' && snap.phase !== 'result' && S.result) {
+        if (S.players[0].inHand) { PROF.hands++; if (S.players[0].win > 0) PROF.wins++; saveProf(); }
+        if (S.players[0].win > 0) Snd.win(); else Snd.pot();
+      }
+      if (turn && !snap.turn) Snd.ping();
+    }
+    snap.hand = S.handNo; snap.board = S.board.length; snap.phase = S.phase; snap.turn = turn;
+    snap.bets = S.players.map(function (p) { return p.bet; });
+    snap.folded = S.players.map(function (p) { return p.folded ? 1 : 0; });
+    snap.label = S.players.map(function (p) { return p.label; });
+  }
+
+  var gen = 0;   // zaehlt Spielstarts: aeltere, abgebrochene Spiele laufen nicht weiter
+  var game = P.createGame({
+    render: render,
+    sleep: function (ms) { var g = gen; return new Promise(function (r) { setTimeout(function () { if (g === gen) r(); }, ms); }); },
+    humanAction: function () {
+      return new Promise(function (res) {
+        humanResolve = res; raiseMode = false;
+        seats[0].el.classList.remove('timed'); void seats[0].el.offsetWidth;
+        clearTimeout(turnTimer);
+        turnTimer = setTimeout(function () { act({ type: toCallNow() > 0 ? 'fold' : 'check' }); }, TURN_MS);
+        render();
+      });
+    },
+    waitNext: function () {
+      var g = gen;
+      return new Promise(function (res) {
+        nextResolve = res; render();
+        var R = S.result, ms = (R && R.showdown) ? 6500 : 3500;   // Zeit, das Ergebnis zu sehen
+        clearTimeout(nextTimer);
+        nextTimer = setTimeout(function () {
+          if (g !== gen || !nextResolve) return;
+          var r = nextResolve; nextResolve = null; r();
+        }, ms);
+      });
+    },
+    react: function (id, emo, delay) { var g = gen; setTimeout(function () { if (g === gen) showReaction(id, emo); }, delay || 0); },
+    onEnd: showEnd
+  });
+  var S = game.S;
+
+  /* ---------- Bausteine ---------- */
+  function cardEl(cls) {
+    var d = document.createElement('div');
+    d.className = 'card ' + (cls || '');
+    d.innerHTML = '<div class="inner"><div class="face"></div><div class="back"></div></div>';
+    return d;
+  }
+  function setFace(el, c) {
+    var f = el.querySelector('.face');
+    var red = c.s === 1 || c.s === 2;
+    var r = P.rname(c.r), s = P.SUITS[c.s];
+    f.className = 'face' + (red ? ' red' : '');
+    f.innerHTML = '<div class="corner tl"><b>' + r + '</b><i>' + s + '</i></div><div class="pip">' + s +
+      '</div><div class="corner br"><b>' + r + '</b><i>' + s + '</i></div>';
+    el.dataset.key = c.r + '-' + c.s;
+  }
+  function chipStack(amount) {
+    var dens = [[1000, 'c1000'], [500, 'c500'], [100, 'c100'], [50, 'c50'], [10, 'c10'], [5, 'c5'], [1, 'c1']];
+    var rest = amount, stacks = [];
+    for (var i = 0; i < dens.length; i++) {
+      var n = Math.floor(rest / dens[i][0]);
+      rest -= n * dens[i][0];
+      if (n > 0) stacks.push([dens[i][1], Math.min(n, 6)]);
+    }
+    if (!stacks.length) return '';
+    var maxN = 0, html = '';
+    stacks.forEach(function (st, si) {
+      maxN = Math.max(maxN, st[1]);
+      for (var k = 0; k < st[1]; k++) {
+        html += '<i class="ch ' + st[0] + '" style="left:' + (si * 27) + 'px;bottom:' + (k * 3.2) + 'px"></i>';
+      }
+    });
+    return '<span class="stack" style="width:' + (stacks.length * 27 - 1) + 'px;height:' + (16 + (maxN - 1) * 3.2) + 'px">' + html + '</span>';
+  }
+
+  /* ---------- Pot-Chips: verstreut in der Mitte, mit Wert und Farbe ---------- */
+  var DENS = [[1000, 'c1000', '1K'], [500, 'c500', '500'], [100, 'c100', '100'], [50, 'c50', '50'], [10, 'c10', '10'], [5, 'c5', '5'], [1, 'c1', '1']];
+  var potChipEls = [], potSlots = [], potKey = -1;
+  (function () {
+    var seed = 12345;
+    function rnd() { seed = (seed * 16807) % 2147483647; return seed / 2147483647; }
+    for (var i = 0; i < 28; i++) {
+      var a = i * 2.399963 + rnd() * 0.8, r = Math.sqrt((i + 0.6) / 28);
+      potSlots.push({ x: 66 + Math.cos(a) * r * 50 + (rnd() - 0.5) * 8, y: 23 + Math.sin(a) * r * 15 + (rnd() - 0.5) * 5, rot: Math.round(rnd() * 360) });
+    }
+  })();
+  function setPotChips(amount) {
+    var host = $('#potchips'), list = [], rest = amount, i;
+    DENS.forEach(function (d) { var n = Math.floor(rest / d[0]); rest -= n * d[0]; for (var k = 0; k < n; k++) list.push(d); });
+    for (i = 0; i < 28; i++) {
+      var el = potChipEls[i];
+      if (i < list.length) {
+        if (!el) {
+          el = document.createElement('i');
+          el.className = 'pchip';
+          el.innerHTML = '<b></b>';
+          el.style.left = '66px'; el.style.top = '23px'; el.style.opacity = '0';
+          host.appendChild(el);
+          potChipEls[i] = el;
+          void el.offsetWidth;
+        }
+        var d = list[i], sl = potSlots[i];
+        el.className = 'pchip ' + d[1];
+        el.firstChild.textContent = d[2];
+        el.style.setProperty('--rot', sl.rot + 'deg');
+        el.style.left = sl.x + 'px'; el.style.top = sl.y + 'px'; el.style.opacity = '1';
+        el.style.zIndex = String(i);
+      } else if (el) {
+        el.style.left = '66px'; el.style.top = '23px'; el.style.opacity = '0';
+      }
+    }
+  }
+
+  /* ---------- DOM aufbauen ---------- */
+  var seats = [], bets = [], slots = [];
+  (function build() {
+    var seatsEl = $('#seats'), betsEl = $('#bets'), boardEl = $('#board');
+    S.players.forEach(function (p, i) {
+      var el = document.createElement('div');
+      el.className = 'seat' + (i === 0 ? ' me' : '');
+      el.id = 'seat' + i;
+      el.innerHTML =
+        '<div class="minis"></div>' +
+        '<div class="avatar" style="--av:' + AV[i] + '"><span>' + p.name.charAt(0) + '</span><b class="rslot"></b><i class="dbtn">D</i><i class="bbtn"></i>' + (i === 0 ? '<svg class="timer" viewBox="0 0 100 100"><circle cx="50" cy="50" r="47"></circle></svg>' : '') + '</div>' +
+        '<div class="pill"><b></b><em></em>' + (i === 0 ? '<span class="pl" title="Gewinn / Verlust seit Beginn dieser Runde"><span class="plv"></span></span>' : '') + '</div>' +
+        '<div class="tag"></div>';
+      var minis = el.querySelector('.minis');
+      var m = [cardEl('mini down'), cardEl('mini down')];
+      m.forEach(function (c) { minis.appendChild(c); });
+      seatsEl.appendChild(el);
+      seats.push({
+        el: el, minis: minis, m: m,
+        blind: el.querySelector('.bbtn'), name: el.querySelector('.pill b'), pl: el.querySelector('.pl'), plv: el.querySelector('.plv'), chips: el.querySelector('.pill em'), tag: el.querySelector('.tag')
+      });
+      var b = document.createElement('div');
+      b.className = 'bet';
+      b.innerHTML = '<span class="bchips"></span><span class="amt"></span>';
+      betsEl.appendChild(b);
+      bets.push({ el: b, chips: b.querySelector('.bchips'), amt: b.querySelector('.amt'), v: -1 });
+    });
+    var flyEl = document.createElement('div'); flyEl.id = 'fly'; $('#stage').appendChild(flyEl);
+    var winEl = document.createElement('div'); winEl.id = 'win'; $('#stage').appendChild(winEl);
+    var toastEl = document.createElement('div'); toastEl.id = 'toast'; $('#stage').appendChild(toastEl);
+    for (var k = 0; k < 5; k++) {
+      var slot = document.createElement('div');
+      slot.className = 'slot';
+      var c = cardEl('down');
+      slot.appendChild(c);
+      boardEl.appendChild(slot);
+      slots.push({ el: slot, card: c, key: '' });
+    }
+  })();
+
+  /* ---------- Layout ---------- */
+  function layout() {
+    var w = stage.clientWidth, h = stage.clientHeight;
+    if (!w || !h) return;
+    geo.w = w; geo.h = h;
+    var tw = w * 0.84;
+    var th = Math.min(h * 0.62, tw * 1.35);
+    var tx = (w - tw) / 2, ty = h * 0.075 + (h * 0.63 - th) / 2;
+    table.style.left = tx + 'px'; table.style.top = ty + 'px';
+    table.style.width = tw + 'px'; table.style.height = th + 'px';
+    var cx = w / 2, cy = ty + th / 2, rx = tw / 2, ry = th / 2;
+
+    zone.style.left = (cx - tw * 0.35) + 'px'; zone.style.top = (cy + ry * 0.02 - th * 0.27) + 'px';
+    zone.style.width = (tw * 0.7) + 'px'; zone.style.height = (th * 0.54) + 'px';
+
+    var pot = $('#pot'); pot.style.left = cx + 'px'; pot.style.top = (cy - ry * 0.26) + 'px';
+    var board = $('#board'); board.style.left = cx + 'px'; board.style.top = (cy + ry * 0.2) + 'px';
+    var winC = $('#win'); winC.style.left = cx + 'px'; winC.style.top = (cy + ry * 0.62) + 'px';
+    deckEl.style.left = cx + 'px'; deckEl.style.top = (cy - ry * 0.66) + 'px';
+
+    for (var i = 0; i < 5; i++) {
+      var bx, by;
+      if (i === 0) { bx = cx; by = cy + ry * 0.6; }
+      else {
+        var a = ANG[i] * Math.PI / 180;
+        var x = cx + rx * Math.cos(a), y = cy + ry * Math.sin(a);
+        x = Math.max(44, Math.min(w - 44, x));
+        seats[i].el.style.left = x + 'px'; seats[i].el.style.top = y + 'px';
+        var dx = cx - x, dy = cy - y, d = Math.sqrt(dx * dx + dy * dy) || 1;
+        if (i === 1 || i === 4) { bx = x + (dx > 0 ? 66 : -66); by = y - 2; }
+        else { bx = x + (dx > 0 ? 58 : -58); by = y + 66; }
+      }
+      bets[i].el.style.left = bx + 'px'; bets[i].el.style.top = by + 'px';
+    }
+  }
+  if (window.ResizeObserver) new ResizeObserver(layout).observe(stage);
+  window.addEventListener('resize', layout);
+
+  /* ---------- Rendern ---------- */
+  function resultText() {
+    var R = S.result;
+    if (!R) return { t: '', s: '' };
+    var t;
+    if (R.ids.length === 1) {
+      var tp = S.players[R.topId];
+      t = (tp.id === 0 ? 'Du gewinnst ' : tp.name + ' gewinnt ') + fmt(R.won[tp.id]);
+    } else {
+      t = R.ids.map(function (i) { return (i === 0 ? 'Du' : S.players[i].name) + ' +' + fmt(R.won[i]); }).join(' · ');
+    }
+    return { t: t, s: R.showdown ? R.hand : 'Alle anderen haben gepasst' };
+  }
+
+  var profit = 0;
+  function renderSeat(p, i) {
+    var r = seats[i], el = r.el;
+    r.name.textContent = p.name;
+    r.chips.textContent = fmt(p.chips);
+    var result = S.phase === 'result';
+    var out = p.chips === 0 && (!p.inHand || result);
+    el.classList.toggle('out', out);
+    el.classList.toggle('folded', p.inHand && p.folded);
+    el.classList.toggle('turn', S.glow === i && S.phase === 'bet');
+    if (i === 0) el.classList.toggle('timed', !!humanResolve && S.phase === 'bet');
+    el.classList.toggle('win', result && p.win > 0);
+    el.classList.toggle('dealer', S.handNo > 0 && S.dealer === i);
+    var isSB = S.handNo > 0 && S.sbIdx === i, isBB = S.handNo > 0 && S.bbIdx === i;
+    el.classList.toggle('sb', isSB); el.classList.toggle('bb', isBB);
+    r.blind.textContent = isBB ? 'BB' : isSB ? 'SB' : '';
+    var txt = out ? 'Raus' : (result && p.win > 0) ? '+' + fmt(p.win) : p.label;
+    r.tag.textContent = txt;
+    r.tag.classList.toggle('win', result && p.win > 0);
+    if (i === 0) {
+      /* Gesamtgewinn/-verlust seit Spielbeginn: nur zwischen den Haenden aktualisieren, nicht waehrend Einsaetzen im Pot liegen */
+      if (S.handNo === 0 || S.phase === 'result' || S.phase === 'idle') {
+        var np = p.chips - P.START_CHIPS;
+        if (np !== profit && S.phase === 'result' && S.handNo > 0) {
+          /* kurz anzeigen, wie sich der Gesamtgewinn in dieser Hand geaendert hat */
+          var dl = np - profit, pd = document.createElement('span');
+          pd.className = 'pld ' + (dl < 0 ? 'neg' : 'pos');
+          pd.textContent = (dl < 0 ? '\u2212' : '+') + fmt(Math.abs(dl));
+          r.pl.appendChild(pd);
+          setTimeout(function () { pd.remove(); }, 2500);
+        }
+        profit = np;
+      }
+      r.plv.textContent = profit > 0 ? '+' + fmt(profit) : profit < 0 ? '\u2212' + fmt(-profit) : '\u00b10';
+      r.pl.classList.toggle('pos', profit > 0); r.pl.classList.toggle('neg', profit < 0);
+      return;
+    }
+    var has = p.inHand && p.hole.length > 0 && !p.folded;
+    el.classList.toggle('cards', has);
+    el.classList.toggle('reveal', has && p.revealed);
+    if (S.handNo !== lastHand) {
+      r.minis.classList.remove('pop'); void r.minis.offsetWidth; r.minis.classList.add('pop');
+      r.m.forEach(function (c) { c.classList.add('down'); c.dataset.key = ''; });
+    }
+    if (has && p.revealed) {
+      r.m.forEach(function (c, k) {
+        var cd = p.hole[k];
+        if (c.dataset.key !== cd.r + '-' + cd.s) setFace(c, cd);
+        c.classList.remove('down');
+      });
+    } else {
+      r.m.forEach(function (c) { c.classList.add('down'); });
+    }
+  }
+
+  function renderBoard() {
+    for (var i = 0; i < 5; i++) {
+      var sl = slots[i], c = S.board[i];
+      if (c) {
+        var key = c.r + '-' + c.s;
+        if (sl.key !== key) {
+          sl.key = key;
+          setFace(sl.card, c);
+          sl.card.classList.add('down');
+          sl.el.classList.add('shown');
+          // Karte fliegt vom Stapel an ihren Platz und dreht sich dabei um
+          var delay = S.board.length === 3 ? i * 140 : 0;
+          var dr = deckEl.getBoundingClientRect(), sr = sl.el.getBoundingClientRect();
+          var fx = (dr.left + dr.width / 2) - (sr.left + sr.width / 2);
+          var fy = (dr.top + dr.height / 2) - (sr.top + sr.height / 2);
+          sl.card.style.transition = 'none';
+          sl.card.style.opacity = '1';
+          sl.card.style.transform = 'translate(' + fx + 'px,' + fy + 'px) scale(.55) rotate(-8deg)';
+          void sl.card.offsetWidth;
+          sl.card.style.transition = 'transform .6s cubic-bezier(.2,.9,.3,1) ' + delay + 'ms, opacity .2s ' + delay + 'ms';
+          sl.card.style.transform = '';
+          sl.card.style.opacity = '';
+          (function (card, dl) {
+            setTimeout(function () { card.classList.remove('down'); }, 180 + dl);
+          })(sl.card, delay);
+        }
+      } else if (sl.key) {
+        sl.key = '';
+        sl.el.classList.remove('shown');
+        sl.card.classList.add('down');
+        sl.card.style.transition = '';
+      }
+    }
+  }
+
+  var potTimer = 0;
+  function renderPot() {
+    var pl = $('#potlabel'), ps = $('#potsub');
+    var total = game.totalPot();
+    if (S.phase === 'result' && S.result) {
+      var rt = resultText();
+      pl.className = 'result'; pl.textContent = rt.t; ps.textContent = rt.s;
+      if (potKey !== 0) { potKey = 0; clearTimeout(potTimer); setPotChips(0); }
+      return;
+    }
+    pl.className = '';
+    pl.innerHTML = 'Pot<b>' + fmt(total) + '</b>';
+    ps.textContent = '';
+    var col = game.collected();
+    if (potKey !== col) {
+      potKey = col;
+      clearTimeout(potTimer);
+      var wait = flyUntil - Date.now();
+      if (wait > 30 && col > 0) potTimer = setTimeout(function () { setPotChips(col); }, wait);
+      else setPotChips(col);
+    }
+  }
+
+  /* Showdown: Karten des Gewinners kommen in die Mitte, die Karten der Hand leuchten */
+  var showKey = -1;
+  function keyOf(c) { return c.r + '-' + c.s; }
+  function clearShow() {
+    showKey = -1;
+    $('#win').innerHTML = '';
+    slots.forEach(function (sl) { sl.card.classList.remove('hl', 'dim'); });
+    seats.forEach(function (r) { r.el.classList.remove('moved'); });
+  }
+  function renderShow() {
+    var R = S.result;
+    if (S.phase !== 'result' || !R || !R.showdown) { if (showKey !== -1) clearShow(); return; }
+    if (showKey === S.handNo) return;
+    showKey = S.handNo;
+    var w = S.players[R.topId];
+    if (!w || w.value === undefined) return;
+    var all = w.hole.concat(S.board);
+    var mk = {};
+    P.made(all, w.value).forEach(function (c) { mk[keyOf(c)] = 1; });
+    var host = $('#win'); host.innerHTML = '';
+    var from = seats[w.id].el.getBoundingClientRect(), st = stage.getBoundingClientRect();
+    var els = w.hole.map(function (c, k) {
+      var el = cardEl('');
+      setFace(el, c);
+      if (mk[keyOf(c)]) el.classList.add('hl'); else el.classList.add('dim');
+      host.appendChild(el);
+      return el;
+    });
+    if (w.id > 0) seats[w.id].el.classList.add('moved');
+    slots.forEach(function (sl) {
+      var on = sl.key && mk[sl.key];
+      sl.card.classList.toggle('hl', !!on);
+      sl.card.classList.toggle('dim', !on);
+    });
+    // Karten fliegen vom Sitz des Gewinners in die Mitte
+    if (els[0].animate) {
+      els.forEach(function (el, k) {
+        var r = el.getBoundingClientRect();
+        var dx = (from.left + from.width / 2) - (r.left + r.width / 2), dy = (from.top + from.height / 2) - (r.top + r.height / 2);
+        el.animate([{ transform: 'translate(' + dx + 'px,' + dy + 'px) scale(.7) rotate(' + (k ? 10 : -10) + 'deg)', opacity: 0 }, { transform: 'none', opacity: 1 }],
+          { duration: 600, delay: k * 120, easing: 'cubic-bezier(.2,.9,.3,1)', fill: 'backwards' });
+      });
+    }
+  }
+
+  var flyUntil = 0;
+  /* Am Ende einer Setzrunde wandern die Chips (gleiche Farben) nacheinander in den Pot */
+  function flyChips(list) {
+    var layer = $('#fly');
+    if (!layer || !list.length || !list[0].el.animate) return;
+    var st = stage.getBoundingClientRect(), pt = $('#potchips').getBoundingClientRect();
+    var tx = pt.left + pt.width / 2, ty = pt.top + pt.height / 2;
+    var step = Math.min(85, 850 / list.length), dur = 380;
+    list.forEach(function (it, k) {
+      var c = document.createElement('i');
+      c.className = it.cls;
+      c.style.cssText = 'position:absolute;left:' + (it.r.left - st.left) + 'px;top:' + (it.r.top - st.top) + 'px;';
+      layer.appendChild(c);
+      var dx = tx - (it.r.left + it.r.width / 2), dy = ty - (it.r.top + it.r.height / 2);
+      var jx = (k % 5 - 2) * 3, jy = (k % 3 - 1) * 2;
+      var anim = c.animate([
+        { transform: 'translate(0,0) scale(1)', offset: 0 },
+        { transform: 'translate(' + (dx * .5) + 'px,' + (dy * .5 - 16) + 'px) scale(1.15)', offset: .5 },
+        { transform: 'translate(' + (dx + jx) + 'px,' + (dy + jy) + 'px) scale(.85)', offset: 1 }
+      ], { duration: dur, delay: k * step, easing: 'cubic-bezier(.4,0,.3,1)', fill: 'both' });
+      Snd.chip(1, k * step + dur * 0.85, 1.8);
+      anim.onfinish = function () {
+        c.remove();
+        var pl = $('#potlabel');
+        if (pl.animate) pl.animate([{ transform: 'scale(1)' }, { transform: 'scale(1.14)' }, { transform: 'scale(1)' }], { duration: 220 });
+      };
+    });
+    flyUntil = Date.now() + (list.length - 1) * step + dur;
+  }
+
+  function renderBets() {
+    var dealing = S.phase === 'deal';
+    var flying = [];
+    S.players.forEach(function (p, i) {
+      var b = bets[i], show = p.bet > 0 && S.phase !== 'result';
+      if (!show && b.v > 0 && b.el.classList.contains('on')) {
+        // Einsatz wird eingesammelt: Position jedes Chips merken, bevor der Marker verschwindet
+        [].forEach.call(b.chips.querySelectorAll('.ch'), function (ch) {
+          flying.push({ el: ch, cls: ch.className, r: ch.getBoundingClientRect() });
+        });
+      }
+      b.el.classList.toggle('on', show);
+      if (show && b.v !== p.bet) {
+        b.v = p.bet;
+        b.chips.innerHTML = chipStack(p.bet);
+        b.amt.textContent = fmt(p.bet);
+        // Einsatz fliegt vom Spieler zum Einsatzplatz und leuchtet kurz auf
+        b.el.classList.add('fresh');
+        clearTimeout(b.t);
+        b.t = setTimeout(function () { b.el.classList.remove('fresh'); }, dealing ? 2500 : 1500);
+        if (b.el.animate) {
+          var sr = seats[i].el.getBoundingClientRect(), br = b.el.getBoundingClientRect();
+          var dx = (sr.left + sr.width / 2) - (br.left + br.width / 2), dy = (sr.top + sr.height / 2) - (br.top + br.height / 2);
+          b.el.animate(
+            [{ translate: dx + 'px ' + dy + 'px', scale: '.55', opacity: 0 }, { translate: '0 0', scale: '1.18', opacity: 1, offset: .7 }, { translate: '0 0', scale: '1', opacity: 1 }],
+            { duration: 560, easing: 'cubic-bezier(.2,.8,.3,1)', delay: dealing ? 1650 : 0, fill: 'backwards' }
+          );
+        }
+      }
+      if (!show) { b.v = -1; b.el.classList.remove('fresh'); }
+    });
+    if (flying.length) flyChips(flying);
+  }
+
+  /* Passen: Karten werden umgedreht, landen kurz in der Mitte und gleiten dann weich in den Stapel */
+  function foldAnim(me) {
+    var layer = $('#fly'), slotsEl = handEl.querySelectorAll('.hslot');
+    if (!layer || !slotsEl.length || !slotsEl[0].animate) return;
+    var st = stage.getBoundingClientRect(), zr = zone.getBoundingClientRect(), dr = deckEl.getBoundingClientRect();
+    var zx = zr.left + zr.width / 2, zy = zr.top + zr.height / 2, dx = dr.left + dr.width / 2, dy = dr.top + dr.height / 2;
+    [].forEach.call(slotsEl, function (sl, k) {
+      var cardRef = sl.querySelector('.card'), r = cardRef.getBoundingClientRect(), W = sl.offsetWidth || r.width;
+      var el = cardEl('');
+      setFace(el, me.hole[k]);
+      el.style.cssText = '--w:' + W + 'px;position:absolute;left:' + (r.left + r.width / 2 - st.left - W / 2) + 'px;top:' + (r.top + r.height / 2 - st.top - W * 0.7) + 'px;';
+      layer.appendChild(el);
+      var cx0 = r.left + r.width / 2, cy0 = r.top + r.height / 2, s0 = r.width / W;
+      var side = k ? 1 : -1;
+      var mx = zx + side * 16 - cx0, my = zy - cy0;
+      var ex = dx - cx0, ey = dy - cy0;
+      var delay = k * 90;
+      setTimeout(function () { el.classList.add('down'); }, 120 + delay);
+      var an = el.animate([
+        { transform: 'translate(0,0) scale(' + s0 + ') rotate(0deg)', opacity: 1, offset: 0 },
+        { transform: 'translate(' + mx + 'px,' + my + 'px) scale(.62) rotate(' + (side * 12) + 'deg)', opacity: 1, offset: .3 },
+        { transform: 'translate(' + mx + 'px,' + my + 'px) scale(.62) rotate(' + (side * 12) + 'deg)', opacity: 1, offset: .62 },
+        { transform: 'translate(' + ex + 'px,' + ey + 'px) scale(.22) rotate(' + (side * 4) + 'deg)', opacity: 0, offset: 1 }
+      ], { duration: 1700, delay: delay, easing: 'cubic-bezier(.35,0,.25,1)', fill: 'both' });
+      an.onfinish = function () { el.remove(); };
+    });
+  }
+
+  function renderHand() {
+    var me = S.players[0];
+    var show = me.inHand && me.hole.length === 2;
+    if (show && handEl.dataset.hn !== String(S.handNo)) {
+      handEl.dataset.hn = String(S.handNo);
+      handEl.innerHTML = '';
+      handEl.style.transform = ''; handEl.style.opacity = ''; handEl.style.transition = '';
+      me.hole.forEach(function (c) {
+        var slot = document.createElement('div');
+        slot.className = 'hslot';
+        var cd = cardEl('');
+        setFace(cd, c);
+        slot.appendChild(cd);
+        handEl.appendChild(slot);
+      });
+    }
+    handEl.classList.toggle('none', !show);
+    if (show && me.folded && !handEl.classList.contains('folded')) foldAnim(me);
+    handEl.classList.toggle('folded', show && me.folded);
+  }
+
+  function toCallNow() {
+    var me = S.players[0];
+    return Math.max(0, S.currentBet - me.bet);
+  }
+  function canFold() { return !!humanResolve; }
+
+  function renderControls() {
+    var me = S.players[0];
+    var myTurn = !!humanResolve;
+    var result = S.phase === 'result';
+    var st = $('#status');
+    var btns = $('#btns'), rp = $('#rpanel'), nx = $('#bNext');
+    btns.hidden = result || raiseMode;
+    rp.hidden = !(myTurn && raiseMode);
+    nx.hidden = true;
+    st.hidden = raiseMode && myTurn;
+
+    if (result) {
+      nx.textContent = me.chips <= 0 || S.players.filter(function (p) { return p.chips > 0; }).length === 1 ? 'Weiter' : 'Nächste Hand';
+      var rt = resultText();
+      st.innerHTML = '<b>' + rt.t + '</b>' + (rt.s ? ' · ' + rt.s : '');
+      return;
+    }
+
+    var toCall = toCallNow();
+    var bFold = $('#bFold'), bCall = $('#bCall'), bRaise = $('#bRaise');
+    bFold.disabled = !myTurn;
+    bCall.disabled = !myTurn;
+    var canRaise = myTurn && me.chips > toCall;
+    bRaise.disabled = !canRaise;
+    bRaise.firstChild.textContent = S.currentBet === 0 ? 'Setzen' : 'Erhöhen';
+    var cs = bCall.querySelector('span'), cm = bCall.querySelector('small');
+    if (toCall === 0) { cs.textContent = 'Check'; cm.textContent = ''; }
+    else if (toCall >= me.chips) { cs.textContent = 'All-in'; cm.textContent = fmt(me.chips); }
+    else { cs.textContent = 'Mitgehen'; cm.textContent = fmt(toCall); }
+
+    var txt;
+    if (flashMsg) txt = flashMsg;
+    else if (myTurn) txt = '<b>Du bist dran</b> · ' + (toCall > 0 ? fmt(Math.min(toCall, me.chips)) + ' zum Mitgehen' : 'Check ist gratis');
+    else if (S.phase === 'deal') txt = 'Karten werden gegeben …';
+    else if (S.phase === 'runout') txt = 'Alle All-in – die Karten werden aufgedeckt';
+    else if (S.phase === 'showdown') txt = 'Showdown …';
+    else if (S.toAct > 0) txt = '<b>' + S.players[S.toAct].name + '</b> überlegt …';
+    else if (me.folded) txt = 'Du hast gepasst';
+    else txt = '';
+    st.innerHTML = txt;
+  }
+
+  var shownBB = 0, toastTimer = 0;
+  function render() {
+    if (!geo.w) layout();
+    soundDiff();
+    var hpl = game.handsPerLevel, hn = Math.max(1, S.handNo);
+    var lastLevel = S.bb >= P.BLINDS[P.BLINDS.length - 1][1];
+    var left = hpl - ((hn - 1) % hpl);
+    $('#info').innerHTML = 'Hand ' + hn + ' · Blinds ' + S.sb + '/' + S.bb + (lastLevel ? '' : '<br><span class="sub">steigen in ' + left + (left === 1 ? ' Hand' : ' Händen') + '</span>');
+    if (S.handNo > 1 && S.handNo !== lastHand && S.bb !== shownBB && shownBB > 0) {
+      var tt = $('#toast');
+      tt.textContent = 'Blinds steigen auf ' + S.sb + ' / ' + S.bb;
+      tt.classList.add('on');
+      clearTimeout(toastTimer);
+      toastTimer = setTimeout(function () { tt.classList.remove('on'); }, 3600);
+    }
+    shownBB = S.bb;
+    S.players.forEach(renderSeat);
+    renderBoard(); renderBets(); renderPot(); renderHand(); renderShow(); renderControls();
+    lastHand = S.handNo;
+  }
+
+  function flash(msg) {
+    flashMsg = msg; renderControls();
+    clearTimeout(flashTimer);
+    flashTimer = setTimeout(function () { flashMsg = ''; renderControls(); }, 2200);
+  }
+
+  /* ---------- Aktionen ---------- */
+  var TURN_MS = 15000, turnTimer = 0;
+  function act(a) {
+    var r = humanResolve;
+    if (!r) return;
+    clearTimeout(turnTimer);
+    humanResolve = null; raiseMode = false; flashMsg = '';
+    if (a.type === 'fold') { tossed = []; clearTimeout(tossTimer); } else restoreTossed();
+    r(a);
+  }
+  $('#bFold').addEventListener('click', function () { act({ type: 'fold' }); });
+  $('#bCall').addEventListener('click', function () { act({ type: toCallNow() > 0 ? 'call' : 'check' }); });
+  $('#bRaise').addEventListener('click', openRaise);
+  $('#rBack').addEventListener('click', function () { raiseMode = false; renderControls(); });
+  $('#rGo').addEventListener('click', function () { if (document.activeElement === $('#ramt')) commitAmt(); act({ type: 'raise', to: +$('#rslider').value }); });
+  $('#bNext').addEventListener('click', function () {
+    var r = nextResolve;
+    if (r) { nextResolve = null; r(); }
+  });
+  function startGame() {
+    gen++;
+    clearTimeout(turnTimer); clearTimeout(nextTimer); clearTimeout(tossTimer);
+    humanResolve = null; nextResolve = null; raiseMode = false; flashMsg = ''; tossed = [];
+    $('#end').hidden = true; $('#pause').hidden = true; $('#menu').hidden = true;
+    $('#fly').innerHTML = ''; $('#toast').classList.remove('on');
+    handEl.style.transform = ''; handEl.style.opacity = ''; handEl.style.transition = '';
+    lastHand = -1; handEl.dataset.hn = ''; shownBB = 0; flyUntil = 0;
+    clearShow();
+    game.reset(); S = game.S; profit = 0; applyProfToSeat();
+    snap.hand = -1;
+    render();
+    game.run();
+  }
+  function toMenu() {
+    gen++;
+    clearTimeout(turnTimer); clearTimeout(nextTimer); clearTimeout(tossTimer);
+    humanResolve = null; nextResolve = null; raiseMode = false; flashMsg = ''; tossed = [];
+    $('#end').hidden = true; $('#pause').hidden = true;
+    $('#fly').innerHTML = '';
+    clearShow();
+    Snd.stopAll();
+    game.reset(); S = game.S; lastHand = -1; handEl.dataset.hn = ''; snap.hand = -1; shownBB = 0;
+    render();
+    Snd.stopAll();
+    $('#menu').hidden = false;
+  }
+  /* ---------- Profil, Ladebildschirm, Hauptmenue ---------- */
+  var PROF = { name: 'Spieler', color: AV[0], hands: 0, wins: 0 };
+  var MORE = ['#b5543f', '#c8873a', '#c4a84a', '#6f9a5a', '#4f9a8a', '#4a86a8', '#5a6fb0', '#8a68b0', '#b0689a', '#a65a6a', '#6b6f75', '#3f4a52'];
+  try {
+    var rawP = JSON.parse(localStorage.getItem('pr-profile') || 'null');
+    if (rawP && typeof rawP === 'object') {
+      if (typeof rawP.name === 'string') PROF.name = rawP.name.slice(0, 14);
+      if (typeof rawP.color === 'string' && /^#[0-9a-f]{6}$/i.test(rawP.color)) PROF.color = rawP.color;
+      else if (rawP.av >= 0 && rawP.av < AV.length) PROF.color = AV[rawP.av | 0];
+      PROF.hands = Math.max(0, rawP.hands | 0); PROF.wins = Math.max(0, rawP.wins | 0);
+    }
+  } catch (e) {}
+  function saveProf() { try { localStorage.setItem('pr-profile', JSON.stringify(PROF)); } catch (e) {} }
+  function profName() { return PROF.name.trim() || 'Spieler'; }
+  function profInitial() { return profName().charAt(0).toUpperCase(); }
+  function applyProfToSeat() {
+    var av = seats[0] && seats[0].el.querySelector('.avatar');
+    if (!av) return;
+    av.style.setProperty('--av', PROF.color);
+    var sp = av.querySelector('span'); if (sp) sp.textContent = profInitial();
+  }
+  function renderProf() {
+    [$('#pavMenu'), $('#pavBig')].forEach(function (e) { e.style.setProperty('--av', PROF.color); e.textContent = profInitial(); });
+    $('#pnameMenu').textContent = profName();
+    [].forEach.call(document.querySelectorAll('#swatches button[data-c], #swMore button'), function (b) { var on = b.dataset.c === PROF.color; b.classList.toggle('on', on); b.setAttribute('aria-checked', on ? 'true' : 'false'); });
+    $('#stHands').textContent = fmt(PROF.hands); $('#stWins').textContent = fmt(PROF.wins);
+    $('#stRate').textContent = PROF.hands ? Math.round(PROF.wins / PROF.hands * 100) + '%' : '–';
+    syncMute();
+  }
+  function mkSwatch(c, host) {
+    var b = document.createElement('button');
+    b.type = 'button'; b.dataset.c = c; b.style.setProperty('--c', c); b.setAttribute('role', 'radio'); b.setAttribute('aria-label', 'Farbe ' + c);
+    b.addEventListener('click', function () { PROF.color = c; saveProf(); renderProf(); applyProfToSeat(); });
+    host.appendChild(b);
+  }
+  AV.forEach(function (c) { mkSwatch(c, $('#swatches')); });
+  /* ganz rechts: gestrichelter Kreis mit Plus -> mehr Farben */
+  var moreBtn = document.createElement('button');
+  moreBtn.type = 'button'; moreBtn.className = 'more'; moreBtn.innerHTML = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><path d="M12 6.5v11M6.5 12h11"/></svg>'; moreBtn.setAttribute('aria-label', 'Mehr Farben anzeigen'); moreBtn.setAttribute('aria-expanded', 'false');
+  moreBtn.addEventListener('click', function () {
+    var open = $('#swMore').hidden;
+    $('#swMore').hidden = !open; moreBtn.classList.toggle('open', open); moreBtn.setAttribute('aria-expanded', open ? 'true' : 'false');
+  });
+  $('#swatches').appendChild(moreBtn);
+  MORE.forEach(function (c) { mkSwatch(c, $('#swMore')); });
+  $('#pName').value = PROF.name;
+  $('#pName').addEventListener('input', function () { PROF.name = this.value.slice(0, 14); saveProf(); renderProf(); applyProfToSeat(); });
+  $('#pName').addEventListener('keydown', function (e) { if (e.key === 'Enter') { e.preventDefault(); this.blur(); } });
+  $('#pName').addEventListener('blur', function () { this.value = PROF.name.trim(); PROF.name = this.value; saveProf(); renderProf(); applyProfToSeat(); });
+  $('#profBtn').addEventListener('click', function () { Snd.unlock(); $('#pName').value = PROF.name; renderProf(); var inMore = MORE.indexOf(PROF.color) >= 0; $('#swMore').hidden = !inMore; moreBtn.classList.toggle('open', inMore); $('#profile').hidden = false; });
+  $('#profBack').addEventListener('click', function () { $('#profile').hidden = true; });
+  renderProf(); applyProfToSeat();
+  /* Ladebildschirm: mindestens ~1,7 s, solange Schriften & Co. noch laden, maximal 4 s */
+  (function () {
+    var splash = $('#splash'), t0 = Date.now(), done = false;
+    function finish() {
+      if (done) return; done = true;
+      setTimeout(function () {
+        splash.classList.add('out'); $('#menu').classList.add('in');
+        setTimeout(function () { splash.hidden = true; $('#menu').classList.add('shown'); }, 900);
+      }, Math.max(0, 1700 - (Date.now() - t0)));
+    }
+    var ready = (document.fonts && document.fonts.ready) ? document.fonts.ready : Promise.resolve();
+    ready.then(finish, finish); setTimeout(finish, 4000);
+  })();
+
+  $('#bAgain').addEventListener('click', startGame);
+  $('#bPlay').addEventListener('click', startGame);
+  $('#pauseBtn').addEventListener('click', function () { $('#pause').hidden = false; });
+  $('#bResume').addEventListener('click', function () { $('#pause').hidden = true; });
+  $('#bMenu').addEventListener('click', toMenu);
+
+  function round10(v) { return Math.round(v / 10) * 10; }
+  function openRaise() {
+    var me = S.players[0];
+    var toCall = toCallNow();
+    var maxTo = me.bet + me.chips;
+    var minTo = Math.min(maxTo, S.currentBet + S.lastRaise);
+    var pot = game.totalPot();
+    raiseCfg = { min: minTo, max: maxTo };
+    var sl = $('#rslider');
+    sl.min = minTo; sl.max = maxTo; sl.step = 1; sl.value = minTo;
+    sl.disabled = minTo >= maxTo; $('#ramt').disabled = minTo >= maxTo;
+    function sized(f) { return Math.max(minTo, Math.min(maxTo, S.currentBet + round10((pot + toCall) * f))); }
+    var presets = [['Min', minTo], ['½ Pot', sized(0.5)], ['¾ Pot', sized(0.75)], ['Pot', sized(1)], ['All-in', maxTo]];
+    var pe = $('#presets');
+    pe.innerHTML = '';
+    presets.forEach(function (pr) {
+      var b = document.createElement('button');
+      b.type = 'button'; b.className = 'preset'; b.textContent = pr[0];
+      b.addEventListener('click', function () { sl.value = pr[1]; updateRaise(); });
+      pe.appendChild(b);
+    });
+    raiseMode = true;
+    renderControls();
+    updateRaise();
+  }
+  function updateRaise() {
+    var sl = $('#rslider'), to = +sl.value;
+    var span = raiseCfg.max - raiseCfg.min;
+    sl.style.setProperty('--fill', (span > 0 ? (to - raiseCfg.min) / span * 100 : 100) + '%');
+    var ra = $('#ramt'); if (document.activeElement !== ra) ra.value = fmt(to);
+    var allin = to >= raiseCfg.max;
+    if (!$('#rlim').classList.contains('flash')) $('#rlim').textContent = 'Minimum ' + fmt(raiseCfg.min) + ' \u00b7 Maximum ' + fmt(raiseCfg.max);
+    $('#rGo').textContent = allin ? 'All-in ' + fmt(raiseCfg.max) : (S.currentBet === 0 ? 'Setzen auf ' : 'Erhöhen auf ') + fmt(to);
+  }
+  /* Schieben rastet auf 10er ein (Minimum und All-in bleiben exakt); eingetippte Zahlen duerfen beliebig sein, z. B. 21 */
+  $('#rslider').addEventListener('input', function () {
+    var ra = $('#ramt'); if (document.activeElement === ra) ra.blur();
+    var sl = this, v = Math.max(raiseCfg.min, Math.min(raiseCfg.max, round10(+sl.value)));
+    if (+sl.value >= raiseCfg.max - 4) v = raiseCfg.max;
+    sl.value = v; updateRaise();
+  });
+  /* Betrag selbst eintippen (auf 10er gerundet, zwischen Minimum und All-in) */
+  function typedAmt() {
+    var v = parseInt(String($('#ramt').value).replace(/\D/g, ''), 10);
+    if (isNaN(v)) return null;
+    return Math.max(raiseCfg.min, Math.min(raiseCfg.max, Math.round(v)));
+  }
+  function commitAmt() {
+    var v = typedAmt(), sl = $('#rslider'), lim = $('#rlim');
+    var raw = parseInt(String($('#ramt').value).replace(/\D/g, ''), 10);
+    lim.classList.remove('flash');
+    if (!isNaN(raw) && raw < raiseCfg.min) { lim.textContent = 'Weniger als ' + fmt(raiseCfg.min) + ' geht nicht (Mindest-Erhöhung)'; void lim.offsetWidth; lim.classList.add('flash'); setTimeout(function () { lim.classList.remove('flash'); updateRaise(); }, 2200); }
+    else if (!isNaN(raw) && raw > raiseCfg.max) { lim.textContent = 'Mehr als ' + fmt(raiseCfg.max) + ' hast du nicht (All-in)'; void lim.offsetWidth; lim.classList.add('flash'); setTimeout(function () { lim.classList.remove('flash'); updateRaise(); }, 2200); }
+    if (v !== null) sl.value = v;
+    $('#ramt').value = fmt(+sl.value); updateRaise();
+  }
+  var ramtFresh = false;
+  $('#ramt').addEventListener('focus', function () { var el = this; ramtFresh = true; el.value = String(+$('#rslider').value); try { el.select(); } catch (e) {} var v0 = el.value; setTimeout(function () { if (el.value === v0) { try { el.select(); } catch (e) {} } }, 0); });
+  $('#ramt').addEventListener('mouseup', function (e) { if (ramtFresh) { e.preventDefault(); ramtFresh = false; } });
+  $('#ramt').addEventListener('touchend', function () { ramtFresh = false; });
+  $('#ramt').addEventListener('input', function () {
+    var el = this, clean = el.value.replace(/\D/g, '').slice(0, 7);
+    if (clean !== el.value) el.value = clean;
+    var v = typedAmt(); if (v !== null) { $('#rslider').value = v; updateRaise(); }
+  });
+  $('#ramt').addEventListener('blur', commitAmt);
+  /* Tipp irgendwo anders auf den Bildschirm = Eingabe uebernehmen (auch auf dem Handy, wo ein Tipp auf leere Flaeche das Feld sonst offen laesst) */
+  document.addEventListener('pointerdown', function (e) { if (document.activeElement === $('#ramt') && e.target !== $('#ramt')) $('#ramt').blur(); }, true);
+  $('#ramt').addEventListener('keydown', function (e) { if (e.key === 'Enter') { e.preventDefault(); this.blur(); } });
+
+  /* ---------- Karten einzeln ziehen: beide in die Mitte = Passen ---------- */
+  var drag = null, tossed = [], tossTimer = 0;
+  function inZone(x, y) {
+    var r = zone.getBoundingClientRect();
+    if (!r.width) return false;
+    var nx = (x - (r.left + r.width / 2)) / (r.width / 2);
+    var ny = (y - (r.top + r.height / 2)) / (r.height / 2);
+    return nx * nx + ny * ny <= 1;
+  }
+  function restoreTossed() {
+    clearTimeout(tossTimer);
+    tossed.forEach(function (sl) {
+      sl.style.transition = 'transform .45s cubic-bezier(.2,1.4,.4,1), opacity .3s';
+      sl.style.transform = '';
+      sl.style.opacity = '';
+    });
+    tossed = [];
+  }
+  handEl.addEventListener('pointerdown', function (e) {
+    var slot = e.target.closest('.hslot');
+    if (!slot || tossed.indexOf(slot) >= 0) return;
+    if (handEl.classList.contains('folded') || handEl.classList.contains('none')) return;
+    var r = slot.getBoundingClientRect();
+    drag = { id: e.pointerId, slot: slot, x0: e.clientX, y0: e.clientY, cx: r.left + r.width / 2, cy: r.top + r.height / 2, dx: 0, dy: 0 };
+    try { slot.setPointerCapture(e.pointerId); } catch (err) {}
+    slot.style.transition = 'none';
+    slot.classList.add('lifted');
+    handEl.classList.add('dragging');
+    if (canFold()) zone.classList.add('show');
+    e.preventDefault();
+  });
+  handEl.addEventListener('pointermove', function (e) {
+    if (!drag || e.pointerId !== drag.id) return;
+    var f = canFold() ? 1 : 0.28;
+    drag.dx = (e.clientX - drag.x0) * f;
+    drag.dy = (e.clientY - drag.y0) * f;
+    drag.slot.style.transform = 'translate(' + drag.dx + 'px,' + drag.dy + 'px) rotate(' + Math.max(-12, Math.min(12, drag.dx / 12)) + 'deg) scale(1.08)';
+    zone.classList.toggle('hot', canFold() && inZone(e.clientX, e.clientY));
+  });
+  function endDrag(e) {
+    if (!drag || e.pointerId !== drag.id) return;
+    var d = drag; drag = null;
+    handEl.classList.remove('dragging');
+    zone.classList.remove('show', 'hot');
+    d.slot.classList.remove('lifted');
+    var drop = e.type === 'pointerup' && canFold() && inZone(e.clientX, e.clientY);
+    if (drop) {
+      var zr = zone.getBoundingClientRect();
+      var k = tossed.length;
+      var tx = zr.left + zr.width / 2 - d.cx + (k ? 16 : -16), ty = zr.top + zr.height / 2 - d.cy;
+      d.slot.style.transition = 'transform .38s cubic-bezier(.5,0,.8,.4), opacity .38s';
+      d.slot.style.transform = 'translate(' + tx + 'px,' + ty + 'px) scale(.5) rotate(' + (k ? 14 : -14) + 'deg)';
+      tossed.push(d.slot);
+      Snd.card(200);
+      setTimeout(function () { act({ type: 'fold' }); }, 380);   // eine Karte in die Mitte reicht zum Passen
+    } else {
+      if (e.type === 'pointerup' && humanResolve && toCallNow() === 0 && inZone(e.clientX, e.clientY)) {
+        flash('Check ist gratis – du musst nicht passen');
+      }
+      d.slot.style.transition = 'transform .5s cubic-bezier(.2,1.4,.4,1)';
+      d.slot.style.transform = '';
+    }
+  }
+  handEl.addEventListener('pointerup', endDrag);
+  handEl.addEventListener('pointercancel', endDrag);
+
+  /* ---------- Reaktionen (Emojis ueber dem Profilbild, auch fuer Online-Spieler gedacht) ---------- */
+  function showReaction(id, emo) {
+    var host = seats[id] && seats[id].el.querySelector('.rslot');
+    if (!host) return;
+    if (id === 0) {
+      // eigene Reaktion in der obersten Ebene, damit sie ueber den eigenen Handkarten liegt
+      var layer = $('#fly'), ar = seats[0].el.querySelector('.avatar').getBoundingClientRect(), st = stage.getBoundingClientRect();
+      [].forEach.call(layer.querySelectorAll('.reactwrap'), function (n) { n.remove(); });
+      host = document.createElement('div');
+      host.className = 'reactwrap';
+      host.style.cssText = 'position:absolute;width:0;height:0;left:' + (ar.left + ar.width / 2 - st.left) + 'px;top:' + (ar.top - st.top) + 'px;';
+      layer.appendChild(host);
+    }
+    if (id !== 0) host.innerHTML = '';
+    var b = document.createElement('div');
+    b.className = 'react'; b.textContent = emo;
+    host.appendChild(b);
+    if (b.animate) {
+      b.animate([{ transform: 'translateX(-50%) translateY(8px) scale(.4)', opacity: 0 }, { transform: 'translateX(-50%) translateY(-4px) scale(1.15)', opacity: 1, offset: .18 }, { transform: 'translateX(-50%) translateY(0) scale(1)', opacity: 1, offset: .28 }, { transform: 'translateX(-50%) translateY(0) scale(1)', opacity: 1, offset: .82 }, { transform: 'translateX(-50%) translateY(-10px) scale(.9)', opacity: 0 }], { duration: 2200, easing: 'ease-out' });
+    }
+    clearTimeout(b.__t);
+    b.__t = setTimeout(function () { if (b.parentNode) b.remove(); if (id === 0 && host.parentNode) host.remove(); }, 2200);
+  }
+  var reactTimes = [], REACT_MAX = 3, REACT_WINDOW = 9000, reactLockTimer = 0;
+  function reactLocked() {
+    var now = Date.now();
+    reactTimes = reactTimes.filter(function (t) { return now - t < REACT_WINDOW; });
+    return reactTimes.length >= REACT_MAX;
+  }
+  function updateReactLock() {
+    var locked = reactLocked();
+    $('#reactPanel').classList.toggle('locked', locked);
+    $('#reactBtn').classList.toggle('cool', locked);
+    clearTimeout(reactLockTimer);
+    if (locked) reactLockTimer = setTimeout(updateReactLock, Math.max(200, REACT_WINDOW - (Date.now() - reactTimes[0]) + 50));
+  }
+  function sendReaction(emo) {
+    if (reactLocked()) { updateReactLock(); return; }
+    reactTimes.push(Date.now());
+    showReaction(0, emo);   // bei Online-Runden wird hier zusaetzlich an die Mitspieler gesendet
+    updateReactLock();
+  }
+  /* Der Smiley-Kreis ist versteckt: Pfeil antippen oder nach rechts wischen blendet ihn ein; Pfeil (zeigt dann nach links) antippen oder nach links wischen versteckt ihn wieder */
+  function setReactShown(on) {
+    $('#reactBtn').classList.toggle('show', on); $('#reactTab').classList.toggle('open', on);
+    $('#reactTab').setAttribute('aria-label', on ? 'Reaktionen ausblenden' : 'Reaktionen einblenden');
+    if (!on) $('#reactPanel').hidden = true;
+  }
+  var tabDrag = null, swiped = false;
+  function startSwipe(e) { tabDrag = { x: e.clientX, id: e.pointerId }; swiped = false; }
+  ['#reactTab', '#reactBtn'].forEach(function (sel) { $(sel).addEventListener('pointerdown', startSwipe); });
+  document.addEventListener('pointermove', function (e) {
+    if (!tabDrag || e.pointerId !== tabDrag.id) return;
+    var dx = e.clientX - tabDrag.x;
+    if (dx > 22) { tabDrag = null; swiped = true; setReactShown(true); }
+    else if (dx < -22) { tabDrag = null; swiped = true; setReactShown(false); }
+  });
+  document.addEventListener('pointerup', function () { tabDrag = null; setTimeout(function () { swiped = false; }, 0); });
+  $('#reactTab').addEventListener('click', function () { if (swiped) return; setReactShown(!$('#reactBtn').classList.contains('show')); });
+  $('#reactBtn').addEventListener('click', function () {
+    if (swiped) return;
+    var p = $('#reactPanel'); p.hidden = !p.hidden; updateReactLock();
+  });
+  $('#reactPanel').addEventListener('click', function (e) {
+    var b = e.target.closest('button[data-e]');
+    if (!b) return;
+    sendReaction(b.dataset.e);
+    $('#reactPanel').hidden = true;
+  });
+  document.addEventListener('pointerdown', function (e) {
+    var p = $('#reactPanel');
+    if (!p.hidden && !e.target.closest('#reactPanel') && !e.target.closest('#reactBtn')) p.hidden = true;
+  });
+
+  /* ---------- Spielende ---------- */
+  function showEnd(win) {
+    $('#endTitle').textContent = win ? 'Du hast gewonnen' : 'Du bist raus';
+    $('#endText').textContent = win
+      ? 'Alle vier Gegner sind ausgeschieden. Du hast die ganze Runde abgeräumt.'
+      : 'Deine Chips sind aufgebraucht. Neues Spiel, neues Glück.';
+    $('#end').hidden = false;
+  }
+
+  /* ---------- Start ---------- */
+  layout();
+  render();
+})();
+</script>
+
+<script>if('serviceWorker' in navigator&&location.protocol.startsWith('http')){addEventListener('load',function(){navigator.serviceWorker.register('sw.js').catch(function(){})})}</script>
+</body></html>
