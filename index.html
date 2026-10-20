@@ -1011,6 +1011,15 @@ input.bprange[type=range]::-moz-range-thumb { width: 20px; height: 20px; border-
 #slRisk[hidden] { display: none; }
 #slRisk:active { transform: translateY(3px); box-shadow: 0 1px 0 #8a5d17, 0 4px 10px rgba(0,0,0,.45); }
 @keyframes slholdp2 { to { filter: brightness(1.12); } }
+/* Gluecksrad nach dem Nachdreh (dreht sich von allein) */
+.slwheel { position: absolute; left: 50%; top: 50%; z-index: 6; width: min(70%, 230px); aspect-ratio: 1; transform: translate(-50%, -50%); animation: slbig .45s cubic-bezier(.2,.9,.3,1.3) both; pointer-events: none; }
+.slwheel[hidden] { display: none; }
+.slwheel svg { width: 100%; height: 100%; display: block; filter: drop-shadow(0 0 22px rgba(244,214,127,.6)) drop-shadow(0 10px 18px rgba(0,0,0,.6)); }
+.slwheel svg text { font: 900 17px var(--ui); fill: #fff; text-shadow: 0 1px 2px rgba(0,0,0,.6); }
+.slwheel svg text.sm { font-size: 10px; }
+.slwptr { position: absolute; left: 50%; top: -8px; width: 0; height: 0; transform: translateX(-50%); border: 12px solid transparent; border-top: 22px solid #ffe08a; border-bottom: 0; filter: drop-shadow(0 2px 3px rgba(0,0,0,.6)); }
+#slwRes { position: absolute; left: 50%; top: 50%; transform: translate(-50%, -50%) scale(.3); opacity: 0; padding: 6px 16px; border-radius: 14px; background: rgba(16,10,26,.92); box-shadow: 0 0 0 2px var(--brass), 0 0 30px rgba(224,170,74,.8); font: 800 40px var(--display); color: #ffe08a; transition: transform .35s cubic-bezier(.2,.9,.3,1.4), opacity .2s; }
+#slwRes.on { opacity: 1; transform: translate(-50%, -50%); }
 /* Risikoleiter */
 .slgam { text-align: center; }
 .slgam h2 { margin-bottom: 6px; }
@@ -1301,6 +1310,7 @@ input.bprange[type=range]::-moz-range-thumb { width: 20px; height: 20px; border-
           <div><small>Gewinn</small><b id="slWinL">0</b></div>
         </div>
         <div class="slbig" id="slBig" hidden><small></small><b></b></div>
+        <div class="slwheel" id="slWheel" hidden><svg id="slwSvg" viewBox="-100 -100 200 200" aria-hidden="true"></svg><i class="slwptr"></i><b id="slwRes"></b></div>
       </div>
       <div class="slpay" id="slPay" aria-label="Gewinntabelle"></div>
       <div class="bjtoast" id="slToast"></div>
@@ -6110,7 +6120,8 @@ input.bprange[type=range]::-moz-range-thumb { width: 20px; height: 20px; border-
 <script>
 /* Slots: zwei Automaten, gespielt direkt mit dem Guthaben (Spielgeld).
    Lucky Seven: drei Walzen, eine Gewinnlinie (der rote Strich), Joker nur auf der mittleren Walze, Stein-Kirschen
-   (landet eine auf der Linie, bleibt ihre Walze stehen und die anderen drehen gratis nach).
+   (landet eine auf der Linie, bleibt ihre Walze stehen und die anderen drehen gratis nach; stehen danach drei
+   Kirschen in der Reihe, dreht sich ein kleines Gluecksrad und nimmt diesen Gewinn x2 bis x25).
    Diamant 5 (frei ab 5.000 Chips): fuenf Walzen, drei Reihen, fuenf Gewinnlinien, Joker auf den Walzen 2 bis 4.
    Bei beiden: dreimal Extra-Spin irgendwo im Fenster = 10 Gratis-Drehs, jeder Gewinn darin erhoeht den Multiplikator
    (x1 bis x5); nach einem Gewinn die Risikoleiter (Rot/Schwarz, 50:50); ein fester Jackpot (200x Einsatz).
@@ -6128,6 +6139,8 @@ input.bprange[type=range]::-moz-range-thumb { width: 20px; height: 20px; border-
 
   var BETS = [10, 20, 50, 100, 200, 500, 1000], GIFT = 50, COPIES = 9, FREE_N = 10, MULT_MAX = 5;
   var JP0 = 200, UNLOCK = 5000, LADDER = 5;
+  /* Gluecksrad nach dem Nachdreh: jedes Feld ist so gross wie seine Chance (zusammen 100) */
+  var WHEEL = [{ m: 2, p: 19 }, { m: 5, p: 12 }, { m: 3, p: 13 }, { m: 10, p: 6 }, { m: 2, p: 18 }, { m: 25, p: 2 }, { m: 3, p: 12 }, { m: 2, p: 18 }];
 
   /* feste Walzenbaender (immer gleich gemischt, damit die Nachbarn wie bei echten Walzen stimmen) */
   function strip(count, seed) {
@@ -6163,7 +6176,7 @@ input.bprange[type=range]::-moz-range-thumb { width: 20px; height: 20px; border-
     id: 'lucky', title: 'LUCKY ★ SEVEN', short: 'Lucky 7', reels: 3, need: 3, gap: 420, tease: 2600,
     counts: [{ C: 7, c: 1, L: 7, O: 5, G: 5, B: 4, R: 3, S: 2, F: 2 }, { C: 6, c: 1, L: 7, O: 5, G: 5, B: 4, R: 3, S: 2, W: 1, F: 2 }, { C: 7, c: 1, L: 7, O: 5, G: 5, B: 4, R: 3, S: 2, F: 2 }],
     seeds: [7, 4242, 90001],
-    pays: { SWS: 100, RRR: 30, BBB: 16, GGG: 10, OOO: 8, LLL: 6, CCC: 6, mix: 4, CC: 3, C: 2 }
+    pays: { SWS: 100, RRR: 30, BBB: 15, GGG: 10, OOO: 7, LLL: 5, CCC: 4, mix: 4, CC: 3, C: 2 }
   };
   /* Gewinnlinie: drei echte Siebenen = Jackpot; der Joker (nur Mitte) ersetzt jedes Symbol ausser Extra-Spin */
   M1.eval = function (g) {
@@ -6314,6 +6327,7 @@ input.bprange[type=range]::-moz-range-thumb { width: 20px; height: 20px; border-
       row('CC', symHTML('C') + symHTML('C') + '<i>+ beliebig</i>', fmt(M1.pays.CC * b));
       row('C', symHTML('C') + '<i>+ beliebig</i>', fmt(M1.pays.C * b));
       row('STN', symHTML('c') + '<i>auf der Linie</i>', 'Nachdreh');
+      row('WHL', symHTML('c') + symHTML('C') + symHTML('C') + '<i>im Nachdreh</i>', 'Rad ×2–×25');
     } else {
       row('JP', symHTML('D') + '<i>× 5</i>', 'Jackpot');
       M2.order.forEach(function (s) {
@@ -6328,7 +6342,8 @@ input.bprange[type=range]::-moz-range-thumb { width: 20px; height: 20px; border-
     if (cur === M1) return 'Dein Guthaben ist gespeichert. Gewonnen wird in der Reihe mit dem roten Strich. ' +
       'Der <b>Joker</b> (nur mittlere Walze) ersetzt jedes Symbol, drei echte Siebenen knacken den <b>Jackpot</b>. ' +
       'Dreimal <b>Extra-Spin</b> irgendwo im Fenster = 10 Gratis-Drehs, jeder Gewinn darin erhöht den Multiplikator bis ×5. ' +
-      'Landet eine <b>Stein-Kirsche</b> auf der Linie, bleibt ihre Walze stehen und die anderen drehen gratis nach. Beträge für deinen Einsatz:';
+      'Landet eine <b>Stein-Kirsche</b> auf der Linie, bleibt ihre Walze stehen und die anderen drehen gratis nach. ' +
+      'Stehen danach drei Kirschen in der Reihe, dreht sich das <b>Glücksrad</b> und nimmt diesen Gewinn ×2 bis ×25. Beträge für deinen Einsatz:';
     return 'Dein Guthaben ist gespeichert. 5 Gewinnlinien (Mitte, oben, unten, V und umgedrehtes V), gewonnen wird mit gleichen Symbolen von links. ' +
       'Der <b>Joker</b> (Walze 2 bis 4) ersetzt jedes Symbol, fünf echte Diamanten auf einer Linie knacken den <b>Jackpot</b> (* mit Joker). ' +
       'Dreimal <b>Extra-Spin</b> irgendwo = 10 Gratis-Drehs mit steigendem Multiplikator. Beträge je Linie für deinen Einsatz:';
@@ -6402,6 +6417,7 @@ input.bprange[type=range]::-moz-range-thumb { width: 20px; height: 20px; border-
     all('#sl .slpay div.on').forEach(function (c) { c.classList.remove('on'); });
     var svg = winEl.querySelector('.sllines'); if (svg) svg.innerHTML = '';
     mach.classList.remove('won'); winEl.classList.remove('line'); $('#slBig').hidden = true; $('#slWinL').classList.remove('on');
+    $('#slWheel').hidden = true;
     clearTimeout(bigT); clearTimeout(holdT);
   }
   function endOffers() { riskAmt = 0; }
@@ -6461,9 +6477,14 @@ input.bprange[type=range]::-moz-range-thumb { width: 20px; height: 20px; border-
     for (var k = 0; k < mc.reels; k++) {
       var g = grid(mc, res), ev = mc.eval(g), sc = k === 0 ? scatter(mc, res) : null, mult = fr ? f.mult : 1;
       var jpWin = ev && ev.jp ? Math.round(JP0 * b) : 0, win = (ev ? Math.round(ev.m * b * mult) : 0) + jpWin;
+      var wheel = null;
+      if (k > 0 && ev && !ev.jp && ev.k.length === 3 && ev.k[0] === ev.k[2]) {   // drei in einer Reihe nach dem Nachdreh
+        var rr = randInt(100), wi = 0; while (rr >= WHEEL[wi].p) { rr -= WHEEL[wi].p; wi++; }
+        wheel = wi; win *= WHEEL[wi].m;
+      }
       var multUp = fr && win > 0 && f.mult < MULT_MAX;
       if (fr && win > 0) f.mult = Math.min(MULT_MAX, f.mult + 1);
-      steps.push({ res: res, ev: ev, sc: sc, win: win, jpWin: jpWin, mult: mult, multUp: multUp, held: held.slice(), before: total });
+      steps.push({ res: res, ev: ev, sc: sc, win: win, jpWin: jpWin, mult: mult, multUp: multUp, held: held.slice(), before: total, wheel: wheel });
       total += win; if (jpWin) jpAny = true;
       var nw = g.map(function (c, i) { return !held[i] && !!STONE[c[1]]; });
       if (!nw.some(Boolean)) break;
@@ -6542,6 +6563,7 @@ input.bprange[type=range]::-moz-range-thumb { width: 20px; height: 20px; border-
   }
 
   function done(c, k) {
+    if (c.steps[k].wheel !== null && !c.steps[k].wheelShown) { c.steps[k].wheelShown = true; spinWheel(c, k); return; }
     var gg = gen, mc = c.mc, s = c.steps[k], x = s.win / c.b, hold = 0, strong = false, base0 = c.base + s.before, last = k === c.steps.length - 1;
     if (s.win > 0) {
       s.ev.wins.forEach(function (w) { w.cells.forEach(function (q) { cellEl(q[0], s.res[q[0]], q[1]).classList.add('hit'); }); });
@@ -6549,6 +6571,7 @@ input.bprange[type=range]::-moz-range-thumb { width: 20px; height: 20px; border-
         var key = d.dataset.k;
         if (mc === M1 ? key === s.ev.k : s.ev.wins.some(function (w) { return (w.k === key && (key !== 'C' || w.n >= 3)) || (key === 'C2' && w.k === 'C' && w.n === 2); })) d.classList.add('on');
       });
+      if (s.wheel !== null) all('#sl .slpay div[data-k="WHL"]').forEach(function (d) { d.classList.add('on'); });
       var wl = $('#slWinL'), slow = x >= 10;
       wl.classList.add('on');
       countUp(wl, s.before, s.before + s.win, slow ? 1400 : 600);
@@ -6558,9 +6581,9 @@ input.bprange[type=range]::-moz-range-thumb { width: 20px; height: 20px; border-
       if (strong) { winEl.classList.add('line'); hold = s.jpWin ? 4200 : x >= 40 ? 3000 : x >= 12 ? 2400 : 1800; }
       if (mc === M2) drawLines(s.ev.wins, strong);
       if (s.multUp) { $('#slBetLT').textContent = 'Gratis ×' + (s.mult + 1); var bl = $('#slBetL'); bl.classList.remove('pop'); void bl.offsetWidth; bl.classList.add('pop'); }
-      if (s.jpWin || x >= 10) {
+      if (s.jpWin || x >= 10 || s.wheel !== null) {
         mach.classList.add('won');
-        big(s.jpWin ? 'Jackpot' : x >= 40 ? 'Riesengewinn' : x >= 20 ? 'Großer Gewinn' : s.mult > 1 ? 'Gewinn ×' + s.mult : 'Gewinn', '+' + fmt(s.win));
+        big(s.jpWin ? 'Jackpot' : s.wheel !== null ? 'Glücksrad ×' + WHEEL[s.wheel].m : x >= 40 ? 'Riesengewinn' : x >= 20 ? 'Großer Gewinn' : s.mult > 1 ? 'Gewinn ×' + s.mult : 'Gewinn', '+' + fmt(s.win));
         Snd.win(); if (x >= 20) setTimeout(function () { Snd.pot(); }, 450); if (s.jpWin) setTimeout(function () { Snd.win(); }, 900);
         coins(s.jpWin ? 60 : x >= 20 ? 30 : 14);
       } else Snd.chip(Math.min(4, Math.max(1, Math.round(x))), 0, true);
@@ -6596,6 +6619,49 @@ input.bprange[type=range]::-moz-range-thumb { width: 20px; height: 20px; border-
     if (!last && !hold) hold = 700;   // kurz zeigen, was gefallen ist, bevor nachgedreht wird
     if (hold) holdT = setTimeout(release, hold);
     else release();
+  }
+  /* Drei in einer Reihe nach dem Nachdreh: die Reihe leuchtet, ein kleines Gluecksrad dreht sich von allein
+     und zeigt, wie oft der Gewinn genommen wird */
+  (function drawWheel() {
+    var h = '', tx = '', a = -90, R = 92, COL = { 2: '#5a3a8c', 3: '#1f6c86', 5: '#b0752a', 10: '#8c1f2a', 25: '#2f7d45' };
+    WHEEL.forEach(function (w) {
+      var span = w.p * 3.6, a0 = a * Math.PI / 180, a1 = (a + span) * Math.PI / 180, am = a + span / 2;
+      h += '<path d="M0 0 L' + (R * Math.cos(a0)).toFixed(2) + ' ' + (R * Math.sin(a0)).toFixed(2) + ' A' + R + ' ' + R + ' 0 0 1 ' + (R * Math.cos(a1)).toFixed(2) + ' ' + (R * Math.sin(a1)).toFixed(2) + ' Z" fill="' + COL[w.m] + '" stroke="#f4d67f" stroke-width="1.5"/>';
+      if (span >= 12) tx += '<text transform="rotate(' + (am + 90).toFixed(1) + ') translate(0 -62)" text-anchor="middle" dy="5">×' + w.m + '</text>';
+      else tx += '<text class="sm" transform="rotate(' + (am + 90).toFixed(1) + ') translate(0 -66)" text-anchor="middle" dy="4">×' + w.m + '</text>';
+      w.mid = a + 90 + span / 2;   // Mitte des Feldes, gemessen vom Zeiger oben im Uhrzeigersinn
+      a += span;
+    });
+    h += tx + '<circle r="93" fill="none" stroke="#f4d67f" stroke-width="3"/><circle r="15" fill="#f4d67f"/><circle r="6" fill="#1a1004"/>';   // Schrift ueber allen Feldern
+    $('#slwSvg').innerHTML = h;
+  })();
+  var wheelRot = 0;
+  function spinWheel(c, k) {
+    var gg = gen, s = c.steps[k], w = WHEEL[s.wheel], half = w.p * 1.8;
+    s.ev.wins.forEach(function (q) { q.cells.forEach(function (x) { cellEl(x[0], s.res[x[0]], x[1]).classList.add('hit'); }); });
+    winEl.classList.add('line'); mach.classList.add('won');
+    var box = $('#slWheel'), svg = $('#slwSvg'), res = $('#slwRes');
+    res.textContent = ''; res.classList.remove('on');
+    box.hidden = false; Snd.win();
+    var target = wheelRot - (wheelRot % 360) + 360 * 5 + (360 - w.mid) + (Math.random() - 0.5) * half * 1.4;
+    wheelRot = target;
+    svg.style.transition = 'none'; void svg.offsetWidth;
+    setTimeout(function () {
+      if (gg !== gen) return;
+      svg.style.transition = 'transform 3.4s cubic-bezier(.12,.75,.15,1)';
+      svg.style.transform = 'rotate(' + target + 'deg)';
+      Snd.spin(2.3); setTimeout(function () { if (gg === gen) Snd.tease(1.1); }, 2300);
+    }, 450);
+    setTimeout(function () {
+      if (gg !== gen) return;
+      res.textContent = '×' + w.m; res.classList.add('on');
+      Snd.pot(); if (w.m >= 10) setTimeout(function () { Snd.win(); }, 300);
+    }, 3950);
+    setTimeout(function () {
+      if (gg !== gen) return;
+      box.hidden = true; mach.classList.remove('won');
+      done(c, k);
+    }, 5300);
   }
   /* Steinblock: die Walze bleibt stehen, die anderen drehen gratis nach */
   function stoneNext(c, k) {
