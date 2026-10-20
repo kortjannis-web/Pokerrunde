@@ -652,7 +652,8 @@ input.bprange[type=range]::-moz-range-thumb { width: 20px; height: 20px; border-
 .fl .btn { height: 38px; padding: 0 14px; font-size: 14px; flex: none; }
 .flm { width: 34px; height: 34px; border-radius: 50%; border: 0; background: transparent; color: var(--muted); padding: 0; display: grid; place-items: center; flex: none; }
 .flm svg { width: 18px; height: 18px; }
-.flx { display: none; justify-content: flex-end; gap: 8px; padding: 0 10px 10px; }
+.flx { display: none; justify-content: flex-end; flex-wrap: wrap; gap: 8px; padding: 0 10px 10px; }
+.flx .fnote { white-space: nowrap; }
 .fl.open .flx { display: flex; }
 .flx .btn { color: #ff8a76; }
 .fadd { display: flex; gap: 8px; }
@@ -668,12 +669,15 @@ input.bprange[type=range]::-moz-range-thumb { width: 20px; height: 20px; border-
 .finv .psec { margin: 4px 0 8px; }
 #pause .finv .fl, #bjPause .finv .fl { background: var(--bg); }
 #pause .finv .fl .pav i, #bjPause .finv .fl .pav i { box-shadow: 0 0 0 2.5px var(--bg); }
-#invBan { position: absolute; left: 0; right: 0; top: max(10px, env(safe-area-inset-top)); z-index: 96; display: flex; align-items: center; gap: 10px; padding: 10px 8px 10px 10px; border-radius: 16px; background: var(--bg2); border: 1px solid rgba(224,170,74,.55); box-shadow: 0 14px 34px rgba(0,0,0,.6); animation: ibin .35s cubic-bezier(.2,.9,.3,1); }
+#invBan, #askBan { position: absolute; left: 0; right: 0; top: max(10px, env(safe-area-inset-top)); z-index: 96; display: flex; align-items: center; gap: 10px; padding: 10px 8px 10px 10px; border-radius: 16px; background: var(--bg2); border: 1px solid rgba(224,170,74,.55); box-shadow: 0 14px 34px rgba(0,0,0,.6); animation: ibin .35s cubic-bezier(.2,.9,.3,1); }
 @keyframes ibin { from { transform: translateY(-20px); opacity: 0; } to { transform: none; opacity: 1; } }
 .ibtxt { flex: 1; min-width: 0; display: flex; flex-direction: column; gap: 2px; font: 500 13px/1.3 var(--ui); color: var(--muted); }
 .ibtxt b { color: var(--ink); font: 700 15px var(--ui); overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
-#invBan .btn { height: 40px; padding: 0 14px; font-size: 14px; flex: none; }
-#invBan .btn[hidden] { display: none; }
+#invBan .btn, #askBan .btn { height: 40px; padding: 0 14px; font-size: 14px; flex: none; }
+#invBan .btn[hidden], #askBan .btn[hidden] { display: none; }
+#askBan { flex-wrap: wrap; }
+#askBan .ibtxt { flex: 1 1 150px; }
+.flx .btn.primary { color: var(--brass-ink); }
 .ibx { width: 32px; height: 32px; border: 0; border-radius: 50%; background: transparent; color: var(--muted); padding: 0; display: grid; place-items: center; flex: none; }
 .ibx svg { width: 16px; height: 16px; }
 #fToast { position: absolute; left: 50%; bottom: max(24px, env(safe-area-inset-bottom)); z-index: 97; transform: translate(-50%, 12px); padding: 9px 16px; border-radius: 999px; background: var(--brass); color: var(--brass-ink); font: 800 13px var(--ui); opacity: 0; pointer-events: none; transition: opacity .3s, transform .3s; white-space: nowrap; max-width: calc(100% - 20px); overflow: hidden; text-overflow: ellipsis; box-shadow: 0 6px 18px rgba(0,0,0,.5); }
@@ -1645,6 +1649,13 @@ input.bprange[type=range]::-moz-range-thumb { width: 20px; height: 20px; border-
     <div class="ibtxt"><b id="ibName"></b><span id="ibText"></span></div>
     <button class="btn primary" id="ibGo" type="button">Beitreten</button>
     <button class="ibx" id="ibX" type="button" aria-label="Einladung schließen"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" aria-hidden="true"><path d="M6 6l12 12M18 6L6 18"/></svg></button>
+  </div>
+
+  <div id="askBan" hidden role="alert">
+    <span class="pav" id="abAv"></span>
+    <div class="ibtxt"><b id="abName"></b><span id="abText"></span></div>
+    <button class="btn" id="abNo" type="button">Ablehnen</button>
+    <button class="btn primary" id="abYes" type="button">Annehmen</button>
   </div>
 
   <div id="end" hidden>
@@ -4416,9 +4427,14 @@ input.bprange[type=range]::-moz-range-thumb { width: 20px; height: 20px; border-
     return MP.seats.length < Math.min(5, NET.cfg.seats) &&
       MP.seats.every(function (st, i) { return i === 0 || st.kind !== 'human' || st.gone || st.v >= 3; });
   }
+  /* Bot ohne Chips (nur wo Bots nicht nachladen, also bei einem Spiel gegen Bots, das zum Online-Tisch wurde): sein Platz ist frei */
+  function botFree(i) {
+    var p = S.players[i];
+    return !S.botRebuy && !!p && p.kind === 'bot' && p.chips <= 0 && (!p.inHand || S.phase === 'result' || S.phase === 'idle');
+  }
   function mpFreeSeats() {
     var free = 0;
-    MP.seats.forEach(function (st, i) { if (i > 0 && st.kind === 'human' && st.gone) free++; });
+    MP.seats.forEach(function (st, i) { if (i > 0 && ((st.kind === 'human' && st.gone) || (st.kind === 'bot' && botFree(i)))) free++; });
     if (mpCanGrow()) free += Math.min(5, NET.cfg.seats) - MP.seats.length;
     return free - MP.joins.length;
   }
@@ -4446,6 +4462,7 @@ input.bprange[type=range]::-moz-range-thumb { width: 20px; height: 20px; border-
       if (j.conn.open === false) return;
       var idx = -1;
       MP.seats.forEach(function (st, i) { if (idx < 0 && i > 0 && st.kind === 'human' && st.gone) idx = i; });
+      MP.seats.forEach(function (st, i) { if (idx < 0 && i > 0 && st.kind === 'bot' && botFree(i)) idx = i; });
       if (idx < 0) {
         if (!mpCanGrow()) { try { j.conn.send({ t: 'full' }); } catch (e) {} return; }
         idx = MP.seats.length;
@@ -4465,6 +4482,41 @@ input.bprange[type=range]::-moz-range-thumb { width: 20px; height: 20px; border-
         toastMsg(nm + ' ist nicht eingestiegen'); mpDrop(idx);
       }, 8000);
     });
+  }
+  /* Ein Freund fragt, ob er dazukommen darf: aus dem Spiel gegen Bots wird ein Online-Tisch mit denselben Chips
+     und Bots. Der Freund setzt sich ab der naechsten Hand auf den Platz eines Bots ohne Chips. done(code) bzw. done('') */
+  function hostNow(done) {
+    if (MP.on && MP.role === 'host' && NET.code) { done(mpFreeSeats() > 0 ? NET.code : ''); return; }
+    if (MP.on || NET.peer || !playing || !netAvail() || !S.players.some(function (p, i) { return botFree(i); })) { done(''); return; }
+    var g = ++NET.gen, code = newCode(), tries = 0;
+    (function attempt() {
+      var fin = false, peer;
+      try { peer = new window.Peer(PEER_PREFIX + code.toLowerCase(), peerOpts()); } catch (e) { done(''); return; }
+      var to = setTimeout(function () { if (fin) return; fin = true; try { peer.destroy(); } catch (e) {} done(''); }, 12000);
+      peer.on('open', function () {
+        if (fin) return; fin = true; clearTimeout(to);
+        if (g !== NET.gen || MP.on || NET.peer || !playing) { try { peer.destroy(); } catch (e) {} done(''); return; }
+        var bots = S.players.filter(function (p) { return p.kind === 'bot'; }).length;
+        NET.peer = peer; NET.role = 'host'; NET.code = code; NET.locked = true; NET.shown = 1; NET.conns = [];
+        NET.cfg = { sb: SB_OPTS.indexOf(S.sb0) >= 0 ? S.sb0 : 10, every: EVERY_OPTS.indexOf(game.handsPerLevel) >= 0 ? game.handsPerLevel : 8, seats: S.players.length, bots: bots };
+        NET.players = [Object.assign({ id: 'host', host: true }, cleanProf(myPublic(S.players[0].chips)))];
+        MP = { on: true, role: 'host', n: S.players.length, wait: null, brokes: [], joins: [], ended: false,
+               seats: S.players.map(function (p, i) {
+                 return i === 0 ? { rid: '', name: profName(), color: PROF.color, peer: '', conn: null, chips: p.chips, kind: 'human', gone: false, last: '', v: 4 }
+                                : { name: p.name, color: p.color || AV[i], peer: '', conn: null, chips: p.chips, kind: p.kind, gone: false, last: '' };
+               }) };
+        peer.on('connection', hostAccept);
+        peer.on('disconnected', function () { if (g === NET.gen) { try { peer.reconnect(); } catch (e) {} } });
+        wantWake();
+        done(code);
+      });
+      peer.on('error', function (err) {
+        if (fin || g !== NET.gen) return;
+        fin = true; clearTimeout(to); try { peer.destroy(); } catch (e) {}
+        if (err && err.type === 'unavailable-id' && tries < 4) { tries++; code = newCode(); attempt(); return; }
+        done('');
+      });
+    })();
   }
   function mpHostEnd() {
     MP.ended = true;
@@ -4911,8 +4963,16 @@ input.bprange[type=range]::-moz-range-thumb { width: 20px; height: 20px; border-
     cardEl: cardEl, setFace: setFace, chipStack: chipStack, seg: seg, Picker: Picker,
     newCode: newCode, cleanCode: cleanCode, netAvail: netAvail, peerOpts: peerOpts, MSG_NOLIB: MSG_NOLIB,
     /* fuer die Freundesliste: wo bin ich gerade (Menue, Bots, Online-Tisch mit Code) */
-    poker: function () { return { role: NET.role, code: NET.code, playing: playing }; },
-    pokerJoin: function (code) { $('#profile').hidden = true; $('#pview').hidden = true; openFriends('join', code); }
+    poker: function () {
+      var free = playing && (MP.on ? MP.role === 'host' && mpFreeSeats() > 0 : S.players.some(function (p, i) { return botFree(i); }));
+      return { role: NET.role, code: NET.code, playing: playing, free: !!free };
+    },
+    pokerHost: hostNow,
+    /* auto: gleich beitreten (nach einer angenommenen Anfrage), mit dem zuletzt gewaehlten Einsatz */
+    pokerJoin: function (code, auto) {
+      $('#profile').hidden = true; $('#pview').hidden = true; openFriends('join', code);
+      if (auto) setTimeout(function () { if (!$('#frGo').disabled) netJoin(); }, 60);
+    }
   };
 })();
 </script>
@@ -6154,9 +6214,42 @@ input.bprange[type=range]::-moz-range-thumb { width: 20px; height: 20px; border-
   var idle = window.prIdle;
   window.prIdle = function () { return (!idle || idle()) && bj.hidden && !NB.peer; };
   /* fuer die Freundesliste */
+  /* Ein Freund fragt, ob er dazukommen darf: der Tisch, an dem man allein spielt, wird zum Online-Tisch.
+     Der Freund setzt sich in der naechsten Setzrunde dazu. done(code) bzw. done('') */
+  function free() { return !!T && T.seats.filter(function (s) { return !s.gone; }).length < (T.cap || MAX_SEATS); }
+  function hostNow(done) {
+    if (NB.role === 'host' && NB.code) { done(free() ? NB.code : ''); return; }
+    if (NB.role || NB.peer || !T || !H || bj.hidden || !PR.netAvail() || !free()) { done(''); return; }
+    var g = ++NB.gen, code = PR.newCode(), tries = 0;
+    (function attempt() {
+      var fin = false, peer;
+      try { peer = new window.Peer(PEER_PREFIX + code.toLowerCase(), PR.peerOpts()); } catch (e) { done(''); return; }
+      var to = setTimeout(function () { if (fin) return; fin = true; try { peer.destroy(); } catch (e) {} done(''); }, 12000);
+      peer.on('open', function () {
+        if (fin) return; fin = true; clearTimeout(to);
+        if (g !== NB.gen || NB.role || !T || bj.hidden) { try { peer.destroy(); } catch (e) {} done(''); return; }
+        NB.peer = peer; NB.role = 'host'; NB.code = code; NB.conns = [];
+        peer.on('connection', function (c) { hostAccept(c, g); });
+        peer.on('disconnected', function () { if (g === NB.gen) { try { peer.reconnect(); } catch (e) {} } });
+        openTable(); push();
+        done(code);
+      });
+      peer.on('error', function (err) {
+        if (fin || g !== NB.gen) return;
+        fin = true; clearTimeout(to); try { peer.destroy(); } catch (e) {}
+        if (err && err.type === 'unavailable-id' && tries < 4) { tries++; code = PR.newCode(); attempt(); return; }
+        done('');
+      });
+    })();
+  }
   window.BJ = {
-    state: function () { return { on: !bj.hidden, role: NB.role, code: NB.code }; },
-    join: function (code) { $('#profile').hidden = true; $('#friends').hidden = true; setPage(BJP, false); openFriends('join', code); }
+    state: function () { return { on: !bj.hidden, role: NB.role, code: NB.code, free: !bj.hidden && (!NB.role || NB.role === 'host') && free() }; },
+    host: hostNow,
+    /* auto: gleich beitreten (nach einer angenommenen Anfrage), mit dem zuletzt gewaehlten Einsatz */
+    join: function (code, auto) {
+      $('#profile').hidden = true; $('#friends').hidden = true; setPage(BJP, false); openFriends('join', code);
+      if (auto) setTimeout(function () { if (!$('#bjfGo').disabled) $('#bjfGo').click(); }, 60);
+    }
   };
 })();
 </script>
@@ -6940,21 +7033,24 @@ input.bprange[type=range]::-moz-range-thumb { width: 20px; height: 20px; border-
   /* ---------- wo bin ich gerade? ---------- */
   function myStatus() {
     var b = window.BJ ? window.BJ.state() : {}, n = PR.poker();
-    if (b.on) return { g: 'bj', code: b.code || '' };
+    /* ask: man spielt allein bzw. gegen Bots und es ist ein Platz frei, Freunde koennen fragen, ob sie dazukommen duerfen */
+    if (b.on) return { g: 'bj', code: b.code || '', ask: b.free ? 1 : 0 };
     if (window.SL && window.SL.on()) return { g: 'slots', code: '' };
-    if (n.role) return { g: 'poker', code: n.code || '' };
-    if (n.playing) return { g: 'poker', code: '' };
+    if (n.role) return { g: 'poker', code: n.code || '', ask: n.free ? 1 : 0 };
+    if (n.playing) return { g: 'poker', code: '', ask: n.free ? 1 : 0 };
     return { g: 'menu', code: '' };
   }
   function cleanSt(s) {
     s = (s && typeof s === 'object') ? s : {};
-    return { g: s.g === 'poker' || s.g === 'bj' || s.g === 'slots' ? s.g : 'menu', code: typeof s.code === 'string' && /^[A-Z2-9]{5}$/.test(s.code) ? s.code : '' };
+    var g = s.g === 'poker' || s.g === 'bj' || s.g === 'slots' ? s.g : 'menu';
+    return { g: g, code: typeof s.code === 'string' && /^[A-Z2-9]{5}$/.test(s.code) ? s.code : '', ask: s.ask && (g === 'poker' || g === 'bj') ? 1 : 0 };
   }
   function stText(st) {
     if (!st) return 'Online';
-    if (st.g === 'bj') return st.code ? 'Am Blackjack-Tisch' : 'Spielt Blackjack';
+    var fr = st.ask && !st.code ? ' · Platz frei' : '';
+    if (st.g === 'bj') return (st.code ? 'Am Blackjack-Tisch' : 'Spielt Blackjack') + fr;
     if (st.g === 'slots') return 'Spielt Slots';
-    if (st.g === 'poker') return st.code ? 'Am Pokertisch' : 'Spielt Poker gegen Bots';
+    if (st.g === 'poker') return (st.code ? 'Am Pokertisch' : 'Spielt Poker gegen Bots') + fr;
     return 'Online';
   }
   /* sl: bester Slots-Gewinn und Zahl der Jackpots (fuer die Slots-Bestenliste; aeltere Versionen lassen das Feld weg) */
@@ -7081,6 +7177,18 @@ input.bprange[type=range]::-moz-range-thumb { width: 20px; height: 20px; border-
     } else if (d.t === 'inv') {
       var st = cleanSt({ g: d.g, code: d.code });
       if (st.code && st.g !== 'menu') showInvite(f, st);
+    } else if (d.t === 'ask') {
+      gotAsk(f, d.g === 'bj' ? 'bj' : 'poker');
+    } else if (d.t === 'askok') {
+      var ok = cleanSt({ g: d.g, code: d.code });
+      delete asked[code]; changed();
+      if (!ok.code || (ok.g !== 'poker' && ok.g !== 'bj')) return;
+      if (!window.prIdle()) { toast((f.name || code) + ' hat angenommen – verlass erst dein laufendes Spiel'); return; }
+      toast((f.name || code) + ' hat angenommen, du kommst an den Tisch'); Snd.ping();
+      joinTable(ok, true);
+    } else if (d.t === 'askno') {
+      delete asked[code]; changed();
+      toast(d.r === 'full' ? 'Bei ' + (f.name || code) + ' ist gerade kein Platz frei' : (f.name || code) + ' hat deine Anfrage abgelehnt');
     } else if (d.t === 'rm') {
       removeFriend(code, false);
     } else if (d.t === 'big') {
@@ -7183,7 +7291,15 @@ input.bprange[type=range]::-moz-range-thumb { width: 20px; height: 20px; border-
     var cd = document.createElement('span'); cd.className = 'fnote'; cd.style.marginRight = 'auto'; cd.style.alignSelf = 'center'; cd.textContent = 'Code ' + f.code;
     var rm = document.createElement('button'); rm.type = 'button'; rm.className = 'btn'; rm.textContent = 'Entfernen';
     rm.addEventListener('click', function () { removeFriend(f.code, true); });
-    x.appendChild(cd); x.appendChild(rm); el.appendChild(x);
+    x.appendChild(cd);
+    if (on && st.ask && !st.code) {
+      var wait = asked[f.code] > Date.now();
+      var ak = document.createElement('button'); ak.type = 'button'; ak.className = 'btn' + (wait ? '' : ' primary');
+      ak.textContent = wait ? 'Angefragt …' : 'An den Tisch fragen'; ak.disabled = wait;
+      ak.addEventListener('click', function () { askJoin(f, st); });
+      x.appendChild(ak);
+    }
+    x.appendChild(rm); el.appendChild(x);
     return el;
   }
   /* Zeile in "Freunde einladen" (am eigenen Tisch) */
@@ -7331,12 +7447,54 @@ input.bprange[type=range]::-moz-range-thumb { width: 20px; height: 20px; border-
   function toast(t) { ftEl.textContent = t; ftEl.classList.add('on'); clearTimeout(ftT); ftT = setTimeout(function () { ftEl.classList.remove('on'); }, 3200); }
 
   /* ---------- an einen Tisch gehen (aus der Liste oder einer Einladung) ---------- */
-  function joinTable(st) {
+  function joinTable(st, auto) {
     $('#invBan').hidden = true;
     if (!window.prIdle()) { toast('Verlass erst dein laufendes Spiel'); return; }
-    if (st.g === 'bj') { $('#friends').hidden = true; window.BJ.join(st.code); }
-    else { $('#bjf').hidden = true; PR.pokerJoin(st.code); }
+    if (st.g === 'bj') { $('#friends').hidden = true; window.BJ.join(st.code, auto); }
+    else { $('#bjf').hidden = true; PR.pokerJoin(st.code, auto); }
   }
+
+  /* ---------- fragen, ob man an den Tisch eines Freundes darf, der allein bzw. gegen Bots spielt ---------- */
+  var asked = {};   // Code -> bis wann die Anfrage laeuft
+  function askJoin(f, st) {
+    var L = LIVE[f.code]; if (!L || !L.on) return;
+    if (!window.prIdle()) { toast('Verlass erst dein laufendes Spiel'); return; }
+    send(L.conn, { t: 'ask', g: st.g });
+    asked[f.code] = Date.now() + 40000;
+    toast('Anfrage an ' + (f.name || f.code) + ' geschickt');
+    render(true);
+    setTimeout(function () { if (asked[f.code] && asked[f.code] <= Date.now()) { delete asked[f.code]; toast((f.name || f.code) + ' hat nicht geantwortet'); render(true); } }, 40100);
+  }
+  var ask = null, askT = 0;
+  function askHide() { $('#askBan').hidden = true; ask = null; clearTimeout(askT); }
+  function askReply(code, m) { var L = LIVE[code]; if (L && L.on) send(L.conn, m); }
+  function gotAsk(f, g) {
+    var me = myStatus();
+    if (me.g !== g || !me.ask) { askReply(f.code, { t: 'askno', r: 'full' }); return; }
+    if (ask && ask.code !== f.code) askReply(ask.code, { t: 'askno' });
+    ask = { code: f.code, g: g };
+    var av = $('#abAv'); av.style.setProperty('--av', f.color); av.textContent = (f.name || '?').charAt(0).toUpperCase();
+    $('#abName').textContent = f.name || f.code;
+    $('#abText').textContent = g === 'bj' ? 'möchte an deinen Blackjack-Tisch' : 'möchte an deinen Pokertisch (auf den Platz eines Bots ohne Chips)';
+    $('#abYes').disabled = false; $('#abNo').disabled = false; $('#abYes').textContent = 'Annehmen';
+    $('#askBan').hidden = false;
+    Snd.ping();
+    clearTimeout(askT); askT = setTimeout(function () { if (ask && ask.code === f.code) askHide(); }, 35000);
+  }
+  $('#abNo').addEventListener('click', function () { if (ask) askReply(ask.code, { t: 'askno' }); askHide(); });
+  $('#abYes').addEventListener('click', function () {
+    if (!ask) return;
+    var a = ask; clearTimeout(askT);
+    $('#abYes').disabled = true; $('#abNo').disabled = true; $('#abYes').textContent = 'Öffne Tisch …';
+    (a.g === 'bj' ? window.BJ.host : PR.pokerHost)(function (code) {
+      if (ask !== a) return;
+      askHide();
+      if (!code) { askReply(a.code, { t: 'askno', r: 'full' }); toast('Das hat nicht geklappt – gerade ist kein Platz frei oder keine Verbindung'); return; }
+      askReply(a.code, { t: 'askok', g: a.g, code: code });
+      var fr = friend(a.code);
+      toast((fr && fr.name || 'Dein Freund') + (a.g === 'bj' ? ' setzt sich in der nächsten Runde dazu' : ' kommt ab der nächsten Hand dazu'));
+    });
+  });
   var invSt = null;
   function showInvite(f, st) {
     var me = lastSt || myStatus();
@@ -7401,7 +7559,7 @@ input.bprange[type=range]::-moz-range-thumb { width: 20px; height: 20px; border-
   function menuFree() {
     if ($('#menu').hidden || !$('#splash').hidden || !$('#daily').hidden) return false;
     if (window.prIdle && !window.prIdle()) return false;
-    return ['#friends', '#bjf', '#profile', '#pview', '#chipdlg', '#invBan'].every(function (s) { var e = $(s); return !e || e.hidden; });
+    return ['#friends', '#bjf', '#profile', '#pview', '#chipdlg', '#invBan', '#askBan'].every(function (s) { var e = $(s); return !e || e.hidden; });
   }
   function showDaily() {
     var d = loadDaily(); if (d.day === today()) return;
