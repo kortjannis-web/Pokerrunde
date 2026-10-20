@@ -808,16 +808,12 @@ input.bprange[type=range]::-moz-range-thumb { width: 20px; height: 20px; border-
         <div style="display:flex;flex-direction:column;gap:8px">
           <div class="prow vrow"><span>Lautstärke</span><input type="range" id="volProf" min="0" max="100" step="1" aria-label="Lautstärke"><output id="volProfN">100%</output></div>
           <details class="prow guide" id="guide">
-            <summary>Anleitung: Züge vormerken</summary>
+            <summary>Anleitung: Pre-Move (vormerken)</summary>
             <ol>
-              <li>Solange <b>andere dran sind</b>, kannst du deinen Zug schon vormerken.</li>
-              <li><b>Knopf nach oben ziehen</b> – Passen, Check/Mitgehen oder Setzen/Erhöhen. Er bleibt dann oben stehen und ist hell umrandet.</li>
+              <li>Solange andere dran sind: Knopf <b>nach oben ziehen</b> (Passen, Check/Mitgehen oder Erhöhen).</li>
               <li>Sobald du dran bist, wird der Zug <b>automatisch</b> gemacht.</li>
-              <li><b>Setzen/Erhöhen:</b> hochziehen, Betrag wählen und auf „Vormerken“ tippen.</li>
-              <li><b>Check/Mitgehen</b> und <b>Setzen</b> werden wieder aufgehoben, wenn vorher jemand setzt oder eine neue Karte kommt – dann entscheidest du selbst.</li>
-              <li><b>Passen</b> bleibt die ganze Hand stehen. Ist Check gratis, wird gecheckt statt gepasst.</li>
-              <li><b>Aufheben:</b> den Knopf antippen oder wieder nach unten ziehen.</li>
-              <li>Tipp: Wenn du dran bist, kannst du auch eine Karte in die Mitte ziehen, um zu passen.</li>
+              <li><b>Aufheben:</b> Knopf antippen oder wieder runterziehen.</li>
+              <li>Setzt vorher jemand, wird Check/Mitgehen/Erhöhen von selbst aufgehoben.</li>
             </ol>
           </details>
         </div>
@@ -3452,7 +3448,9 @@ input.bprange[type=range]::-moz-range-thumb { width: 20px; height: 20px; border-
 
   $('#bAgain').addEventListener('click', function () { if (MP.on) toMenu(); else openDlg('buyin'); });
   $('#bPlay').addEventListener('click', function () { openDlg('buyin'); });
-  $('#pauseBtn').addEventListener('click', function () { syncMute(); $('#pause').hidden = false; });
+  function closeGuides() { [].forEach.call(document.querySelectorAll('.guide'), function (d) { d.open = false; }); }   // Anleitung jedes Mal zugeklappt zeigen
+  $('#pauseBtn').addEventListener('click', function () { syncMute(); closeGuides(); $('#pause').hidden = false; });
+  $('#profBtn').addEventListener('click', closeGuides);
   $('#bResume').addEventListener('click', function () { $('#pause').hidden = true; });
   $('#bMenu').addEventListener('click', toMenu);
 
