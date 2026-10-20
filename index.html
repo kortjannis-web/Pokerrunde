@@ -664,6 +664,10 @@ input.bprange[type=range]::-moz-range-thumb { width: 20px; height: 20px; border-
 .frr .pav { width: 28px; height: 28px; font-size: 13px; }
 .frr b { flex: 1; min-width: 0; font: 700 15px var(--ui); overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
 .frc { font: 800 15px var(--ui); color: var(--brass); font-variant-numeric: tabular-nums; }
+#bjTip { position: absolute; right: 8px; bottom: 6px; z-index: 6; height: 32px; padding: 0 12px; border-radius: 999px; border: 1px solid rgba(224,170,74,.55); background: rgba(16,18,19,.85); color: var(--ink); font: 700 13px var(--ui); }
+#bjTip:active { transform: scale(.95); }
+#bjActUI .btn.tipped { animation: tipped .65s ease-in-out 4; }
+@keyframes tipped { 0%, 100% { box-shadow: 0 0 0 0 rgba(224,170,74,0); } 50% { box-shadow: 0 0 0 3px var(--ink), 0 0 22px 6px rgba(224,170,74,.8); } }
 /* ---------- Taegliche Belohnung ---------- */
 #daily { z-index: 92; }
 #daily .endcard { display: flex; flex-direction: column; gap: 12px; }
@@ -1068,6 +1072,7 @@ input.bprange[type=range]::-moz-range-thumb { width: 20px; height: 20px; border-
       <div id="bjMe"><div class="bjhands"></div></div>
       <div id="bjFly"></div>
       <div class="bjtoast" id="bjToast"></div>
+      <button class="bjtip" id="bjTip" type="button" hidden aria-label="Tipp: was wäre jetzt richtig?">💡 Tipp</button>
     </main>
     <footer id="bjCtl">
       <div id="bjStatus" aria-live="polite"></div>
@@ -5041,16 +5046,19 @@ input.bprange[type=range]::-moz-range-thumb { width: 20px; height: 20px; border-
       else if (my.chips < t.min && BW > 0) st = 'Lade Chips nach (+ oben), um weiterzuspielen';
       else st = 'Chips antippen oder ins Feld ziehen · mindestens <b>' + fmt(t.min) + '</b>';
     } else {
+      $('#bjTip').hidden = true;
       var myTurn = !!(my && t.phase === 'play' && t.seats[t.turn] === my && !(H && H.busy));
       var h = myTurn ? my.hands[my.cur] : null, ok = !!(h && h.cards.length >= 2 && !h.done);
       $('#bjHit').disabled = !ok; $('#bjStand').disabled = !ok;
       $('#bjDouble').disabled = !(ok && canDouble(my, h)); $('#bjSplit').disabled = !(ok && canSplit(my, h));
       $('#bjDouble small').textContent = h ? '+' + fmt(h.bet) : ''; $('#bjSplit small').textContent = h ? '+' + fmt(h.bet) : '';
+      $('#bjTip').hidden = !ok;
       if (t.phase === 'deal') st = 'Karten werden ausgeteilt …';
       else if (t.phase === 'dealer') st = 'Der Dealer ist dran …';
       else if (t.phase === 'play') {
         var cur = t.seats[t.turn];
         if (cur === my) st = '<b>Du bist dran</b>' + (my.hands.length > 1 ? ' · Hand ' + (my.cur + 1) + ' von ' + my.hands.length : '') + (sec ? ' · ' + sec + ' s' : '');
+        if (cur === my && ok && tip && tip.key === tipKey(my, h)) st = '💡 <b>' + tip.say + '</b>' + (sec ? ' · ' + sec + ' s' : '');
         else if (cur) {
           st = '';
           var b = document.createElement('b'); b.textContent = cur.name;
@@ -5067,6 +5075,50 @@ input.bprange[type=range]::-moz-range-thumb { width: 20px; height: 20px; border-
     $('#bjStatus').innerHTML = st;
   }
   setInterval(function () { if (T && DL && !bj.hidden) renderCtl(); }, 500);
+
+  /* ---------- Tipp: Grundstrategie (6 Decks, Dealer steht auf 17, Verdoppeln nach Teilen erlaubt) ---------- */
+  var tip = null, tipT = 0;
+  function tipKey(s, h) { return T.round + ':' + s.cur + ':' + h.cards.length; }
+  function advise(s, h, upCard) {
+    var u = cval(upCard), v = total(h.cards), t = v.t;
+    var dbl = canDouble(s, h), spl = canSplit(s, h);
+    function D(orElse) { return dbl ? 'double' : orElse; }
+    if (spl) {
+      var p = cval(h.cards[0]);
+      var yes = p === 11 || p === 8 || (p === 9 && u !== 7 && u !== 10 && u !== 11) || (p === 7 && u <= 7) ||
+                (p === 6 && u <= 6) || (p === 4 && (u === 5 || u === 6)) || ((p === 2 || p === 3) && u <= 7);
+      if (yes) return 'split';
+    }
+    if (v.soft && t <= 21 && h.cards.length >= 2) {
+      if (t >= 19) return 'stand';
+      if (t === 18) return u >= 3 && u <= 6 ? D('stand') : u <= 8 ? 'stand' : 'hit';
+      if (t === 17) return u >= 3 && u <= 6 ? D('hit') : 'hit';
+      if (t >= 15) return u >= 4 && u <= 6 ? D('hit') : 'hit';
+      return u >= 5 && u <= 6 ? D('hit') : 'hit';
+    }
+    if (t >= 17) return 'stand';
+    if (t >= 13) return u <= 6 ? 'stand' : 'hit';
+    if (t === 12) return u >= 4 && u <= 6 ? 'stand' : 'hit';
+    if (t === 11) return u <= 10 ? D('hit') : 'hit';
+    if (t === 10) return u <= 9 ? D('hit') : 'hit';
+    if (t === 9) return u >= 3 && u <= 6 ? D('hit') : 'hit';
+    return 'hit';
+  }
+  var TIP_TXT = { hit: 'Karte', stand: 'Stehen', double: 'Verdoppeln', split: 'Teilen' };
+  var TIP_BTN = { hit: '#bjHit', stand: '#bjStand', double: '#bjDouble', split: '#bjSplit' };
+  $('#bjTip').addEventListener('click', function () {
+    var my = seatOf(ME);
+    if (!T || !my || T.phase !== 'play' || T.seats[T.turn] !== my) return;
+    var h = my.hands[my.cur];
+    if (!h || h.cards.length < 2 || !T.dealer[0]) return;
+    var a = advise(my, h, T.dealer[0]), v = total(h.cards);
+    var mine = (v.soft && v.t < 21 ? 'Soft ' : '') + v.t, up = T.dealer[0].r === 14 ? 'Ass' : String(cval(T.dealer[0]));
+    tip = { key: tipKey(my, h), say: 'Tipp: ' + TIP_TXT[a] + ' (' + mine + ' gegen ' + up + ')' };
+    [].forEach.call(document.querySelectorAll('#bjActUI .btn'), function (b) { b.classList.remove('tipped'); });
+    var btn = $(TIP_BTN[a]); btn.classList.add('tipped');
+    clearTimeout(tipT); tipT = setTimeout(function () { btn.classList.remove('tipped'); }, 2600);
+    renderCtl();
+  });
 
   /* ---------- Eingaben ---------- */
   function sendReady() {
