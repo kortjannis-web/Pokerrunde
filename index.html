@@ -351,7 +351,8 @@ button { font: inherit; color: inherit; cursor: pointer; }
 /* Einstellungen im Pause-Fenster */
 #pause .endcard { max-height: 100%; overflow-y: auto; }
 .psettings { display: flex; flex-direction: column; gap: 8px; margin: 0 0 18px; text-align: left; }
-#pause .prow { background: var(--bg); }
+#pause .prow, #bjPause .prow { background: var(--bg); }
+#bjPause .endcard { max-height: 100%; overflow-y: auto; }
 #pause .codebox { background: var(--bg); padding: 14px 12px 12px; }
 #pause .codebox .code { font-size: 36px; }
 /* Anleitung im Profil und im Pause-Fenster */
@@ -816,6 +817,11 @@ input.bprange[type=range]::-moz-range-thumb { width: 20px; height: 20px; border-
 #bjActUI .btn { height: 68px; font: 800 20px var(--ui); border-radius: 16px; }
 #bjActUI .btn.side { height: 50px; padding: 0 2px; font: 700 10.5px var(--ui); border-radius: 12px; }
 #bjActUI .btn.side small { font-size: 10px; }
+/* Vormerken wie beim Poker: solange andere dran sind, Knopf nach oben ziehen, dann bleibt er oben stehen */
+#bjActUI .btn { position: relative; touch-action: none; }
+#bjActUI.pre .btn:not(:disabled) { opacity: .55; }
+#bjActUI.pre .btn.on { opacity: 1; transform: translateY(-10px); box-shadow: 0 0 0 2px var(--ink), 0 8px 16px rgba(0,0,0,.45); }
+#bjActUI .btn.drag { transition: none; opacity: .9; }
 .bjchiprow { display: flex; justify-content: center; gap: 14px; }
 .bjchip { position: relative; width: 50px; height: 50px; border-radius: 50%; border: 0; padding: 0; display: grid; place-items: center;
   background: repeating-conic-gradient(#efe8d8 0 13deg, var(--cc) 13deg 45deg); box-shadow: 0 3px 6px rgba(0,0,0,.55); transition: transform .12s, opacity .2s; }
@@ -1261,6 +1267,7 @@ input.bprange[type=range]::-moz-range-thumb { width: 20px; height: 20px; border-
           </div>
           <div class="finv" data-fi></div>
         </div>
+        <div class="psettings" id="bjGuide"></div>
         <button class="btn primary wide" id="bjResume" type="button">Weiterspielen</button>
         <button class="btn wide" id="bjMenu" type="button" style="margin-top:10px">Zum Hauptmenü</button>
       </div>
@@ -1574,12 +1581,21 @@ input.bprange[type=range]::-moz-range-thumb { width: 20px; height: 20px; border-
           <div class="prow vrow"><span>Lautstärke</span><input type="range" id="volProf" min="0" max="100" step="1" aria-label="Lautstärke"><output id="volProfN">100%</output></div>
           <div class="prow"><span>Vibration bei Gewinn</span><button class="sw" id="vibSw" type="button" role="switch" aria-checked="true" aria-label="Vibration bei Gewinn"></button></div>
           <details class="prow guide" id="guide">
-            <summary>Anleitung: Pre-Move (vormerken)</summary>
+            <summary>Anleitung: Pre-Move beim Poker</summary>
             <ol>
               <li>Solange andere dran sind: Knopf <b>nach oben ziehen</b> (Passen, Check/Mitgehen oder Erhöhen).</li>
               <li>Sobald du dran bist, wird der Zug <b>automatisch</b> gemacht.</li>
               <li><b>Aufheben:</b> Knopf antippen oder wieder runterziehen.</li>
               <li>Setzt vorher jemand, wird Check/Mitgehen/Erhöhen von selbst aufgehoben.</li>
+            </ol>
+          </details>
+          <details class="prow guide" id="guideBj">
+            <summary>Anleitung: Pre-Move beim Blackjack</summary>
+            <ol>
+              <li>Solange andere dran sind (oder noch ausgeteilt wird): Knopf <b>nach oben ziehen</b> (Karte, Stehen, Verdoppeln oder Teilen).</li>
+              <li>Sobald du dran bist, wird der Zug <b>automatisch</b> gemacht.</li>
+              <li><b>Aufheben:</b> Knopf antippen oder wieder runterziehen.</li>
+              <li>Bekommt deine Hand vorher noch eine Karte, wird der vorgemerkte Zug von selbst aufgehoben.</li>
             </ol>
           </details>
         </div>
@@ -5357,8 +5373,14 @@ input.bprange[type=range]::-moz-range-thumb { width: 20px; height: 20px; border-
       $('#bjTip').hidden = true;
       var myTurn = !!(my && t.phase === 'play' && t.seats[t.turn] === my && !(H && H.busy));
       var h = myTurn ? my.hands[my.cur] : null, ok = !!(h && h.cards.length >= 2 && !h.done);
-      $('#bjHit').disabled = !ok; $('#bjStand').disabled = !ok;
-      $('#bjDouble').disabled = !(ok && canDouble(my, h)); $('#bjSplit').disabled = !(ok && canSplit(my, h));
+      var ph = preHand(), turnKey = ok ? tipKey(my, h) : '';
+      if (pre && !(ph && ph.key === pre.key) && pre.key !== turnKey) pre = null;   // Hand hat sich geaendert: aufheben
+      $('#bjHit').disabled = !(ok || ph); $('#bjStand').disabled = !(ok || ph);
+      $('#bjDouble').disabled = !((ok && canDouble(my, h)) || (ph && canDouble(ph.my, ph.h)));
+      $('#bjSplit').disabled = !((ok && canSplit(my, h)) || (ph && canSplit(ph.my, ph.h)));
+      $('#bjActUI').classList.toggle('pre', !!ph);
+      Object.keys(ACT_BTN).forEach(function (a) { $(ACT_BTN[a]).classList.toggle('on', !!(ph && pre && pre.a === a)); });
+      if (pre && ok && pre.key === turnKey) runPre(my, h);
       $('#bjDouble small').textContent = h ? '+' + fmt(h.bet) : ''; $('#bjSplit small').textContent = h ? '+' + fmt(h.bet) : '';
       $('#bjTip').hidden = !ok;
       if (t.phase === 'deal') st = 'Karten werden ausgeteilt …';
@@ -5367,7 +5389,7 @@ input.bprange[type=range]::-moz-range-thumb { width: 20px; height: 20px; border-
         var cur = t.seats[t.turn];
         if (cur === my) st = '<b>Du bist dran</b>' + (my.hands.length > 1 ? ' · Hand ' + (my.cur + 1) + ' von ' + my.hands.length : '') + (sec ? ' · ' + sec + ' s' : '');
         if (cur === my && ok && tip && tip.key === tipKey(my, h)) st = '💡 <b>' + tip.say + '</b>' + (sec ? ' · ' + sec + ' s' : '');
-        else if (cur) {
+        else if (cur && cur !== my) {
           st = '';
           var b = document.createElement('b'); b.textContent = cur.name;
           st = b.outerHTML + ' ist dran' + (sec ? ' · ' + sec + ' s' : '');
@@ -5378,6 +5400,7 @@ input.bprange[type=range]::-moz-range-thumb { width: 20px; height: 20px; border-
           st = net > 0 ? 'Gewonnen: <b>+' + fmt(net) + '</b>' : net < 0 ? 'Verloren: <b>−' + fmt(-net) + '</b>' : 'Unentschieden, du bekommst deinen Einsatz zurück';
         } else st = 'Runde vorbei';
       }
+      if (ph && pre) st += (st ? ' · ' : '') + 'vorgemerkt: <b>' + TIP_TXT[pre.a] + '</b>';
       if (my && !my.inR && (t.phase === 'deal' || t.phase === 'play' || t.phase === 'dealer')) st = 'Du setzt diese Runde aus und bist ab der nächsten dabei';
     }
     $('#bjStatus').innerHTML = st;
@@ -5501,10 +5524,84 @@ input.bprange[type=range]::-moz-range-thumb { width: 20px; height: 20px; border-
   });
   $('#bjClear').addEventListener('click', function () { myBet = 0; if (T) { view(T, ME); betChanged(); } });
   $('#bjDeal').addEventListener('click', function () { Snd.chip(2, 0); sendReady(); });
-  $('#bjHit').addEventListener('click', function () { sendAct('hit'); });
-  $('#bjStand').addEventListener('click', function () { Snd.knock(); sendAct('stand'); });
-  $('#bjDouble').addEventListener('click', function () { Snd.chip(2, 0); sendAct('double'); });
-  $('#bjSplit').addEventListener('click', function () { Snd.chip(2, 0); sendAct('split'); });
+  function doAct(a) {
+    if (a === 'stand') Snd.knock(); else if (a !== 'hit') Snd.chip(2, 0);
+    sendAct(a);
+  }
+
+  /* ---------- Vormerken (Pre-Move) wie beim Poker: solange andere dran sind (oder noch ausgeteilt wird),
+     Knopf nach oben ziehen. Sobald du dran bist, wird der Zug automatisch gemacht. Bekommt die Hand vorher
+     noch eine Karte (oder geht es an der naechsten geteilten Hand weiter), verfaellt er. ---------- */
+  var pre = null, preDragAt = 0;
+  var ACT_BTN = { hit: '#bjHit', stand: '#bjStand', double: '#bjDouble', split: '#bjSplit' };
+  function preHand() {
+    if (!T || (T.phase !== 'deal' && T.phase !== 'play')) return null;
+    var my = seatOf(ME);
+    if (!my || !my.inR || (T.phase === 'play' && T.seats[T.turn] === my)) return null;
+    var h = my.hands[my.cur];
+    if (!h || h.done || h.cards.length < 2 || total(h.cards).t >= 21) return null;
+    return { my: my, h: h, key: tipKey(my, h) };
+  }
+  function allowed(a, s, h) { return a === 'hit' || a === 'stand' || (a === 'double' ? canDouble(s, h) : canSplit(s, h)); }
+  function runPre(my, h) {
+    var p0 = pre;
+    if (p0.run) return;
+    p0.run = true;
+    setTimeout(function () {
+      if (pre !== p0) return;
+      pre = null;
+      var me = seatOf(ME), hh = me && me.hands[me.cur];
+      if (!T || T.phase !== 'play' || T.seats[T.turn] !== me || !hh || tipKey(me, hh) !== p0.key) { renderCtl(); return; }
+      if (allowed(p0.a, me, hh)) doAct(p0.a); else { bjToast(TIP_TXT[p0.a] + ' geht nicht mehr, du bist dran'); renderCtl(); }
+    }, 150);
+  }
+  function setPre(a) {
+    var ph = preHand();
+    if (!ph || !allowed(a, ph.my, ph.h)) return;
+    pre = { a: a, key: ph.key };
+    Snd.chip(1, 0);
+    renderCtl();
+  }
+  Object.keys(ACT_BTN).forEach(function (a) {
+    var el = $(ACT_BTN[a]), d = null;
+    el.addEventListener('pointerdown', function (e) {
+      if (el.disabled || !$('#bjActUI').classList.contains('pre')) return;
+      d = { id: e.pointerId, y0: e.clientY, dy: 0, on: el.classList.contains('on') };
+      try { el.setPointerCapture(e.pointerId); } catch (err) {}
+      el.classList.add('drag');
+    });
+    el.addEventListener('pointermove', function (e) {
+      if (!d || e.pointerId !== d.id) return;
+      d.dy = e.clientY - d.y0;
+      var off = d.on ? -10 + Math.max(-36, Math.min(24, d.dy * 0.8)) : Math.max(-46, Math.min(0, d.dy * 0.8));
+      el.style.transform = 'translateY(' + off + 'px)';
+    });
+    function end(e) {
+      if (!d || e.pointerId !== d.id) return;
+      var g = d; d = null;
+      el.classList.remove('drag'); el.style.transform = '';
+      if (Math.abs(g.dy) > 8) preDragAt = Date.now();
+      if (e.type !== 'pointerup') return;
+      if (!preHand()) {   // waehrend des Ziehens drangekommen: gleich ausfuehren
+        var me = seatOf(ME), hh = me && me.hands[me.cur];
+        if (g.dy <= -28 && !g.on && T && T.phase === 'play' && T.seats[T.turn] === me && hh && !hh.done && allowed(a, me, hh)) doAct(a);
+        return;
+      }
+      if (g.dy <= -28) setPre(a);
+      else if (g.on && g.dy >= 20 && pre && pre.a === a) { pre = null; renderCtl(); }
+    }
+    el.addEventListener('pointerup', end);
+    el.addEventListener('pointercancel', end);
+    el.addEventListener('click', function () {
+      if (Date.now() - preDragAt < 400) return;   // der Klick gehoert noch zur Ziehbewegung
+      if (preHand()) {
+        if (pre && pre.a === a) { pre = null; renderCtl(); }
+        else bjToast('Zum Vormerken den Knopf nach oben ziehen');
+        return;
+      }
+      doAct(a);
+    });
+  });
 
   /* ---------- Starten und Verlassen ---------- */
   /* ---------- Reaktionen (nur am Online-Tisch): hoechstens 3 in 9 Sekunden pro Spieler ---------- */
@@ -5603,9 +5700,11 @@ input.bprange[type=range]::-moz-range-thumb { width: 20px; height: 20px; border-
       $('#bjPWa').href = 'https://wa.me/?text=' + encodeURIComponent('Komm an meinen Blackjack-Tisch! Code: ' + NB.code + '\n' + PR.SITE_URL + '#bj-' + NB.code);
     }
     if (NB.role === 'host') $('#bjMenu').textContent = 'Tisch schließen'; else $('#bjMenu').textContent = 'Zum Hauptmenü';
+    [].forEach.call(document.querySelectorAll('#bjPause .guide'), function (d) { d.open = false; });   // Anleitung jedes Mal zugeklappt
     $('#bjPause').hidden = false;
   }
   $('#bjPauseBtn').addEventListener('click', openPause);
+  (function () { var g = $('#guideBj').cloneNode(true); g.removeAttribute('id'); $('#bjGuide').appendChild(g); })();
   $('#bjCodeBtn').addEventListener('click', openPause);
   $('#bjResume').addEventListener('click', function () { $('#bjPause').hidden = true; });
   $('#bjMenu').addEventListener('click', leave);
