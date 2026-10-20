@@ -936,6 +936,7 @@ input.bprange[type=range]::-moz-range-thumb { width: 20px; height: 20px; border-
       <button type="button" data-e="😂">😂</button><button type="button" data-e="😱">😱</button><button type="button" data-e="😭">😭</button><button type="button" data-e="🤑">🤑</button><button type="button" data-e="👍">👍</button><button type="button" data-e="🔥">🔥</button>
       <span id="reactWait">Kurz warten …</span>
     </div>
+    <div class="bjre" id="pkRe" hidden><i class="dots">Verbindung weg · verbinde neu</i></div>
     <div id="handwrap">
       <div id="hand" class="none"></div>
     </div>
@@ -3649,7 +3650,7 @@ input.bprange[type=range]::-moz-range-thumb { width: 20px; height: 20px; border-
   var SB_OPTS = [5, 10, 20, 25, 50, 100], EVERY_OPTS = [5, 8, 10, 15, 20, 0], SEAT_OPTS = [2, 3, 4, 5], BOT_OPTS = [0, 1, 2, 3, 4];
   var BOT_NAMES = ['Svenja', 'Tarek', 'Olga', 'Bruno'];
   var ROOM = { code: '', sb: 10, every: 8, seats: 5, bots: 0 };
-  var NET = { peer: null, role: '', code: '', cfg: null, conns: [], players: [], gen: 0, shown: 0 };
+  var NET = { peer: null, role: '', code: '', cfg: null, conns: [], players: [], gen: 0, shown: 0, rids: {}, rid: '' };
   try {
     var rawR = JSON.parse(localStorage.getItem('pr-room') || 'null');
     if (rawR) {
@@ -3749,7 +3750,7 @@ input.bprange[type=range]::-moz-range-thumb { width: 20px; height: 20px; border-
   function initialOf(p) { return p.name.charAt(0).toUpperCase(); }
   function wipeNet(sayBye) {
     var peer = NET.peer, conns = NET.conns.slice(), host = NET.role === 'host';
-    NET.gen++; NET.peer = null; NET.role = ''; NET.conn = null; NET.locked = false; NET.late = false; NET.conns = []; NET.players = []; NET.cfg = null; NET.code = ''; NET.shown = 0;
+    NET.gen++; NET.peer = null; NET.role = ''; NET.conn = null; NET.locked = false; NET.late = false; NET.conns = []; NET.players = []; NET.cfg = null; NET.code = ''; NET.shown = 0; NET.rids = {};
     if (!peer) return;
     if (sayBye && host) conns.forEach(function (c) { try { c.send({ t: 'closed' }); } catch (e) {} });
     setTimeout(function () { try { peer.destroy(); } catch (e) {} }, sayBye ? 250 : 0);
@@ -3814,11 +3815,12 @@ input.bprange[type=range]::-moz-range-thumb { width: 20px; height: 20px; border-
       if (NET.players.length >= humanCap(NET.cfg)) { try { conn.send({ t: 'full' }); } catch (e) {} setTimeout(function () { try { conn.close(); } catch (e) {} }, 400); return; }
       conn._pr = true; NET.conns.push(conn);
       NET.players.push(Object.assign({ id: conn.peer, host: false }, cleanProf(d.p), { old: !(d.v >= 2), v: d.v | 0 }));
+      NET.rids[conn.peer] = cleanRid(d.rid);
       hostBroadcast(); renderLobby();
     });
     function gone() {
       if (g !== NET.gen || !conn._pr) return; conn._pr = false;
-      if (MP.on) { mpDropPeer(conn.peer); return; }
+      if (MP.on) { mpAway(conn.peer); return; }
       NET.conns = NET.conns.filter(function (c) { return c !== conn; });
       NET.players = NET.players.filter(function (p) { return p.id !== conn.peer; });
       hostBroadcast(); renderLobby();
@@ -3850,7 +3852,8 @@ input.bprange[type=range]::-moz-range-thumb { width: 20px; height: 20px; border-
       if (finished || g !== NET.gen) return;
       var conn = peer.connect(PEER_PREFIX + code.toLowerCase(), { serialization: 'json', reliable: true });
       NET.conn = conn;
-      conn.on('open', function () { try { conn.send({ t: 'hello', v: 3, p: myPublic(pkJoin.get()) }); } catch (e) {} });
+      NET.rid = newRid();
+      conn.on('open', function () { try { conn.send({ t: 'hello', v: 4, rid: NET.rid, p: myPublic(pkJoin.get()) }); } catch (e) {} });
       conn.on('data', function (d) {
         if (g !== NET.gen || !d || typeof d !== 'object') return;
         if (d.t === 'start' || d.t === 'snap' || d.t === 'react' || d.t === 'broke' || d.t === 'ack' || d.t === 'end') { guestMsg(d); return; }
@@ -3882,11 +3885,59 @@ input.bprange[type=range]::-moz-range-thumb { width: 20px; height: 20px; border-
       function lost() {
         if (g !== NET.gen) return;
         if (!finished) fail('Verbindung zum Tisch fehlgeschlagen.');
-        else if (MP.on) { if (!MP.dead) mpEndCard('Verbindung weg', 'Die Verbindung zum Tisch ist abgebrochen. Deine Chips bleiben in deinem Guthaben.'); }
+        else if (MP.on) { if (!MP.dead) mpReconnect(code); }
         else { wipeNet(false); backToMain('Die Verbindung zum Tisch ist abgebrochen.'); }
       }
       conn.on('close', lost); conn.on('error', lost);
     });
+  }
+  function newRid() {
+    var a = new Uint8Array(12), out = '';
+    try { window.crypto.getRandomValues(a); } catch (e) { for (var i = 0; i < 12; i++) a[i] = Math.floor(Math.random() * 256); }
+    for (var j = 0; j < 12; j++) out += (a[j] % 36).toString(36);
+    return out;
+  }
+  /* Verbindung zum Tisch abgerissen: bis zu 90 Sekunden immer wieder neu verbinden, der Ersteller haelt den Platz frei */
+  function mpReconnect(code) {
+    if (!MP.on || MP.role !== 'guest' || MP.dead) return;
+    var g = ++NET.gen, until = Date.now() + 90000, old = NET.peer;
+    NET.peer = null; NET.conn = null;
+    try { if (old) old.destroy(); } catch (e) {}
+    $('#pkRe').hidden = false;
+    function giveUp(title, text) { $('#pkRe').hidden = true; if (MP.on && !MP.dead) mpEndCard(title, text); }
+    (function attempt() {
+      if (g !== NET.gen || !MP.on || MP.dead) { $('#pkRe').hidden = true; return; }
+      if (Date.now() > until) { giveUp('Verbindung weg', 'Die Verbindung zum Tisch ist abgebrochen. Deine Chips bleiben in deinem Guthaben.'); return; }
+      var peer, done = false;
+      try { peer = new window.Peer(undefined, peerOpts()); } catch (e) { setTimeout(attempt, 4000); return; }
+      NET.peer = peer;
+      function retry() { if (done || g !== NET.gen) return; done = true; clearTimeout(to); try { peer.destroy(); } catch (e) {} setTimeout(attempt, 2500); }
+      var to = setTimeout(retry, 10000);
+      peer.on('error', retry);
+      peer.on('open', function () {
+        if (g !== NET.gen) return;
+        var conn = peer.connect(PEER_PREFIX + code.toLowerCase(), { serialization: 'json', reliable: true }), back = false;
+        conn.on('open', function () { try { conn.send({ t: 'hello', v: 4, rid: NET.rid, p: myPublic(S.players[0] ? S.players[0].chips : 0) }); } catch (e) {} });
+        conn.on('data', function (d) {
+          if (g !== NET.gen || !d || typeof d !== 'object' || !MP.on) return;
+          if (d.t === 'start' && d.re) {
+            back = true; done = true; clearTimeout(to);
+            NET.conn = conn; MP.conn = conn; MP.seat = d.seat | 0;
+            $('#pkRe').hidden = true; toastMsg('Wieder verbunden');
+            try { conn.send({ t: 'ready' }); } catch (e) {}
+            return;
+          }
+          if (back && (d.t === 'snap' || d.t === 'react' || d.t === 'broke' || d.t === 'ack' || d.t === 'end')) { guestMsg(d); return; }
+          if (d.t === 'closed') { giveUp('Spiel beendet', 'Der Ersteller hat den Tisch verlassen. Deine Chips bleiben in deinem Guthaben.'); return; }
+          if (!back && (d.t === 'wait' || d.t === 'full' || d.t === 'started')) {
+            giveUp('Verbindung weg', 'Dein Platz am Tisch ist nicht mehr frei. Deine Chips bleiben in deinem Guthaben.');
+            try { conn.close(); } catch (e) {}
+          }
+        });
+        function lost() { if (g !== NET.gen) return; if (back) mpReconnect(code); else retry(); }
+        conn.on('close', lost); conn.on('error', lost);
+      });
+    })();
   }
 
 
@@ -3936,7 +3987,7 @@ input.bprange[type=range]::-moz-range-thumb { width: 20px; height: 20px; border-
     var seatsArr = [], used = {};
     function uniq(nm) { var k = nm, c = 1; while (used[k.toLowerCase()]) { c++; k = nm + ' ' + c; } used[k.toLowerCase()] = 1; return k; }
     hum.forEach(function (p, i) {
-      seatsArr.push({ name: uniq(p.name), color: p.color, peer: p.host ? '' : p.id, conn: p.host ? null : NET.conns.filter(function (c) { return c.peer === p.id; })[0], chips: buys[i], kind: 'human', gone: false, last: '', v: p.v | 0 });
+      seatsArr.push({ rid: p.host ? '' : (NET.rids[p.id] || ''), name: uniq(p.name), color: p.color, peer: p.host ? '' : p.id, conn: p.host ? null : NET.conns.filter(function (c) { return c.peer === p.id; })[0], chips: buys[i], kind: 'human', gone: false, last: '', v: p.v | 0 });
     });
     for (var bi = 0; bi < cfg.bots; bi++) seatsArr.push({ name: uniq(BOT_NAMES[bi % BOT_NAMES.length]), color: BOT_COL, peer: '', conn: null, chips: avg, kind: 'bot', gone: false, last: '' });
     prepTable();
@@ -4058,6 +4109,39 @@ input.bprange[type=range]::-moz-range-thumb { width: 20px; height: 20px; border-
       }
     }
   }
+  /* Verbindung eines Mitspielers abgerissen (nicht abgemeldet): Platz 90 Sekunden freihalten. Ist er dran,
+     wird nach Ablauf der Zugzeit wie immer automatisch gecheckt bzw. gepasst. */
+  function cleanRid(r) { return typeof r === 'string' && /^[a-z0-9]{12,32}$/.test(r) ? r : ''; }
+  function mpAway(peer) {
+    if (MP.joins) MP.joins = MP.joins.filter(function (j) { return j.p.id !== peer; });
+    MP.seats.forEach(function (st, i) {
+      if (i === 0 || st.peer !== peer || st.gone) return;
+      if (!st.rid || MP.role !== 'host' || MP.ended) { mpDrop(i); return; }
+      st.conn = null; st.away = Date.now(); st.last = '';
+      var b = MP.brokes[i]; if (b) b.res(0);
+      toastMsg(st.name + ': Verbindung weg, wartet auf Rückkehr');
+      clearTimeout(st.awT);
+      st.awT = setTimeout(function () { if (MP.on && MP.seats[i] === st && st.away) { st.away = 0; mpDrop(i); } }, 90000);
+    });
+  }
+  /* derselbe Mitspieler meldet sich mit seiner Kennung zurueck: alter Platz, alle Chips, laufende Hand */
+  function mpRejoin(conn, d) {
+    var rid = cleanRid(d.rid), seat = -1;
+    if (!rid || MP.ended) return false;
+    MP.seats.forEach(function (st, i) { if (i > 0 && !st.gone && st.rid === rid) seat = i; });
+    if (seat < 0) return false;
+    var st = MP.seats[seat], oldPeer = st.peer;
+    clearTimeout(st.awT); st.away = 0;
+    if (st.conn && st.conn !== conn) { st.conn._pr = false; try { st.conn.close(); } catch (e) {} }
+    NET.conns = NET.conns.filter(function (c) { return c !== st.conn; });
+    st.conn = conn; st.peer = conn.peer; st.last = ''; st.ready = true;
+    conn._pr = true; NET.conns.push(conn);
+    NET.players.forEach(function (q) { if (!q.host && q.id === oldPeer) q.id = conn.peer; });
+    try { conn.send({ t: 'start', seat: seat, n: MP.n, chips: S.players[seat] ? S.players[seat].chips : 0, re: 1 }); } catch (e) {}
+    toastMsg(st.name + ' ist wieder da');
+    mpBroadcast();
+    return true;
+  }
   function mpDrop(seat) {
     var st = MP.seats[seat]; if (!st || st.gone) return;
     st.gone = true;
@@ -4093,9 +4177,10 @@ input.bprange[type=range]::-moz-range-thumb { width: 20px; height: 20px; border-
     function bye(t) { try { conn.send({ t: t }); } catch (e) {} setTimeout(function () { try { conn.close(); } catch (e) {} }, 400); }
     if (MP.ended || !(d.v >= 3)) { bye('started'); return; }
     if (mpFreeSeats() <= 0) { bye('full'); return; }
+    if (mpRejoin(conn, d)) return;
     var p = Object.assign({ id: conn.peer, host: false }, cleanProf(d.p), { v: d.v | 0 });
     conn._pr = true; NET.conns.push(conn);
-    MP.joins.push({ conn: conn, p: p });
+    MP.joins.push({ conn: conn, p: p, rid: cleanRid(d.rid) });
     var w = mpWaitMsg();
     MP.joins.forEach(function (j) { try { j.conn.send(w); } catch (e) {} });
     toastMsg(p.name + ' kommt ab der nächsten Hand dazu');
@@ -4118,7 +4203,7 @@ input.bprange[type=range]::-moz-range-thumb { width: 20px; height: 20px; border-
       var nm = j.p.name, c = 1; while (used[nm.toLowerCase()]) { c++; nm = j.p.name + ' ' + c; }
       var chips = Math.max(10, Math.min(1e9, Math.round(j.p.buyin) || P.START_CHIPS));
       if (game.seat({ name: nm, color: j.p.color, chips: chips }, idx) !== idx) return;
-      var st = { name: nm, color: j.p.color, peer: j.p.id, conn: j.conn, chips: chips, kind: 'human', gone: false, last: '', v: j.p.v };
+      var st = { name: nm, color: j.p.color, peer: j.p.id, conn: j.conn, chips: chips, kind: 'human', gone: false, last: '', v: j.p.v, rid: j.rid || '' };
       MP.seats[idx] = st; MP.brokes[idx] = null; MP.n = S.players.length;
       NET.players.push(j.p);
       try { j.conn.send({ t: 'start', seat: idx, n: MP.n, chips: chips }); } catch (e) {}
