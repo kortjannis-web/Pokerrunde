@@ -1095,6 +1095,19 @@ input.bprange[type=range]::-moz-range-thumb { width: 20px; height: 20px; border-
 .slgbtns .slgred { background: #b52a2a; color: #fff; border-color: transparent; }
 .slgbtns .slgblk { background: #1b1b1b; color: #fff; border-color: rgba(255,255,255,.25); }
 .slgmsg { min-height: 20px; margin: 8px 0 0; font: 700 14px var(--ui); color: var(--brass); }
+/* Freunde, die gerade auch Slots spielen: oben links neben dem Schriftzug, Gewinne steigen kurz ueber ihnen auf */
+.slleftbar { display: flex; align-items: center; gap: 10px; min-width: 0; }
+.slfr { display: flex; align-items: center; gap: 6px; }
+.slfr[hidden] { display: none; }
+.slfa { position: relative; width: 32px; height: 32px; flex: none; }
+.slfa .pav { width: 32px; height: 32px; font-size: 15px; box-shadow: 0 0 0 2px rgba(185,140,255,.55); transition: box-shadow .3s; }
+.slfa.big .pav { animation: slfbig .45s ease-in-out 6 alternate; box-shadow: 0 0 0 3px #ffe08a, 0 0 18px 6px rgba(255,224,138,.85); }
+.slfa.big::after { content: '🎉'; position: absolute; right: -8px; top: -10px; font-size: 16px; animation: pop .4s cubic-bezier(.2,.9,.3,1.4); }
+@keyframes slfbig { to { transform: scale(1.18); } }
+.slfmore { font: 800 12px var(--ui); color: var(--muted); }
+.slfw { position: absolute; left: 50%; top: 100%; z-index: 40; transform: translateX(-50%); white-space: nowrap; pointer-events: none; font: 900 14px var(--ui); color: #ffe08a; text-shadow: 0 1px 3px rgba(0,0,0,.8); animation: slfw 2.4s ease-out forwards; }
+.slfw.big { font-size: 20px; color: #fff3c4; text-shadow: 0 0 10px rgba(255,224,138,.9), 0 1px 3px rgba(0,0,0,.8); animation-duration: 3.6s; }
+@keyframes slfw { 0% { opacity: 0; transform: translate(-50%, -6px) scale(.6); } 12% { opacity: 1; transform: translate(-50%, 2px) scale(1.1); } 75% { opacity: 1; transform: translate(-50%, 6px); } 100% { opacity: 0; transform: translate(-50%, 14px); } }
 /* Slots-Bestenliste bei den Freunden */
 .frr .frc small { display: block; font: 600 10px var(--ui); color: var(--muted); text-align: right; }
 
@@ -1351,7 +1364,7 @@ input.bprange[type=range]::-moz-range-thumb { width: 20px; height: 20px; border-
 
   <div id="sl" hidden>
     <header class="bjbar">
-      <span class="brand">Slots</span>
+      <div class="slleftbar"><span class="brand">Slots</span><div class="slfr" id="slFr" hidden aria-label="Freunde, die gerade Slots spielen"></div></div>
       <div class="right">
         <div class="bank bjbank" role="status" aria-label="Dein Guthaben"><i class="bchip" aria-hidden="true"></i><span id="slBank">0</span></div>
         <button class="iconbtn" id="slPauseBtn" type="button" aria-label="Pause"><svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><rect x="6" y="5" width="4" height="14" rx="1.2"/><rect x="14" y="5" width="4" height="14" rx="1.2"/></svg></button>
@@ -6456,6 +6469,10 @@ input.bprange[type=range]::-moz-range-thumb { width: 20px; height: 20px; border-
   var sl = $('#sl'), mach = $('#slMachine'), winEl = $('#slWin'), reels = [];
   var busy = false, gen = 0, shown = 0, toastT = 0, bigT = 0, holdT = 0;
   var riskAmt = 0, payKey = '', auto = false, autoT = 0;
+  /* Gewinn fuer Freunde, die gerade auch Slots spielen: erst melden, wenn er feststeht (nach der Risikoleiter bzw. wenn sie nicht genommen wird) */
+  var pendRep = 0, pendBet = 0;
+  function report(w, b) { if (w > 0 && window.PRF && window.PRF.slw) window.PRF.slw(w, b); }
+  function settle() { if (pendRep) report(pendRep, pendBet); pendRep = 0; }
   /* waehrend des Drehs zeigen Knopf und Anzeige erst, was schon zu sehen war: neue Gratis-Drehs kommen erst mit dem
      Extra-Spin-Schild dazu, der hoehere Multiplikator erst mit dem Gewinn (verbucht ist beides schon beim Druecken) */
   var vis = null;
@@ -6639,7 +6656,7 @@ input.bprange[type=range]::-moz-range-thumb { width: 20px; height: 20px; border-
      Alles wird sofort berechnet und verbucht, danach nur noch nacheinander gezeigt. */
   function spin() {
     if (busy || sl.hidden || !$('#slGamble').hidden) return;
-    Snd.unlock();
+    Snd.unlock(); settle();
     var mc = cur, f = fsOf(mc), P = PR.prof(), fr = f.free > 0, b, cost;
     if (fr) { b = f.fbet; cost = 0; f.free--; }
     else {
@@ -6870,6 +6887,9 @@ input.bprange[type=range]::-moz-range-thumb { width: 20px; height: 20px; border-
     all('#sl .slreel.held').forEach(function (r) { r.classList.remove('held'); });
     if (!c.fr && !c.steps[0].sc && c.total > 0 && !c.jp) riskAmt = c.total;
     if (c.endFs && c.f.fwon > 0) riskAmt = c.f.fwon;
+    /* Gewinn ohne Risikoleiter (Jackpot) gleich melden, sonst erst, wenn klar ist, ob riskiert wird */
+    if (riskAmt) { pendRep = riskAmt; pendBet = c.b; }
+    else if (!c.fr && !c.steps[0].sc && c.total > 0) report(c.total, c.b);
     renderAll();
     autoNext(700);
   }
@@ -6877,7 +6897,7 @@ input.bprange[type=range]::-moz-range-thumb { width: 20px; height: 20px; border-
      Hoert auf bei erneutem Druck, beim Verlassen, wenn die Seite im Hintergrund ist oder das Guthaben nicht mehr reicht */
   function setAuto(on) {
     auto = on; clearTimeout(autoT);
-    if (on) riskAmt = 0;
+    if (on) { riskAmt = 0; settle(); }
     renderAll();
   }
   function autoNext(ms) {
@@ -6901,7 +6921,7 @@ input.bprange[type=range]::-moz-range-thumb { width: 20px; height: 20px; border-
   function riskOpen() {
     if (busy || !riskAmt) return;
     Snd.unlock();
-    g0 = gAmt = Math.min(riskAmt, bank()); riskAmt = 0;
+    g0 = gAmt = Math.min(riskAmt, bank()); riskAmt = 0; pendRep = 0;
     if (gAmt <= 0) { renderAll(); return; }
     gStep = 0; gBusy = false;
     $('#slgCard').classList.remove('up'); $('#slgMsg').textContent = '';
@@ -6954,6 +6974,7 @@ input.bprange[type=range]::-moz-range-thumb { width: 20px; height: 20px; border-
     $('#slGamble').hidden = true; gBusy = false;
     if (gAmt > 0 && gStep > 0) toast('+' + fmt(gAmt) + ' eingesammelt');
     if (window.PRF && gStep >= LADDER && gAmt >= 1000) window.PRF.brag('risk', gAmt, cur.short);
+    report(gAmt, pendBet);
     gAmt = 0; checkUnlock(); renderAll();
   }
   $('#slRisk').addEventListener('click', riskOpen);
@@ -6985,7 +7006,7 @@ input.bprange[type=range]::-moz-range-thumb { width: 20px; height: 20px; border-
     if (fsOf(cur).free > 0) toast('Du hast noch ' + fsOf(cur).free + ' Extra Spins');
   }
   function leave() {
-    gen++; busy = false; auto = false; clearTimeout(autoT); clearHits(); endOffers();
+    gen++; busy = false; auto = false; clearTimeout(autoT); settle(); clearHits(); endOffers();
     $('#slGamble').hidden = true; gAmt = 0; gBusy = false;
     all('#sl .slcoin').forEach(function (c) { c.remove(); });
     reels.forEach(function (el, i) { el.classList.remove('spin'); place(i, cur.pos[i] + cur.N, 0); });
@@ -7226,6 +7247,8 @@ input.bprange[type=range]::-moz-range-thumb { width: 20px; height: 20px; border-
       removeFriend(code, false);
     } else if (d.t === 'big') {
       showBrag(f, d);
+    } else if (d.t === 'slw') {
+      showSlWin(f, d);
     }
   }
   /* Lebenszeichen: wer 45 Sekunden nichts schickt (Handy gesperrt, App zu), gilt als offline */
@@ -7471,9 +7494,52 @@ input.bprange[type=range]::-moz-range-thumb { width: 20px; height: 20px; border-
       : '🎰 ' + nm + ' hat gerade +' + fmt(w) + ' gewonnen' + (m ? ' (' + m + ')' : ''));
     Snd.ping();
   }
-  window.PRF = { brag: brag };
-  function changed() { render(false); }
-  setInterval(function () { render(false); }, 2000);
+  /* Slots: feststehender Gewinn an Freunde, die gerade online sind (aeltere Versionen ignorieren die Nachricht) */
+  function slw(w, b) {
+    w = Math.round(+w); b = Math.round(+b) || 0;
+    if (!isFinite(w) || w <= 0) return;
+    var msg = { t: 'slw', w: Math.min(w, 1e12), b: Math.max(0, Math.min(b, 1e9)) };
+    Object.keys(LIVE).forEach(function (code) { var L = LIVE[code]; if (L.on) send(L.conn, msg); });
+  }
+  /* Freunde, die gerade Slots spielen, oben links im Slots-Bildschirm */
+  var slKey = '';
+  function renderSlFr() {
+    var host = $('#slFr'); if (!host) return;
+    var list = window.SL && window.SL.on() ? sorted().filter(function (f) { return isOn(f.code) && LIVE[f.code].st && LIVE[f.code].st.g === 'slots'; }) : [];
+    var k = JSON.stringify(list.map(function (f) { return [f.code, f.name, f.color]; }));
+    if (k === slKey) return;
+    slKey = k;
+    host.hidden = !list.length;
+    var keep = {};
+    [].forEach.call(host.querySelectorAll('.slfa'), function (el) { keep[el.dataset.c] = el; });
+    host.innerHTML = '';
+    list.slice(0, 3).forEach(function (f) {
+      var el = keep[f.code] || document.createElement('span');
+      el.className = el.className || 'slfa'; el.dataset.c = f.code; el.title = f.name || f.code;
+      if (!el.firstChild) { var a = document.createElement('span'); a.className = 'pav'; el.appendChild(a); }
+      var av = el.querySelector('.pav'); av.style.setProperty('--av', f.color); av.textContent = (f.name || '?').charAt(0).toUpperCase();
+      host.appendChild(el);
+    });
+    if (list.length > 3) { var m = document.createElement('span'); m.className = 'slfmore'; m.textContent = '+' + (list.length - 3); host.appendChild(m); }
+  }
+  function showSlWin(f, d) {
+    var w = Math.round(+d.w), b = Math.round(+d.b) || 0;
+    if (!isFinite(w) || w <= 0 || !window.SL || !window.SL.on()) return;
+    renderSlFr();
+    var el = $('#slFr .slfa[data-c="' + f.code + '"]'); if (!el) return;
+    var big = b > 0 ? w >= 10 * b : w >= 1000;
+    var n = document.createElement('b'); n.className = 'slfw' + (big ? ' big' : ''); n.textContent = '+' + fmt(w);
+    n.addEventListener('animationend', function () { n.remove(); });
+    el.appendChild(n);
+    if (big) {
+      el.classList.remove('big'); void el.offsetWidth; el.classList.add('big');
+      clearTimeout(el._bt); el._bt = setTimeout(function () { el.classList.remove('big'); }, 3600);
+      try { Snd.ping(); } catch (e) {}
+    }
+  }
+  window.PRF = { brag: brag, slw: slw };
+  function changed() { render(false); renderSlFr(); }
+  setInterval(function () { render(false); renderSlFr(); }, 1000);
 
   var ftT = 0, ftEl = document.createElement('div');
   ftEl.id = 'fToast'; $('#app').appendChild(ftEl);
