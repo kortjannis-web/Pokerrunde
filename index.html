@@ -155,6 +155,8 @@ button { font: inherit; color: inherit; cursor: pointer; }
 #win .card .face { box-shadow: 0 8px 16px rgba(0,0,0,.5); }
 #win .card.hl .face { box-shadow: 0 0 0 2.5px var(--brass), 0 0 18px 4px rgba(224,170,74,.85); }
 .hl .face, .slot .card.hl .face { box-shadow: 0 0 0 2.5px var(--brass), 0 0 18px 4px rgba(224,170,74,.85); }
+/* entscheidende Beikarte (Kicker): duennerer Rahmen ohne Leuchten */
+.kk .face, #win .card.kk .face, .slot .card.kk .face { box-shadow: 0 0 0 2px var(--brass), 0 8px 16px rgba(0,0,0,.5); }
 .card.dim, .slot.shown .card.dim { opacity: .5; }
 .seat.moved .minis { opacity: 0 !important; }
 #fly { position: absolute; inset: 0; pointer-events: none; z-index: 8; }
@@ -1022,6 +1024,25 @@ input.bprange[type=range]::-moz-range-thumb { width: 20px; height: 20px; border-
       default: return t0 === 14 ? 'Royal Flush' : 'Straight Flush bis ' + SING[t0];
     }
   }
+  /* Gleiche Hand (z. B. beide "Paar Asse")? Dann entscheidet die hoechste Beikarte (Kicker) – oder der Pot wird geteilt.
+     Gibt { tie } zurueck oder { kick: Rang der entscheidenden Karte, text } */
+  function decider(v, others) {
+    var name = describe(v), near = -1, tie = false;
+    others.forEach(function (o) {
+      if (o === undefined || describe(o) !== name) return;
+      if (o === v) tie = true;
+      else if (o < v && o > near) near = o;
+    });
+    if (tie) return { tie: true };
+    if (near < 0) return {};
+    for (var i = 0; i < 5; i++) {
+      var a = tbOf(v, i);
+      if (a !== tbOf(near, i)) {
+        return { kick: a, text: 'Kicker ' + SING[a] };
+      }
+    }
+    return {};
+  }
   /* Welche der Karten bilden die Hand (ohne Kicker)? */
   function made(cards, v) {
     var c = catOf(v), t0 = tbOf(v, 0), t1 = tbOf(v, 1), out = [], i;
@@ -1450,9 +1471,13 @@ input.bprange[type=range]::-moz-range-thumb { width: 20px; height: 20px; border-
       var toCall = Math.max(0, S.currentBet - p.bet);
       if (toCall === 0) return act('check', 'check');
       var pct = preflopPct(p.hole);
-      if (toCall > S.bb) return a;
-      if (pct >= 0.85) {
-        var pf = Math.min(0.65, 0.2 + (pct - 0.85) * 2.5);
+      /* Billig ist billig: kostet es nur den Big Blind oder (bei hoechstens einer Erhoehung) kaum etwas vom eigenen Stapel,
+         schaut man sich meistens den Flop an, statt sofort wegzuwerfen. Nur richtig schlechte Karten fliegen oefter raus. */
+      var small = S.raises <= 1 && toCall <= (p.chips + p.bet) * 0.05;
+      if (toCall > S.bb && !small) return a;
+      var junk = toCall <= S.bb ? 0.85 : 0.6;
+      if (pct >= junk) {
+        var pf = Math.min(0.75, 0.2 + (pct - junk) * 2.5);
         if (Math.random() < pf) return a;
       }
       return act('call', 'call');
@@ -1646,11 +1671,14 @@ input.bprange[type=range]::-moz-range-thumb { width: 20px; height: 20px; border-
       });
       S.players.forEach(function (p) { p.win = won[p.id] || 0; if (!p.folded) p.label = ''; });
       var ids = Object.keys(won).map(Number).sort(function (a, b) { return won[b] - won[a]; });
-      var tp = S.players[ids[0]];
-      S.result = {
-        showdown: lv.length > 1, won: won, ids: ids, topId: ids[0],
-        hand: (lv.length > 1 && tp.value !== undefined) ? describe(tp.value) : ''
-      };
+      var tp = S.players[ids[0]], hand = '', kick = 0;
+      if (lv.length > 1 && tp.value !== undefined) {
+        hand = describe(tp.value);
+        var dk = decider(tp.value, lv.filter(function (p) { return p !== tp; }).map(function (p) { return p.value; }));
+        if (dk.tie) hand += ' · gleich stark, Pot geteilt';
+        else if (dk.kick) { kick = dk.kick; hand += ' · ' + dk.text; }
+      }
+      S.result = { showdown: lv.length > 1, won: won, ids: ids, topId: ids[0], hand: hand, kick: kick };
       S.phase = 'result'; S.toAct = -1; S.glow = -1;
       botReactions(lv, won, lv.length > 1);
       H.render();
@@ -1740,7 +1768,7 @@ input.bprange[type=range]::-moz-range-thumb { width: 20px; height: 20px; border-
 
   var api = {
     createGame: createGame, SUITS: SUITS, rname: rname, best: best, bestSlow: bestSlow, eval5: eval5, eval7: eval7,
-    catOf: catOf, handName: handName, describe: describe, made: made, HAND_NAMES: HAND_NAMES, preflopStrength: preflopStrength, preflopPct: preflopPct,
+    catOf: catOf, handName: handName, describe: describe, decider: decider, made: made, HAND_NAMES: HAND_NAMES, preflopStrength: preflopStrength, preflopPct: preflopPct,
     equity: equity, BLINDS: BLINDS, START_CHIPS: START_CHIPS, REBUY: REBUY, fmt: fmt
   };
   if (typeof module !== 'undefined' && module.exports) module.exports = api;
@@ -2327,7 +2355,7 @@ input.bprange[type=range]::-moz-range-thumb { width: 20px; height: 20px; border-
   function clearShow() {
     showKey = -1;
     $('#win').innerHTML = '';
-    slots.forEach(function (sl) { sl.card.classList.remove('hl', 'dim'); });
+    slots.forEach(function (sl) { sl.card.classList.remove('hl', 'kk', 'dim'); });
     seats.forEach(function (r) { r.el.classList.remove('moved'); });
   }
   function renderShow() {
@@ -2340,19 +2368,23 @@ input.bprange[type=range]::-moz-range-thumb { width: 20px; height: 20px; border-
     var all = w.hole.concat(S.board);
     var mk = {};
     P.made(all, w.value).forEach(function (c) { mk[keyOf(c)] = 1; });
+    /* Kicker dazu markieren, damit man sieht, warum bei gleicher Hand gewonnen wurde */
+    var kk = {};
+    if (R.kick) for (var ki = 0; ki < all.length; ki++) { var kc = all[ki]; if (kc.r === R.kick && !mk[keyOf(kc)]) { kk[keyOf(kc)] = 1; mk[keyOf(kc)] = 1; break; } }
     var host = $('#win'); host.innerHTML = '';
     var from = seats[w.id].el.getBoundingClientRect(), st = stage.getBoundingClientRect();
     var els = w.hole.map(function (c, k) {
       var el = cardEl('');
       setFace(el, c);
-      if (mk[keyOf(c)]) el.classList.add('hl'); else el.classList.add('dim');
+      if (kk[keyOf(c)]) el.classList.add('kk'); else if (mk[keyOf(c)]) el.classList.add('hl'); else el.classList.add('dim');
       host.appendChild(el);
       return el;
     });
     if (w.id > 0) seats[w.id].el.classList.add('moved');
     slots.forEach(function (sl) {
       var on = sl.key && mk[sl.key];
-      sl.card.classList.toggle('hl', !!on);
+      sl.card.classList.toggle('kk', !!(sl.key && kk[sl.key]));
+      sl.card.classList.toggle('hl', !!on && !kk[sl.key]);
       sl.card.classList.toggle('dim', !on);
     });
     // Karten fliegen vom Sitz des Gewinners in die Mitte
@@ -3332,7 +3364,7 @@ input.bprange[type=range]::-moz-range-thumb { width: 20px; height: 20px; border-
     if (R) {
       var won = {};
       Object.keys(R.won).forEach(function (k) { won[tv(+k)] = R.won[k]; });
-      rv = { showdown: R.showdown, won: won, ids: R.ids.map(tv), topId: tv(R.topId), hand: R.hand };
+      rv = { showdown: R.showdown, won: won, ids: R.ids.map(tv), topId: tv(R.topId), hand: R.hand, kick: R.kick | 0 };
     }
     var me = S.players[g];
     return {
