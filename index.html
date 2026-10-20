@@ -329,7 +329,7 @@ button { font: inherit; color: inherit; cursor: pointer; }
 .c1 { --cc: #8a8f94; } .c5 { --cc: #7a5a9a; } .c10 { --cc: #b4503f; } .c50 { --cc: #3f7d62; } .c100 { --cc: #2b2f33; } .c500 { --cc: #5d6f93; } .c1000 { --cc: #b98d2d; }
 
 /* ---------- Bedienleiste ---------- */
-#controls { flex: 0 0 auto; height: 138px; padding: 6px 0 12px; display: flex; flex-direction: column; justify-content: flex-end; gap: 8px; }
+#controls { flex: 0 0 auto; height: 148px; padding: 6px 0 12px; display: flex; flex-direction: column; justify-content: flex-end; gap: 8px; }
 #status { text-align: center; font: 500 13px var(--ui); color: var(--muted); min-height: 18px; font-variant-numeric: tabular-nums; }
 #status b { color: var(--ink); font-weight: 700; }
 .btns { display: grid; grid-template-columns: 1fr 1.4fr 1fr; gap: 10px; }
@@ -365,17 +365,18 @@ button { font: inherit; color: inherit; cursor: pointer; }
 .guide ol b { color: var(--ink); font-weight: 700; }
 .btn:active:not(:disabled) { transform: scale(.97); }
 .btn.wide { width: 100%; height: 58px; }
-#rpanel { display: flex; flex-direction: column; gap: 8px; }
+/* Erhoehen-Feld passt ganz in die Leiste unten, sonst rutschen die Pot-Knoepfe unter den eigenen Platz */
+#rpanel { display: flex; flex-direction: column; gap: 6px; }
 .presets { display: flex; gap: 6px; }
-.preset { flex: 1; height: 30px; border-radius: 999px; background: var(--bg2); border: 1px solid var(--line); font: 600 12px var(--ui); padding: 0; }
+.preset { flex: 1; height: 28px; border-radius: 999px; background: var(--bg2); border: 1px solid var(--line); font: 600 12px var(--ui); padding: 0; }
 .rrow { display: flex; align-items: center; gap: 14px; }
-#ramt { width: 96px; flex: none; text-align: right; font: 800 22px var(--display); font-variant-numeric: tabular-nums; color: var(--ink); background: rgba(255,255,255,.05); border: 1px solid var(--line); border-radius: 10px; padding: 4px 10px; margin: 0; outline: none; }
+#ramt { width: 96px; flex: none; text-align: right; font: 800 20px var(--display); font-variant-numeric: tabular-nums; color: var(--ink); background: rgba(255,255,255,.05); border: 1px solid var(--line); border-radius: 10px; padding: 2px 10px; margin: 0; outline: none; }
 #ramt:focus { border-color: var(--brass); background: rgba(224,170,74,.1); }
 #ramt:disabled { opacity: .6; }
-#rlim { margin-top: -4px; text-align: right; font: 600 11px var(--ui); color: var(--muted); font-variant-numeric: tabular-nums; transition: color .2s; }
+#rlim { margin-top: -3px; text-align: right; font: 600 11px var(--ui); color: var(--muted); font-variant-numeric: tabular-nums; transition: color .2s; }
 #rlim.flash { color: var(--brass); font-weight: 700; }
 .rbtns { display: grid; grid-template-columns: 1fr 2.2fr; gap: 10px; }
-.rbtns .btn { height: 46px; flex-direction: row; }
+.rbtns .btn { height: 42px; flex-direction: row; }
 input[type=range] { -webkit-appearance: none; appearance: none; flex: 1; min-width: 0; height: 30px; background: transparent; margin: 0; cursor: pointer; touch-action: none; }
 input[type=range]::-webkit-slider-runnable-track { height: 8px; border-radius: 999px; background: linear-gradient(90deg, var(--oak1) var(--fill, 0%), #34383c var(--fill, 0%)); }
 input[type=range]::-moz-range-track { height: 8px; border-radius: 999px; background: #34383c; }
