@@ -439,6 +439,26 @@ input[type=range]::-moz-range-thumb {
 #splash .menulogo i:nth-child(2) { animation-delay: .15s; } #splash .menulogo i:nth-child(3) { animation-delay: .3s; } #splash .menulogo i:nth-child(4) { animation-delay: .45s; }
 @keyframes suit { from { opacity: 0; transform: translateY(8px) scale(.8); } to { opacity: 1; transform: none; } }
 #splash h1 { animation: suit .7s .1s ease both; }
+/* Startbild im Casino-Look: dunkelrot und gold, Leuchtschild mit Gluehbirnen, Chips fallen herein */
+#splash.casino { background: repeating-linear-gradient(45deg, rgba(224,170,74,.05) 0 2px, transparent 2px 22px), repeating-linear-gradient(-45deg, rgba(224,170,74,.05) 0 2px, transparent 2px 22px), radial-gradient(ellipse at 50% 38%, #6b1222, #2a0710 55%, #0c0306); }
+.cas { width: min(330px, 100%); text-align: center; }
+.casign { position: relative; padding: 22px 18px 18px; border-radius: 26px; background: linear-gradient(180deg, #3a0a14, #1a0409); border: 7px dotted #ffe08a; box-shadow: 0 0 0 3px #b07d22, 0 0 0 9px #1a0409, 0 0 0 11px rgba(224,170,74,.55), 0 0 40px 8px rgba(224,170,74,.35), inset 0 0 24px rgba(0,0,0,.6); animation: casin .7s cubic-bezier(.2,.9,.3,1.3) both, cabulb .45s steps(2) .7s infinite; }
+.casign small { display: block; font: 800 11px var(--ui); letter-spacing: .3em; text-transform: uppercase; color: #f4d67f; opacity: .9; }
+#splash .casign h1 { margin: 4px 0 2px; font: 800 min(54px, 12.5vw)/1.05 var(--display); letter-spacing: .08em; padding-left: .08em; white-space: nowrap; background: linear-gradient(180deg, #fff6d0, #f4d67f 45%, #c48a2c 55%, #ffe9a8); -webkit-background-clip: text; background-clip: text; color: transparent; filter: drop-shadow(0 3px 0 #5a3008) drop-shadow(0 0 14px rgba(244,214,127,.55)); animation: suit .7s .25s ease both; }
+.casign p { margin: 0; font: 700 min(12px, 3.4vw) var(--ui); letter-spacing: .14em; white-space: nowrap; text-transform: uppercase; color: #ecd9b0; }
+.casuits { display: flex; justify-content: center; gap: 14px; margin-top: 10px; font-size: 18px; color: #f4d67f; }
+.casuits i { font-style: normal; } .casuits i.r { color: #ff6b5e; }
+.cachips { display: flex; justify-content: center; gap: 14px; height: 52px; margin-top: 26px; }
+.cachips i { width: 46px; height: 46px; border-radius: 50%; border: 5px dashed rgba(255,255,255,.9); background: radial-gradient(circle, rgba(255,255,255,.18) 0 34%, transparent 36%), var(--c); box-shadow: 0 0 0 2px var(--c), 0 8px 14px rgba(0,0,0,.55); animation: cachip .7s cubic-bezier(.3,1.5,.5,1) both; }
+.cachips i:nth-child(1) { --c: #c0392b; animation-delay: .35s; }
+.cachips i:nth-child(2) { --c: #151515; animation-delay: .5s; }
+.cachips i:nth-child(3) { --c: #c9962f; animation-delay: .65s; }
+#splash.casino .loadbar { background: rgba(255,224,138,.14); }
+#splash.casino .loadbar i { background: linear-gradient(90deg, #b07d22, #ffe08a); box-shadow: 0 0 10px rgba(255,224,138,.7); }
+#splash.casino .loadtxt { color: #d9bf8a; }
+@keyframes casin { from { opacity: 0; transform: scale(.7); } to { opacity: 1; transform: none; } }
+@keyframes cabulb { 50% { border-color: #b07d22; } }
+@keyframes cachip { from { opacity: 0; transform: translateY(-60px) rotate(-200deg); } to { opacity: 1; transform: none; } }
 .loadbar { margin: 22px auto 0; width: 170px; height: 4px; border-radius: 999px; background: rgba(236,231,218,.12); overflow: hidden; }
 .loadbar i { display: block; height: 100%; width: 100%; border-radius: inherit; background: var(--brass); transform-origin: left; animation: load 1.7s cubic-bezier(.3,.1,.2,1) forwards; }
 @keyframes load { from { transform: scaleX(.04); } 70% { transform: scaleX(.85); } to { transform: scaleX(1); } }
@@ -1153,11 +1173,15 @@ input.bprange[type=range]::-moz-range-thumb { width: 20px; height: 20px; border-
     </div>
   </div>
 
-  <div id="splash">
-    <div class="menucard">
-      <div class="menulogo" aria-hidden="true"><i>♠</i><i class="r">♥</i><i>♣</i><i class="r">♦</i></div>
-      <h1>Pokertisch</h1>
-      <p class="menusub">Texas Hold’em · bis zu 5 Spieler</p>
+  <div id="splash" class="casino">
+    <div class="cas">
+      <div class="casign">
+        <small>★ Willkommen im ★</small>
+        <h1>CASINO</h1>
+        <p>Poker · Blackjack · Slots</p>
+        <div class="casuits" aria-hidden="true"><i>♠</i><i class="r">♥</i><i>♣</i><i class="r">♦</i></div>
+      </div>
+      <div class="cachips" aria-hidden="true"><i></i><i></i><i></i></div>
       <div class="loadbar"><i></i></div>
       <p class="loadtxt">Lädt …</p>
     </div>
