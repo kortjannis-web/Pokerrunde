@@ -550,8 +550,10 @@ input.bprange[type=range]::-moz-range-thumb { width: 20px; height: 20px; border-
 .pstat b { display: block; font: 800 22px var(--display); font-variant-numeric: tabular-nums; }
 .pstat span { color: var(--muted); font: 600 11px var(--ui); }
 /* Verlauf der Statistik */
-#stSeg { margin-top: 10px; }
-#stSeg button { height: 36px; font-size: 13px; }
+#stGame button { height: 38px; font-size: 14px; }
+.stitle { padding: 0 6px 4px; color: var(--muted); font: 700 11px var(--ui); letter-spacing: .12em; text-transform: uppercase; }
+.sbox .zl { stroke: rgba(236,231,218,.45); stroke-width: 1.2; stroke-dasharray: 4 4; }
+.sbox .ar.neg { fill: #ff8a76; }
 .sbox { position: relative; margin-top: 8px; padding: 10px 6px 4px; border-radius: 12px; background: var(--bg2); border: 1px solid var(--line); touch-action: pan-y; user-select: none; -webkit-user-select: none; }
 .sbox svg { display: block; width: 100%; height: 170px; overflow: visible; }
 .sbox .gl { stroke: var(--line); stroke-width: 1; }
@@ -1372,27 +1374,20 @@ input.bprange[type=range]::-moz-range-thumb { width: 20px; height: 20px; border-
         </div>
       </div>
       <div>
-        <div class="psec" style="margin-bottom:8px">Statistik</div>
-        <div class="pstats">
-          <div class="pstat"><b id="stHands">0</b><span>Hände</span></div>
-          <div class="pstat"><b id="stWins">0</b><span>gewonnen</span></div>
-          <div class="pstat"><b id="stRate">–</b><span>Quote</span></div>
+        <div class="psec">Statistik</div>
+        <div class="seg" id="stGame" role="radiogroup" aria-label="Statistik für welches Spiel"></div>
+        <div class="pstats" id="stTiles" style="margin-top:10px">
+          <div class="pstat"><b>0</b><span></span></div>
+          <div class="pstat"><b>0</b><span></span></div>
+          <div class="pstat"><b>–</b><span></span></div>
         </div>
-        <div class="seg" id="stSeg" role="radiogroup" aria-label="Verlauf anzeigen"></div>
+        <div class="frhint" id="stNote" style="text-align:center"></div>
         <div class="sbox" id="stBox">
+          <div class="stitle">Gewinn und Verlust</div>
           <svg id="stSvg" role="img" aria-label="Verlauf"></svg>
           <div class="stip" id="stTip" hidden></div>
-          <p class="sempty" id="stEmpty" hidden>Spiel ein paar Hände, dann siehst du hier deinen Verlauf.</p>
+          <p class="sempty" id="stEmpty" hidden></p>
         </div>
-      </div>
-      <div>
-        <div class="psec" style="margin-bottom:8px">Blackjack</div>
-        <div class="pstats">
-          <div class="pstat"><b id="bjsR">0</b><span>Runden</span></div>
-          <div class="pstat"><b id="bjsQ">–</b><span>Quote</span></div>
-          <div class="pstat"><b id="bjsB">0</b><span>Blackjacks</span></div>
-        </div>
-        <div class="frhint" id="bjsN" style="text-align:center"></div>
       </div>
       <div>
         <div class="psec" style="margin-bottom:8px">Einstellungen</div>
@@ -3337,7 +3332,7 @@ input.bprange[type=range]::-moz-range-thumb { width: 20px; height: 20px; border-
     prepTable();
     var total = PROF.bank, bi = Math.round(+buyin || total);
     bi = Math.max(Math.min(P.REBUY, total), Math.min(total, bi));
-    wallet = total - bi; PROF.buyin = bi; saveProf();
+    wallet = total - bi; PROF.buyin = bi; saveProf(); sessBank = PROF.bank;
     game.reset(bi); S = game.S; profit = 0; playing = true; applyProfToSeat();
     snap.hand = -1;
     render();
@@ -3372,8 +3367,10 @@ input.bprange[type=range]::-moz-range-thumb { width: 20px; height: 20px; border-
       PROF.hands = Math.max(0, rawP.hands | 0); PROF.wins = Math.max(0, rawP.wins | 0);
       if (typeof rawP.bank === 'number' && isFinite(rawP.bank)) PROF.bank = Math.max(0, Math.round(rawP.bank));
       if (typeof rawP.buyin === 'number' && isFinite(rawP.buyin)) PROF.buyin = Math.max(P.REBUY, Math.round(rawP.buyin));
+      if (typeof rawP.pnet === 'number' && isFinite(rawP.pnet)) PROF.pnet = Math.round(rawP.pnet);
+      /* Eintrag: [Haende, gewonnen, Guthaben] und seit der Spiele-Statistik als viertes der Poker-Saldo */
       if (Array.isArray(rawP.log)) PROF.log = rawP.log.filter(function (e) {
-        return Array.isArray(e) && e.length === 3 && e.every(function (x) { return typeof x === 'number' && isFinite(x) && x >= 0; });
+        return Array.isArray(e) && (e.length === 3 || e.length === 4) && e.every(function (x, i) { return typeof x === 'number' && isFinite(x) && (i === 3 || x >= 0); });
       }).slice(-LOG_MAX);
     }
   } catch (e) {}
@@ -3404,73 +3401,97 @@ input.bprange[type=range]::-moz-range-thumb { width: 20px; height: 20px; border-
     [$('#pavMenu'), $('#pavBig')].forEach(function (e) { e.style.setProperty('--av', PROF.color); e.textContent = profInitial(); });
     $('#pnameMenu').textContent = profName();
     [].forEach.call(document.querySelectorAll('#swatches button[data-c], #swMore button'), function (b) { var on = b.dataset.c === PROF.color; b.classList.toggle('on', on); b.setAttribute('aria-checked', on ? 'true' : 'false'); });
-    $('#stHands').textContent = fmt(PROF.hands); $('#stWins').textContent = fmt(PROF.wins);
-    $('#stRate').textContent = PROF.hands ? Math.round(PROF.wins / PROF.hands * 100) + '%' : '–';
     syncMute();
   }
   /* ---------- Statistik-Verlauf: Quote, gewonnene Haende oder Guthaben ueber die gespielten Haende ---------- */
+  /* Guthaben nach der letzten Hand: der Unterschied ist Gewinn oder Verlust dieser Hand (Aufladen aendert das Guthaben nicht) */
+  var sessBank = null;
   function logHand() {
     if (!Array.isArray(PROF.log)) PROF.log = [];
-    PROF.log.push([PROF.hands, PROF.wins, PROF.bank]);
+    var net = PROF.pnet || 0;
+    if (sessBank != null) {
+      if (!PROF.log.some(function (e) { return e.length > 3; })) PROF.log.push([Math.max(0, PROF.hands - 1), PROF.wins, sessBank, net]);   // Startpunkt bei 0
+      net += PROF.bank - sessBank; PROF.pnet = net;
+    }
+    sessBank = PROF.bank;
+    PROF.log.push([PROF.hands, PROF.wins, PROF.bank, net]);
     /* zu lang: jeden zweiten Punkt weglassen, so bleibt der ganze Verlauf drin, nur weniger fein */
     if (PROF.log.length > LOG_MAX) { var L = PROF.log; PROF.log = L.filter(function (e, i) { return i % 2 === 0 || i === L.length - 1; }); }
     saveProf();
   }
-  var ST_MODES = [
-    { k: 'rate', name: 'Quote', y: function (e) { return e[0] ? e[1] / e[0] * 100 : 0; }, lab: function (v) { return Math.round(v) + ' %'; } },
-    { k: 'wins', name: 'Gewonnen', y: function (e) { return e[1]; }, lab: function (v) { return fmt(Math.round(v)); } },
-    { k: 'bank', name: 'Guthaben', y: function (e) { return e[2]; }, lab: function (v) { return v >= 1e4 ? fmt(Math.round(v / 1000)) + 'K' : fmt(Math.round(v)); } }
-  ];
-  var stMode = 'rate', stPts = null;
+  var STG = [{ k: 'poker', name: 'Poker' }, { k: 'bj', name: 'Blackjack' }, { k: 'slots', name: 'Slots' }];
+  var stGame = 'poker', stPts = null, stUnit = '';
+  try { var lg = localStorage.getItem('pr-game'); if (lg === 'bj' || lg === 'slots') stGame = lg; } catch (e) {}
+  function readJ(k) { try { return JSON.parse(localStorage.getItem(k) || 'null'); } catch (e) { return null; } }
+  function signed(v) { v = Math.round(v); return (v > 0 ? '+' : v < 0 ? '−' : '±') + fmt(Math.abs(v)); }
+  function pct(a, b) { return b ? Math.round(a / b * 100) + ' %' : '–'; }
+  /* pro Spiel: drei Kennzahlen, eine Zeile darunter und der Saldo-Verlauf als Punkte { x, y } */
+  function gameStats(g) {
+    if (g === 'bj') {
+      var b = readJ('pr-bjstats') || {}, r = b.r | 0;
+      return { unit: 'Runde', tiles: [[fmt(r), 'Runden'], [pct(b.w | 0, r), 'Quote'], [fmt(b.bj | 0), 'Blackjacks']],
+        note: r ? 'Gewonnen ' + fmt(b.w | 0) + ' · verloren ' + fmt(b.l | 0) + ' · Saldo ' + signed(+b.net || 0) : 'Noch keine Runde Blackjack gespielt.',
+        pts: (readJ('pr-bjlog') || []).map(function (e) { return { x: e[0], y: e[1] }; }),
+        empty: 'Spiel ein paar Runden Blackjack, dann siehst du hier, wie viel du gewonnen oder verloren hast.' };
+    }
+    if (g === 'slots') {
+      var o = readJ('pr-slstats') || {}, n = o.n | 0;
+      return { unit: 'Dreh', tiles: [[fmt(n), 'Drehs'], [pct(o.w | 0, n), 'Trefferquote'], [o.best ? fmt(o.best) : '–', 'bester Gewinn']],
+        note: n ? fmt(o.w | 0) + ' Gewinne · Saldo ' + signed(+o.net || 0) + (o.jp ? ' · ' + fmt(o.jp) + '× Jackpot' : '') : 'Noch nicht an den Slots gespielt.',
+        pts: (readJ('pr-sllog') || []).map(function (e) { return { x: e[0], y: e[1] }; }),
+        empty: 'Dreh ein paar Mal an den Slots, dann siehst du hier, wie viel du gewonnen oder verloren hast.' };
+    }
+    var pts = (PROF.log || []).filter(function (e) { return e.length > 3; }).map(function (e) { return { x: e[0], y: e[3] }; });
+    return { unit: 'Hand', tiles: [[fmt(PROF.hands), 'Hände'], [fmt(PROF.wins), 'gewonnen'], [pct(PROF.wins, PROF.hands), 'Quote']],
+      note: pts.length > 1 ? 'Saldo ' + signed(pts[pts.length - 1].y) + ' Chips' : PROF.hands ? '' : 'Noch keine Hand Poker gespielt.',
+      pts: pts, empty: 'Spiel ein paar Hände Poker, dann siehst du hier, wie viel du gewonnen oder verloren hast.' };
+  }
   function niceStep(range) {
     var raw = Math.max(range, 1e-9) / 4, mag = Math.pow(10, Math.floor(Math.log(raw) / Math.LN10)), nr = raw / mag;
     return (nr <= 1 ? 1 : nr <= 2 ? 2 : nr <= 2.5 ? 2.5 : nr <= 5 ? 5 : 10) * mag;
   }
+  function chipLab(v) { return Math.abs(v) >= 1e4 ? signed(v / 1000).replace('±', '') + 'K' : v ? signed(v) : '0'; }
   function drawStats() {
-    seg($('#stSeg'), ST_MODES.map(function (m) { return m.k; }), stMode,
-      function (k) { return ST_MODES.filter(function (m) { return m.k === k; })[0].name; },
-      function (k) { stMode = k; drawStats(); });
-    var svg = $('#stSvg'), box = $('#stBox'), log = PROF.log || [];
-    $('#stTip').hidden = true; stPts = null;
+    seg($('#stGame'), STG.map(function (m) { return m.k; }), stGame,
+      function (k) { return STG.filter(function (m) { return m.k === k; })[0].name; },
+      function (k) { stGame = k; drawStats(); });
+    var G = gameStats(stGame);
+    [].forEach.call($('#stTiles').children, function (t, i) { t.querySelector('b').textContent = G.tiles[i][0]; t.querySelector('span').textContent = G.tiles[i][1]; });
+    $('#stNote').textContent = G.note; $('#stNote').hidden = !G.note;
+    var svg = $('#stSvg'), box = $('#stBox'), log = G.pts;
+    $('#stTip').hidden = true; stPts = null; stUnit = G.unit;
     var w = svg.clientWidth || box.clientWidth - 12;
-    if (log.length < 2 || !w) { svg.style.display = 'none'; $('#stEmpty').hidden = false; return; }
+    if (log.length < 2 || !w) { svg.style.display = 'none'; $('#stEmpty').textContent = G.empty; $('#stEmpty').hidden = false; return; }
     svg.style.display = ''; $('#stEmpty').hidden = true;
-    var M = ST_MODES.filter(function (m) { return m.k === stMode; })[0];
-    var h = 170, L = 44, R = 14, T = 14, B = 22;
-    var ys = log.map(M.y), lo = Math.min.apply(null, ys), hi = Math.max.apply(null, ys);
-    var y0, y1, step;
-    if (M.k === 'bank') {
-      step = niceStep(hi - lo || hi || 100);
-      y0 = Math.floor(lo / step) * step; y1 = Math.ceil(hi / step) * step; if (y1 === y0) y1 += step;
-    } else {
-      step = niceStep(Math.max(hi, M.k === 'rate' ? 10 : 4));
-      y0 = 0; y1 = Math.ceil(hi / step) * step || step;
-      if (M.k === 'rate' && y1 > 100) y1 = 100;
-    }
-    var x0 = log[0][0], x1 = log[log.length - 1][0]; if (x1 === x0) x1 = x0 + 1;
+    var h = 170, L = 50, R = 14, T = 14, B = 22;
+    var ys = log.map(function (e) { return e.y; }), lo = Math.min(0, Math.min.apply(null, ys)), hi = Math.max(0, Math.max.apply(null, ys));
+    var step = niceStep(hi - lo || 100), y0 = Math.floor(lo / step) * step, y1 = Math.ceil(hi / step) * step;
+    if (y1 === y0) y1 += step;
+    var x0 = log[0].x, x1 = log[log.length - 1].x; if (x1 === x0) x1 = x0 + 1;
     function X(v) { return L + (v - x0) / (x1 - x0) * (w - L - R); }
     function Y(v) { return T + (1 - (v - y0) / (y1 - y0)) * (h - T - B); }
     var o = '';
     for (var g = y0; g <= y1 + step / 1000; g += step) {
       var gy = Y(g).toFixed(1);
-      o += '<line class="gl" x1="' + L + '" x2="' + (w - R) + '" y1="' + gy + '" y2="' + gy + '"/>';
-      o += '<text class="ax" x="' + (L - 6) + '" y="' + gy + '" dy="3.5" text-anchor="end">' + M.lab(g) + '</text>';
+      o += '<line class="' + (Math.abs(g) < step / 1000 ? 'zl' : 'gl') + '" x1="' + L + '" x2="' + (w - R) + '" y1="' + gy + '" y2="' + gy + '"/>';
+      o += '<text class="ax" x="' + (L - 6) + '" y="' + gy + '" dy="3.5" text-anchor="end">' + chipLab(g) + '</text>';
     }
-    var pts = log.map(function (e, i) { return [X(e[0]), Y(ys[i])]; });
+    var pts = log.map(function (e) { return [X(e.x), Y(e.y)]; }), zy = Y(0).toFixed(1);
     var d = pts.map(function (q, i) { return (i ? 'L' : 'M') + q[0].toFixed(1) + ' ' + q[1].toFixed(1); }).join('');
-    o += '<path class="ar" d="' + d + 'L' + pts[pts.length - 1][0].toFixed(1) + ' ' + Y(y0).toFixed(1) + 'L' + pts[0][0].toFixed(1) + ' ' + Y(y0).toFixed(1) + 'Z"/>';
+    var lastV = ys[ys.length - 1];
+    o += '<path class="ar' + (lastV < 0 ? ' neg' : '') + '" d="' + d + 'L' + pts[pts.length - 1][0].toFixed(1) + ' ' + zy + 'L' + pts[0][0].toFixed(1) + ' ' + zy + 'Z"/>';
     o += '<path class="ln" d="' + d + '"/>';
-    o += '<text class="ax" x="' + L + '" y="' + (h - 5) + '">Hand ' + fmt(x0) + '</text>';
-    o += '<text class="ax" x="' + (w - R) + '" y="' + (h - 5) + '" text-anchor="end">Hand ' + fmt(log[log.length - 1][0]) + '</text>';
+    o += '<text class="ax" x="' + L + '" y="' + (h - 5) + '">' + G.unit + ' ' + fmt(x0) + '</text>';
+    o += '<text class="ax" x="' + (w - R) + '" y="' + (h - 5) + '" text-anchor="end">' + G.unit + ' ' + fmt(log[log.length - 1].x) + '</text>';
     var last = pts[pts.length - 1];
-    o += '<text class="lb" x="' + (last[0] - 6).toFixed(1) + '" y="' + (last[1] - 9).toFixed(1) + '" text-anchor="end">' + M.lab(ys[ys.length - 1]) + '</text>';
+    o += '<text class="lb" x="' + (last[0] - 6).toFixed(1) + '" y="' + (last[1] < T + 18 ? last[1] + 18 : last[1] - 9).toFixed(1) + '" text-anchor="end">' + signed(lastV) + '</text>';
     o += '<line class="xh" id="stXh" y1="' + T + '" y2="' + (h - B) + '" x1="-9" x2="-9" visibility="hidden"/>';
     o += '<circle class="dt" cx="' + last[0].toFixed(1) + '" cy="' + last[1].toFixed(1) + '" r="4.5"/>';
     o += '<circle class="dt" id="stDot" r="4.5" cx="-9" cy="-9" visibility="hidden"/>';
     svg.setAttribute('viewBox', '0 0 ' + w + ' ' + h);
-    svg.setAttribute('aria-label', M.name + ' im Verlauf, zuletzt ' + M.lab(ys[ys.length - 1]));
+    svg.setAttribute('aria-label', 'Gewinn und Verlust im Verlauf, zuletzt ' + signed(lastV) + ' Chips');
     svg.innerHTML = o;
-    stPts = pts;
+    stPts = pts.map(function (q, i) { return [q[0], q[1], log[i]]; });
   }
   /* Antippen oder mit dem Finger/der Maus darueberfahren zeigt die Werte an dieser Stelle */
   function stHover(e) {
@@ -3478,12 +3499,12 @@ input.bprange[type=range]::-moz-range-thumb { width: 20px; height: 20px; border-
     var svg = $('#stSvg'), r = svg.getBoundingClientRect(), x = e.clientX - r.left, bi = 0;
     if (x < 0 || x > r.width) return stLeave();
     stPts.forEach(function (q, i) { if (Math.abs(q[0] - x) < Math.abs(stPts[bi][0] - x)) bi = i; });
-    var q = stPts[bi], en = PROF.log[bi]; if (!en) return;
+    var q = stPts[bi], en = q[2]; if (!en) return;
     var xh = $('#stXh'), dt = $('#stDot');
     xh.setAttribute('x1', q[0]); xh.setAttribute('x2', q[0]); xh.setAttribute('visibility', 'visible');
     dt.setAttribute('cx', q[0]); dt.setAttribute('cy', q[1]); dt.setAttribute('visibility', 'visible');
     var tip = $('#stTip'), br = $('#stBox').getBoundingClientRect();
-    tip.innerHTML = '<b>Hand ' + fmt(en[0]) + '</b><br>' + Math.round(en[0] ? en[1] / en[0] * 100 : 0) + ' % Quote <span>·</span> ' + fmt(en[1]) + ' gewonnen<br>' + fmt(en[2]) + ' Chips Guthaben';
+    tip.innerHTML = '<b>' + stUnit + ' ' + fmt(en.x) + '</b><br>' + (en.y > 0 ? 'im Plus ' : en.y < 0 ? 'im Minus ' : '') + signed(en.y) + ' Chips';
     tip.hidden = false;
     var tw = tip.offsetWidth, cx = r.left - br.left + q[0];
     tip.style.left = Math.max(tw / 2 + 4, Math.min(br.width - tw / 2 - 4, cx)) + 'px';
@@ -3927,7 +3948,7 @@ input.bprange[type=range]::-moz-range-thumb { width: 20px; height: 20px; border-
     });
     for (var bi = 0; bi < cfg.bots; bi++) seatsArr.push({ name: uniq(BOT_NAMES[bi % BOT_NAMES.length]), color: BOT_COL, peer: '', conn: null, chips: avg, kind: 'bot', gone: false, last: '' });
     prepTable();
-    wallet = bank - buys[0]; PROF.buyin = buys[0]; saveProf();
+    wallet = bank - buys[0]; PROF.buyin = buys[0]; saveProf(); sessBank = bank;
     MP = { on: true, role: 'host', n: n, seats: seatsArr, wait: null, brokes: [], joins: [], ended: false };
     NET.players = hum.slice();
     game.resetMulti({
@@ -4152,7 +4173,7 @@ input.bprange[type=range]::-moz-range-thumb { width: 20px; height: 20px; border-
     prepTable();
     var bank = Math.max(P.REBUY, PROF.bank | 0);
     var bi = Math.max(Math.min(P.REBUY, bank), Math.min(bank, Math.round(+d.chips) || bank));
-    wallet = bank - bi; PROF.buyin = bi; saveProf();
+    wallet = bank - bi; PROF.buyin = bi; saveProf(); sessBank = bank;
     MP = { on: true, role: 'guest', n: n, seat: seat, conn: NET.conn, unacked: 0, pend: 0, doneTk: -1, dead: false };
     var G = guestGame.S;
     G.players = []; for (var i = 0; i < n; i++) G.players.push({ id: i, name: i === 0 ? 'Du' : '', color: null, chips: 0, bet: 0, total: 0, folded: false, allIn: false, inHand: false, label: '', win: 0, revealed: false, hole: [] });
@@ -5023,9 +5044,15 @@ input.bprange[type=range]::-moz-range-thumb { width: 20px; height: 20px; border-
   function bjStat(net, bjs) {
     var st = { r: 0, w: 0, l: 0, bj: 0, net: 0 };
     try { var o = JSON.parse(localStorage.getItem('pr-bjstats') || 'null'); if (o && typeof o === 'object') Object.keys(st).forEach(function (k) { if (typeof o[k] === 'number' && isFinite(o[k])) st[k] = o[k]; }); } catch (e) {}
+    var log = null;
+    try { log = JSON.parse(localStorage.getItem('pr-bjlog') || 'null'); } catch (e) {}
+    if (!Array.isArray(log)) log = [];
+    if (!log.length) log.push([st.r, st.net]);   // Startpunkt: bisheriger Stand
     st.r++; if (net > 0) st.w++; else if (net < 0) st.l++;
     st.bj += bjs; st.net += net;
-    try { localStorage.setItem('pr-bjstats', JSON.stringify(st)); } catch (e) {}
+    log.push([st.r, st.net]);
+    if (log.length > 1000) log = log.filter(function (e, i) { return i % 2 === 0 || i === log.length - 1; });
+    try { localStorage.setItem('pr-bjstats', JSON.stringify(st)); localStorage.setItem('pr-bjlog', JSON.stringify(log)); } catch (e) {}
   }
   function secs() { return DL ? Math.max(0, Math.ceil((DL - Date.now()) / 1000)) : 0; }
   function renderCtl() {
@@ -5655,6 +5682,19 @@ input.bprange[type=range]::-moz-range-thumb { width: 20px; height: 20px; border-
   }
   function multOf(k) { for (var i = 0; i < PAYS.length; i++) if (PAYS[i].k === k) return PAYS[i].m; return 0; }
 
+  /* Statistik fuers Profil: Drehs, Gewinne, Saldo, bester Gewinn, Jackpots und der Saldo-Verlauf */
+  function slStat(net, win, jp) {
+    var o = null, log = null;
+    try { o = JSON.parse(localStorage.getItem('pr-slstats') || 'null'); log = JSON.parse(localStorage.getItem('pr-sllog') || 'null'); } catch (e) {}
+    o = (o && typeof o === 'object') ? o : {}; if (!Array.isArray(log)) log = [];
+    var st = { n: +o.n || 0, w: +o.w || 0, net: +o.net || 0, best: +o.best || 0, jp: +o.jp || 0 };
+    if (!log.length) log.push([st.n, st.net]);
+    st.n++; if (win > 0) st.w++; st.net += net; st.best = Math.max(st.best, win); if (jp) st.jp++;
+    log.push([st.n, st.net]);
+    if (log.length > 1000) log = log.filter(function (e, i) { return i % 2 === 0 || i === log.length - 1; });
+    try { localStorage.setItem('pr-slstats', JSON.stringify(st)); localStorage.setItem('pr-sllog', JSON.stringify(log)); } catch (e) {}
+  }
+
   /* ---------- Anzeige ---------- */
   var sl = $('#sl'), reels = [].slice.call(document.querySelectorAll('#sl .slstrip')), mach = $('#slMachine');
   var pos = [randInt(N), randInt(N), randInt(N)], busy = false, gen = 0, bet = 10, shown = 0, toastT = 0, bigT = 0;
@@ -5729,6 +5769,7 @@ input.bprange[type=range]::-moz-range-thumb { width: 20px; height: 20px; border-
     /* gleich verbuchen: geht die Seite mitten im Drehen zu, ist nichts verloren */
     var before = P.bank;
     P.bank = before - bet + win; PR.saveProf(); PR.renderBank();
+    slStat(win - bet, win, ev && ev.k === 'SSS');
     busy = true; var g = ++gen;
     clearHits(); renderBet();
     showBank(before - bet); $('#slWinL').textContent = '0';
@@ -6292,15 +6333,7 @@ input.bprange[type=range]::-moz-range-thumb { width: 20px; height: 20px; border-
   });
   setInterval(function () { if (menuFree()) showDaily(); }, 1500);
 
-  /* ---------- Profil: Blackjack-Statistik und Vibration ---------- */
-  function renderBjStats() {
-    var st = { r: 0, w: 0, l: 0, bj: 0, net: 0 };
-    try { var o = JSON.parse(localStorage.getItem('pr-bjstats') || 'null'); if (o) Object.keys(st).forEach(function (k) { if (typeof o[k] === 'number') st[k] = o[k]; }); } catch (e) {}
-    $('#bjsR').textContent = fmt(st.r);
-    $('#bjsQ').textContent = st.r ? Math.round(st.w / st.r * 100) + '%' : '–';
-    $('#bjsB').textContent = fmt(st.bj);
-    $('#bjsN').textContent = st.r ? 'Gewonnen ' + fmt(st.w) + ' · verloren ' + fmt(st.l) + ' · Saldo ' + (st.net > 0 ? '+' : st.net < 0 ? '−' : '') + fmt(Math.abs(st.net)) : 'Noch keine Runde Blackjack gespielt.';
-  }
+  /* ---------- Profil: Vibration (die Statistik je Spiel steht im Profil-Teil oben) ---------- */
   function renderVib() { var on = Snd.vibOn(); $('#vibSw').setAttribute('aria-checked', on ? 'true' : 'false'); }
   $('#vibSw').addEventListener('click', function () {
     var on = !Snd.vibOn();
@@ -6308,8 +6341,8 @@ input.bprange[type=range]::-moz-range-thumb { width: 20px; height: 20px; border-
     renderVib();
     if (on) { try { navigator.vibrate && navigator.vibrate(60); } catch (e) {} }
   });
-  $('#profBtn').addEventListener('click', function () { renderBjStats(); renderVib(); });
-  renderBjStats(); renderVib();
+  $('#profBtn').addEventListener('click', function () { renderVib(); });
+  renderVib();
 })();
 </script>
 
