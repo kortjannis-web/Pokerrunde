@@ -655,6 +655,19 @@ input.bprange[type=range]::-moz-range-thumb { width: 20px; height: 20px; border-
 #fToast { position: absolute; left: 50%; bottom: max(24px, env(safe-area-inset-bottom)); z-index: 97; transform: translate(-50%, 12px); padding: 9px 16px; border-radius: 999px; background: var(--brass); color: var(--brass-ink); font: 800 13px var(--ui); opacity: 0; pointer-events: none; transition: opacity .3s, transform .3s; white-space: nowrap; max-width: calc(100% - 20px); overflow: hidden; text-overflow: ellipsis; box-shadow: 0 6px 18px rgba(0,0,0,.5); }
 #fToast.on { opacity: 1; transform: translate(-50%, 0); }
 
+.frank { display: flex; flex-direction: column; gap: 8px; margin-bottom: 6px; }
+.frl { display: flex; flex-direction: column; border-radius: 14px; background: var(--bg2); border: 1px solid var(--line); overflow: hidden; }
+.frr { display: flex; align-items: center; gap: 10px; padding: 8px 14px 8px 10px; }
+.frr + .frr { border-top: 1px solid var(--line); }
+.frr.me { background: rgba(224,170,74,.1); }
+.frn { width: 26px; text-align: center; font: 800 14px var(--ui); color: var(--muted); font-variant-numeric: tabular-nums; }
+.frr .pav { width: 28px; height: 28px; font-size: 13px; }
+.frr b { flex: 1; min-width: 0; font: 700 15px var(--ui); overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.frc { font: 800 15px var(--ui); color: var(--brass); font-variant-numeric: tabular-nums; }
+#bjTip { position: absolute; right: 8px; bottom: 6px; z-index: 6; height: 32px; padding: 0 12px; border-radius: 999px; border: 1px solid rgba(224,170,74,.55); background: rgba(16,18,19,.85); color: var(--ink); font: 700 13px var(--ui); }
+#bjTip:active { transform: scale(.95); }
+#bjActUI .btn.tipped { animation: tipped .65s ease-in-out 4; }
+@keyframes tipped { 0%, 100% { box-shadow: 0 0 0 0 rgba(224,170,74,0); } 50% { box-shadow: 0 0 0 3px var(--ink), 0 0 22px 6px rgba(224,170,74,.8); } }
 /* ---------- Taegliche Belohnung ---------- */
 #daily { z-index: 92; }
 #daily .endcard { display: flex; flex-direction: column; gap: 12px; }
@@ -1059,6 +1072,7 @@ input.bprange[type=range]::-moz-range-thumb { width: 20px; height: 20px; border-
       <div id="bjMe"><div class="bjhands"></div></div>
       <div id="bjFly"></div>
       <div class="bjtoast" id="bjToast"></div>
+      <button class="bjtip" id="bjTip" type="button" hidden aria-label="Tipp: was wäre jetzt richtig?">💡 Tipp</button>
     </main>
     <footer id="bjCtl">
       <div id="bjStatus" aria-live="polite"></div>
@@ -5032,16 +5046,19 @@ input.bprange[type=range]::-moz-range-thumb { width: 20px; height: 20px; border-
       else if (my.chips < t.min && BW > 0) st = 'Lade Chips nach (+ oben), um weiterzuspielen';
       else st = 'Chips antippen oder ins Feld ziehen · mindestens <b>' + fmt(t.min) + '</b>';
     } else {
+      $('#bjTip').hidden = true;
       var myTurn = !!(my && t.phase === 'play' && t.seats[t.turn] === my && !(H && H.busy));
       var h = myTurn ? my.hands[my.cur] : null, ok = !!(h && h.cards.length >= 2 && !h.done);
       $('#bjHit').disabled = !ok; $('#bjStand').disabled = !ok;
       $('#bjDouble').disabled = !(ok && canDouble(my, h)); $('#bjSplit').disabled = !(ok && canSplit(my, h));
       $('#bjDouble small').textContent = h ? '+' + fmt(h.bet) : ''; $('#bjSplit small').textContent = h ? '+' + fmt(h.bet) : '';
+      $('#bjTip').hidden = !ok;
       if (t.phase === 'deal') st = 'Karten werden ausgeteilt …';
       else if (t.phase === 'dealer') st = 'Der Dealer ist dran …';
       else if (t.phase === 'play') {
         var cur = t.seats[t.turn];
         if (cur === my) st = '<b>Du bist dran</b>' + (my.hands.length > 1 ? ' · Hand ' + (my.cur + 1) + ' von ' + my.hands.length : '') + (sec ? ' · ' + sec + ' s' : '');
+        if (cur === my && ok && tip && tip.key === tipKey(my, h)) st = '💡 <b>' + tip.say + '</b>' + (sec ? ' · ' + sec + ' s' : '');
         else if (cur) {
           st = '';
           var b = document.createElement('b'); b.textContent = cur.name;
@@ -5058,6 +5075,50 @@ input.bprange[type=range]::-moz-range-thumb { width: 20px; height: 20px; border-
     $('#bjStatus').innerHTML = st;
   }
   setInterval(function () { if (T && DL && !bj.hidden) renderCtl(); }, 500);
+
+  /* ---------- Tipp: Grundstrategie (6 Decks, Dealer steht auf 17, Verdoppeln nach Teilen erlaubt) ---------- */
+  var tip = null, tipT = 0;
+  function tipKey(s, h) { return T.round + ':' + s.cur + ':' + h.cards.length; }
+  function advise(s, h, upCard) {
+    var u = cval(upCard), v = total(h.cards), t = v.t;
+    var dbl = canDouble(s, h), spl = canSplit(s, h);
+    function D(orElse) { return dbl ? 'double' : orElse; }
+    if (spl) {
+      var p = cval(h.cards[0]);
+      var yes = p === 11 || p === 8 || (p === 9 && u !== 7 && u !== 10 && u !== 11) || (p === 7 && u <= 7) ||
+                (p === 6 && u <= 6) || (p === 4 && (u === 5 || u === 6)) || ((p === 2 || p === 3) && u <= 7);
+      if (yes) return 'split';
+    }
+    if (v.soft && t <= 21 && h.cards.length >= 2) {
+      if (t >= 19) return 'stand';
+      if (t === 18) return u >= 3 && u <= 6 ? D('stand') : u <= 8 ? 'stand' : 'hit';
+      if (t === 17) return u >= 3 && u <= 6 ? D('hit') : 'hit';
+      if (t >= 15) return u >= 4 && u <= 6 ? D('hit') : 'hit';
+      return u >= 5 && u <= 6 ? D('hit') : 'hit';
+    }
+    if (t >= 17) return 'stand';
+    if (t >= 13) return u <= 6 ? 'stand' : 'hit';
+    if (t === 12) return u >= 4 && u <= 6 ? 'stand' : 'hit';
+    if (t === 11) return u <= 10 ? D('hit') : 'hit';
+    if (t === 10) return u <= 9 ? D('hit') : 'hit';
+    if (t === 9) return u >= 3 && u <= 6 ? D('hit') : 'hit';
+    return 'hit';
+  }
+  var TIP_TXT = { hit: 'Karte', stand: 'Stehen', double: 'Verdoppeln', split: 'Teilen' };
+  var TIP_BTN = { hit: '#bjHit', stand: '#bjStand', double: '#bjDouble', split: '#bjSplit' };
+  $('#bjTip').addEventListener('click', function () {
+    var my = seatOf(ME);
+    if (!T || !my || T.phase !== 'play' || T.seats[T.turn] !== my) return;
+    var h = my.hands[my.cur];
+    if (!h || h.cards.length < 2 || !T.dealer[0]) return;
+    var a = advise(my, h, T.dealer[0]), v = total(h.cards);
+    var mine = (v.soft && v.t < 21 ? 'Soft ' : '') + v.t, up = T.dealer[0].r === 14 ? 'Ass' : String(cval(T.dealer[0]));
+    tip = { key: tipKey(my, h), say: 'Tipp: ' + TIP_TXT[a] + ' (' + mine + ' gegen ' + up + ')' };
+    [].forEach.call(document.querySelectorAll('#bjActUI .btn'), function (b) { b.classList.remove('tipped'); });
+    var btn = $(TIP_BTN[a]); btn.classList.add('tipped');
+    clearTimeout(tipT); tipT = setTimeout(function () { btn.classList.remove('tipped'); }, 2600);
+    renderCtl();
+  });
 
   /* ---------- Eingaben ---------- */
   function sendReady() {
@@ -5750,7 +5811,7 @@ input.bprange[type=range]::-moz-range-thumb { width: 20px; height: 20px; border-
   'use strict';
   var PR = window.PR;
   if (!PR) return;
-  var Snd = PR.Snd;
+  var Snd = PR.Snd, fmt = PR.fmt;
   function $(s) { return document.querySelector(s); }
   function all(s) { return [].slice.call(document.querySelectorAll(s)); }
 
@@ -5781,7 +5842,9 @@ input.bprange[type=range]::-moz-range-thumb { width: 20px; height: 20px; border-
   } catch (e) {}
   function cleanFriend(f) {
     var nm = String(f.name == null ? '' : f.name).slice(0, 14).trim();
-    return { code: f.code, name: nm, color: (typeof f.color === 'string' && /^#[0-9a-f]{6}$/i.test(f.color)) ? f.color : PR.AV[0], pending: !!f.pending };
+    var bk = Math.round(+f.bank);
+    return { code: f.code, name: nm, color: (typeof f.color === 'string' && /^#[0-9a-f]{6}$/i.test(f.color)) ? f.color : PR.AV[0], pending: !!f.pending,
+             bank: isFinite(bk) && bk >= 0 ? Math.min(bk, 1e12) : null };
   }
   function friend(code) { for (var i = 0; i < FR.length; i++) if (FR[i].code === code) return FR[i]; return null; }
   function saveFR() { try { localStorage.setItem('pr-friends', JSON.stringify(FR.slice(0, MAX_FRIENDS))); } catch (e) {} }
@@ -5810,7 +5873,9 @@ input.bprange[type=range]::-moz-range-thumb { width: 20px; height: 20px; border-
     if (st.g === 'poker') return st.code ? 'Am Pokertisch' : 'Spielt Poker gegen Bots';
     return 'Online';
   }
-  function myPub() { var P = PR.prof(); return { name: PR.profName(), color: P.color }; }
+  function myPub() { var P = PR.prof(); return { name: PR.profName(), color: P.color, bank: Math.round(P.bank || 0) }; }
+  /* Chipstand des Freundes merken (fuer die Rangliste, auch wenn er offline ist) */
+  function takeBank(f, p) { var b = Math.round(+(p && p.bank)); if (isFinite(b) && b >= 0) f.bank = Math.min(b, 1e12); }
 
   /* ---------- Vermittlung ---------- */
   var peer = null, startT = 0, alive = false;
@@ -5907,6 +5972,7 @@ input.bprange[type=range]::-moz-range-thumb { width: 20px; height: 20px; border-
       }
       var g = cleanFriend({ code: code, name: d.p && d.p.name, color: d.p && d.p.color });
       if (g.name) f.name = g.name;
+      takeBank(f, d.p);
       f.color = g.color;
       if (f.pending) { f.pending = false; toast((f.name || code) + ' ist jetzt dein Freund'); }
       saveFR();
@@ -5917,7 +5983,7 @@ input.bprange[type=range]::-moz-range-thumb { width: 20px; height: 20px; border-
     } else if (!f) return;
     else if (d.t === 'st') {
       L.st = cleanSt(d.s);
-      if (d.p) { var h = cleanFriend({ code: code, name: d.p.name, color: d.p.color }); if (h.name) f.name = h.name; f.color = h.color; saveFR(); }
+      if (d.p) { var h = cleanFriend({ code: code, name: d.p.name, color: d.p.color }); if (h.name) f.name = h.name; f.color = h.color; takeBank(f, d.p); saveFR(); }
       changed();
     } else if (d.t === 'inv') {
       var st = cleanSt({ g: d.g, code: d.code });
@@ -6052,7 +6118,8 @@ input.bprange[type=range]::-moz-range-thumb { width: 20px; height: 20px; border-
     return el;
   }
   function setupList(host) {
-    host.innerHTML = '<div class="psec">Deine Freunde <span></span></div><div class="flist"></div>' +
+    host.innerHTML = '<div class="frank" hidden><div class="psec">Rangliste</div><div class="frl"></div></div>' +
+      '<div class="psec">Deine Freunde <span></span></div><div class="flist"></div>' +
       '<div class="fadd"><input type="text" maxlength="6" autocomplete="off" autocapitalize="characters" spellcheck="false" placeholder="Spielercode eines Freundes" aria-label="Spielercode eines Freundes"><button class="btn primary" type="button" disabled>Hinzufügen</button></div>' +
       '<p class="fnote"></p>';
     var inp = host.querySelector('input'), btn = host.querySelector('.fadd .btn'), note = host.querySelector('.fnote');
@@ -6072,7 +6139,7 @@ input.bprange[type=range]::-moz-range-thumb { width: 20px; height: 20px; border-
   var renderKey = '';
   function render(force) {
     var me = lastSt || myStatus();
-    var k = JSON.stringify([FR, me, openRow, Object.keys(LIVE).map(function (c) { return [c, isOn(c), LIVE[c].st]; })]);
+    var k = JSON.stringify([FR, me, openRow, PR.prof().bank, PR.profName(), Object.keys(LIVE).map(function (c) { return [c, isOn(c), LIVE[c].st]; })]);
     if (!force && k === renderKey) return;
     renderKey = k;
     var n = onlineCount();
@@ -6086,6 +6153,7 @@ input.bprange[type=range]::-moz-range-thumb { width: 20px; height: 20px; border-
         e.textContent = 'Noch keine Freunde. Trag unten den Spielercode eines Freundes ein, dann seht ihr, wann der andere online ist.';
         list.appendChild(e);
       } else sorted().forEach(function (f) { list.appendChild(friendRow(f, me)); });
+      renderRank(host.querySelector('.frank'));
     });
     all('[data-fi]').forEach(function (host) {
       host.innerHTML = '';
@@ -6097,6 +6165,26 @@ input.bprange[type=range]::-moz-range-thumb { width: 20px; height: 20px; border-
       if (!on.length) { var e = document.createElement('div'); e.className = 'fempty'; e.textContent = 'Gerade ist keiner deiner Freunde online.'; list.appendChild(e); }
       on.forEach(function (f) { list.appendChild(inviteRow(f, me)); });
       host.appendChild(list);
+    });
+  }
+  /* Rangliste: du und deine Freunde nach Chips (bei Offline-Freunden der zuletzt bekannte Stand) */
+  function renderRank(box) {
+    var P = PR.prof(), rows = FR.filter(function (f) { return f.bank != null && !f.pending; })
+      .map(function (f) { return { name: f.name || f.code, color: f.color, bank: f.bank, on: isOn(f.code) }; });
+    box.hidden = !rows.length;
+    if (!rows.length) return;
+    rows.push({ name: PR.profName(), color: P.color, bank: Math.round(P.bank || 0), me: true });
+    rows.sort(function (a, b) { return b.bank - a.bank; });
+    var list = box.querySelector('.frl'); list.innerHTML = '';
+    rows.forEach(function (r, i) {
+      if (i >= 10 && !r.me) return;
+      var el = document.createElement('div'); el.className = 'frr' + (r.me ? ' me' : '');
+      var n = document.createElement('span'); n.className = 'frn'; n.textContent = i === 0 ? '🏆' : (i + 1) + '.';
+      var a = document.createElement('span'); a.className = 'pav'; a.style.setProperty('--av', r.color); a.textContent = (r.name || '?').charAt(0).toUpperCase();
+      var nm = document.createElement('b'); nm.textContent = r.me ? r.name + ' (du)' : r.name;
+      var c = document.createElement('span'); c.className = 'frc'; c.textContent = fmt(r.bank);
+      el.appendChild(n); el.appendChild(a); el.appendChild(nm); el.appendChild(c);
+      list.appendChild(el);
     });
   }
   function changed() { render(false); }
