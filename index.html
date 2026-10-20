@@ -1978,7 +1978,7 @@ input.bprange[type=range]::-moz-range-thumb { width: 20px; height: 20px; border-
 
     function mkPlayer(id, name, chips, kind, color, pers) {
       return {
-        id: id, name: name, kind: kind, color: color || null, chips: chips, start: chips, pend: 0, out: false, hole: [], bet: 0, total: 0,
+        id: id, name: name, kind: kind, color: color || null, chips: chips, start: chips, buy0: chips, pend: 0, out: false, hole: [], bet: 0, total: 0,
         folded: false, allIn: false, acted: false, inHand: false, label: '',
         revealed: false, win: 0, value: undefined,
         limped: false, pfRaise: false, pfCall: false, aggr: 0,
@@ -2001,7 +2001,7 @@ input.bprange[type=range]::-moz-range-thumb { width: 20px; height: 20px; border-
         return mkPlayer(id, name, id === 0 ? hc : START_CHIPS, id === 0 ? 'human' : 'bot', null,
           id === 0 ? makeStyle(STYLES[0]) : makeStyle(styles[id - 1]));
       });
-      S.sb0 = 10; S.every0 = HANDS_PER_LEVEL;
+      S.sb0 = 10; S.every0 = HANDS_PER_LEVEL; S.botRebuy = false;
       resetCommon();
     }
     /* Mehrspieler: o = { seats: [{name, color, kind: 'human'|'bot', chips}], sb, every } – Sitz 0 ist immer der Host */
@@ -2013,6 +2013,7 @@ input.bprange[type=range]::-moz-range-thumb { width: 20px; height: 20px; border-
           bot ? makeStyle(styles[(bi++) % styles.length]) : makeStyle(STYLES[0]));
       });
       S.sb0 = o.sb > 0 ? o.sb : 10; S.every0 = o.every === 0 ? 1e9 : (o.every > 0 ? o.every : HANDS_PER_LEVEL);
+      S.botRebuy = true;   // online mit Freunden: pleite gegangene Bots laden wieder auf
       resetCommon();
     }
     /* Online: jemand kommt waehrend des Spiels dazu – nur zwischen zwei Haenden aufrufen.
@@ -2515,6 +2516,12 @@ input.bprange[type=range]::-moz-range-thumb { width: 20px; height: 20px; border-
           if (n > 0) { p.chips = n; p.start += n; if (p.id === 0) S.humanStart += n; }
           else p.out = true;
         }));
+        /* Online mit Bots: ein pleite gegangener Bot laedt wieder so viele Chips auf, wie er am Anfang hatte */
+        if (S.botRebuy) S.players.forEach(function (p) {
+          if (p.kind !== 'bot' || p.out || p.chips > 0) return;
+          p.chips = p.buy0; p.start += p.buy0;
+          if (H.react) H.react(p.id, '💰', 300);
+        });
         if (S.players.filter(function (p) { return p.chips > 0 && !p.out; }).length <= 1) { H.onEnd(true); return; }
         await playHand();
         await H.waitNext();
