@@ -3649,43 +3649,46 @@ input.bprange[type=range]::-moz-range-thumb { width: 20px; height: 20px; border-
 </script>
 
 <script>
-/* Neue Version erkennen: Skripte und Styles der Seite auf dem Server mit den geladenen vergleichen.
-   Im Menue wird sofort neu geladen, im Spiel erscheint ein Hinweis zum Antippen. */
+/* Neue Version erkennen: die Seite auf dem Server wird regelmaessig geholt und mit dem ersten Abruf verglichen
+   (nie mit der angezeigten Seite – Browser und Erweiterungen veraendern die). Im Menue wird neu geladen,
+   im Spiel erscheint ein Hinweis zum Antippen. Hoechstens ein automatisches Neuladen pro Minute. */
 (function () {
-  if (!location.protocol.startsWith('http') || !window.fetch || !window.DOMParser) return;
-  function sig(doc) {
-    var t = '';
-    [].forEach.call(doc.querySelectorAll('script:not([src]), style'), function (n) { t += n.textContent; });
-    var h = 0;
-    for (var i = 0; i < t.length; i++) h = (h * 31 + t.charCodeAt(i)) | 0;
-    return h + ':' + t.length;
-  }
-  var mine = null, busy = false, found = false, last = 0;   // erst berechnen, wenn die ganze Seite geparst ist
+  if (!location.protocol.startsWith('http') || !window.fetch) return;
+  function hash(t) { var h = 0; for (var i = 0; i < t.length; i++) h = (h * 31 + t.charCodeAt(i)) | 0; return h + ':' + t.length; }
+  var base = null, busy = false, found = false, last = 0;
   function check() {
-    if (document.readyState === 'loading' || busy || found || Date.now() - last < 15000) return;
-    if (!mine) mine = sig(document);
+    if (busy || found || Date.now() - last < 15000) return;
     busy = true; last = Date.now();
     fetch('./?u=' + Date.now(), { cache: 'no-store' }).then(function (r) { return r.ok ? r.text() : null; }).then(function (txt) {
       busy = false;
       if (!txt || txt.indexOf('Pokerrunde') < 0) return;
-      if (sig(new DOMParser().parseFromString(txt, 'text/html')) !== mine) { found = true; offer(); }
+      var h = hash(txt);
+      if (base === null) { base = h; return; }
+      if (h !== base) { found = true; offer(); }
     }).catch(function () { busy = false; });
   }
+  function reload() {
+    try {
+      var t = +sessionStorage.getItem('pr-reload') || 0;
+      if (Date.now() - t < 60000) return false;
+      sessionStorage.setItem('pr-reload', String(Date.now()));
+    } catch (e) {}
+    location.reload();
+    return true;
+  }
   function offer() {
-    if (window.prIdle && window.prIdle()) { location.reload(); return; }
+    if (window.prIdle && window.prIdle() && reload()) return;
     var b = document.createElement('button');
     b.type = 'button';
     b.textContent = 'Neue Version da – tippen zum Aktualisieren';
     b.style.cssText = 'position:fixed;left:50%;top:max(8px, env(safe-area-inset-top));transform:translateX(-50%);z-index:99;padding:9px 16px;border-radius:999px;border:0;background:var(--brass);color:var(--brass-ink);font:800 13px var(--ui);box-shadow:0 6px 18px rgba(0,0,0,.5);white-space:nowrap;cursor:pointer';
     b.addEventListener('click', function () { location.reload(); });
     document.body.appendChild(b);
-    // wechselt man spaeter ins Menue, wird von selbst aktualisiert
-    var t = setInterval(function () { if (window.prIdle && window.prIdle()) { clearInterval(t); location.reload(); } }, 2000);
   }
   document.addEventListener('visibilitychange', function () { if (document.visibilityState === 'visible') check(); });
   addEventListener('focus', check);
   setInterval(check, 60000);
-  setTimeout(check, 5000);
+  setTimeout(check, 2000);
 })();
 </script>
 
