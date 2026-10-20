@@ -696,6 +696,11 @@ input.bprange[type=range]::-moz-range-thumb { width: 20px; height: 20px; border-
 #askBan { flex-wrap: wrap; }
 #askBan .ibtxt { flex: 1 1 150px; }
 .flx .btn.primary { color: var(--brass-ink); }
+.flx .btn.gift { color: var(--brass); border-color: rgba(224,170,74,.55); }
+#giftDlg { z-index: 95; }
+#giftDlg .endcard { display: flex; flex-direction: column; gap: 14px; }
+#giftDlg h2, #giftDlg p { margin: 0; }
+#giftDlg p { color: var(--muted); font: 500 14px/1.4 var(--ui); }
 .ibx { width: 32px; height: 32px; border: 0; border-radius: 50%; background: transparent; color: var(--muted); padding: 0; display: grid; place-items: center; flex: none; }
 .ibx svg { width: 16px; height: 16px; }
 #fToast { position: absolute; left: 50%; bottom: max(24px, env(safe-area-inset-bottom)); z-index: 97; transform: translate(-50%, 12px); padding: 9px 16px; border-radius: 999px; background: var(--brass); color: var(--brass-ink); font: 800 13px var(--ui); opacity: 0; pointer-events: none; transition: opacity .3s, transform .3s; white-space: nowrap; max-width: calc(100% - 20px); overflow: hidden; text-overflow: ellipsis; box-shadow: 0 6px 18px rgba(0,0,0,.5); }
@@ -1708,6 +1713,18 @@ input.bprange[type=range]::-moz-range-thumb { width: 20px; height: 20px; border-
       </div>
       <p class="shopown" id="shopOwn"></p>
       <button class="btn wide" id="shopClose" type="button">Schließen</button>
+    </div>
+  </div>
+
+  <div id="giftDlg" class="overlay" hidden>
+    <div class="endcard">
+      <h2>Chips schicken</h2>
+      <p id="gfText"></p>
+      <div id="gfPick"></div>
+      <div>
+        <button class="btn primary wide" id="gfGo" type="button">Schicken</button>
+        <button class="btn wide" id="gfNo" type="button" style="margin-top:10px">Abbrechen</button>
+      </div>
     </div>
   </div>
 
@@ -7313,6 +7330,10 @@ input.bprange[type=range]::-moz-range-thumb { width: 20px; height: 20px; border-
       showBrag(f, d);
     } else if (d.t === 'slw') {
       showSlWin(f, d);
+    } else if (d.t === 'gift') {
+      gotGift(f, c, d);
+    } else if (d.t === 'giftok') {
+      giftDone(f, d);
     }
   }
   /* Lebenszeichen: wer 45 Sekunden nichts schickt (Handy gesperrt, App zu), gilt als offline */
@@ -7412,6 +7433,11 @@ input.bprange[type=range]::-moz-range-thumb { width: 20px; height: 20px; border-
     var rm = document.createElement('button'); rm.type = 'button'; rm.className = 'btn'; rm.textContent = 'Entfernen';
     rm.addEventListener('click', function () { removeFriend(f.code, true); });
     x.appendChild(cd);
+    if (on && !f.pending) {
+      var gb = document.createElement('button'); gb.type = 'button'; gb.className = 'btn gift'; gb.textContent = 'Chips schicken';
+      gb.addEventListener('click', function () { openGift(f); });
+      x.appendChild(gb);
+    }
     if (on && st.ask && !st.code) {
       var wait = asked[f.code] > Date.now();
       var ak = document.createElement('button'); ak.type = 'button'; ak.className = 'btn' + (wait ? '' : ' primary');
@@ -7617,6 +7643,76 @@ input.bprange[type=range]::-moz-range-thumb { width: 20px; height: 20px; border-
     else { $('#bjf').hidden = true; PR.pokerJoin(st.code, auto); }
   }
 
+  /* ---------- Chips an einen Freund schicken ----------
+     Nur aus dem Menue (nicht mitten im Spiel), und nur an Freunde, die gerade online sind. Die Chips gehen sofort vom
+     eigenen Guthaben ab; der Freund bestaetigt den Empfang. Kommt keine Bestaetigung (z. B. alte App-Version), gibt es
+     sie nach 20 Sekunden zurueck. Erhaltene Chips kommen ins Guthaben, sobald man im Menue ist (nicht mitten im Spiel). */
+  var giftTo = '', sentGifts = {};
+  function bankNow() { return Math.max(0, PR.prof().bank | 0); }
+  var gfPick = PR.Picker($('#gfPick'), function () { return Math.min(10, bankNow()); }, bankNow);
+  function giftId() { var a = new Uint8Array(10), o = ''; try { window.crypto.getRandomValues(a); } catch (e) { for (var i = 0; i < 10; i++) a[i] = Math.floor(Math.random() * 256); } for (var j = 0; j < 10; j++) o += (a[j] % 36).toString(36); return o; }
+  function openGift(f) {
+    if (!window.prIdle()) { toast('Verlass erst dein laufendes Spiel'); return; }
+    if (bankNow() < 10) { toast('Du hast zu wenig Chips zum Verschicken'); return; }
+    giftTo = f.code;
+    $('#gfText').textContent = 'An ' + (f.name || f.code) + '. Die Chips gehen von deinem Guthaben ab und landen gleich bei ' + (f.name || 'deinem Freund') + '.';
+    gfPick.set(Math.min(100, bankNow()));
+    $('#giftDlg').hidden = false;
+  }
+  $('#gfNo').addEventListener('click', function () { $('#giftDlg').hidden = true; });
+  $('#gfGo').addEventListener('click', function () {
+    var f = friend(giftTo), n = gfPick.get(), P = PR.prof();
+    $('#giftDlg').hidden = true;
+    if (!f || !isOn(f.code)) { toast((f && f.name || 'Dein Freund') + ' ist gerade nicht online'); return; }
+    if (!window.prIdle()) { toast('Verlass erst dein laufendes Spiel'); return; }
+    if (!(n >= 1) || n > bankNow()) return;
+    var id = giftId(), nm = f.name || f.code;
+    P.bank -= n; PR.saveProf(); PR.renderBank();
+    sentGifts[id] = { n: n, nm: nm, t: setTimeout(function () {
+      if (!sentGifts[id]) return; delete sentGifts[id];
+      queueGift({ id: 'r' + id, n: n, back: nm });
+      toast('Die Chips sind bei ' + nm + ' nicht angekommen und kommen zurück');
+    }, 20000) };
+    send(LIVE[f.code].conn, { t: 'gift', id: id, n: n });
+    Snd.chip(3, 0, true);
+    toast('Schicke ' + fmt(n) + ' Chips an ' + nm + ' …');
+  });
+  function giftDone(f, d) {
+    var g = sentGifts[d.id]; if (!g) return;
+    clearTimeout(g.t); delete sentGifts[d.id];
+    toast((f.name || f.code) + ' hat deine ' + fmt(g.n) + ' Chips bekommen');
+  }
+  /* Eingang: gespeichert, bis man im Menue ist; jede Sendung zaehlt nur einmal (Kennung) */
+  function readQ() { try { var q = JSON.parse(localStorage.getItem('pr-gifts') || '[]'); return Array.isArray(q) ? q : []; } catch (e) { return []; } }
+  function writeQ(q) { try { localStorage.setItem('pr-gifts', JSON.stringify(q.slice(-50))); } catch (e) {} }
+  function seenIds() { try { var a = JSON.parse(localStorage.getItem('pr-giftids') || '[]'); return Array.isArray(a) ? a : []; } catch (e) { return []; } }
+  function queueGift(g) { var q = readQ(); q.push(g); writeQ(q); applyGifts(); }
+  function gotGift(f, c, d) {
+    var n = Math.round(+d.n), id = typeof d.id === 'string' && /^[a-z0-9]{8,20}$/.test(d.id) ? d.id : '';
+    if (!id || !(n >= 1) || n > 1e9) return;
+    var ids = seenIds();
+    if (ids.indexOf(id) < 0) {
+      ids.push(id); try { localStorage.setItem('pr-giftids', JSON.stringify(ids.slice(-100))); } catch (e) {}
+      queueGift({ id: id, n: n, from: f.name || f.code });
+      if (!canApply()) { toast((f.name || f.code) + ' hat dir ' + fmt(n) + ' Chips geschickt – sie kommen ins Guthaben, sobald du im Menü bist'); Snd.ping(); }
+    }
+    send(c, { t: 'giftok', id: id });
+  }
+  function canApply() { return window.prIdle() && !$('#menu').hidden; }
+  function applyGifts() {
+    var q = readQ(); if (!q.length || !canApply()) return;
+    writeQ([]);
+    var P = PR.prof();
+    q.forEach(function (g) {
+      var n = Math.round(+g.n); if (!(n >= 1) || n > 1e9) return;
+      P.bank += n;
+      toast(g.back ? fmt(n) + ' Chips sind zurück (' + g.back + ' hat sie nicht bekommen)' : '🎁 ' + g.from + ' hat dir ' + fmt(n) + ' Chips geschickt');
+    });
+    PR.saveProf(); PR.renderBank();
+    Snd.chip(4, 0, true); setTimeout(function () { Snd.pot(); }, 250);
+  }
+  setInterval(applyGifts, 1000);
+
   /* ---------- fragen, ob man an den Tisch eines Freundes darf, der allein bzw. gegen Bots spielt ---------- */
   var asked = {};   // Code -> bis wann die Anfrage laeuft
   function askJoin(f, st) {
@@ -7722,7 +7818,7 @@ input.bprange[type=range]::-moz-range-thumb { width: 20px; height: 20px; border-
   function menuFree() {
     if ($('#menu').hidden || !$('#splash').hidden || !$('#daily').hidden) return false;
     if (window.prIdle && !window.prIdle()) return false;
-    return ['#friends', '#bjf', '#profile', '#pview', '#chipdlg', '#invBan', '#askBan', '#shop'].every(function (s) { var e = $(s); return !e || e.hidden; });
+    return ['#friends', '#bjf', '#profile', '#pview', '#chipdlg', '#invBan', '#askBan', '#shop', '#giftDlg'].every(function (s) { var e = $(s); return !e || e.hidden; });
   }
   function showDaily() {
     var d = loadDaily(); if (d.day === today()) return;
