@@ -3070,9 +3070,11 @@ input.bprange[type=range]::-moz-range-thumb { width: 20px; height: 20px; border-
     var pot = $('#pot'); pot.style.left = cx + 'px'; pot.style.top = (cy - ry * 0.26) + 'px';
     var board = $('#board'); board.style.left = cx + 'px'; board.style.top = (cy + ry * 0.2) + 'px';
     var winC = $('#win'); winC.style.left = cx + 'px'; winC.style.top = (cy + ry * 0.62) + 'px';
-    /* Kartenstapel links auf dem freien Filz: neben dem Pot, unter den Einsaetzen oben links, ueber den Gemeinschaftskarten
-       (oben in der Mitte laege er auf den Einsaetzen bzw. den Pot-Chips) */
-    deckEl.style.left = (cx - rx * 0.66) + 'px'; deckEl.style.top = (cy - ry * 0.1) + 'px';
+    var topSeat = (POSMAP[NSEATS] || POSMAP[5]).indexOf(5) >= 0;
+    /* zu viert sitzt jemand oben in der Mitte: Kartenstapel links oben auf dem Filz, zwischen ihm und dem Pot */
+    if (NSEATS === 4) { deckEl.style.left = (cx - rx * 0.46) + 'px'; deckEl.style.top = (cy - ry * 0.6) + 'px'; }
+    else if (topSeat) { deckEl.style.left = (cx - rx * 0.62) + 'px'; deckEl.style.top = (cy - ry * 0.4) + 'px'; }
+    else { deckEl.style.left = cx + 'px'; deckEl.style.top = (cy - ry * 0.66) + 'px'; }
 
     var pm = POSMAP[NSEATS] || POSMAP[5];
     for (var i = 0; i < 5; i++) {
