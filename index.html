@@ -841,7 +841,7 @@ input.bprange[type=range]::-moz-range-thumb { width: 20px; height: 20px; border-
 /* ---------- Slots ---------- */
 :root { --sl1: #5a3a8c; --sl2: #331f55; --sl3: #170d29; }
 #sl { position: absolute; inset: 0; z-index: 58; display: flex; flex-direction: column; background: radial-gradient(120% 70% at 50% 30%, #2a2140, var(--bg) 70%); background-color: var(--bg); }
-#slStage { position: relative; flex: 1 1 auto; min-height: 0; overflow: hidden; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 12px; --ch: min(25cqw, 92px, 11.2vh); }
+#slStage { position: relative; flex: 1 1 auto; min-height: 0; overflow: hidden; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 12px; --ch: min(25cqw, 92px, 10.4vh); }
 .slm { position: relative; width: min(100%, 380px); padding: 10px 10px 12px; border-radius: 24px; background: linear-gradient(180deg, var(--sl1), var(--sl2) 55%, var(--sl3)); border: 2px solid rgba(224,170,74,.65); box-shadow: 0 22px 44px rgba(0,0,0,.55), inset 0 2px 0 rgba(255,255,255,.18), inset 0 -6px 14px rgba(0,0,0,.4); }
 /* Schild oben mit Lichterkette */
 .slmarq { position: relative; height: 44px; margin: 0 6px 10px; border-radius: 14px; display: grid; place-items: center; background: linear-gradient(180deg, #8c1f2a, #4f0d16); box-shadow: inset 0 0 0 2px rgba(224,170,74,.8), 0 4px 10px rgba(0,0,0,.4); overflow: hidden; }
@@ -916,7 +916,7 @@ input.bprange[type=range]::-moz-range-thumb { width: 20px; height: 20px; border-
 .slpay .ps .sy.bar { font-size: 7px; box-shadow: inset 0 0 0 1px #e0aa4a; }
 .slpay .ps i { font: 600 11px var(--ui); font-style: normal; color: var(--muted); white-space: nowrap; }
 .slpay b { font: 800 13px var(--ui); color: var(--ink); font-variant-numeric: tabular-nums; }
-@media (max-height: 690px) { #slStage > .slpay { display: none; } }
+@media (max-height: 780px) { #slStage > .slpay { display: none; } }
 #slPause .slpay { margin: 4px 0 16px; padding: 0; }
 #slPause .endcard { max-height: 100%; overflow-y: auto; }
 /* Bedienung: Einsatz links, gruener Knopf rechts */
@@ -939,6 +939,107 @@ input.bprange[type=range]::-moz-range-thumb { width: 20px; height: 20px; border-
 #slSpin.free { line-height: 1.1; background: radial-gradient(circle at 50% 35%, #b98cff, #6a35c9 55%, #3d1a80); box-shadow: 0 6px 0 #2a1060, 0 12px 22px rgba(0,0,0,.5), inset 0 2px 0 rgba(255,255,255,.35); }
 #slSpin.free:active:not(:disabled), #slSpin.free.down { box-shadow: 0 1px 0 #2a1060, 0 5px 12px rgba(0,0,0,.5), inset 0 2px 0 rgba(255,255,255,.25); }
 #slSpin.free b { display: block; font-size: 22px; }
+/* ---------- Slots: zweiter Automat, Jackpot, Joker, Halten, Risikoleiter, Gluecksrad, Erfolge ---------- */
+/* Automat waehlen */
+.slpick { display: flex; gap: 6px; padding: 3px; border-radius: 999px; background: rgba(0,0,0,.35); border: 1px solid var(--line); }
+.slpick button { height: 30px; padding: 0 14px; border-radius: 999px; border: 0; background: transparent; color: var(--muted); font: 800 12px var(--ui); letter-spacing: .04em; white-space: nowrap; }
+.slpick button.on { background: var(--brass); color: var(--brass-ink); }
+.slpick button.lock { opacity: .7; }
+.slpick button:disabled { opacity: .45; }
+/* Schild mit Jackpot */
+.slmarq { height: 58px; display: flex; flex-direction: column; justify-content: center; align-items: center; gap: 1px; }
+.slmarq span { font-size: 17px; }
+.slmarq em { position: relative; font-style: normal; display: flex; align-items: baseline; gap: 7px; }
+.slmarq em small { font: 800 9px var(--ui); letter-spacing: .2em; text-transform: uppercase; color: #f4d67f; opacity: .85; }
+.slmarq em b { font: 800 19px var(--display); color: #fff3c4; font-variant-numeric: tabular-nums; text-shadow: 0 0 10px rgba(255,224,138,.8); }
+.slmarq em b.up { animation: sljp .5s ease-out; }
+@keyframes sljp { 30% { color: #fff; transform: scale(1.12); } }
+.slm.hold .slmarq span { animation: bulbs .4s steps(2) infinite; }
+/* Fenster fuer beliebig viele Walzen */
+.slwin { grid-template-columns: repeat(var(--nr, 3), 1fr); }
+#sl.m2 #slStage { --ch: min(16cqw, 64px, 9.6vh); }
+#sl.m2 .slm { --sl1: #1f6c86; --sl2: #0f3a52; --sl3: #06192a; border-color: rgba(120,220,255,.6); }
+#sl.m2 .slmarq { background: linear-gradient(180deg, #14506a, #082536); box-shadow: inset 0 0 0 2px rgba(140,225,255,.85), 0 4px 10px rgba(0,0,0,.4); }
+#sl.m2 .slmarq span { color: #bff0ff; text-shadow: 0 2px 0 #06324a, 0 0 12px rgba(150,230,255,.6); }
+#sl.m2 .slwin { gap: 4px; padding: 6px; }
+#sl.m2 .slreel { border-radius: 8px; }
+/* Gewinnlinien bei Diamant 5 */
+.sllines { position: absolute; inset: 0; width: 100%; height: 100%; pointer-events: none; overflow: visible; }
+.sllines polyline { fill: none; stroke: #f4d67f; stroke-width: 4; stroke-linecap: round; stroke-linejoin: round; filter: drop-shadow(0 0 4px rgba(244,214,127,.95)); stroke-dasharray: 1000; stroke-dashoffset: 1000; animation: sldraw .5s ease-out forwards; }
+.sllines polyline.big { stroke-width: 6; animation: sldraw .5s ease-out forwards, slglow .5s ease-in-out .5s infinite alternate; }
+.sllines text { font: 900 11px var(--ui); fill: #1a1004; }
+.sllines circle { fill: #f4d67f; }
+@keyframes sldraw { to { stroke-dashoffset: 0; } }
+/* Joker */
+.sy.wd { width: calc(var(--ch) * .74); height: calc(var(--ch) * .74); border-radius: 22%; display: grid; place-content: center; text-align: center; font: 900 calc(var(--ch) * .34) / 1 var(--ui); color: #fff7d1;
+  background: conic-gradient(from 200deg, #e0475b, #f4b23e, #f4e23e, #4fc46a, #3ea6f4, #9b5cf4, #e0475b); box-shadow: inset 0 0 0 2px #fff3c4, inset 0 0 0 5px rgba(0,0,0,.25), 0 2px 5px rgba(0,0,0,.4); text-shadow: 0 1px 2px rgba(0,0,0,.6); }
+.sy.wd b { display: block; font-size: .36em; letter-spacing: .06em; margin-top: 1px; }
+.slpay .ps .sy.wd { flex: none; width: 48px; height: 48px; margin: -14px; font-size: 22px; transform: scale(.42); }
+/* Halten (Lucky Seven) */
+.slhold { position: absolute; left: 50%; bottom: 6px; z-index: 3; transform: translateX(-50%); height: 26px; padding: 0 10px; border-radius: 999px; border: 0; font: 900 11px var(--ui); letter-spacing: .08em; text-transform: uppercase; color: #1a1004; background: #f4d67f; box-shadow: 0 2px 6px rgba(0,0,0,.45); animation: slholdp .7s ease-in-out infinite alternate; }
+.slhold[hidden] { display: none; }
+.slhold.on { background: #4fc46a; color: #06210d; animation: none; }
+@keyframes slholdp { to { transform: translateX(-50%) scale(1.08); } }
+.slreel.held { box-shadow: 0 0 0 3px #4fc46a, 0 0 16px 3px rgba(79,196,106,.6); }
+/* Multiplikator in den Extra-Spins */
+.sllcd b.pop { animation: slpop .5s cubic-bezier(.2,.9,.3,1.4); }
+/* Riskieren */
+#slRisk { flex: none; width: 78px; height: 58px; border-radius: 16px; border: 0; padding: 0; color: #1a1004; font: 900 12px/1.1 var(--ui); letter-spacing: .04em; text-transform: uppercase;
+  background: linear-gradient(180deg, #ffe08a, #e0aa4a); box-shadow: 0 4px 0 #8a5d17, 0 8px 16px rgba(0,0,0,.45); animation: slholdp2 .8s ease-in-out infinite alternate; }
+#slRisk small { display: block; font-size: 17px; font-family: var(--display); }
+#slRisk[hidden] { display: none; }
+#slRisk:active { transform: translateY(3px); box-shadow: 0 1px 0 #8a5d17, 0 4px 10px rgba(0,0,0,.45); }
+@keyframes slholdp2 { to { filter: brightness(1.12); } }
+/* Risikoleiter */
+.slgam { text-align: center; }
+.slgam h2 { margin-bottom: 6px; }
+.slgl { display: flex; flex-direction: column-reverse; gap: 4px; margin: 6px 0 12px; }
+.slgl div { display: flex; justify-content: space-between; padding: 5px 12px; border-radius: 9px; background: var(--bg); border: 1px solid var(--line); font: 800 14px var(--ui); color: var(--muted); font-variant-numeric: tabular-nums; }
+.slgl div.done { color: var(--ink); border-color: rgba(224,170,74,.45); }
+.slgl div.now { background: var(--brass); color: var(--brass-ink); border-color: transparent; }
+.slgrow { display: flex; align-items: center; justify-content: center; gap: 16px; }
+.slgcard { position: relative; width: 84px; height: 118px; perspective: 600px; }
+.slgcard i { position: absolute; inset: 0; border-radius: 10px; backface-visibility: hidden; transition: transform .45s cubic-bezier(.3,.8,.3,1); display: grid; place-items: center; font-style: normal; box-shadow: 0 8px 18px rgba(0,0,0,.5); }
+.slgcard .b { background: repeating-linear-gradient(45deg, #7a1f2b 0 6px, #5a1520 6px 12px); border: 4px solid #f7f2e6; }
+.slgcard .f { background: #f7f2e6; transform: rotateY(180deg); font: 400 58px/1 serif; }
+.slgcard .f.red { color: #d8322f; } .slgcard .f.blk { color: #161616; }
+.slgcard.up .b { transform: rotateY(-180deg); } .slgcard.up .f { transform: rotateY(0); }
+.slgcur small { display: block; font: 700 10px var(--ui); letter-spacing: .14em; text-transform: uppercase; color: var(--muted); }
+.slgcur b { display: block; font: 800 28px var(--display); color: #ffe08a; font-variant-numeric: tabular-nums; }
+.slghist { display: flex; justify-content: center; gap: 4px; min-height: 22px; margin: 10px 0 4px; }
+.slghist i { width: 18px; height: 22px; border-radius: 4px; background: #f7f2e6; font: 400 15px/22px serif; font-style: normal; }
+.slghist i.red { color: #d8322f; } .slghist i.blk { color: #161616; }
+.slgbtns { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin: 10px 0; }
+.slgbtns .btn { height: 52px; font-size: 16px; }
+.slgbtns .slgred { background: #b52a2a; color: #fff; border-color: transparent; }
+.slgbtns .slgblk { background: #1b1b1b; color: #fff; border-color: rgba(255,255,255,.25); }
+.slgmsg { min-height: 20px; margin: 8px 0 0; font: 700 14px var(--ui); color: var(--brass); }
+/* Gluecksrad */
+.slwh { text-align: center; }
+.slwheel { position: relative; width: min(72vw, 260px); aspect-ratio: 1; margin: 6px auto 16px; }
+.slwheel svg { width: 100%; height: 100%; display: block; transform: rotate(0deg); filter: drop-shadow(0 8px 18px rgba(0,0,0,.5)); }
+.slwheel svg text { font: 900 11px var(--ui); fill: #fff; }
+.slwptr { position: absolute; left: 50%; top: -6px; width: 0; height: 0; transform: translateX(-50%); border: 13px solid transparent; border-top: 24px solid #ffe08a; border-bottom: 0; filter: drop-shadow(0 2px 3px rgba(0,0,0,.6)); }
+#slWheelBtn { position: relative; }
+#slWheelBtn::after { content: ''; position: absolute; top: 5px; right: 5px; width: 9px; height: 9px; border-radius: 50%; background: #e0475b; box-shadow: 0 0 0 2px var(--bg); }
+#slWheelBtn[hidden] { display: none; }
+/* Erfolg freigeschaltet */
+.slach { position: absolute; left: 50%; bottom: 8px; z-index: 9; transform: translate(-50%, 10px); padding: 8px 16px 8px 12px; border-radius: 14px; background: rgba(16,10,26,.95); box-shadow: 0 0 0 1.5px var(--brass), 0 8px 22px rgba(0,0,0,.55); display: flex; align-items: center; gap: 10px; opacity: 0; pointer-events: none; transition: opacity .35s, transform .35s; white-space: nowrap; }
+.slach.on { opacity: 1; transform: translate(-50%, 0); }
+.slach > i { font-style: normal; font-size: 24px; }
+.slach small { display: block; font: 800 10px var(--ui); letter-spacing: .16em; text-transform: uppercase; color: var(--brass); }
+.slach b { display: block; font: 800 15px var(--ui); color: var(--ink); }
+/* Erfolge im Profil */
+.achs { display: grid; grid-template-columns: 1fr 1fr; gap: 6px; margin-top: 8px; }
+.ach { display: flex; align-items: center; gap: 8px; padding: 8px 10px; border-radius: 12px; background: var(--bg); border: 1px solid var(--line); min-width: 0; }
+.ach > i { font-style: normal; font-size: 20px; filter: grayscale(1); opacity: .35; }
+.ach b { display: block; font: 800 12px var(--ui); color: var(--muted); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.ach small { display: block; font: 600 10px var(--ui); color: var(--muted); opacity: .8; line-height: 1.25; }
+.ach.on { border-color: rgba(224,170,74,.5); background: rgba(224,170,74,.1); }
+.ach.on > i { filter: none; opacity: 1; }
+.ach.on b { color: var(--ink); }
+/* Slots-Bestenliste bei den Freunden */
+.frr .frc small { display: block; font: 600 10px var(--ui); color: var(--muted); text-align: right; }
 
 </style>
 
@@ -1188,19 +1289,16 @@ input.bprange[type=range]::-moz-range-thumb { width: 20px; height: 20px; border-
     <header class="bjbar">
       <span class="brand">Slots</span>
       <div class="right">
+        <button class="iconbtn" id="slWheelBtn" type="button" aria-label="Glücksrad" hidden><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path d="M12 3v18M3 12h18M5.6 5.6l12.8 12.8M18.4 5.6L5.6 18.4"/><circle cx="12" cy="12" r="2" fill="currentColor"/></svg></button>
         <div class="bank bjbank" role="status" aria-label="Dein Guthaben"><i class="bchip" aria-hidden="true"></i><span id="slBank">0</span></div>
         <button class="iconbtn" id="slPauseBtn" type="button" aria-label="Pause"><svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><rect x="6" y="5" width="4" height="14" rx="1.2"/><rect x="14" y="5" width="4" height="14" rx="1.2"/></svg></button>
       </div>
     </header>
     <main id="slStage">
+      <div class="slpick" id="slPick" role="tablist" aria-label="Automat"></div>
       <div class="slm" id="slMachine">
-        <div class="slmarq"><span>LUCKY ★ SEVEN</span></div>
-        <div class="slwin">
-          <div class="slreel"><div class="slstrip"></div></div>
-          <div class="slreel"><div class="slstrip"></div></div>
-          <div class="slreel"><div class="slstrip"></div></div>
-          <div class="slline" aria-hidden="true"><i></i></div>
-        </div>
+        <div class="slmarq"><span id="slTitle">LUCKY ★ SEVEN</span><em><small>Jackpot</small><b id="slJp">0</b></em></div>
+        <div class="slwin" id="slWin"></div>
         <div class="sllcd" aria-live="polite">
           <div><small id="slBetLT">Einsatz</small><b id="slBetL">0</b></div>
           <div><small>Gewinn</small><b id="slWinL">0</b></div>
@@ -1209,6 +1307,7 @@ input.bprange[type=range]::-moz-range-thumb { width: 20px; height: 20px; border-
       </div>
       <div class="slpay" id="slPay" aria-label="Gewinntabelle"></div>
       <div class="bjtoast" id="slToast"></div>
+      <div class="slach" id="slAch" aria-live="polite"><i></i><div><small>Erfolg</small><b></b></div></div>
     </main>
     <footer id="slCtl">
       <div class="slleft">
@@ -1219,15 +1318,43 @@ input.bprange[type=range]::-moz-range-thumb { width: 20px; height: 20px; border-
           <button class="iconbtn" id="slPlus" type="button" aria-label="Einsatz erhöhen">+</button>
         </div>
       </div>
+      <button id="slRisk" type="button" hidden>Riskieren<small>×2</small></button>
       <button id="slSpin" type="button">Drehen</button>
     </footer>
     <div id="slPause" class="overlay" hidden>
       <div class="endcard">
         <h2>Pause</h2>
-        <p>Dein Guthaben ist gespeichert. Gewinne in der Reihe mit dem roten Strich, Beträge für deinen Einsatz. Dreimal Extra-Spin irgendwo im Fenster (auf jeder Walze einer) bringt 10 Gratis-Drehungen.</p>
+        <p id="slRules"></p>
         <div class="slpay" id="slPay2"></div>
         <button class="btn primary wide" id="slResume" type="button">Weiterspielen</button>
         <button class="btn wide" id="slMenu" type="button" style="margin-top:10px">Zum Hauptmenü</button>
+      </div>
+    </div>
+    <div id="slGamble" class="overlay" hidden>
+      <div class="endcard slgam">
+        <h2>Risikoleiter</h2>
+        <p style="margin:0">Rot oder Schwarz? Richtig verdoppelt, falsch ist der Gewinn weg.</p>
+        <div class="slgl" id="slgLadder"></div>
+        <div class="slgrow">
+          <div class="slgcard" id="slgCard"><i class="b"></i><i class="f"></i></div>
+          <div class="slgcur"><small>Im Spiel</small><b id="slgAmt">0</b></div>
+        </div>
+        <div class="slghist" id="slgHist" aria-label="Letzte Karten"></div>
+        <div class="slgbtns">
+          <button class="btn slgred" id="slgRed" type="button">Rot ♥♦</button>
+          <button class="btn slgblk" id="slgBlack" type="button">Schwarz ♠♣</button>
+        </div>
+        <button class="btn primary wide" id="slgTake" type="button">Nehmen</button>
+        <p class="slgmsg" id="slgMsg"></p>
+      </div>
+    </div>
+    <div id="slWheel" class="overlay" hidden>
+      <div class="endcard slwh">
+        <h2>Glücksrad</h2>
+        <p style="margin:0">Einmal am Tag gratis drehen: Chips oder Extra-Spins für Lucky Seven.</p>
+        <div class="slwheel"><svg id="slwSvg" viewBox="-100 -100 200 200" aria-hidden="true"></svg><i class="slwptr"></i></div>
+        <button class="btn primary wide" id="slwGo" type="button">Drehen</button>
+        <button class="btn wide" id="slwLater" type="button" style="margin-top:10px">Später</button>
       </div>
     </div>
   </div>
@@ -1439,6 +1566,10 @@ input.bprange[type=range]::-moz-range-thumb { width: 20px; height: 20px; border-
           <div class="stip" id="stTip" hidden></div>
           <p class="sempty" id="stEmpty" hidden></p>
         </div>
+      </div>
+      <div>
+        <div class="psec">Slots-Erfolge <span id="achN"></span></div>
+        <div class="achs" id="achBox"></div>
       </div>
       <div>
         <div class="psec" style="margin-bottom:8px">Einstellungen</div>
@@ -5900,139 +6031,332 @@ input.bprange[type=range]::-moz-range-thumb { width: 20px; height: 20px; border-
 </script>
 
 <script>
-/* Slots: ein klassischer einarmiger Bandit mit drei Walzen und einer Gewinnlinie (der rote Strich in der Mitte).
-   Gespielt wird direkt mit dem Guthaben (Spielgeld). Jede Walze hat 35 Felder; wie oft ein Symbol darauf steht,
-   bestimmt, wie leicht es faellt. Mit dieser Verteilung und Gewinntabelle gewinnt etwa jeder vierte Dreh,
-   etwa jeder 200. bringt 10 Extra-Spins, auf Dauer kommen rund 97 % der Einsaetze zurueck (wie bei einem echten Automaten). */
+/* Slots: zwei Automaten, gespielt direkt mit dem Guthaben (Spielgeld).
+   Lucky Seven: drei Walzen, eine Gewinnlinie (der rote Strich), Joker nur auf der mittleren Walze, ab und zu "Halten".
+   Diamant 5 (frei ab 5.000 Chips): fuenf Walzen, drei Reihen, fuenf Gewinnlinien, Joker auf den Walzen 2 bis 4.
+   Bei beiden: dreimal Extra-Spin irgendwo im Fenster = 10 Gratis-Drehs, jeder Gewinn darin erhoeht den Multiplikator
+   (x1 bis x5); nach einem Gewinn die Risikoleiter (Rot/Schwarz, 50:50); ein gemeinsamer Jackpot-Topf; einmal am Tag
+   das Gluecksrad; Erfolge im Profil.
+   Durchgerechnet (alle Walzenstellungen bzw. Millionen Probedrehs): auf Dauer kommen bei beiden Automaten rund 95 %
+   der Einsaetze zurueck, bei bestem Halten etwas mehr. Der Jackpot ist ein Vielfaches des Einsatzes: er startet bei 200x,
+   waechst mit jedem bezahlten Dreh um 0,01x und hoert bei 400x auf zu wachsen. Auch mit vollem Topf bleibt der Automat
+   so unter 100 % (rund 97 bis 98 %), das Casino bleibt also immer im Plus. */
 (function () {
   'use strict';
   var PR = window.PR;
   if (!PR) return;
   var Snd = PR.Snd, fmt = PR.fmt;
   function $(s) { return document.querySelector(s); }
+  function all(s) { return [].slice.call(document.querySelectorAll(s)); }
+  function readJ(k) { try { return JSON.parse(localStorage.getItem(k) || 'null'); } catch (e) { return null; } }
+  function writeJ(k, v) { try { localStorage.setItem(k, JSON.stringify(v)); } catch (e) {} }
 
-  /* C Kirsche, L Zitrone, O Orange, G Trauben, B Glocke, R Bar, S Sieben, F Extra-Spin */
-  var SYM = { C: '🍒', L: '🍋', O: '🍊', G: '🍇', B: '🔔' };
-  var COUNT = { C: 8, L: 6, O: 5, G: 5, B: 4, R: 3, S: 2, F: 2 };
-  var PAYS = [
-    { k: 'SSS', m: 200 }, { k: 'RRR', m: 50 }, { k: 'BBB', m: 25 }, { k: 'GGG', m: 15 },
-    { k: 'OOO', m: 12 }, { k: 'LLL', m: 10 }, { k: 'CCC', m: 10 },
-    { k: 'mix', m: 5 },    // Bar und Sieben gemischt
-    { k: 'CC', m: 5 },     // Kirsche auf Walze 1 und 2
-    { k: 'C', m: 2 }       // Kirsche auf Walze 1
-  ];
-  var BETS = [10, 20, 50, 100, 200, 500, 1000], GIFT = 50, COPIES = 9, FREE_N = 10;
-  var N = Object.keys(COUNT).reduce(function (s, c) { return s + COUNT[c]; }, 0);
+  var BETS = [10, 20, 50, 100, 200, 500, 1000], GIFT = 50, COPIES = 9, FREE_N = 10, MULT_MAX = 5;
+  var JP0 = 200, JPMAX = 400, JPGROW = 0.01, HOLD_P = 15, UNLOCK = 5000, LADDER = 5;
 
-  function symHTML(c) {
-    if (c === 'S') return '<span class="sy sev">7</span>';
-    if (c === 'R') return '<span class="sy bar">BAR</span>';
-    if (c === 'F') return '<span class="sy fs">EXTRA<b>SPIN</b></span>';
-    return '<span class="sy e">' + SYM[c] + '</span>';
-  }
   /* feste Walzenbaender (immer gleich gemischt, damit die Nachbarn wie bei echten Walzen stimmen) */
-  function strip(seed) {
+  function strip(count, seed) {
     var a = [];
-    Object.keys(COUNT).forEach(function (c) { for (var i = 0; i < COUNT[c]; i++) a.push(c); });
+    Object.keys(count).forEach(function (c) { for (var i = 0; i < count[c]; i++) a.push(c); });
     var x = seed;
     function rnd() { x = (x * 1103515245 + 12345) % 2147483648; return x / 2147483648; }
     for (var i = a.length - 1; i > 0; i--) { var j = Math.floor(rnd() * (i + 1)), t = a[i]; a[i] = a[j]; a[j] = t; }
     return a;
   }
-  var STRIPS = [strip(7), strip(4242), strip(90001)];
   function randInt(n) {
     try { var a = new Uint32Array(1); window.crypto.getRandomValues(a); return a[0] % n; }
     catch (e) { return Math.floor(Math.random() * n); }
   }
-  /* Gewinnlinie auswerten: welche Regel, welche Walzen leuchten */
-  function evalLine(a) {
-    if (a[0] === a[1] && a[1] === a[2] && multOf(a.join(''))) return { k: a.join(''), hit: [1, 1, 1] };
-    if (a.every(function (c) { return c === 'R' || c === 'S'; })) return { k: 'mix', hit: [1, 1, 1] };
-    if (a[0] === 'C' && a[1] === 'C') return { k: 'CC', hit: [1, 1, 0] };
-    if (a[0] === 'C') return { k: 'C', hit: [1, 0, 0] };
-    return null;
+
+  /* C Kirsche, L Zitrone, O Orange, G Trauben, B Glocke, M Melone, T Stern, D Diamant, R Bar, S Sieben, W Joker, F Extra-Spin */
+  var EMO = { C: '🍒', L: '🍋', O: '🍊', G: '🍇', B: '🔔', M: '🍉', T: '⭐', D: '💎' };
+  function symHTML(c) {
+    if (c === 'S') return '<span class="sy sev">7</span>';
+    if (c === 'R') return '<span class="sy bar">BAR</span>';
+    if (c === 'F') return '<span class="sy fs">EXTRA<b>SPIN</b></span>';
+    if (c === 'W') return '<span class="sy wd">★<b>JOKER</b></span>';
+    return '<span class="sy e">' + EMO[c] + '</span>';
   }
-  function multOf(k) { for (var i = 0; i < PAYS.length; i++) if (PAYS[i].k === k) return PAYS[i].m; return 0; }
-  /* Extra-Spin zaehlt ueberall im Fenster (oben, Mitte, unten): auf jeder Walze einer = Extra-Spins.
-     Liefert je Walze die Zeile (-1, 0, 1) oder null, wenn eine Walze keinen hat. */
-  function fvis(i, r) { for (var d = -1; d <= 1; d++) if (STRIPS[i][(r + d + N) % N] === 'F') return true; return false; }
-  function scatter(res) {
-    var rows = res.map(function (r, i) {
-      for (var d = -1; d <= 1; d++) if (STRIPS[i][(r + d + N) % N] === 'F') return d;
-      return null;
+  function RS(c) { return c === 'R' || c === 'S'; }
+
+  /* ---------- Automat 1: Lucky Seven ---------- */
+  var M1 = {
+    id: 'lucky', title: 'LUCKY ★ SEVEN', short: 'Lucky 7', reels: 3, need: 3, hold: true, gap: 420, tease: 2600,
+    counts: [{ C: 8, L: 7, O: 5, G: 5, B: 4, R: 3, S: 2, F: 2 }, { C: 7, L: 7, O: 5, G: 5, B: 4, R: 3, S: 2, W: 1, F: 2 }, { C: 8, L: 7, O: 5, G: 5, B: 4, R: 3, S: 2, F: 2 }],
+    seeds: [7, 4242, 90001],
+    pays: { SWS: 100, RRR: 40, BBB: 20, GGG: 12, OOO: 10, LLL: 8, CCC: 8, mix: 4, CC: 4, C: 2 }
+  };
+  /* Gewinnlinie: drei echte Siebenen = Jackpot; der Joker (nur Mitte) ersetzt jedes Symbol ausser Extra-Spin */
+  M1.eval = function (g) {
+    var a = [g[0][1], g[1][1], g[2][1]], LN = [[0, 1], [1, 1], [2, 1]];
+    if (a[0] === 'S' && a[1] === 'S' && a[2] === 'S') return { m: 0, jp: true, k: 'SSS', wins: [{ cells: LN }] };
+    var best = null;
+    (a[1] === 'W' ? ['C', 'L', 'O', 'G', 'B', 'R', 'S'] : [a[1]]).forEach(function (mid) {
+      var b = [a[0], mid, a[2]], r = null;
+      if (b[0] === b[1] && b[1] === b[2]) r = { k: b[0] === 'S' ? 'SWS' : b.join(''), n: 3 };
+      if (!(r && M1.pays[r.k]) && b.every(RS)) r = { k: 'mix', n: 3 };
+      if (!(r && M1.pays[r.k]) && b[0] === 'C' && b[1] === 'C') r = { k: 'CC', n: 2 };
+      if (!(r && M1.pays[r.k]) && b[0] === 'C') r = { k: 'C', n: 1 };
+      if (r && M1.pays[r.k] && (!best || M1.pays[r.k] > best.m)) { r.m = M1.pays[r.k]; best = r; }
     });
-    return rows.indexOf(null) < 0 ? rows : null;
+    if (!best) return null;
+    return { m: best.m, k: best.k, wins: [{ cells: LN.slice(0, best.n), k: best.k }], wild: a[1] === 'W' && best.n >= 2, five: false };
+  };
+
+  /* ---------- Automat 2: Diamant 5 ---------- */
+  var LINES5 = [[1, 1, 1, 1, 1], [0, 0, 0, 0, 0], [2, 2, 2, 2, 2], [0, 1, 2, 1, 0], [2, 1, 0, 1, 2]];
+  var D_OUT = { C: 6, L: 6, M: 5, G: 4, B: 3, T: 3, D: 4, F: 1 }, D_IN = { C: 6, L: 5, M: 5, G: 4, B: 3, T: 3, D: 4, W: 1, F: 1 };
+  var M2 = {
+    id: 'diamond', title: 'DIAMANT 💎 5', short: 'Diamant 5', reels: 5, need: 3, hold: false, gap: 260, tease: 1800,
+    counts: [D_OUT, D_IN, D_IN, D_IN, D_OUT], seeds: [11, 2024, 777, 555, 31337],
+    /* je Linie, in Linien-Einsaetzen (Einsatz / 5): 3, 4, 5 gleiche von links; 2 Kirschen von links = 2 */
+    pays: { C: [10, 30, 100], L: [10, 30, 100], M: [15, 45, 130], G: [18, 55, 170], B: [20, 70, 220], T: [25, 90, 280], D: [35, 120, 500] }, c2: 2,
+    order: ['D', 'T', 'B', 'G', 'M', 'L', 'C']
+  };
+  /* fuenf echte Diamanten auf einer Linie = Jackpot; der Joker ersetzt jedes Symbol ausser Extra-Spin */
+  M2.eval = function (g) {
+    var tot = 0, wins = [], jp = false, wild = false, five = false;
+    LINES5.forEach(function (L, li) {
+      var sy = L.map(function (row, i) { return g[i][row]; });
+      var cells = L.map(function (row, i) { return [i, row]; });
+      if (sy.every(function (c) { return c === 'D'; })) { jp = true; wins.push({ line: li, cells: cells, n: 5, k: 'JP' }); return; }
+      var s = sy[0];
+      if (!M2.pays[s]) return;
+      var n = 1; while (n < 5 && (sy[n] === s || sy[n] === 'W')) n++;
+      var m = n >= 3 ? M2.pays[s][n - 3] : s === 'C' && n === 2 ? M2.c2 : 0;
+      if (!m) return;
+      tot += m;
+      if (sy.slice(0, n).indexOf('W') >= 0) wild = true;
+      if (n === 5) five = true;
+      wins.push({ line: li, cells: cells.slice(0, n), n: n, k: s });
+    });
+    if (!tot && !jp) return null;
+    return { m: tot / 5, jp: jp, k: jp ? 'JP' : '', wins: wins, wild: wild, five: five };
+  };
+
+  var MACH = [M1, M2];
+  MACH.forEach(function (mc) {
+    mc.S = mc.counts.map(function (c, i) { return strip(c, mc.seeds[i]); });
+    mc.N = mc.S[0].length;
+    mc.pos = mc.S.map(function () { return randInt(mc.N); });
+  });
+  function grid(mc, res) {
+    return res.map(function (r, i) { return [-1, 0, 1].map(function (d) { return mc.S[i][(r + d + mc.N) % mc.N]; }); });
   }
+  /* Extra-Spin zaehlt ueberall im Fenster: Zeile (-1, 0, 1) je Walze oder null */
+  function fRow(mc, i, r) { for (var d = -1; d <= 1; d++) if (mc.S[i][(r + d + mc.N) % mc.N] === 'F') return d; return null; }
+  function scatter(mc, res) {
+    var rows = res.map(function (r, i) { return fRow(mc, i, r); });
+    return rows.filter(function (x) { return x !== null; }).length >= mc.need ? rows : null;
+  }
+
+  /* ---------- gespeicherter Stand ---------- */
+  var bet = 10, cur = M1, FS = {};
+  function blankFs() { return { free: 0, fbet: 10, fwon: 0, mult: 1 }; }
+  function cleanFs(o) {
+    var f = blankFs();
+    if (o && o.free > 0 && BETS.indexOf(o.fbet) >= 0) { f.free = Math.min(o.free | 0, 200); f.fbet = o.fbet; f.fwon = Math.max(0, o.fwon | 0); f.mult = Math.max(1, Math.min(MULT_MAX, o.mult | 0 || 1)); }
+    return f;
+  }
+  (function () {
+    var sv = readJ('pr-slots') || {};
+    if (BETS.indexOf(sv.bet) >= 0) bet = sv.bet;
+    var fs = sv.fs || {};
+    if (!sv.fs && sv.free > 0) fs = { lucky: { free: sv.free, fbet: sv.fbet, fwon: sv.fwon, mult: 1 } };   // alter Stand
+    MACH.forEach(function (mc) { FS[mc.id] = cleanFs(fs[mc.id]); });
+    if (sv.mach === 'diamond' && unlocked()) cur = M2;
+  })();
+  function saveState() {
+    var fs = {}; MACH.forEach(function (mc) { fs[mc.id] = FS[mc.id]; });
+    writeJ('pr-slots', { bet: bet, mach: cur.id, fs: fs });
+  }
+  function fsOf(mc) { return FS[mc.id]; }
+  function unlocked() { try { return localStorage.getItem('pr-slunlock') === '1'; } catch (e) { return false; } }
+  /* Jackpot-Topf (gemeinsam fuer beide Automaten) als Vielfaches des Einsatzes */
+  var pot = JP0;
+  (function () { var o = readJ('pr-slpot'); if (o && isFinite(+o.m)) pot = Math.max(JP0, Math.min(JPMAX, +o.m)); })();
+  function savePot() { writeJ('pr-slpot', { m: Math.round(pot * 100) / 100 }); }
 
   /* Statistik fuers Profil: Drehs, Gewinne, Saldo, bester Gewinn, Jackpots und der Saldo-Verlauf */
-  function slStat(net, win, jp) {
-    var o = null, log = null;
-    try { o = JSON.parse(localStorage.getItem('pr-slstats') || 'null'); log = JSON.parse(localStorage.getItem('pr-sllog') || 'null'); } catch (e) {}
-    o = (o && typeof o === 'object') ? o : {}; if (!Array.isArray(log)) log = [];
-    var st = { n: +o.n || 0, w: +o.w || 0, net: +o.net || 0, best: +o.best || 0, jp: +o.jp || 0 };
+  function stats() { var o = readJ('pr-slstats') || {}; return { n: +o.n || 0, w: +o.w || 0, net: +o.net || 0, best: +o.best || 0, jp: +o.jp || 0 }; }
+  function slStat(net, win, jp, nospin) {
+    var st = stats(), log = readJ('pr-sllog');
+    if (!Array.isArray(log)) log = [];
     if (!log.length) log.push([st.n, st.net]);
-    st.n++; if (win > 0) st.w++; st.net += net; st.best = Math.max(st.best, win); if (jp) st.jp++;
-    log.push([st.n, st.net]);
+    if (!nospin) { st.n++; if (win > 0) st.w++; }
+    st.net += net; st.best = Math.max(st.best, win); if (jp) st.jp++;
+    if (nospin && log.length > 1) log[log.length - 1] = [st.n, st.net]; else log.push([st.n, st.net]);
     if (log.length > 1000) log = log.filter(function (e, i) { return i % 2 === 0 || i === log.length - 1; });
-    try { localStorage.setItem('pr-slstats', JSON.stringify(st)); localStorage.setItem('pr-sllog', JSON.stringify(log)); } catch (e) {}
+    writeJ('pr-slstats', st); writeJ('pr-sllog', log);
+    return st;
   }
 
+  /* ---------- Erfolge ---------- */
+  var ACH = [
+    ['first', '🎉', 'Erster Gewinn', 'Gewinne zum ersten Mal'],
+    ['cherry', '🍒', 'Kirschkern', 'Drei Kirschen auf der Linie'],
+    ['bell', '🔔', 'Glockenspiel', 'Drei Glocken auf der Linie'],
+    ['bar', '🍸', 'Bar-Hopper', 'Drei Bars auf der Linie'],
+    ['joker', '🃏', 'Joker!', 'Gewinn mit einem Joker'],
+    ['sws', '😎', 'Sieben, Joker, Sieben', '7 · Joker · 7 bei Lucky Seven'],
+    ['jp', '💰', 'Jackpot!', 'Knacke den Jackpot'],
+    ['fs', '🎁', 'Extra Spins', 'Löse Extra-Spins aus'],
+    ['fsre', '🔁', 'Nachschlag', 'Extra-Spins in den Extra-Spins'],
+    ['x5', '🚀', 'Volle Fahrt', 'Multiplikator ×5 erreichen'],
+    ['risk3', '🎲', 'Risikofreudig', '3 Stufen auf der Risikoleiter'],
+    ['risk5', '🔥', 'Alles oder nichts', 'Risikoleiter ganz nach oben'],
+    ['hold', '✋', 'Gutes Händchen', 'Gewinn nach dem Halten'],
+    ['n100', '🎰', 'Stammgast', '100 Drehs'],
+    ['n1000', '🏅', 'Dauerdreher', '1.000 Drehs'],
+    ['k1', '🐟', 'Großer Fisch', 'Einzelgewinn ab 1.000'],
+    ['k10', '🐋', 'Wal', 'Einzelgewinn ab 10.000'],
+    ['dia', '💎', 'Diamantfieber', 'Diamant 5 freischalten'],
+    ['five', '🖐️', 'Fünf auf einen Streich', '5 gleiche auf einer Linie (Diamant 5)'],
+    ['wheel', '🎡', 'Glücksrad', 'Dreh am Glücksrad']
+  ];
+  var achGot = readJ('pr-slach') || {}, achQ = [], achT = 0;
+  if (typeof achGot !== 'object' || Array.isArray(achGot)) achGot = {};
+  function ach(id) {
+    if (achGot[id]) return;
+    var a = ACH.filter(function (x) { return x[0] === id; })[0]; if (!a) return;
+    achGot[id] = Date.now(); writeJ('pr-slach', achGot);
+    achQ.push(a); if (achQ.length === 1) achNext();
+  }
+  function achNext() {
+    var a = achQ[0], el = $('#slAch'); if (!a) return;
+    el.querySelector('i').textContent = a[1]; el.querySelector('b').textContent = a[2];
+    el.classList.add('on'); Snd.ping();
+    clearTimeout(achT);
+    achT = setTimeout(function () { el.classList.remove('on'); setTimeout(function () { achQ.shift(); achNext(); }, 400); }, 2600);
+  }
+  function renderAch() {
+    var box = $('#achBox'); if (!box) return;
+    var n = 0; box.innerHTML = '';
+    ACH.forEach(function (a) {
+      var on = !!achGot[a[0]]; if (on) n++;
+      var d = document.createElement('div'); d.className = 'ach' + (on ? ' on' : '');
+      d.innerHTML = '<i>' + a[1] + '</i><div><b></b><small></small></div>';
+      d.querySelector('b').textContent = a[2]; d.querySelector('small').textContent = a[3];
+      box.appendChild(d);
+    });
+    $('#achN').textContent = n + ' / ' + ACH.length;
+  }
+  $('#profBtn').addEventListener('click', renderAch);
+  renderAch();
+
   /* ---------- Anzeige ---------- */
-  var sl = $('#sl'), reels = [].slice.call(document.querySelectorAll('#sl .slstrip')), mach = $('#slMachine'), win3 = $('#sl .slwin');
-  var pos = [randInt(N), randInt(N), randInt(N)], busy = false, gen = 0, bet = 10, shown = 0, toastT = 0, bigT = 0, holdT = 0;
-  /* Extra-Spins: wie viele uebrig, mit welchem Einsatz, was sie bisher gebracht haben (bleibt gespeichert) */
-  var free = 0, fbet = 10, fwon = 0;
-  try {
-    var sv = JSON.parse(localStorage.getItem('pr-slots') || 'null');
-    if (sv && BETS.indexOf(sv.bet) >= 0) bet = sv.bet;
-    if (sv && sv.free > 0 && BETS.indexOf(sv.fbet) >= 0) { free = Math.min(sv.free | 0, 100); fbet = sv.fbet; fwon = Math.max(0, sv.fwon | 0); }
-  } catch (e) {}
-  function saveBet() { try { localStorage.setItem('pr-slots', JSON.stringify({ bet: bet, free: free, fbet: fbet, fwon: fwon })); } catch (e) {} }
-  reels.forEach(function (el, i) {
-    var h = '';
-    for (var c = 0; c < COPIES; c++) STRIPS[i].forEach(function (s) { h += '<div class="slcell">' + symHTML(s) + '</div>'; });
-    el.innerHTML = h;
-  });
-  /* Walze so stellen, dass Feld idx (im langen Band) auf der Gewinnlinie liegt */
+  var sl = $('#sl'), mach = $('#slMachine'), winEl = $('#slWin'), reels = [];
+  var busy = false, gen = 0, shown = 0, toastT = 0, bigT = 0, holdT = 0;
+  var holdOffer = false, holdSel = -1, holdBet = 0, riskAmt = 0, payKey = '';
+
+  function build() {
+    var mc = cur, h = '';
+    sl.classList.toggle('m2', mc === M2);
+    $('#slTitle').textContent = mc.title;
+    winEl.style.setProperty('--nr', mc.reels);
+    for (var i = 0; i < mc.reels; i++) {
+      h += '<div class="slreel"><div class="slstrip">';
+      for (var c = 0; c < COPIES; c++) mc.S[i].forEach(function (s) { h += '<div class="slcell">' + symHTML(s) + '</div>'; });
+      h += '</div>' + (mc.hold ? '<button class="slhold" type="button" data-r="' + i + '" hidden>Halten</button>' : '') + '</div>';
+    }
+    h += mc === M1 ? '<div class="slline" aria-hidden="true"><i></i></div>' : '<svg class="sllines" aria-hidden="true"></svg>';
+    winEl.innerHTML = h;
+    reels = [].slice.call(winEl.querySelectorAll('.slstrip'));
+    mc.pos.forEach(function (p, i) { place(i, p + mc.N, 0); });
+    all('#slWin .slhold').forEach(function (b) { b.addEventListener('click', function () { pickHold(+b.dataset.r); }); });
+  }
+  /* Walze so stellen, dass Feld idx (im langen Band) in der Mitte liegt */
   function place(i, idx, ms, ease) {
     var el = reels[i];
     el.style.transition = ms ? 'transform ' + ms + 'ms ' + (ease || 'cubic-bezier(.18,.7,.28,1.035)') : 'none';
-    el.style.transform = 'translateY(' + (-(idx - 1) / (COPIES * N) * 100) + '%)';
+    el.style.transform = 'translateY(' + (-(idx - 1) / (COPIES * cur.N) * 100) + '%)';
   }
-  pos.forEach(function (p, i) { place(i, p + N, 0); });
+  function cellEl(i, r, row) { return reels[i].children[r + cur.N + row - 1]; }
 
+  function curBet() { var f = fsOf(cur); return f.free > 0 ? f.fbet : holdOffer ? holdBet : bet; }
+  function lineAmt(m, b) { return fmt(Math.round(m * b)); }
   function paytable(el) {
-    var b = free > 0 ? fbet : bet;
+    var b = curBet(), mc = cur;
     el.innerHTML = '';
-    PAYS.forEach(function (p) {
-      var d = document.createElement('div'), sy = '';
-      if (p.k === 'mix') sy = symHTML('R') + symHTML('S') + '<i>gemischt</i>';
-      else if (p.k === 'CC') sy = symHTML('C') + symHTML('C') + '<i>+ beliebig</i>';
-      else if (p.k === 'C') sy = symHTML('C') + '<i>+ beliebig</i>';
-      else sy = symHTML(p.k[0]) + symHTML(p.k[0]) + symHTML(p.k[0]);
-      d.dataset.k = p.k;
-      d.innerHTML = '<span class="ps">' + sy + '</span><b>' + fmt(p.m * b) + '</b>';
+    function row(k, sy, val) {
+      var d = document.createElement('div'); d.dataset.k = k;
+      d.innerHTML = '<span class="ps">' + sy + '</span><b>' + val + '</b>';
       el.appendChild(d);
-    });
-    var f = document.createElement('div');
-    f.dataset.k = 'FFF';
-    f.innerHTML = '<span class="ps">' + symHTML('F') + symHTML('F') + symHTML('F') + '</span><b>' + FREE_N + ' Spins</b>';
-    el.appendChild(f);
+    }
+    if (mc === M1) {
+      row('SSS', symHTML('S') + symHTML('S') + symHTML('S'), 'Jackpot');
+      row('SWS', symHTML('S') + symHTML('W') + symHTML('S'), fmt(100 * b));
+      ['RRR', 'BBB', 'GGG', 'OOO', 'LLL', 'CCC'].forEach(function (k) { row(k, symHTML(k[0]) + symHTML(k[0]) + symHTML(k[0]), fmt(M1.pays[k] * b)); });
+      row('mix', symHTML('R') + symHTML('S') + '<i>gemischt</i>', fmt(M1.pays.mix * b));
+      row('CC', symHTML('C') + symHTML('C') + '<i>+ beliebig</i>', fmt(M1.pays.CC * b));
+      row('C', symHTML('C') + '<i>+ beliebig</i>', fmt(M1.pays.C * b));
+    } else {
+      row('JP', symHTML('D') + '<i>× 5</i>', 'Jackpot');
+      M2.order.forEach(function (s) {
+        var p = M2.pays[s];
+        row(s, symHTML(s) + '<i>3 · 4 · 5</i>', lineAmt(p[0] / 5, b) + ' · ' + lineAmt(p[1] / 5, b) + ' · ' + (s === 'D' ? lineAmt(p[2] / 5, b) + '*' : lineAmt(p[2] / 5, b)));
+      });
+      row('C2', symHTML('C') + symHTML('C') + '<i>von links</i>', lineAmt(M2.c2 / 5, b));
+    }
+    row('FFF', symHTML('F') + symHTML('F') + symHTML('F'), FREE_N + ' Spins');
+  }
+  function rulesText() {
+    if (cur === M1) return 'Dein Guthaben ist gespeichert. Gewonnen wird in der Reihe mit dem roten Strich. ' +
+      'Der <b>Joker</b> (nur mittlere Walze) ersetzt jedes Symbol, drei echte Siebenen knacken den <b>Jackpot</b>. ' +
+      'Dreimal <b>Extra-Spin</b> irgendwo im Fenster = 10 Gratis-Drehs, jeder Gewinn darin erhöht den Multiplikator bis ×5. ' +
+      'Manchmal darfst du nach einem Dreh eine Walze <b>halten</b> (dann gibt es beim nächsten Dreh keine Extra-Spins). Beträge für deinen Einsatz:';
+    return 'Dein Guthaben ist gespeichert. 5 Gewinnlinien (Mitte, oben, unten, V und umgedrehtes V), gewonnen wird mit gleichen Symbolen von links. ' +
+      'Der <b>Joker</b> (Walze 2 bis 4) ersetzt jedes Symbol, fünf echte Diamanten auf einer Linie knacken den <b>Jackpot</b> (* mit Joker). ' +
+      'Dreimal <b>Extra-Spin</b> irgendwo = 10 Gratis-Drehs mit steigendem Multiplikator. Beträge je Linie für deinen Einsatz:';
   }
   function bank() { return PR.prof().bank | 0; }
-  function renderBet() {
-    var fr = free > 0, b = fr ? fbet : bet;
+  function renderJp(anim) {
+    var el = $('#slJp'), v = Math.round(pot * curBet());
+    el.textContent = fmt(v);
+    if (anim) { el.classList.remove('up'); void el.offsetWidth; el.classList.add('up'); }
+  }
+  function renderPick() {
+    var host = $('#slPick'); host.innerHTML = '';
+    MACH.forEach(function (mc) {
+      var b = document.createElement('button'), lock = mc === M2 && !unlocked();
+      b.type = 'button'; b.setAttribute('role', 'tab');
+      b.className = (mc === cur ? 'on' : '') + (lock ? ' lock' : '');
+      b.textContent = lock ? '🔒 ' + mc.short + ' ab ' + fmt(UNLOCK) : mc.short + (fsOf(mc).free > 0 && mc !== cur ? ' 🎁' : '');
+      b.setAttribute('aria-selected', mc === cur ? 'true' : 'false');
+      b.disabled = busy && mc !== cur;
+      b.addEventListener('click', function () { choose(mc); });
+      host.appendChild(b);
+    });
+  }
+  function choose(mc) {
+    if (mc === cur || busy) return;
+    if (mc === M2 && !unlocked()) { toast('Diamant 5 wird ab ' + fmt(UNLOCK) + ' Chips Guthaben freigeschaltet'); return; }
+    Snd.chip(1, 0);
+    endOffers(); clearHits();
+    cur = mc; saveState(); build(); renderAll();
+    $('#slWinL').textContent = '0';
+    if (fsOf(cur).free > 0) toast('Du hast hier noch ' + fsOf(cur).free + ' Extra Spins');
+  }
+  function renderAll() {
+    var f = fsOf(cur), fr = f.free > 0, b = curBet();
     $('#slBet').textContent = fmt(b); $('#slBetL').textContent = fmt(b);
-    $('#slBetLT').textContent = fr ? 'Gratis' : 'Einsatz';
+    $('#slBetLT').textContent = fr ? 'Gratis ×' + f.mult : 'Einsatz';
     $('#sl .sllcd').classList.toggle('free', fr);
-    var i = BETS.indexOf(bet);
-    $('#slMinus').disabled = busy || fr || i <= 0;
-    $('#slPlus').disabled = busy || fr || i >= BETS.length - 1 || BETS[i + 1] > Math.max(bank(), BETS[0]);
+    var i = BETS.indexOf(bet), lockBet = busy || fr || holdOffer;
+    $('#slMinus').disabled = lockBet || i <= 0;
+    $('#slPlus').disabled = lockBet || i >= BETS.length - 1 || BETS[i + 1] > Math.max(bank(), BETS[0]);
     var sp = $('#slSpin');
     sp.disabled = busy;
     sp.classList.toggle('free', fr);
-    sp.innerHTML = fr ? 'Gratis<b>' + free + '</b>' : 'Drehen';
-    paytable($('#slPay')); paytable($('#slPay2'));
+    sp.innerHTML = fr ? 'Gratis<b>' + f.free + '</b>' : 'Drehen';
+    $('#slRisk').hidden = busy || !riskAmt;
+    all('#slWin .slhold').forEach(function (h, k) { h.hidden = busy || !holdOffer; h.classList.toggle('on', holdSel === k); h.textContent = holdSel === k ? 'Gehalten' : 'Halten'; });
+    reels.forEach(function (el, k) { el.parentNode.classList.toggle('held', holdOffer && holdSel === k); });
+    mach.classList.toggle('hold', holdOffer && !busy);
+    var pk = cur.id + ':' + b;
+    if (pk !== payKey) { payKey = pk; paytable($('#slPay')); paytable($('#slPay2')); $('#slRules').innerHTML = rulesText(); }
+    renderJp(false); renderPick();
+    $('#slWheelBtn').hidden = !wheelFree();
   }
   function bankEls() { return [$('#slBank'), $('#slBank2')]; }
   function showBank(v) { shown = v; bankEls().forEach(function (el) { el.textContent = fmt(v); }); }
@@ -6052,11 +6376,18 @@ input.bprange[type=range]::-moz-range-thumb { width: 20px; height: 20px; border-
     })(t0);
   }
   function clearHits() {
-    [].forEach.call(document.querySelectorAll('#sl .slcell.hit, #sl .slcell.fhit, #sl .slcell.fland'), function (c) { c.classList.remove('hit', 'fhit', 'fland'); });
-    [].forEach.call(document.querySelectorAll('#sl .slreel.tease'), function (c) { c.classList.remove('tease'); });
-    [].forEach.call(document.querySelectorAll('#sl .slpay div.on'), function (c) { c.classList.remove('on'); });
-    mach.classList.remove('won'); win3.classList.remove('line'); $('#slBig').hidden = true; $('#slWinL').classList.remove('on');
+    all('#sl .slcell.hit, #sl .slcell.fhit, #sl .slcell.fland').forEach(function (c) { c.classList.remove('hit', 'fhit', 'fland'); });
+    all('#sl .slreel.tease').forEach(function (c) { c.classList.remove('tease'); });
+    all('#sl .slpay div.on').forEach(function (c) { c.classList.remove('on'); });
+    var svg = winEl.querySelector('.sllines'); if (svg) svg.innerHTML = '';
+    mach.classList.remove('won'); winEl.classList.remove('line'); $('#slBig').hidden = true; $('#slWinL').classList.remove('on');
     clearTimeout(bigT); clearTimeout(holdT);
+  }
+  function endOffers() { holdOffer = false; holdSel = -1; riskAmt = 0; }
+  function big(small, text) {
+    var bg = $('#slBig');
+    bg.hidden = true; void bg.offsetWidth;   // Einblend-Animation neu starten
+    bg.querySelector('small').textContent = small; bg.querySelector('b').textContent = text; bg.hidden = false;
   }
   /* Muenzregen ueber den ganzen Automaten (n Muenzen) */
   function coins(n) {
@@ -6074,137 +6405,348 @@ input.bprange[type=range]::-moz-range-thumb { width: 20px; height: 20px; border-
       st.appendChild(c);
     }
   }
-  function big(small, text) {
-    var bg = $('#slBig');
-    bg.hidden = true; void bg.offsetWidth;   // Einblend-Animation neu starten
-    bg.querySelector('small').textContent = small; bg.querySelector('b').textContent = text; bg.hidden = false;
+  /* Gewinnlinien von Diamant 5 einzeichnen (durch die Mitte der Felder) */
+  function drawLines(wins, strong) {
+    var svg = winEl.querySelector('.sllines'); if (!svg) return;
+    var wr = winEl.getBoundingClientRect(), h = '';
+    svg.setAttribute('viewBox', '0 0 ' + wr.width + ' ' + wr.height);
+    wins.forEach(function (w) {
+      var pts = LINES5[w.line].map(function (row, i) {
+        var r = reels[i].parentNode.getBoundingClientRect();
+        return [(r.left - wr.left + r.width / 2).toFixed(1), (r.top - wr.top + (row + 0.5) * r.height / 3).toFixed(1)];
+      });
+      h += '<polyline class="' + (strong ? 'big' : '') + '" points="' + pts.map(function (p) { return p.join(','); }).join(' ') + '"/>';
+      h += '<circle cx="5" cy="' + pts[0][1] + '" r="7"/><text x="5" y="' + pts[0][1] + '" dy="3.8" text-anchor="middle">' + (w.line + 1) + '</text>';
+    });
+    svg.innerHTML = h;
+  }
+
+  /* ---------- Halten (nur Lucky Seven) ---------- */
+  function pickHold(i) {
+    if (!holdOffer || busy) return;
+    holdSel = holdSel === i ? -1 : i; Snd.chip(1, 0); renderAll();
   }
 
   /* ---------- Drehen ---------- */
   function spin() {
-    if (busy || sl.hidden) return;
+    if (busy || sl.hidden || !$('#slGamble').hidden || !$('#slWheel').hidden) return;
     Snd.unlock();
-    var P = PR.prof(), fr = free > 0, b, cost;
-    if (fr) { b = fbet; cost = 0; free--; }
+    var mc = cur, f = fsOf(mc), P = PR.prof(), fr = f.free > 0, held = holdOffer ? holdSel : -1, b, cost;
+    if (fr) { b = f.fbet; cost = 0; f.free--; held = -1; }
     else {
-      if (P.bank < BETS[0]) { P.bank = GIFT; PR.saveProf(); PR.renderBank(); showBank(P.bank); toast('Pleite – du bekommst ' + GIFT + ' Chips zum Weiterspielen'); }
-      while (bet > P.bank && BETS.indexOf(bet) > 0) bet = BETS[BETS.indexOf(bet) - 1];
-      b = bet; cost = bet; fwon = 0;
+      if (held >= 0 && holdBet <= P.bank) b = holdBet;
+      else {
+        held = -1;
+        if (P.bank < BETS[0]) { P.bank = GIFT; PR.saveProf(); PR.renderBank(); showBank(P.bank); toast('Pleite – du bekommst ' + GIFT + ' Chips zum Weiterspielen'); }
+        while (bet > P.bank && BETS.indexOf(bet) > 0) bet = BETS[BETS.indexOf(bet) - 1];
+        b = bet;
+      }
+      cost = b;
+      pot = Math.min(JPMAX, pot + JPGROW); savePot();
     }
-    var res = [randInt(N), randInt(N), randInt(N)];
-    var line = res.map(function (r, i) { return STRIPS[i][r]; }), ev = evalLine(line), win = ev ? multOf(ev.k) * b : 0, sc = scatter(res);
-    if (sc) { if (!fr) fbet = b; free += FREE_N; }
-    if (fr || sc) fwon += win;
+    endOffers();
+    var res = mc.pos.map(function (p, i) { return i === held ? p : randInt(mc.N); });
+    var g = grid(mc, res), ev = mc.eval(g), sc = held >= 0 ? null : scatter(mc, res);
+    var mult = fr ? f.mult : 1;
+    var lineWin = ev ? Math.round(ev.m * b * mult) : 0, jpWin = ev && ev.jp ? Math.round(pot * b) : 0, win = lineWin + jpWin;
+    if (jpWin) { pot = JP0; savePot(); }
+    var multUp = fr && win > 0 && f.mult < MULT_MAX;
+    if (fr && win > 0) f.mult = Math.min(MULT_MAX, f.mult + 1);
+    if (sc) { if (!fr) { f.fbet = b; f.mult = 1; f.fwon = 0; } f.free += FREE_N; }
+    if (fr || sc) f.fwon += win;
+    var endFs = fr && !sc && f.free === 0;
+    var offerHold = mc.hold && !fr && !sc && !win && held < 0 && randInt(100) < HOLD_P;
     /* gleich verbuchen: geht die Seite mitten im Drehen zu, ist nichts verloren */
     var before = P.bank;
-    P.bank = before - cost + win; PR.saveProf(); PR.renderBank(); saveBet();
-    slStat(win - cost, win, ev && ev.k === 'SSS');
-    busy = true; var g = ++gen;
-    clearHits(); renderBet();
+    P.bank = before - cost + win; PR.saveProf(); PR.renderBank(); saveState();
+    var st = slStat(win - cost, win, !!jpWin);
+    busy = true; var gg = ++gen;
+    clearHits(); renderAll();
     showBank(before - cost); $('#slWinL').textContent = '0';
     $('#slSpin').classList.add('down'); setTimeout(function () { $('#slSpin').classList.remove('down'); }, 140);
-    /* Spannung: liegen auf Walze 1 und 2 schon Extra-Spins (oder zwei Siebenen / zwei Bars auf der Linie),
-       dreht die dritte deutlich laenger und laeuft ganz langsam aus */
-    var tease = (fvis(0, res[0]) && fvis(1, res[1])) || (line[0] === line[1] && (line[0] === 'S' || line[0] === 'R'));
-    var last = 0, TEASE = 2600;
-    res.forEach(function (r, i) {
-      var long = tease && i === 2, ms = 1150 + i * 420 + (long ? TEASE : 0), el = reels[i];
-      place(i, pos[i] + N, 0); void el.offsetWidth;
-      el.classList.add('spin');
-      place(i, r + N * (long ? 5 : 2 + i), ms, long ? 'cubic-bezier(.1,.6,.1,1)' : '');
-      setTimeout(function () { if (g === gen) el.classList.remove('spin'); }, ms - (long ? 1600 : 260));
-      setTimeout(function () {
-        if (g !== gen) return;
-        pos[i] = r; place(i, r + N, 0); Snd.reel();
-        if (long) el.parentNode.classList.remove('tease');
-        /* Extra-Spin gelandet (und alle Walzen davor hatten auch einen): Klang und Leuchten */
-        var k = 0; while (k <= i && fvis(k, res[k])) k++;
-        if (k > i) {
-          for (var d = -1; d <= 1; d++) if (STRIPS[i][(r + d + N) % N] === 'F') el.children[r + N + d].classList.add('fland');
-          Snd.scat(i);
-        }
-        if (tease && i === 1) { reels[2].parentNode.classList.add('tease'); Snd.tease(TEASE / 1000 + 0.1); }
-      }, ms);
-      last = ms;
-    });
-    Snd.spin((tease ? last - TEASE : last) / 1000 - 0.1);
-    setTimeout(function () { if (g === gen) done(res, ev, win, before - cost, sc, fr); }, last + 120);
-  }
-  function done(res, ev, win, base, sc, fr) {
-    var g = gen, m = ev ? multOf(ev.k) : 0, hold = 0;
-    if (ev) {
-      ev.hit.forEach(function (h, i) { if (h) reels[i].children[res[i] + N].classList.add('hit'); });
-      [].forEach.call(document.querySelectorAll('#sl .slpay div[data-k="' + ev.k + '"]'), function (d) { d.classList.add('on'); });
-      var wl = $('#slWinL');
-      wl.classList.add('on');
-      countUp(wl, 0, win, m >= 10 ? 1400 : 600);
-      countUp(bankEls(), base, base + win, m >= 10 ? 1400 : 600, function () { shown = base + win; });
-      /* alles ueber Kirschen: die Linie leuchtet und der Knopf bleibt kurz gesperrt, damit man den Gewinn sieht */
-      if (ev.k !== 'C' && ev.k !== 'CC') {
-        win3.classList.add('line');
-        hold = ev.k === 'SSS' ? 4200 : m >= 25 ? 3000 : m >= 12 ? 2400 : 1800;
+
+    /* Stoppzeiten. Spannung: fehlt nur noch ein Extra-Spin (oder ist der Jackpot / 7-7 / Bar-Bar noch drin),
+       dreht die naechste Walze deutlich laenger und laeuft ganz langsam aus */
+    var stops = [], teased = [], extra = 0, fseen = 0, line = g.map(function (c) { return c[1]; });
+    for (var i = 0; i < mc.reels; i++) {
+      var tz = false;
+      if (i !== held && i > 0) {
+        if (held < 0 && fseen === mc.need - 1) tz = true;
+        if (mc === M1 && i === 2 && RS(line[0]) && (line[1] === line[0] || line[1] === 'W')) tz = true;
+        if (mc === M2 && i === 4 && LINES5.some(function (L) { return L.slice(0, 4).every(function (row, k) { return g[k][row] === 'D'; }); })) tz = true;
       }
-      if (m >= 10) {
+      if (tz) extra += mc.tease;
+      stops.push(i === held ? 0 : 1150 + i * mc.gap + extra);
+      teased.push(tz);
+      if (held < 0 && fRow(mc, i, res[i]) !== null) fseen++;
+    }
+    var last = Math.max.apply(null, stops), firstTease = teased.indexOf(true);
+    var ratchet = firstTease > 0 ? Math.max.apply(null, stops.slice(0, firstTease)) : last;
+    var fcount = 0;
+    res.forEach(function (r, i) {
+      if (i === held) return;
+      var ms = stops[i], el = reels[i], long = teased[i];
+      place(i, mc.pos[i] + mc.N, 0); void el.offsetWidth;
+      el.classList.add('spin');
+      place(i, r + mc.N * Math.min(COPIES - 1, 2 + i + (long ? 2 : 0)), ms, long ? 'cubic-bezier(.1,.6,.1,1)' : '');
+      setTimeout(function () { if (gg === gen) el.classList.remove('spin'); }, ms - (long ? 1400 : 260));
+      setTimeout(function () {
+        if (gg !== gen) return;
+        mc.pos[i] = r; place(i, r + mc.N, 0); Snd.reel();
+        el.parentNode.classList.remove('tease');
+        /* Extra-Spin gelandet und noch moeglich: Klang und Leuchten, jeder weitere einen Ton hoeher */
+        var d = held < 0 ? fRow(mc, i, r) : null;
+        if (d !== null) {
+          fcount++;
+          if (fcount + (mc.reels - 1 - i) >= mc.need) { cellEl(i, r, d + 1).classList.add('fland'); Snd.scat(Math.min(2, fcount - 1)); }
+        }
+        var nx = i + 1; while (nx < mc.reels && nx === held) nx++;
+        if (nx < mc.reels && teased[nx]) { reels[nx].parentNode.classList.add('tease'); Snd.tease((stops[nx] - ms) / 1000 + 0.1); }
+      }, ms);
+    });
+    Snd.spin(ratchet / 1000 - 0.1);
+    var o = { mc: mc, f: f, res: res, ev: ev, sc: sc, fr: fr, b: b, win: win, jpWin: jpWin, base: before - cost, mult: mult, multUp: multUp,
+              retrig: !!(sc && fr), endFs: endFs, offerHold: offerHold, held: held, st: st };
+    setTimeout(function () { if (gg === gen) done(o); }, last + 120);
+  }
+
+  function done(o) {
+    var gg = gen, mc = o.mc, x = o.win / o.b, hold = 0, strong = false;
+    if (o.win > 0) {
+      o.ev.wins.forEach(function (w) { w.cells.forEach(function (c) { cellEl(c[0], o.res[c[0]], c[1]).classList.add('hit'); }); });
+      all('#sl .slpay div').forEach(function (d) {
+        var k = d.dataset.k;
+        if (mc === M1 ? k === o.ev.k : o.ev.wins.some(function (w) { return (w.k === k && (k !== 'C' || w.n >= 3)) || (k === 'C2' && w.k === 'C' && w.n === 2); })) d.classList.add('on');
+      });
+      var wl = $('#slWinL'), slow = x >= 10;
+      wl.classList.add('on');
+      countUp(wl, 0, o.win, slow ? 1400 : 600);
+      countUp(bankEls(), o.base, o.base + o.win, slow ? 1400 : 600, function () { shown = o.base + o.win; });
+      /* alles ueber Kirschen: die Linie leuchtet und der Knopf bleibt kurz gesperrt, damit man den Gewinn sieht */
+      strong = o.jpWin > 0 || (mc === M1 ? o.ev.k !== 'C' && o.ev.k !== 'CC' : x >= 4);
+      if (strong) { winEl.classList.add('line'); hold = o.jpWin ? 4200 : x >= 40 ? 3000 : x >= 12 ? 2400 : 1800; }
+      if (mc === M2) drawLines(o.ev.wins, strong);
+      if (o.multUp) { var lt = $('#slBetLT'); lt.textContent = 'Gratis ×' + o.f.mult; var bl = $('#slBetL'); bl.classList.remove('pop'); void bl.offsetWidth; bl.classList.add('pop'); }
+      if (o.jpWin || x >= 10) {
         mach.classList.add('won');
-        big(ev.k === 'SSS' ? 'Jackpot' : m >= 25 ? 'Großer Gewinn' : 'Gewinn', '+' + fmt(win));
-        Snd.win(); if (m >= 25) setTimeout(function () { Snd.pot(); }, 450); if (ev.k === 'SSS') setTimeout(function () { Snd.win(); }, 900);
-        coins(ev.k === 'SSS' ? 60 : m >= 25 ? 30 : 14);
-      } else Snd.chip(Math.min(4, m), 0, true);
-    } else showBank(base);
-    if (sc) {
-      /* Extra-Spins: die drei Symbole leuchten, danach (oder gleich) das Schild */
-      var at = m >= 10 ? Math.min(hold, 2000) : 0;
-      sc.forEach(function (d, i) { reels[i].children[res[i] + N + d].classList.add('fhit'); });
-      [].forEach.call(document.querySelectorAll('#sl .slpay div[data-k="FFF"]'), function (d) { d.classList.add('on'); });
+        big(o.jpWin ? 'Jackpot' : x >= 40 ? 'Riesengewinn' : x >= 20 ? 'Großer Gewinn' : o.mult > 1 ? 'Gewinn ×' + o.mult : 'Gewinn', '+' + fmt(o.win));
+        Snd.win(); if (x >= 20) setTimeout(function () { Snd.pot(); }, 450); if (o.jpWin) setTimeout(function () { Snd.win(); }, 900);
+        coins(o.jpWin ? 60 : x >= 20 ? 30 : 14);
+      } else Snd.chip(Math.min(4, Math.max(1, Math.round(x))), 0, true);
+    } else showBank(o.base);
+    if (o.sc) {
+      /* Extra-Spins: die Symbole leuchten, danach (oder gleich) das Schild */
+      var at = x >= 10 || o.jpWin ? Math.min(hold, 2000) : 0;
+      o.sc.forEach(function (d, i) { if (d !== null) cellEl(i, o.res[i], d + 1).classList.add('fhit'); });
+      all('#sl .slpay div[data-k="FFF"]').forEach(function (d) { d.classList.add('on'); });
       bigT = setTimeout(function () {
-        if (g !== gen) return;
+        if (gg !== gen) return;
         mach.classList.add('won');
-        big(fr ? 'Noch mal' : 'Extra Spins', '+' + FREE_N + ' Gratis');
+        big(o.fr ? 'Noch mal' : 'Extra Spins', '+' + FREE_N + ' Gratis');
         Snd.win(); setTimeout(function () { Snd.ping(); }, 500); coins(24);
       }, at);
       hold = at + 2600;
     }
-    if (!sc && fr && free === 0) {
-      var tot = fwon;
-      setTimeout(function () { if (g === gen) toast('Extra Spins vorbei – ' + (tot ? '+' + fmt(tot) + ' gewonnen' : 'leider nichts gewonnen')); }, hold);
+    if (o.endFs) {
+      var tot = o.f.fwon;
+      setTimeout(function () { if (gg === gen) toast('Extra Spins vorbei – ' + (tot ? '+' + fmt(tot) + ' gewonnen' : 'leider nichts gewonnen')); }, hold);
     }
+    /* Erfolge */
+    if (o.win > 0) ach('first');
+    if (o.ev) {
+      if (o.ev.k === 'CCC') ach('cherry');
+      if (o.ev.k === 'BBB') ach('bell');
+      if (o.ev.k === 'RRR') ach('bar');
+      if (o.ev.k === 'SWS') ach('sws');
+      if (o.ev.wild) ach('joker');
+      if (o.ev.five) ach('five');
+      if (mc === M2 && o.ev.wins.some(function (w) { return w.k === 'B' && w.n >= 3; })) ach('bell');
+    }
+    if (o.jpWin) ach('jp');
+    if (o.sc) ach(o.retrig ? 'fsre' : 'fs');
+    if (o.f.mult >= MULT_MAX && o.fr) ach('x5');
+    if (o.held >= 0 && o.win > 0) ach('hold');
+    if (o.st.n >= 100) ach('n100');
+    if (o.st.n >= 1000) ach('n1000');
+    if (o.win >= 1000) ach('k1');
+    if (o.win >= 10000) ach('k10');
+    /* Freunden Bescheid geben */
+    if (window.PRF) {
+      if (o.jpWin) window.PRF.brag('jp', o.win, mc.short);
+      else if (x >= 40 && o.win >= 1000) window.PRF.brag('big', o.win, mc.short);
+    }
+    checkUnlock();
     function release() {
-      if (g !== gen) return;
-      busy = false; renderBet();
+      if (gg !== gen) return;
+      busy = false;
       $('#slBig').hidden = true; mach.classList.remove('won');
+      if (o.offerHold) { holdOffer = true; holdSel = -1; holdBet = o.b; toast('Halten möglich: tipp auf eine Walze'); }
+      if (!o.fr && !o.sc && o.win > 0 && !o.jpWin) riskAmt = o.win;
+      if (o.endFs && o.f.fwon > 0) riskAmt = o.f.fwon;
+      renderAll();
     }
-    if (hold) { holdT = setTimeout(release, hold); renderBet(); }
-    else { busy = false; renderBet(); }
+    if (hold) { holdT = setTimeout(release, hold); renderAll(); }
+    else release();
   }
+  function checkUnlock() {
+    if (unlocked() || bank() < UNLOCK) return;
+    try { localStorage.setItem('pr-slunlock', '1'); } catch (e) {}
+    ach('dia');
+    setTimeout(function () { toast('Neu freigeschaltet: Diamant 5 – oben umschalten'); renderPick(); }, 1200);
+  }
+
+  /* ---------- Risikoleiter: Rot oder Schwarz, richtig = doppelt, falsch = weg ---------- */
+  var gAmt = 0, g0 = 0, gStep = 0, gBusy = false, gHist = [], SUITS = ['♥', '♦', '♠', '♣'];
+  function riskOpen() {
+    if (busy || !riskAmt) return;
+    Snd.unlock();
+    g0 = gAmt = Math.min(riskAmt, bank()); riskAmt = 0;
+    if (gAmt <= 0) { renderAll(); return; }
+    gStep = 0; gBusy = false;
+    $('#slgCard').classList.remove('up'); $('#slgMsg').textContent = '';
+    renderGamble(); renderAll();
+    $('#slGamble').hidden = false;
+  }
+  function renderGamble() {
+    var lad = $('#slgLadder'); lad.innerHTML = '';
+    for (var k = 1; k <= LADDER; k++) {
+      var d = document.createElement('div');
+      d.className = k <= gStep ? 'done' : k === gStep + 1 ? 'now' : '';
+      d.innerHTML = '<span>Stufe ' + k + '</span><span>' + fmt(g0 * Math.pow(2, k)) + '</span>';
+      lad.appendChild(d);
+    }
+    $('#slgAmt').textContent = fmt(gAmt);
+    $('#slgHist').innerHTML = gHist.map(function (s) { return '<i class="' + (s < 2 ? 'red' : 'blk') + '">' + SUITS[s] + '</i>'; }).join('');
+    $('#slgTake').textContent = gAmt ? 'Nehmen: ' + fmt(gAmt) : 'Schließen';
+    $('#slgRed').disabled = $('#slgBlack').disabled = gBusy || !gAmt || gStep >= LADDER;
+    $('#slgTake').disabled = gBusy;
+  }
+  function guess(red) {
+    if (gBusy || !gAmt || gStep >= LADDER) return;
+    gBusy = true;
+    var s = randInt(4), ok = (s < 2) === red, P = PR.prof(), f = $('#slgCard .f');
+    f.textContent = SUITS[s]; f.className = 'f ' + (s < 2 ? 'red' : 'blk');
+    $('#slgCard').classList.add('up'); Snd.fold();
+    gHist.unshift(s); if (gHist.length > 7) gHist.pop();
+    setTimeout(function () {
+      if (ok) {
+        P.bank += gAmt; slStat(gAmt, gAmt * 2, false, true); gAmt *= 2; gStep++;
+        $('#slgMsg').textContent = gStep >= LADDER ? 'Ganz oben!' : 'Richtig!';
+        Snd.chip(3, 0, true); if (gStep >= 3) Snd.pot();
+        if (gStep === 3) ach('risk3');
+        if (gStep >= LADDER) { ach('risk5'); Snd.win(); coins(30); }
+      } else {
+        P.bank -= gAmt; slStat(-gAmt, 0, false, true);
+        $('#slgMsg').textContent = 'Daneben – der Gewinn ist weg';
+        gAmt = 0; Snd.knock();
+      }
+      PR.saveProf(); PR.renderBank(); showBank(P.bank); $('#slWinL').textContent = fmt(gAmt);
+      renderGamble();
+      setTimeout(function () {
+        if ($('#slGamble').hidden) return;
+        if (!gAmt || gStep >= LADDER) { closeGamble(); return; }
+        $('#slgCard').classList.remove('up'); gBusy = false; renderGamble();
+      }, gStep >= LADDER || !gAmt ? 1500 : 900);
+    }, 420);
+  }
+  function closeGamble() {
+    if ($('#slGamble').hidden) return;
+    $('#slGamble').hidden = true; gBusy = false;
+    if (gAmt > 0 && gStep > 0) toast('+' + fmt(gAmt) + ' eingesammelt');
+    if (gAmt >= 1000) ach('k1');
+    if (gAmt >= 10000) ach('k10');
+    if (window.PRF && gStep >= LADDER && gAmt >= 1000) window.PRF.brag('risk', gAmt, cur.short);
+    gAmt = 0; checkUnlock(); renderAll();
+  }
+  $('#slRisk').addEventListener('click', riskOpen);
+  $('#slgRed').addEventListener('click', function () { guess(true); });
+  $('#slgBlack').addEventListener('click', function () { guess(false); });
+  $('#slgTake').addEventListener('click', function () { if (!gBusy) closeGamble(); });
+
+  /* ---------- Gluecksrad: einmal am Tag gratis ---------- */
+  var WHEEL = [{ t: '100', c: 100 }, { t: '5 Spins', s: 5 }, { t: '200', c: 200 }, { t: '500', c: 500 }, { t: '150', c: 150 }, { t: '10 Spins', s: 10 }, { t: '300', c: 300 }, { t: '1.000', c: 1000 }];
+  var WCOL = ['#8c1f2a', '#5a3a8c', '#b0752a', '#1f6c86', '#8c1f2a', '#5a3a8c', '#b0752a', '#2f7d45'];
+  var wheelBusy = false, wheelRot = 0, wheelShown = false;
+  function dayKey() { var d = new Date(); return d.getFullYear() + '-' + (d.getMonth() + 1) + '-' + d.getDate(); }
+  function wheelFree() { try { return localStorage.getItem('pr-slwheel') !== dayKey(); } catch (e) { return false; } }
+  (function drawWheel() {
+    var h = '', n = WHEEL.length, R = 96;
+    WHEEL.forEach(function (w, i) {
+      var a0 = (i / n) * 2 * Math.PI - Math.PI / 2, a1 = ((i + 1) / n) * 2 * Math.PI - Math.PI / 2, am = (a0 + a1) / 2;
+      h += '<path d="M0 0 L' + (R * Math.cos(a0)).toFixed(2) + ' ' + (R * Math.sin(a0)).toFixed(2) + ' A' + R + ' ' + R + ' 0 0 1 ' + (R * Math.cos(a1)).toFixed(2) + ' ' + (R * Math.sin(a1)).toFixed(2) + ' Z" fill="' + WCOL[i] + '" stroke="#f4d67f" stroke-width="1.5"/>';
+      var deg = am * 180 / Math.PI;
+      h += '<text transform="rotate(' + deg.toFixed(1) + ') translate(60 0) rotate(90)" text-anchor="middle" dy="4">' + w.t + '</text>';
+    });
+    h += '<circle r="97" fill="none" stroke="#f4d67f" stroke-width="3"/><circle r="14" fill="#f4d67f"/><circle r="6" fill="#1a1004"/>';
+    $('#slwSvg').innerHTML = h;
+  })();
+  function wheelOpen() {
+    if (!wheelFree() || busy) return;
+    wheelShown = true; Snd.unlock();
+    $('#slwGo').disabled = false; $('#slwGo').textContent = 'Drehen'; $('#slwLater').hidden = false;
+    $('#slWheel').hidden = false;
+  }
+  $('#slwGo').addEventListener('click', function () {
+    if (wheelBusy) return;
+    if (!wheelFree()) { wheelDone(); return; }   // nach dem Drehen: weiter
+    wheelBusy = true; $('#slwGo').disabled = true; $('#slwLater').hidden = true;
+    try { localStorage.setItem('pr-slwheel', dayKey()); } catch (e) {}
+    var k = randInt(WHEEL.length), w = WHEEL[k], seg = 360 / WHEEL.length;
+    /* Gewinn gleich verbuchen */
+    var P = PR.prof();
+    if (w.c) { P.bank = Math.round((P.bank || 0) + w.c); PR.saveProf(); PR.renderBank(); }
+    else { var f = fsOf(M1); if (!f.free) { f.fbet = 10; f.mult = 1; f.fwon = 0; } f.free += w.s; saveState(); }
+    ach('wheel');
+    var target = wheelRot - (wheelRot % 360) + 360 * 6 + (360 - (k * seg + seg / 2)) + (randInt(21) - 10) * seg / 50;
+    wheelRot = target;
+    var svg = $('#slwSvg');
+    svg.style.transition = 'transform 4.6s cubic-bezier(.12,.75,.15,1)';
+    svg.style.transform = 'rotate(' + target + 'deg)';
+    Snd.spin(3.2); setTimeout(function () { Snd.tease(1.3); }, 3200);
+    setTimeout(function () {
+      wheelBusy = false;
+      Snd.win(); coins(20);
+      $('#slwGo').disabled = false; $('#slwGo').textContent = w.c ? '+' + fmt(w.c) + ' Chips – weiter' : '+' + w.s + ' Extra Spins – weiter';
+      showBank(bank()); renderAll();
+    }, 4700);
+  });
+  $('#slwLater').addEventListener('click', function () { $('#slWheel').hidden = true; });
+  /* geschlossen: bei gewonnenen Extra-Spins gleich zu Lucky Seven */
+  function wheelDone() { $('#slWheel').hidden = true; if (fsOf(M1).free > 0 && cur !== M1) choose(M1); renderAll(); }
+  $('#slWheelBtn').addEventListener('click', wheelOpen);
 
   /* ---------- Bedienung ---------- */
   $('#slSpin').addEventListener('click', spin);
-  $('#slMinus').addEventListener('click', function () { var i = BETS.indexOf(bet); if (!busy && !free && i > 0) { bet = BETS[i - 1]; saveBet(); Snd.chip(1, 0); renderBet(); } });
-  $('#slPlus').addEventListener('click', function () { var i = BETS.indexOf(bet); if (!busy && !free && i < BETS.length - 1 && BETS[i + 1] <= bank()) { bet = BETS[i + 1]; saveBet(); Snd.chip(1, 0); renderBet(); } });
+  $('#slMinus').addEventListener('click', function () { var i = BETS.indexOf(bet); if (!busy && !holdOffer && !fsOf(cur).free && i > 0) { bet = BETS[i - 1]; saveState(); Snd.chip(1, 0); renderAll(); } });
+  $('#slPlus').addEventListener('click', function () { var i = BETS.indexOf(bet); if (!busy && !holdOffer && !fsOf(cur).free && i < BETS.length - 1 && BETS[i + 1] <= bank()) { bet = BETS[i + 1]; saveState(); Snd.chip(1, 0); renderAll(); } });
   document.addEventListener('keydown', function (e) {
-    if (sl.hidden || !$('#slPause').hidden) return;
+    if (sl.hidden || !$('#slPause').hidden || !$('#slGamble').hidden || !$('#slWheel').hidden) return;
     if (e.key === ' ' || e.key === 'Enter') { e.preventDefault(); spin(); }
   });
   function open() {
     Snd.unlock();
     $('#menu').hidden = true; sl.hidden = false; $('#slPause').hidden = true;
-    clearHits(); $('#slWinL').textContent = '0';
-    showBank(bank()); renderBet();
-    if (free > 0) toast('Du hast noch ' + free + ' Extra Spins');
+    if (cur === M2 && !unlocked()) cur = M1;
+    build(); clearHits(); endOffers(); $('#slWinL').textContent = '0';
+    showBank(bank()); renderAll(); checkUnlock();
+    if (fsOf(cur).free > 0) toast('Du hast noch ' + fsOf(cur).free + ' Extra Spins');
+    if (wheelFree()) setTimeout(function () { if (!sl.hidden && !busy) wheelOpen(); }, 500);
   }
   function leave() {
-    gen++; busy = false; clearHits();
-    [].forEach.call(document.querySelectorAll('#sl .slcoin'), function (c) { c.remove(); });
-    reels.forEach(function (el, i) { el.classList.remove('spin'); place(i, pos[i] + N, 0); });
+    gen++; busy = false; clearHits(); endOffers();
+    $('#slGamble').hidden = true; gAmt = 0; gBusy = false;
+    $('#slWheel').hidden = true;
+    all('#sl .slcoin').forEach(function (c) { c.remove(); });
+    reels.forEach(function (el, i) { el.classList.remove('spin'); place(i, cur.pos[i] + cur.N, 0); });
     Snd.stopAll();
     sl.hidden = true; $('#slPause').hidden = true; $('#menu').hidden = false;
     PR.renderBank();
   }
   $('#slPlay').addEventListener('click', open);
-  $('#slPauseBtn').addEventListener('click', function () { renderBet(); $('#slPause').hidden = false; });
+  $('#slPauseBtn').addEventListener('click', function () { renderAll(); $('#slPause').hidden = false; });
   $('#slResume').addEventListener('click', function () { $('#slPause').hidden = true; });
   $('#slMenu').addEventListener('click', leave);
-  renderBet();
+  build(); renderAll();
 
   /* Update-Pruefung: nicht neu laden, solange man am Automaten ist */
   var idle = window.prIdle;
@@ -6255,8 +6797,10 @@ input.bprange[type=range]::-moz-range-thumb { width: 20px; height: 20px; border-
   function cleanFriend(f) {
     var nm = String(f.name == null ? '' : f.name).slice(0, 14).trim();
     var bk = Math.round(+f.bank);
+    var sb = Math.round(+f.sb), sj = Math.round(+f.sj);
     return { code: f.code, name: nm, color: (typeof f.color === 'string' && /^#[0-9a-f]{6}$/i.test(f.color)) ? f.color : PR.AV[0], pending: !!f.pending,
-             bank: isFinite(bk) && bk >= 0 ? Math.min(bk, 1e12) : null };
+             bank: isFinite(bk) && bk >= 0 ? Math.min(bk, 1e12) : null,
+             sb: f.sb != null && isFinite(sb) && sb >= 0 ? Math.min(sb, 1e12) : null, sj: isFinite(sj) && sj >= 0 ? Math.min(sj, 1e6) : 0 };
   }
   function friend(code) { for (var i = 0; i < FR.length; i++) if (FR[i].code === code) return FR[i]; return null; }
   function saveFR() { try { localStorage.setItem('pr-friends', JSON.stringify(FR.slice(0, MAX_FRIENDS))); } catch (e) {} }
@@ -6285,9 +6829,18 @@ input.bprange[type=range]::-moz-range-thumb { width: 20px; height: 20px; border-
     if (st.g === 'poker') return st.code ? 'Am Pokertisch' : 'Spielt Poker gegen Bots';
     return 'Online';
   }
-  function myPub() { var P = PR.prof(); return { name: PR.profName(), color: P.color, bank: Math.round(P.bank || 0) }; }
+  /* sl: bester Slots-Gewinn und Zahl der Jackpots (fuer die Slots-Bestenliste; aeltere Versionen lassen das Feld weg) */
+  function mySl() { var o = null; try { o = JSON.parse(localStorage.getItem('pr-slstats') || 'null'); } catch (e) {} o = o || {}; return [Math.round(+o.best || 0), Math.round(+o.jp || 0)]; }
+  function myPub() { var P = PR.prof(); return { name: PR.profName(), color: P.color, bank: Math.round(P.bank || 0), sl: mySl() }; }
   /* Chipstand des Freundes merken (fuer die Rangliste, auch wenn er offline ist) */
-  function takeBank(f, p) { var b = Math.round(+(p && p.bank)); if (isFinite(b) && b >= 0) f.bank = Math.min(b, 1e12); }
+  function takeBank(f, p) {
+    var b = Math.round(+(p && p.bank)); if (isFinite(b) && b >= 0) f.bank = Math.min(b, 1e12);
+    if (p && Array.isArray(p.sl)) {
+      var sb = Math.round(+p.sl[0]), sj = Math.round(+p.sl[1]);
+      if (isFinite(sb) && sb >= 0) f.sb = Math.min(sb, 1e12);
+      if (isFinite(sj) && sj >= 0) f.sj = Math.min(sj, 1e6);
+    }
+  }
 
   /* ---------- Vermittlung ---------- */
   var peer = null, startT = 0, alive = false;
@@ -6402,6 +6955,8 @@ input.bprange[type=range]::-moz-range-thumb { width: 20px; height: 20px; border-
       if (st.code && st.g !== 'menu') showInvite(f, st);
     } else if (d.t === 'rm') {
       removeFriend(code, false);
+    } else if (d.t === 'big') {
+      showBrag(f, d);
     }
   }
   /* Lebenszeichen: wer 45 Sekunden nichts schickt (Handy gesperrt, App zu), gilt als offline */
@@ -6531,6 +7086,7 @@ input.bprange[type=range]::-moz-range-thumb { width: 20px; height: 20px; border-
   }
   function setupList(host) {
     host.innerHTML = '<div class="frank" hidden><div class="psec">Rangliste</div><div class="frl"></div></div>' +
+      '<div class="frank slr" hidden><div class="psec">Slots-Bestenliste</div><div class="frl"></div></div>' +
       '<div class="psec">Deine Freunde <span></span></div><div class="flist"></div>' +
       '<div class="fadd"><input type="text" maxlength="6" autocomplete="off" autocapitalize="characters" spellcheck="false" placeholder="Spielercode eines Freundes" aria-label="Spielercode eines Freundes"><button class="btn primary" type="button" disabled>Hinzufügen</button></div>' +
       '<p class="fnote"></p>';
@@ -6566,6 +7122,7 @@ input.bprange[type=range]::-moz-range-thumb { width: 20px; height: 20px; border-
         list.appendChild(e);
       } else sorted().forEach(function (f) { list.appendChild(friendRow(f, me)); });
       renderRank(host.querySelector('.frank'));
+      renderSlRank(host.querySelector('.frank.slr'));
     });
     all('[data-fi]').forEach(function (host) {
       host.innerHTML = '';
@@ -6599,6 +7156,45 @@ input.bprange[type=range]::-moz-range-thumb { width: 20px; height: 20px; border-
       list.appendChild(el);
     });
   }
+  /* Slots-Bestenliste: groesster Einzelgewinn, dazu wie oft der Jackpot geknackt wurde */
+  function renderSlRank(box) {
+    var P = PR.prof(), me = mySl(), rows = FR.filter(function (f) { return f.sb != null && !f.pending; })
+      .map(function (f) { return { name: f.name || f.code, color: f.color, best: f.sb, jp: f.sj || 0 }; });
+    box.hidden = !rows.length;
+    if (!rows.length) return;
+    rows.push({ name: PR.profName(), color: P.color, best: me[0], jp: me[1], me: true });
+    rows.sort(function (a, b) { return b.best - a.best || b.jp - a.jp; });
+    var list = box.querySelector('.frl'); list.innerHTML = '';
+    rows.forEach(function (r, i) {
+      if (i >= 10 && !r.me) return;
+      var el = document.createElement('div'); el.className = 'frr' + (r.me ? ' me' : '');
+      var n = document.createElement('span'); n.className = 'frn'; n.textContent = i === 0 ? '🎰' : (i + 1) + '.';
+      var a = document.createElement('span'); a.className = 'pav'; a.style.setProperty('--av', r.color); a.textContent = (r.name || '?').charAt(0).toUpperCase();
+      var nm = document.createElement('b'); nm.textContent = r.me ? r.name + ' (du)' : r.name;
+      var c = document.createElement('span'); c.className = 'frc'; c.textContent = r.best ? fmt(r.best) : '–';
+      var sm = document.createElement('small'); sm.textContent = r.jp ? r.jp + '× Jackpot' : 'bester Gewinn';
+      c.appendChild(sm);
+      el.appendChild(n); el.appendChild(a); el.appendChild(nm); el.appendChild(c);
+      list.appendChild(el);
+    });
+  }
+  /* grosser Slots-Gewinn: allen Freunden, die gerade online sind, Bescheid geben (aeltere Versionen ignorieren die Nachricht) */
+  function brag(k, w, m) {
+    w = Math.round(+w);
+    if (!isFinite(w) || w <= 0) return;
+    var msg = { t: 'big', k: k, w: Math.min(w, 1e12), m: String(m || '').slice(0, 14) };
+    Object.keys(LIVE).forEach(function (code) { var L = LIVE[code]; if (L.on) send(L.conn, msg); });
+  }
+  function showBrag(f, d) {
+    var w = Math.round(+d.w);
+    if (!isFinite(w) || w <= 0 || ['jp', 'big', 'risk'].indexOf(d.k) < 0) return;
+    var nm = f.name || f.code, m = typeof d.m === 'string' ? d.m.slice(0, 14) : '';
+    toast(d.k === 'jp' ? '💰 ' + nm + ' hat den Jackpot geknackt: +' + fmt(w) + (m ? ' (' + m + ')' : '')
+      : d.k === 'risk' ? '🔥 ' + nm + ' hat die Risikoleiter geschafft: +' + fmt(w)
+      : '🎰 ' + nm + ' hat gerade +' + fmt(w) + ' gewonnen' + (m ? ' (' + m + ')' : ''));
+    Snd.ping();
+  }
+  window.PRF = { brag: brag };
   function changed() { render(false); }
   setInterval(function () { render(false); }, 2000);
 
