@@ -934,7 +934,7 @@ input.bprange[type=range]::-moz-range-thumb { width: 20px; height: 20px; border-
 #slHelp p { margin: 0 0 10px; font-size: 14px; line-height: 1.45; }
 #slPause .endcard { max-height: 100%; overflow-y: auto; }
 /* Bedienung: Einsatz links, gruener Knopf rechts */
-#slCtl { flex: 0 0 auto; height: 124px; padding: 4px 4px 16px; display: flex; align-items: center; justify-content: space-between; gap: 12px; }
+#slCtl { position: relative; flex: 0 0 auto; height: 124px; padding: 4px 4px 16px; display: flex; align-items: center; justify-content: space-between; gap: 12px; }
 .slleft { display: flex; flex-direction: column; align-items: center; gap: 6px; }
 .slown { display: inline-flex; align-items: center; gap: 7px; height: 28px; padding: 0 12px 0 8px; border-radius: 999px; background: rgba(16,18,19,.7); border: 1px solid var(--line); font: 800 15px var(--ui); color: var(--ink); font-variant-numeric: tabular-nums; }
 .slown small { font: 700 10px var(--ui); letter-spacing: .14em; text-transform: uppercase; color: var(--muted); margin-right: 2px; }
@@ -1005,10 +1005,12 @@ input.bprange[type=range]::-moz-range-thumb { width: 20px; height: 20px; border-
 /* Multiplikator in den Extra-Spins */
 .sllcd b.pop { animation: slpop .5s cubic-bezier(.2,.9,.3,1.4); }
 /* Riskieren */
-#slRisk { flex: none; width: 78px; height: 52px; border-radius: 16px; border: 0; padding: 0; color: #1a1004; font: 900 14px/1.1 var(--ui); letter-spacing: .04em; text-transform: uppercase;
+/* Risiko taucht nur neben dem Drehen-Knopf auf, ohne dass sich etwas verschiebt */
+#slRisk { position: absolute; top: 30px; right: 98px; width: 66px; height: 52px; border-radius: 16px; border: 0; padding: 0; color: #1a1004; font: 900 14px/1.1 var(--ui); letter-spacing: .04em; text-transform: uppercase;
   background: linear-gradient(180deg, #ffe08a, #e0aa4a); box-shadow: 0 4px 0 #8a5d17, 0 8px 16px rgba(0,0,0,.45); animation: slholdp2 .8s ease-in-out infinite alternate; }
 #slRisk small { display: block; font-size: 17px; font-family: var(--display); }
 #slRisk[hidden] { display: none; }
+@media (max-width: 380px) { .slbet { gap: 6px; } .slbetv { min-width: 56px; } #slRisk { width: 60px; font-size: 12px; } }
 #slRisk:active { transform: translateY(3px); box-shadow: 0 1px 0 #8a5d17, 0 4px 10px rgba(0,0,0,.45); }
 @keyframes slholdp2 { to { filter: brightness(1.12); } }
 /* Gluecksrad nach dem Nachdreh (dreht sich von allein) */
