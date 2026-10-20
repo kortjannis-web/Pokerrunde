@@ -341,14 +341,23 @@ button { font: inherit; color: inherit; cursor: pointer; }
 .btn.raise { background: linear-gradient(180deg, var(--oak1), var(--oak2)); color: #1d1307; border-color: transparent; }
 .btn:disabled { opacity: .32; cursor: default; }
 .btn:not(:disabled) { transition: transform .12s; }   /* freigeben sofort, nur das Sperren blendet weich aus */
-/* Vormerken, solange man nicht dran ist: kleiner Kasten oben links im Knopf */
-.btns .btn { position: relative; }
-.pbox { display: none; position: absolute; left: 4px; top: 4px; width: 20px; height: 20px; transform: translate(-50%, -50%); border-radius: 50%; box-sizing: border-box; border: 2px solid var(--ink); background: var(--bg); color: var(--brass-ink); font: 800 12px/16px var(--ui); text-align: center; }
-.btns.pre .btn:not(:disabled) .pbox { display: block; }
+/* Vormerken, solange man nicht dran ist: Knopf nach oben ziehen, dann bleibt er oben stehen */
+.btns .btn { position: relative; touch-action: none; }
 .btns.pre .btn:not(:disabled) { opacity: .55; }
-.btns.pre .btn.on { opacity: 1; box-shadow: 0 0 0 2px var(--ink); }
-.btns.pre .btn.on .pbox { background: var(--brass); border-color: var(--bg); }
-.btns.pre .btn.on .pbox::after { content: '\2713'; }
+.btns.pre .btn.on { opacity: 1; transform: translateY(-10px); box-shadow: 0 0 0 2px var(--ink), 0 8px 16px rgba(0,0,0,.45); }
+.btns .btn.drag { transition: none; opacity: .9; }
+/* Einstellungen im Pause-Fenster */
+#pause .endcard { max-height: 100%; overflow-y: auto; }
+.psettings { display: flex; flex-direction: column; gap: 8px; margin: 0 0 18px; text-align: left; }
+#pause .prow { background: var(--bg); }
+/* Anleitung im Profil und im Pause-Fenster */
+.prow.guide { padding: 0; display: block; }
+.guide summary { list-style: none; cursor: pointer; padding: 12px 14px; display: flex; gap: 10px; text-align: left; justify-content: space-between; align-items: center; }
+.guide summary::-webkit-details-marker { display: none; }
+.guide summary::after { content: '\203A'; font-size: 22px; line-height: 1; color: var(--muted); transition: transform .2s; }
+.guide[open] summary::after { transform: rotate(90deg); }
+.guide ol { text-align: left; margin: 0; padding: 0 14px 14px 32px; display: flex; flex-direction: column; gap: 8px; font: 500 14px/1.4 var(--ui); color: var(--muted); }
+.guide ol b { color: var(--ink); font-weight: 700; }
 .btn:active:not(:disabled) { transform: scale(.97); }
 .btn.wide { width: 100%; height: 58px; }
 #rpanel { display: flex; flex-direction: column; gap: 8px; }
@@ -407,9 +416,7 @@ input[type=range]::-moz-range-thumb {
 #bar { position: relative; }
 #pauseBtn { position: absolute; right: 0; top: 46px; width: 32px; height: 32px; z-index: 12; }
 #pauseBtn svg { width: 15px; height: 15px; }
-#volPop { position: absolute; right: 0; top: 44px; z-index: 20; width: min(250px, 100%); display: flex; align-items: center; gap: 10px; padding: 6px 12px 6px 6px; border-radius: 999px; background: var(--bg2); border: 1px solid var(--line); box-shadow: 0 10px 28px rgba(0,0,0,.55); }
-#volPop[hidden] { display: none; }
-#volPop output, .vrow output { min-width: 38px; text-align: right; font: 700 12px var(--ui); color: var(--muted); font-variant-numeric: tabular-nums; }
+.vrow output { min-width: 38px; text-align: right; font: 700 12px var(--ui); color: var(--muted); font-variant-numeric: tabular-nums; }
 .vrow input[type=range] { flex: 1; max-width: 150px; }
 .overlay { position: absolute; inset: 0; z-index: 55; display: grid; place-items: center; background: rgba(10,11,12,.76); padding: 24px; }
 #menu { position: absolute; inset: 0; z-index: 60; display: grid; place-items: center; padding: 24px; background: radial-gradient(ellipse at 50% 30%, var(--felt2), var(--bg) 70%); }
@@ -561,14 +568,6 @@ input.bprange[type=range]::-moz-range-thumb { width: 20px; height: 20px; border-
     <div class="right">
       <span id="info">Hand 1 · Blinds 10/20</span>
       <button class="iconbtn" id="topBtn" type="button" aria-label="Chips aufladen"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path d="M12 8v8M8 12h8"/></svg></button>
-      <button class="iconbtn" id="mute" type="button" aria-label="Ton an oder aus">
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 9v6h4l5 4V5L8 9H4z" fill="currentColor" stroke="none"/><path class="w" d="M16.5 8.5a5 5 0 010 7M19 6a8.5 8.5 0 010 12"/><path class="x" d="M3 3l18 18"/></svg>
-      </button>
-    </div>
-    <div id="volPop" hidden>
-      <button class="iconbtn" id="volMute" type="button" aria-label="Ton an oder aus"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 9v6h4l5 4V5L8 9H4z" fill="currentColor" stroke="none"/><path class="w" d="M16.5 8.5a5 5 0 010 7M19 6a8.5 8.5 0 010 12"/><path class="x" d="M3 3l18 18"/></svg></button>
-      <input type="range" id="volGame" min="0" max="100" step="1" aria-label="Lautstärke">
-      <output id="volGameN">100%</output>
     </div>
     <button class="iconbtn" id="pauseBtn" type="button" aria-label="Pause">
       <svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><rect x="6" y="5" width="4" height="14" rx="1.2"/><rect x="14" y="5" width="4" height="14" rx="1.2"/></svg>
@@ -601,9 +600,9 @@ input.bprange[type=range]::-moz-range-thumb { width: 20px; height: 20px; border-
   <footer id="controls">
     <div id="status" aria-live="polite"></div>
     <div class="btns" id="btns">
-      <button class="btn" id="bFold" type="button"><span>Passen</span><i class="pbox" aria-hidden="true"></i></button>
-      <button class="btn primary" id="bCall" type="button"><span>Check</span><small></small><i class="pbox" aria-hidden="true"></i></button>
-      <button class="btn raise" id="bRaise" type="button"><span>Erhöhen</span><small></small><i class="pbox" aria-hidden="true"></i></button>
+      <button class="btn" id="bFold" type="button"><span>Passen</span></button>
+      <button class="btn primary" id="bCall" type="button"><span>Check</span><small></small></button>
+      <button class="btn raise" id="bRaise" type="button"><span>Erhöhen</span><small></small></button>
     </div>
     <div id="rpanel" hidden>
       <div class="presets" id="presets"></div>
@@ -636,6 +635,10 @@ input.bprange[type=range]::-moz-range-thumb { width: 20px; height: 20px; border-
     <div class="endcard">
       <h2>Pause</h2>
       <p>Das Spiel läuft im Hintergrund weiter, wie bei einer Online-Runde.</p>
+      <div class="psettings" id="pauseSet">
+        <div class="psec">Einstellungen</div>
+        <div class="prow vrow"><span>Lautstärke</span><input type="range" id="volGame" min="0" max="100" step="1" aria-label="Lautstärke"><output id="volGameN">100%</output></div>
+      </div>
       <button class="btn primary wide" id="bResume" type="button">Weiterspielen</button>
       <button class="btn wide" id="bMenu" type="button" style="margin-top:10px">Zum Hauptmenü</button>
     </div>
@@ -804,6 +807,19 @@ input.bprange[type=range]::-moz-range-thumb { width: 20px; height: 20px; border-
         <div class="psec" style="margin-bottom:8px">Einstellungen</div>
         <div style="display:flex;flex-direction:column;gap:8px">
           <div class="prow vrow"><span>Lautstärke</span><input type="range" id="volProf" min="0" max="100" step="1" aria-label="Lautstärke"><output id="volProfN">100%</output></div>
+          <details class="prow guide" id="guide">
+            <summary>Anleitung: Züge vormerken</summary>
+            <ol>
+              <li>Solange <b>andere dran sind</b>, kannst du deinen Zug schon vormerken.</li>
+              <li><b>Knopf nach oben ziehen</b> – Passen, Check/Mitgehen oder Setzen/Erhöhen. Er bleibt dann oben stehen und ist hell umrandet.</li>
+              <li>Sobald du dran bist, wird der Zug <b>automatisch</b> gemacht.</li>
+              <li><b>Setzen/Erhöhen:</b> hochziehen, Betrag wählen und auf „Vormerken“ tippen.</li>
+              <li><b>Check/Mitgehen</b> und <b>Setzen</b> werden wieder aufgehoben, wenn vorher jemand setzt oder eine neue Karte kommt – dann entscheidest du selbst.</li>
+              <li><b>Passen</b> bleibt die ganze Hand stehen. Ist Check gratis, wird gecheckt statt gepasst.</li>
+              <li><b>Aufheben:</b> den Knopf antippen oder wieder nach unten ziehen.</li>
+              <li>Tipp: Wenn du dran bist, kannst du auch eine Karte in die Mitte ziehen, um zu passen.</li>
+            </ol>
+          </details>
         </div>
       </div>
     </div>
@@ -1847,29 +1863,20 @@ input.bprange[type=range]::-moz-range-thumb { width: 20px; height: 20px; border-
   })();
   document.addEventListener('pointerdown', Snd.unlock, true);
   document.addEventListener('keydown', Snd.unlock, true);
-  /* Lautstaerke: Schieber im Spiel (Popover unter dem Lautsprecher) und im Profil, beide immer gleich */
+  /* Lautstaerke: Schieber im Pause-Fenster und im Profil, beide immer gleich */
   function syncMute() {
     var v = Math.round(Snd.getVol() * 100), muted = !Snd.isOn() || v === 0;
-    $('#mute').classList.toggle('off', muted); $('#volMute').classList.toggle('off', muted);
     ['volGame', 'volProf'].forEach(function (id) {
       var el = $('#' + id); el.value = v; el.style.setProperty('--fill', v + '%');
       $('#' + id + 'N').textContent = muted && v > 0 ? 'Aus' : v + '%';
     });
   }
-  var volPopT = 0;
-  function volPopKeep() { clearTimeout(volPopT); volPopT = setTimeout(function () { $('#volPop').hidden = true; }, 4500); }
-  $('#mute').addEventListener('click', function (e) {
-    Snd.unlock(); var p = $('#volPop'); p.hidden = !p.hidden; syncMute();
-    if (!p.hidden) volPopKeep(); else clearTimeout(volPopT);
-  });
-  $('#volMute').addEventListener('click', function () { Snd.unlock(); if (Snd.getVol() === 0) Snd.setVol(0.8); else Snd.toggle(); syncMute(); volPopKeep(); Snd.ping(); });
-  function onVol(e) { Snd.unlock(); Snd.setVol(+e.target.value / 100); syncMute(); volPopKeep(); }
+  function onVol(e) { Snd.unlock(); Snd.setVol(+e.target.value / 100); syncMute(); }
   function onVolEnd() { Snd.ping(); }
   ['volGame', 'volProf'].forEach(function (id) { $('#' + id).addEventListener('input', onVol); $('#' + id).addEventListener('change', onVolEnd); });
-  document.addEventListener('pointerdown', function (e) {
-    if (!$('#volPop').hidden && !e.target.closest('#volPop') && !e.target.closest('#mute')) $('#volPop').hidden = true;
-  });
   syncMute();
+  /* die Anleitung aus dem Profil gibt es auch im Pause-Fenster */
+  (function () { var g = $('#guide').cloneNode(true); g.removeAttribute('id'); $('#pauseSet').appendChild(g); })();
 
   var snap = { hand: -1, board: 0, bets: [0, 0, 0, 0, 0], folded: [0, 0, 0, 0, 0], label: ['', '', '', '', ''], phase: '', turn: false };
   function chipCount(delta) { return Math.min(5, 1 + Math.floor(Math.log(delta / S.bb + 1) / Math.LN2)); }
@@ -2481,7 +2488,7 @@ input.bprange[type=range]::-moz-range-thumb { width: 20px; height: 20px; border-
     var txt;
     if (flashMsg) txt = flashMsg;
     else if (myTurn) txt = '<b>Du bist dran</b> · ' + (toCall > 0 ? fmt(Math.min(toCall, me.chips)) + ' zum Mitgehen' : 'Check ist gratis');
-    else if (pre) txt = 'Vorgemerkt: <b>' + preName() + '</b> · nochmal tippen zum Aufheben';
+    else if (pre) txt = 'Vorgemerkt: <b>' + preName() + '</b> · antippen zum Aufheben';
     else if (S.phase === 'deal') txt = 'Karten werden gegeben …';
     else if (S.phase === 'runout') txt = 'Alle All-in – die Karten werden aufgedeckt';
     else if (S.phase === 'showdown') txt = 'Showdown …';
@@ -2585,11 +2592,48 @@ input.bprange[type=range]::-moz-range-thumb { width: 20px; height: 20px; border-
     if (raiseMode && preRaise) { preRaise = false; openRaise(true); }   // offenes Vormerk-Fenster wird zum normalen Erhoehen
     else raiseMode = false;
   }
-  $('#bFold').addEventListener('click', function () { if (!humanResolve) return setPre('fold'); act({ type: 'fold' }); });
-  $('#bCall').addEventListener('click', function () { if (!humanResolve) return setPre('call'); act({ type: toCallNow() > 0 ? 'call' : 'check' }); });
+  /* Nicht dran: Antippen hebt eine Vormerkung auf, vorgemerkt wird nur durch Hochziehen */
+  var preDragAt = 0;
+  function preTap(type) {
+    if (Date.now() - preDragAt < 400) return;   // der Klick gehoert noch zur Ziehbewegung
+    if (pre && pre.type === type) { pre = null; return renderControls(); }
+    flash('Zum Vormerken den Knopf nach oben ziehen');
+  }
+  function preGesture(type) {
+    if (type === 'raise') { preRaise = true; return openRaise(); }
+    if (!(pre && pre.type === type)) setPre(type);
+  }
+  [['#bFold', 'fold'], ['#bCall', 'call'], ['#bRaise', 'raise']].forEach(function (x) {
+    var el = $(x[0]), type = x[1], d = null;
+    el.addEventListener('pointerdown', function (e) {
+      if (humanResolve || el.disabled || !$('#btns').classList.contains('pre')) return;
+      d = { id: e.pointerId, y0: e.clientY, dy: 0, on: el.classList.contains('on') };
+      try { el.setPointerCapture(e.pointerId); } catch (err) {}
+      el.classList.add('drag');
+    });
+    el.addEventListener('pointermove', function (e) {
+      if (!d || e.pointerId !== d.id) return;
+      d.dy = e.clientY - d.y0;
+      var off = d.on ? -10 + Math.max(-36, Math.min(24, d.dy * 0.8)) : Math.max(-46, Math.min(0, d.dy * 0.8));
+      el.style.transform = 'translateY(' + off + 'px)';
+    });
+    function end(e) {
+      if (!d || e.pointerId !== d.id) return;
+      var g = d; d = null;
+      el.classList.remove('drag'); el.style.transform = '';
+      if (Math.abs(g.dy) > 8) preDragAt = Date.now();
+      if (e.type !== 'pointerup' || humanResolve) return;
+      if (g.dy <= -28) preGesture(type);
+      else if (g.on && g.dy >= 20 && pre && pre.type === type) { pre = null; renderControls(); }
+    }
+    el.addEventListener('pointerup', end);
+    el.addEventListener('pointercancel', end);
+  });
+  $('#bFold').addEventListener('click', function () { if (!humanResolve) return preTap('fold'); act({ type: 'fold' }); });
+  $('#bCall').addEventListener('click', function () { if (!humanResolve) return preTap('call'); act({ type: toCallNow() > 0 ? 'call' : 'check' }); });
   $('#bRaise').addEventListener('click', function () {
-    if (!humanResolve && pre && pre.type === 'raise') { pre = null; return renderControls(); }
-    preRaise = !humanResolve;
+    if (!humanResolve) return preTap('raise');
+    preRaise = false;
     openRaise();
   });
   $('#rBack').addEventListener('click', function () { raiseMode = false; preRaise = false; renderControls(); });
@@ -3408,7 +3452,7 @@ input.bprange[type=range]::-moz-range-thumb { width: 20px; height: 20px; border-
 
   $('#bAgain').addEventListener('click', function () { if (MP.on) toMenu(); else openDlg('buyin'); });
   $('#bPlay').addEventListener('click', function () { openDlg('buyin'); });
-  $('#pauseBtn').addEventListener('click', function () { $('#pause').hidden = false; });
+  $('#pauseBtn').addEventListener('click', function () { syncMute(); $('#pause').hidden = false; });
   $('#bResume').addEventListener('click', function () { $('#pause').hidden = true; });
   $('#bMenu').addEventListener('click', toMenu);
 
