@@ -687,27 +687,42 @@ input.bprange[type=range]::-moz-range-thumb { width: 20px; height: 20px; border-
 .bjv.bust { color: #ff8a76; }
 .bjv.bj { background: var(--brass); color: var(--brass-ink); border-color: transparent; }
 .bjv:empty { visibility: hidden; }
-/* andere Spieler: kleine Karten in einer Reihe auf dem Tisch */
-#bjOthers { position: absolute; left: 4px; right: 4px; top: calc(var(--cw) * 1.4 + 68px); display: flex; justify-content: space-around; align-items: flex-start; }
-.bjo { position: relative; flex: 0 1 25%; min-width: 0; display: flex; flex-direction: column; align-items: center; gap: 4px; transition: opacity .3s; }
+/* andere Spieler: als eigene Plaetze am linken Tischrand (ab dem dritten auch rechts), mit Karten, Einsatz und wer dran ist */
+#bjOthers { position: absolute; inset: 0; pointer-events: none; }
+.bjside { position: absolute; top: calc(var(--cw) * 1.4 + 64px); width: 31%; max-width: 150px; display: flex; flex-direction: column; gap: 12px; }
+.bjside.l { left: 16px; align-items: flex-start; }
+.bjside.r { right: 16px; align-items: flex-end; }
+.bjo { position: relative; display: flex; flex-direction: column; align-items: flex-start; gap: 5px; max-width: 100%; padding: 6px 8px 7px; border-radius: 14px; background: rgba(0,0,0,.2); border: 1px solid rgba(236,231,218,.08); transition: opacity .3s, box-shadow .3s, border-color .3s; }
+.bjside.r .bjo { align-items: flex-end; }
 .bjo.out { opacity: .5; }
-.bjo .bjhands { display: flex; gap: 4px; min-height: 42px; align-items: flex-start; }
+.bjo.turn { border-color: transparent; box-shadow: 0 0 0 2px var(--brass), 0 0 18px rgba(224,170,74,.45); }
+.bjo .bjhands { display: flex; gap: 6px; min-height: calc(40px * 1.4); align-items: flex-start; }
+.bjo .bjhands:empty { display: none; }   /* beim Setzen noch keine Karten: Platz bleibt klein */
 .bjo .bjb { display: none; }
-.bjo .bjv { position: relative; z-index: 1; margin-top: -9px; }
 .bjo .bjh { display: flex; flex-direction: column; align-items: center; gap: 3px; }
-.bjo .bjc { --w: 30px; }
-.bjo.many .bjc { --w: 24px; }
-.bjo .card .pip, .bjo .card .corner.br { display: none; }
-.bjo .card .corner.tl { top: 50%; left: 50%; transform: translate(-50%, -50%); font-size: 1.25em; }
-.bjo .bjc .card + .card { margin-left: calc(var(--w) * -.35); }
-.bjo .bjv { font-size: 11px; padding: 1px 6px 2px; min-width: 24px; }
+.bjo .bjc { --w: 40px; }
+.bjo .bjc .card + .card { margin-left: calc(var(--w) * -.45); }
+.bjo .bjv { position: relative; z-index: 1; margin-top: -10px; font-size: 11px; padding: 1px 6px 2px; min-width: 24px; }
 .bjo .bjh.act .bjv { background: var(--brass); color: var(--brass-ink); border-color: transparent; }
+/* geteilte Haende: kleinere Karten, nur Wert und Farbe in der Mitte */
+.bjo.many .bjc { --w: 28px; }
+.bjo.many .bjhands { min-height: calc(28px * 1.4); gap: 4px; }
+.bjo.many .card .pip, .bjo.many .card .corner.br { display: none; }
+.bjo.many .card .corner.tl { top: 50%; left: 50%; transform: translate(-50%, -50%); font-size: 1.25em; }
+.bjo.many .bjc .card + .card { margin-left: calc(var(--w) * -.3); }
 .bjwho { display: flex; align-items: center; gap: 5px; max-width: 100%; padding: 2px 8px 2px 2px; border-radius: 999px; background: rgba(16,18,19,.88); border: 1px solid var(--line); }
 .bjwho .pav { width: 22px; height: 22px; font-size: 11px; }
 .bjo.turn .bjwho .pav { box-shadow: 0 0 0 2px var(--brass), 0 0 10px 2px rgba(224,170,74,.6); }
 .bjwho span { font: 700 11px var(--ui); overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+/* Einsatz des Mitspielers: Chips wachsen mit, waehrend er setzt */
+.bjbet { display: flex; align-items: flex-end; gap: 5px; min-height: 20px; }
+.bjbet .stack { zoom: .8; }
+.bjbet b { font: 800 12px var(--ui); font-variant-numeric: tabular-nums; text-shadow: 0 1px 3px rgba(0,0,0,.8); }
+.bjbet b:empty { display: none; }
+.bjbet.pop .stack { animation: pop .35s cubic-bezier(.2,.9,.3,1) both; }
 .bjsub { font: 600 11px var(--ui); color: rgba(236,231,218,.75); font-variant-numeric: tabular-nums; white-space: nowrap; text-shadow: 0 1px 3px rgba(0,0,0,.8); }
 .bjsub.ok { color: var(--brass); font-weight: 800; }
+.bjsub.turn { color: var(--brass); font-weight: 800; }
 /* eigene Haende */
 #bjMe { position: absolute; left: 0; right: 0; bottom: 30px; display: flex; justify-content: center; pointer-events: none; }
 #bjMe .bjhands { display: flex; gap: 12px; justify-content: center; align-items: flex-end; }
@@ -733,7 +748,7 @@ input.bprange[type=range]::-moz-range-thumb { width: 20px; height: 20px; border-
 #bjMe .bjr:empty { display: block; visibility: hidden; }
 #bjStage.solo .bjarc { top: max(calc(var(--cw) * 1.4 + 52px), 36%); }
 .bjo .bjr { display: none; }
-#bjStage:not(.solo) .bjarc { opacity: .4; }
+#bjStage:not(.solo) .bjarc { display: none; }   /* mit Mitspielern am Rand ist dort kein Platz fuer den Schriftzug */
 .bjsub.pos { color: #8fcf9a; font-weight: 800; }
 .bjsub.neg { color: #ff8a76; font-weight: 800; }
 /* Einsatzfeld vor dem eigenen Platz */
@@ -939,7 +954,7 @@ input.bprange[type=range]::-moz-range-thumb { width: 20px; height: 20px; border-
         <text class="b"><textPath href="#bjArcB" startOffset="50%" text-anchor="middle">Dealer zieht bis 16 · steht auf 17</textPath></text>
       </svg>
       <div id="bjDealer" aria-label="Dealer"><div class="bjc"></div><div class="bjv"></div></div>
-      <div id="bjOthers"></div>
+      <div id="bjOthers"><div class="bjside l"></div><div class="bjside r"></div></div>
       <div id="bjSpot" class="off"><div class="ring"></div><div class="stk"></div><b></b></div>
       <div id="bjMe"><div class="bjhands"></div></div>
       <div id="bjFly"></div>
@@ -3153,7 +3168,7 @@ input.bprange[type=range]::-moz-range-thumb { width: 20px; height: 20px; border-
       if (typeof rawP.color === 'string' && /^#[0-9a-f]{6}$/i.test(rawP.color)) PROF.color = rawP.color;
       else if (rawP.av >= 0 && rawP.av < AV.length) PROF.color = AV[rawP.av | 0];
       PROF.hands = Math.max(0, rawP.hands | 0); PROF.wins = Math.max(0, rawP.wins | 0);
-      if (typeof rawP.bank === 'number' && isFinite(rawP.bank)) PROF.bank = Math.max(P.REBUY, Math.round(rawP.bank));
+      if (typeof rawP.bank === 'number' && isFinite(rawP.bank)) PROF.bank = Math.max(0, Math.round(rawP.bank));
       if (typeof rawP.buyin === 'number' && isFinite(rawP.buyin)) PROF.buyin = Math.max(P.REBUY, Math.round(rawP.buyin));
       if (Array.isArray(rawP.log)) PROF.log = rawP.log.filter(function (e) {
         return Array.isArray(e) && e.length === 3 && e.every(function (x) { return typeof x === 'number' && isFinite(x) && x >= 0; });
@@ -4364,6 +4379,7 @@ input.bprange[type=range]::-moz-range-thumb { width: 20px; height: 20px; border-
   function $(s) { return document.querySelector(s); }
 
   var DECKS = 6, CUT = 78, MAX_HANDS = 4, MAX_SEATS = 5, TURN_MS = 25000, BET_MS = 15000;
+  var GIFT = 50;   // so viele Chips gibt es, wenn man pleite ist und auch im Guthaben nichts mehr hat
   var MIN_OPTS = [10, 25, 50];
   var PEER_PREFIX = 'pokerrunde-bj-';
 
@@ -4421,7 +4437,7 @@ input.bprange[type=range]::-moz-range-thumb { width: 20px; height: 20px; border-
   }
   function addSeat(id, p) {
     /* res: was der Spieler noch im Guthaben hat (nicht am Tisch), add: so viel hat er schon nachgeladen */
-    T.seats.push({ id: id, name: p.name, color: p.color, chips: p.chips, res: p.res || 0, add: 0, bet: 0, last: 0, ready: false, hands: [], cur: 0, inR: false, gone: false, gift: 0 });
+    T.seats.push({ id: id, name: p.name, color: p.color, chips: p.chips, res: p.res || 0, add: 0, bet: 0, pend: 0, last: 0, ready: false, hands: [], cur: 0, inR: false, gone: false, gift: 0 });
   }
   /* Chips aus dem Guthaben an den Tisch holen: liegen sofort bereit, auch mitten in der Runde */
   function hTop(id, v, r) {
@@ -4437,17 +4453,26 @@ input.bprange[type=range]::-moz-range-thumb { width: 20px; height: 20px; border-
     T.seats.forEach(function (s) {
       s.hands = []; s.cur = 0; s.inR = false; s.ready = false; s.gift = 0;
       /* pleite und auch im Guthaben nichts mehr: wie beim Poker gibt es wieder Chips zum Weiterspielen */
-      if (s.chips < T.min && s.chips + s.res < T.min) { s.gift = Math.max(PR.REBUY, T.min) - s.chips; s.chips += s.gift; }
+      if (s.chips < T.min && s.chips + s.res < T.min) { s.gift = Math.max(GIFT, T.min) - s.chips; s.chips += s.gift; }
       s.bet = Math.min(s.last || T.min, s.chips);
+      s.pend = s.bet >= T.min ? s.bet : 0;   // so belegt jeder seinen Einsatz vor, die anderen sehen ihn gleich
     });
     push();
+  }
+  /* Einsatz, den jemand gerade zusammenlegt (noch nicht bereit): fuer die Anzeige bei den anderen */
+  function hBet(id, a) {
+    var s = seatOf(id);
+    if (!s || s.gone || T.phase !== 'bet' || s.ready) return;
+    a = Math.max(0, Math.min(s.chips, Math.round(+a || 0)));
+    if (s.pend === a) return;
+    s.pend = a; push();
   }
   function hReady(id, amt) {
     var s = seatOf(id);
     if (!s || s.gone || T.phase !== 'bet' || s.ready) return;
     amt = Math.round(+amt || 0);
     if (!(amt >= T.min) || amt > s.chips) { push(); return; }
-    s.bet = amt; s.ready = true;
+    s.bet = amt; s.pend = amt; s.ready = true;
     checkDeal(); push();
   }
   /* alle bereit: sofort austeilen. Sonst warten die Bereiten hoechstens 15 Sekunden auf den Rest. */
@@ -4714,31 +4739,46 @@ input.bprange[type=range]::-moz-range-thumb { width: 20px; height: 20px; border-
     /* andere Spieler */
     var others = t.seats.filter(function (s) { return s.id !== me; });
     stage.classList.toggle('solo', !others.length);
-    var oh = $('#bjOthers');
-    while (oh.children.length > others.length) oh.removeChild(oh.lastChild);
+    /* die ersten beiden links am Rand, weitere rechts */
+    var cols = [$('#bjOthers .l'), $('#bjOthers .r')];
+    cols.forEach(function (col, c) { var n = c ? Math.max(0, others.length - 2) : Math.min(2, others.length); while (col.children.length > n) col.removeChild(col.lastChild); });
     others.forEach(function (s, i) {
-      var el = oh.children[i];
+      var col = cols[i < 2 ? 0 : 1], el = col.children[i < 2 ? i : i - 2];
       if (!el) {
         el = document.createElement('div'); el.className = 'bjo';
-        el.innerHTML = '<div class="bjhands"></div><div class="bjwho"><span class="pav"></span><span></span></div><div class="bjsub"></div>';
-        oh.appendChild(el);
+        el.innerHTML = '<div class="bjwho"><span class="pav"></span><span></span></div><div class="bjhands"></div><div class="bjbet"><span class="stk"></span><b></b></div><div class="bjsub"></div>';
+        col.appendChild(el);
       }
+      var turn = t.phase === 'play' && t.seats[t.turn] === s;
       var hs = el.querySelector('.bjhands');
-      s.hands.forEach(function (h, j) { fillHand(handBox(hs, j), h, t.phase === 'play' && t.seats[t.turn] === s && s.cur === j && s.hands.length > 1, true); });
+      s.hands.forEach(function (h, j) { fillHand(handBox(hs, j), h, turn && s.cur === j && s.hands.length > 1, true); });
       trimBoxes(hs, s.hands.length);
       el.classList.toggle('many', s.hands.length > 1);
       var av = el.querySelector('.pav'); av.style.setProperty('--av', s.color); av.textContent = (s.name.charAt(0) || '?').toUpperCase();
       el.querySelector('.bjwho span:last-child').textContent = s.name;
-      el.classList.toggle('turn', t.phase === 'play' && t.seats[t.turn] === s);
+      el.classList.toggle('turn', turn);
       el.classList.toggle('out', s.gone || (t.phase !== 'bet' && !s.inR));
+      /* Einsatz: beim Setzen live, danach was auf seinen Haenden liegt */
+      var amt = t.phase === 'bet' ? (s.ready ? s.bet : (s.pend | 0)) : s.inR ? s.hands.reduce(function (a, h) { return a + h.bet; }, 0) : 0;
+      var bt = el.querySelector('.bjbet'), key = s.id + ':' + amt;
+      if (bt._k !== key) {
+        if (bt._k && bt._k.split(':')[0] === s.id && amt > (+bt._k.split(':').pop() || 0) && !V.quiet) {
+          bt.classList.remove('pop'); void bt.offsetWidth; bt.classList.add('pop');
+          if (t.phase === 'bet') Snd.chip(1, 0);
+        }
+        bt._k = key;
+        bt.querySelector('.stk').innerHTML = amt ? PR.chipStack(amt) : '';
+        bt.querySelector('b').textContent = amt ? fmt(amt) : '';
+      }
       var sub = el.querySelector('.bjsub'), st = '';
       if (s.gone) st = 'weg';
-      else if (t.phase === 'bet') st = s.ready ? 'Bereit · ' + fmt(s.bet) : fmt(s.chips) + ' Chips';
+      else if (t.phase === 'bet') st = s.ready ? 'Bereit' : amt ? 'setzt …' : fmt(s.chips) + ' Chips';
       else if (!s.inR) st = 'setzt aus';
-      else st = 'Einsatz ' + fmt(s.hands.reduce(function (a, h) { return a + h.bet; }, 0));
+      else if (turn) st = 'ist dran';
+      else st = fmt(s.chips) + ' Chips';
       var net = t.phase === 'done' && s.inR ? s.hands.reduce(function (a, h) { return a + h.pay - h.bet; }, 0) : null;
       if (net !== null) st = net > 0 ? '+' + fmt(net) : net < 0 ? '−' + fmt(-net) : '±0';
-      sub.textContent = st; sub.classList.toggle('ok', t.phase === 'bet' && s.ready);
+      sub.textContent = st; sub.classList.toggle('ok', t.phase === 'bet' && s.ready); sub.classList.toggle('turn', turn);
       sub.classList.toggle('pos', net > 0); sub.classList.toggle('neg', net !== null && net < 0);
     });
 
@@ -4832,11 +4872,16 @@ input.bprange[type=range]::-moz-range-thumb { width: 20px; height: 20px; border-
       [].forEach.call(document.querySelectorAll('#bjActUI .btn'), function (b) { b.disabled = true; });   // bis der naechste Stand kommt
     } else hAct(ME, a);
   }
+  /* am Tisch mit Freunden sehen die anderen den Einsatz schon beim Setzen */
+  function betChanged() {
+    if (NB.role === 'guest') { try { NB.conn.send({ t: 'bet', a: myBet }); } catch (e) {} }
+    else if (NB.role === 'host') hBet(ME, myBet);
+  }
   function addChip(v) {
     var my = seatOf(ME);
     if (!T || T.phase !== 'bet' || !my || my.ready) return false;
     if (myBet + v > my.chips) return false;
-    myBet += v; Snd.chip(1, 0); view(T, ME); return true;
+    myBet += v; Snd.chip(1, 0); view(T, ME); betChanged(); return true;
   }
   /* Chips antippen oder ins Einsatzfeld ziehen */
   var spotEl = $('#bjSpot'), CD = null, dragAt = 0;
@@ -4885,7 +4930,7 @@ input.bprange[type=range]::-moz-range-thumb { width: 20px; height: 20px; border-
       addChip(+b.dataset.v);
     });
   });
-  $('#bjClear').addEventListener('click', function () { myBet = 0; if (T) view(T, ME); });
+  $('#bjClear').addEventListener('click', function () { myBet = 0; if (T) { view(T, ME); betChanged(); } });
   $('#bjDeal').addEventListener('click', function () { Snd.chip(2, 0); sendReady(); });
   $('#bjHit').addEventListener('click', function () { sendAct('hit'); });
   $('#bjStand').addEventListener('click', function () { Snd.knock(); sendAct('stand'); });
@@ -4895,7 +4940,7 @@ input.bprange[type=range]::-moz-range-thumb { width: 20px; height: 20px; border-
   /* ---------- Starten und Verlassen ---------- */
   function resetView() {
     CEL = {}; fly.innerHTML = '';
-    $('#bjDealer .bjc').innerHTML = ''; $('#bjOthers').innerHTML = ''; $('#bjMe .bjhands').innerHTML = '';
+    $('#bjDealer .bjc').innerHTML = ''; $('#bjOthers .l').innerHTML = ''; $('#bjOthers .r').innerHTML = ''; $('#bjMe .bjhands').innerHTML = '';
     V = { phase: '', round: -1, shuf: -1, sayN: -1, turnKey: '', doneKey: '', giftKey: '', betKey: '', brokeKey: '', quiet: true };
     myBet = 0; dlg = null; $('#bjChipDlg').hidden = true; $('#bjPause').hidden = true; $('#bjEnd').hidden = true; $('#bjToast').classList.remove('on');
   }
@@ -4969,9 +5014,9 @@ input.bprange[type=range]::-moz-range-thumb { width: 20px; height: 20px; border-
   function saveRoom() { try { localStorage.setItem('pr-bjroom', JSON.stringify(ROOM)); } catch (e) {} }
 
   /* ---------- Chips mitbringen und nachladen (wie beim Poker) ---------- */
-  function floorBank() { var P = PR.prof(); if (P.bank < PR.REBUY) { P.bank = PR.REBUY; PR.saveProf(); PR.renderBank(); } }
-  function maxBuy() { return Math.max(PR.REBUY, PR.prof().bank | 0); }
-  function minBuy() { return Math.min(PR.REBUY, maxBuy()); }
+  function floorBank() { var P = PR.prof(); if (P.bank < GIFT) { P.bank = GIFT; PR.saveProf(); PR.renderBank(); } }
+  function maxBuy() { return Math.max(GIFT, PR.prof().bank | 0); }
+  function minBuy() { return Math.min(GIFT, maxBuy()); }
   function maxTop() { return Math.max(0, BW | 0); }
   function minTop() { return Math.min(maxTop(), T ? T.min : 10); }
   function setBuy(v) { ROOM.buy = v; saveRoom(); }
@@ -5115,6 +5160,7 @@ input.bprange[type=range]::-moz-range-thumb { width: 20px; height: 20px; border-
         if (d.t === 'ready') hReady(conn.peer, d.a);
         else if (d.t === 'act') hAct(conn.peer, String(d.a));
         else if (d.t === 'add') hTop(conn.peer, d.a, d.r);
+        else if (d.t === 'bet') hBet(conn.peer, d.a);
         return;
       }
       if (d.t !== 'hello' || d.g !== 'bj') return;
@@ -5126,7 +5172,7 @@ input.bprange[type=range]::-moz-range-thumb { width: 20px; height: 20px; border-
       addSeat(conn.peer, cleanProf(d.p));
       bjToast(T.seats[T.seats.length - 1].name + ' sitzt mit am Tisch');
       Snd.ping();
-      if (T.phase === 'bet') { var s = seatOf(conn.peer); if (s.chips < T.min && s.chips + s.res < T.min) { s.gift = Math.max(PR.REBUY, T.min) - s.chips; s.chips += s.gift; } s.bet = Math.min(T.min, s.chips); checkDeal(); }
+      if (T.phase === 'bet') { var s = seatOf(conn.peer); if (s.chips < T.min && s.chips + s.res < T.min) { s.gift = Math.max(GIFT, T.min) - s.chips; s.chips += s.gift; } s.bet = Math.min(T.min, s.chips); s.pend = s.bet >= T.min ? s.bet : 0; checkDeal(); }
       push();
     });
     function gone() {
