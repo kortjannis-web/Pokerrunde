@@ -1281,11 +1281,15 @@ input.bprange[type=range]::-moz-range-thumb { width: 20px; height: 20px; border-
           var three = function () { return raiseTo(S.currentBet * (2.2 + Math.random() * 0.4), 'raise'); };
           if (pct <= 0.04) return (canRaise && Math.random() < 0.55) ? three() : CALL;
           if (pct <= 0.09 + L * 0.5) return (canRaise && !big && Math.random() < 0.15) ? three() : CALL;
-          var ct = (R <= 3.3 ? 0.36 : R <= 5 ? 0.27 : 0.17) + L;
+          var ct = (R <= 3.3 ? 0.36 : R <= 5 ? 0.27 : R <= 8 ? 0.17 : R <= 15 ? 0.11 : 0.08) + L;
           if (pos === 'BTN') ct += 0.06;
           if (pos === 'BB' && R <= 3.6) ct += 0.14;
           if (pos === 'SB') ct -= 0.03;
           if (hu) ct += 0.15;
+          // Wer schon vor mir mitgegangen ist, macht das Mitgehen enger; wer oft erhoeht, wird eher fuer einen Bluff gehalten
+          ct -= 0.04 * live().filter(function (q) { return q !== p && q.pfCall; }).length;
+          var raiser = live().filter(function (q) { return q !== p && q.pfRaise; })[0];
+          if (raiser) ct += Math.min(0.06, Math.max(0, (pfr(raiser) - 0.25) * 0.25)) + Math.min(0.03, raiser.bluffs * 0.01);
           if (big) ct = Math.min(ct, 0.1);
           if (pct <= ct) return CALL;
           if (canRaise && !big && pct <= 0.35 && (pos === 'BTN' || pos === 'SB' || pos === 'CO') && Math.random() < pers.agg * 0.02) return three();
@@ -1300,8 +1304,16 @@ input.bprange[type=range]::-moz-range-thumb { width: 20px; height: 20px; border-
       /* ----- nach dem Flop ----- */
       var opps = live().filter(function (q) { return q !== p; });
       var nOpp = Math.max(1, opps.length);
-      var eq = equity(p.hole, S.board, opps.map(oppCap), H.sims) + (Math.random() - 0.5) * 0.05;
       var potNow = totalPot(), street = S.board.length;
+      // Wer setzt? Je groesser der Einsatz im Verhaeltnis zum Pot, desto staerker wird seine Hand eingeschaetzt.
+      var bettor = null;
+      if (toCall > 0) opps.forEach(function (q) { if (q.bet === S.currentBet && (!bettor || q.total > bettor.total)) bettor = q; });
+      var ratio = bettor ? S.currentBet / Math.max(S.bb, potNow - roundBets()) : 0;
+      var eq = equity(p.hole, S.board, opps.map(function (q) {
+        var c = oppCap(q);
+        if (q === bettor && ratio > 0.5) c *= Math.max(0.55, 1 - (ratio - 0.5) * 0.3) + (street === 5 ? 0.05 : 0);
+        return Math.min(1, c);
+      }), H.sims) + (Math.random() - 0.5) * 0.05;
       var draw = drawInfo(p.hole, S.board);
       function sized(f) {
         var to = S.currentBet + Math.max(S.lastRaise, round10((potNow + toCall) * f));
@@ -1324,18 +1336,21 @@ input.bprange[type=range]::-moz-range-thumb { width: 20px; height: 20px; border-
         return CHECK;
       }
       var odds = toCall / (potNow + toCall);
-      var need = odds + 0.03 + (pers.tight - 0.5) * 0.1 - pers.station;
+      var need = odds + 0.05 + (pers.tight - 0.5) * 0.1 - pers.station;
       if (draw) need -= 0.05;
-      // Wer setzt? Wer oft bettet oder schon beim Bluffen erwischt wurde, wird weniger respektiert.
-      var bettor = null;
-      opps.forEach(function (q) { if (q.bet === S.currentBet && (!bettor || q.total > bettor.total)) bettor = q; });
+      // Wer oft bettet oder schon beim Bluffen erwischt wurde, wird weniger respektiert.
       var bAf = bettor ? af(bettor) : 0.4;
       var susp = bettor ? Math.min(0.045, Math.max(0, (bAf - 0.4) * 0.2)) + Math.min(0.03, bettor.bluffs * 0.015) : 0;
       need -= susp;
-      if (eq < need && eq >= need - 0.1 && odds <= 0.42 && Math.random() < Math.min(0.5, 0.2 + (bAf - 0.4) * 0.4 + pers.station)) return CALL;
-      var small = toCall <= S.bb * 3 || toCall <= p.chips * 0.07 || odds < 0.2;
-      if (small) need -= 0.08;
-      if (eq >= need || (small && eq > 0.1 && Math.random() < 0.85) || (toCall <= potNow * 0.05 && eq > 0.15)) {
+      // Ist schon jemand mitgegangen, braucht es mehr: der Bluff-Verdacht hilft dann kaum noch
+      var callers = opps.filter(function (q) { return q !== bettor && q.acted && q.bet === S.currentBet; }).length;
+      need += callers * 0.05;
+      var hero = Math.min(0.5, 0.2 + (bAf - 0.4) * 0.4 + pers.station) * (1 - odds * 1.4) * (callers ? 0.3 : 1);
+      if (eq < need && eq >= need - 0.1 && odds <= 0.42 && Math.random() < hero) return CALL;
+      // Klein ist ein Einsatz nur im Verhaeltnis zum Pot – ein potgrosser Einsatz ist nie "klein", auch bei tiefen Stacks
+      var small = odds < 0.2 || toCall <= S.bb * 2;
+      if (small) need -= 0.06;
+      if (eq >= need || (small && eq > 0.15 && eq >= need - 0.1 && Math.random() < (callers ? 0.35 : 0.6)) || (toCall <= potNow * 0.05 && eq > 0.15)) {
         var rt = Math.max(need + 0.2, 0.68);
         if (canRaise && eq >= rt && Math.random() < 0.3 + pers.agg * 0.55) return bet(0.7 + Math.random() * 0.4);
         return CALL;
@@ -1346,15 +1361,15 @@ input.bprange[type=range]::-moz-range-thumb { width: 20px; height: 20px; border-
     }
 
 
-    /* Vor dem Flop passt niemand ohne Grund: nur wirklich schlechte Haende (Perzentil >= .85,
-       z. B. 7-2) und auch die nur manchmal. Gegen sehr grosse Einsaetze bleibt Passen erlaubt. */
+    /* Vor dem Flop passt niemand ohne Grund, solange es billig ist: nur wirklich schlechte Haende
+       (Perzentil >= .85, z. B. 7-2) und auch die nur manchmal. Gegen eine echte Erhoehung entscheidet die Hand. */
     function botDecide(p) {
       var a = decideRaw(p);
       if (S.board.length !== 0 || a.type !== 'fold') return a;
       var toCall = Math.max(0, S.currentBet - p.bet);
       if (toCall === 0) return act('check', 'check');
       var pct = preflopPct(p.hole);
-      if (toCall >= 0.35 * p.chips && pct > 0.6) return a;
+      if (toCall > S.bb) return a;
       if (pct >= 0.85) {
         var pf = Math.min(0.65, 0.2 + (pct - 0.85) * 2.5);
         if (Math.random() < pf) return a;
