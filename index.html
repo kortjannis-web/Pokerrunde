@@ -607,6 +607,54 @@ input.bprange[type=range]::-moz-range-thumb { width: 20px; height: 20px; border-
 .bjlogo i:last-child { transform: rotate(10deg) translate(-5px, -2px); }
 .bjlogo b { align-self: center; margin-left: 12px; font: 800 30px/1 var(--display); color: var(--brass); }
 
+/* ---------- Freunde: Spielercode, wer ist online, Einladungen ---------- */
+.menucard .btn { position: relative; }
+.odot { position: absolute; top: 9px; right: 11px; width: 11px; height: 11px; border-radius: 50%; background: #4fc46a; box-shadow: 0 0 0 2px var(--bg2), 0 0 10px rgba(79,196,106,.8); animation: odot 2.4s ease-in-out infinite; }
+@keyframes odot { 0%, 100% { box-shadow: 0 0 0 2px var(--bg2), 0 0 6px rgba(79,196,106,.5); } 50% { box-shadow: 0 0 0 2px var(--bg2), 0 0 14px rgba(79,196,106,.95); } }
+.codebox .code.pcode { font-size: 38px; letter-spacing: .14em; }
+.fsec { display: flex; flex-direction: column; gap: 8px; margin-top: 6px; }
+.fsec .psec { display: flex; justify-content: space-between; align-items: baseline; }
+.fsec .psec span { color: #4fc46a; letter-spacing: .06em; }
+.flist, .finv .flist { display: flex; flex-direction: column; gap: 8px; }
+.fl { display: flex; flex-direction: column; border-radius: 14px; background: var(--bg2); border: 1px solid var(--line); }
+.flr { display: flex; align-items: center; gap: 12px; padding: 9px 10px 9px 10px; min-height: 58px; }
+.fl .pav { position: relative; }
+.fl .pav i { position: absolute; right: -2px; bottom: -2px; width: 12px; height: 12px; border-radius: 50%; background: #5d6268; box-shadow: 0 0 0 2.5px var(--bg2); }
+.fl.on .pav i { background: #4fc46a; }
+.fln { flex: 1; min-width: 0; display: flex; flex-direction: column; gap: 2px; }
+.fln b { font: 700 16px var(--ui); overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.fln small { color: var(--muted); font: 500 12px var(--ui); overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.fl.on .fln small { color: #8fcf9a; }
+.fl .btn { height: 38px; padding: 0 14px; font-size: 14px; flex: none; }
+.flm { width: 34px; height: 34px; border-radius: 50%; border: 0; background: transparent; color: var(--muted); padding: 0; display: grid; place-items: center; flex: none; }
+.flm svg { width: 18px; height: 18px; }
+.flx { display: none; justify-content: flex-end; gap: 8px; padding: 0 10px 10px; }
+.fl.open .flx { display: flex; }
+.flx .btn { color: #ff8a76; }
+.fadd { display: flex; gap: 8px; }
+.fadd input { flex: 1; min-width: 0; height: 48px; border-radius: 12px; background: var(--bg2); border: 1px solid var(--line); color: var(--brass); font: 800 20px var(--display); letter-spacing: .14em; text-transform: uppercase; padding: 0 12px; outline: none; }
+.fadd input::placeholder { color: rgba(236,231,218,.3); font: 600 14px var(--ui); letter-spacing: 0; text-transform: none; }
+.fadd input:focus { border-color: var(--brass); }
+.fadd .btn { height: 48px; padding: 0 16px; font-size: 14px; }
+.fnote { margin: 0; color: var(--muted); font: 500 13px/1.45 var(--ui); }
+.fnote.warn { color: var(--brass); }
+.fempty { padding: 14px; border-radius: 14px; border: 1px dashed var(--line); color: var(--muted); font: 500 13px/1.45 var(--ui); text-align: center; }
+.finv { text-align: left; }
+.finv:empty { display: none; }
+.finv .psec { margin: 4px 0 8px; }
+#pause .finv .fl, #bjPause .finv .fl { background: var(--bg); }
+#pause .finv .fl .pav i, #bjPause .finv .fl .pav i { box-shadow: 0 0 0 2.5px var(--bg); }
+#invBan { position: absolute; left: 0; right: 0; top: max(10px, env(safe-area-inset-top)); z-index: 96; display: flex; align-items: center; gap: 10px; padding: 10px 8px 10px 10px; border-radius: 16px; background: var(--bg2); border: 1px solid rgba(224,170,74,.55); box-shadow: 0 14px 34px rgba(0,0,0,.6); animation: ibin .35s cubic-bezier(.2,.9,.3,1); }
+@keyframes ibin { from { transform: translateY(-20px); opacity: 0; } to { transform: none; opacity: 1; } }
+.ibtxt { flex: 1; min-width: 0; display: flex; flex-direction: column; gap: 2px; font: 500 13px/1.3 var(--ui); color: var(--muted); }
+.ibtxt b { color: var(--ink); font: 700 15px var(--ui); overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+#invBan .btn { height: 40px; padding: 0 14px; font-size: 14px; flex: none; }
+#invBan .btn[hidden] { display: none; }
+.ibx { width: 32px; height: 32px; border: 0; border-radius: 50%; background: transparent; color: var(--muted); padding: 0; display: grid; place-items: center; flex: none; }
+.ibx svg { width: 16px; height: 16px; }
+#fToast { position: absolute; left: 50%; bottom: max(24px, env(safe-area-inset-bottom)); z-index: 97; transform: translate(-50%, 12px); padding: 9px 16px; border-radius: 999px; background: var(--brass); color: var(--brass-ink); font: 800 13px var(--ui); opacity: 0; pointer-events: none; transition: opacity .3s, transform .3s; white-space: nowrap; max-width: calc(100% - 20px); overflow: hidden; text-overflow: ellipsis; box-shadow: 0 6px 18px rgba(0,0,0,.5); }
+#fToast.on { opacity: 1; transform: translate(-50%, 0); }
+
 /* ---------- Blackjack: Farben (Weinrot statt Gruen) ---------- */
 :root { --bj1: #8b3442; --bj2: #5a1b26; --bj3: #2e0d13; }
 #bj { position: absolute; inset: 0; z-index: 58; display: flex; flex-direction: column; background: radial-gradient(120% 70% at 50% 30%, #2b2224, var(--bg) 70%); background-color: var(--bg); }
@@ -802,6 +850,7 @@ input.bprange[type=range]::-moz-range-thumb { width: 20px; height: 20px; border-
           </div>
         </div>
         <p class="frnote" id="pInvNote">Wer jetzt beitritt, sitzt ab der nächsten Hand mit am Tisch.</p>
+        <div class="finv" data-fi></div>
       </div>
       <div class="psettings" id="pauseSet">
         <div class="psec">Einstellungen</div>
@@ -850,11 +899,11 @@ input.bprange[type=range]::-moz-range-thumb { width: 20px; height: 20px; border-
       <div class="mbtns">
         <div class="mgrp" id="mPoker">
           <button class="btn primary wide" id="bPlay" type="button">Gegen Bots spielen</button>
-          <button class="btn wide" id="bFriends" type="button">Mit Freunden spielen</button>
+          <button class="btn wide" id="bFriends" type="button">Mit Freunden spielen<i class="odot" hidden aria-hidden="true"></i></button>
         </div>
         <div class="mgrp off" id="mBj">
           <button class="btn primary wide" id="bjPlay" type="button">Gegen den Dealer spielen</button>
-          <button class="btn wide" id="bjFriends" type="button">Mit Freunden spielen</button>
+          <button class="btn wide" id="bjFriends" type="button">Mit Freunden spielen<i class="odot" hidden aria-hidden="true"></i></button>
         </div>
       </div>
     </div>
@@ -917,6 +966,7 @@ input.bprange[type=range]::-moz-range-thumb { width: 20px; height: 20px; border-
               <a class="btn" id="bjPWa" href="https://wa.me/" target="_blank" rel="noopener">WhatsApp</a>
             </div>
           </div>
+          <div class="finv" data-fi></div>
         </div>
         <button class="btn primary wide" id="bjResume" type="button">Weiterspielen</button>
         <button class="btn wide" id="bjMenu" type="button" style="margin-top:10px">Zum Hauptmenü</button>
@@ -941,6 +991,7 @@ input.bprange[type=range]::-moz-range-thumb { width: 20px; height: 20px; border-
         <button class="frcard hl" id="bjfCreate" type="button"><b>Tisch eröffnen</b><span>Du bekommst einen Code. Freunde können jederzeit dazukommen.</span></button>
         <button class="frcard" id="bjfJoin" type="button"><b>Tisch beitreten</b><span>Gib den Code ein, den dir ein Freund geschickt hat.</span></button>
         <p class="frnote warn" id="bjfMsg" hidden></p>
+        <div class="fsec" data-fl></div>
       </div>
       <div class="frview" id="bjfCreateV" hidden>
         <div class="codebox">
@@ -981,6 +1032,7 @@ input.bprange[type=range]::-moz-range-thumb { width: 20px; height: 20px; border-
         <button class="frcard hl" id="frCreate" type="button"><b>Tisch erstellen</b><span>Du bekommst einen Code, den du deinen Freunden schickst.</span></button>
         <button class="frcard" id="frJoin" type="button"><b>Tisch beitreten</b><span>Gib den Code ein, den dir ein Freund geschickt hat.</span></button>
         <p class="frnote warn" id="frMainMsg" hidden></p>
+        <div class="fsec" data-fl></div>
       </div>
 
       <div class="frview" id="frCreateV" hidden>
@@ -1038,6 +1090,7 @@ input.bprange[type=range]::-moz-range-thumb { width: 20px; height: 20px; border-
           <div class="psec" id="lbPlTitle">Spieler</div>
           <div class="plist" id="lbPlayers"></div>
         </div>
+        <div class="finv" data-fi></div>
         <p class="frnote" id="lbWait"></p>
         <button class="btn primary wide" id="lbStart" type="button" disabled>Spiel starten</button>
         <button class="btn wide" id="lbLeave" type="button">Tisch schließen</button>
@@ -1097,6 +1150,17 @@ input.bprange[type=range]::-moz-range-thumb { width: 20px; height: 20px; border-
         <input id="pName" type="text" maxlength="14" autocomplete="off" placeholder="Dein Name">
       </div>
       <div>
+        <div class="psec" style="margin-bottom:8px">Dein Spielercode</div>
+        <div class="codebox">
+          <div class="code pcode" id="myCode">------</div>
+          <div class="codebtns">
+            <button class="btn" id="myCodeCopy" type="button">Code kopieren</button>
+            <a class="btn" id="myCodeWa" href="https://wa.me/" target="_blank" rel="noopener">WhatsApp</a>
+          </div>
+          <div class="frhint" style="margin-top:0;text-align:center">Gib deinen Freunden diesen Code. Wer ihn unter „Mit Freunden spielen“ einträgt, ist dein Freund und sieht, wann du online bist.</div>
+        </div>
+      </div>
+      <div>
         <div class="psec" style="margin-bottom:8px">Statistik</div>
         <div class="pstats">
           <div class="pstat"><b id="stHands">0</b><span>Hände</span></div>
@@ -1126,6 +1190,13 @@ input.bprange[type=range]::-moz-range-thumb { width: 20px; height: 20px; border-
         </div>
       </div>
     </div>
+  </div>
+
+  <div id="invBan" hidden role="alert">
+    <span class="pav" id="ibAv"></span>
+    <div class="ibtxt"><b id="ibName"></b><span id="ibText"></span></div>
+    <button class="btn primary" id="ibGo" type="button">Beitreten</button>
+    <button class="ibx" id="ibX" type="button" aria-label="Einladung schließen"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" aria-hidden="true"><path d="M6 6l12 12M18 6L6 18"/></svg></button>
   </div>
 
   <div id="end" hidden>
@@ -4239,7 +4310,10 @@ input.bprange[type=range]::-moz-range-thumb { width: 20px; height: 20px; border-
     Snd: Snd, fmt: fmt, REBUY: P.REBUY, SITE_URL: SITE_URL, AV: AV,
     prof: function () { return PROF; }, saveProf: saveProf, renderBank: renderBank, profName: profName,
     cardEl: cardEl, setFace: setFace, chipStack: chipStack, seg: seg,
-    newCode: newCode, cleanCode: cleanCode, netAvail: netAvail, peerOpts: peerOpts, MSG_NOLIB: MSG_NOLIB
+    newCode: newCode, cleanCode: cleanCode, netAvail: netAvail, peerOpts: peerOpts, MSG_NOLIB: MSG_NOLIB,
+    /* fuer die Freundesliste: wo bin ich gerade (Menue, Bots, Online-Tisch mit Code) */
+    poker: function () { return { role: NET.role, code: NET.code, playing: playing }; },
+    pokerJoin: function (code) { $('#profile').hidden = true; $('#pview').hidden = true; openFriends('join', code); }
   };
 })();
 </script>
@@ -5038,6 +5112,423 @@ input.bprange[type=range]::-moz-range-thumb { width: 20px; height: 20px; border-
   /* Update-Pruefung: nicht mitten in einer Blackjack-Runde oder an einem offenen Tisch neu laden */
   var idle = window.prIdle;
   window.prIdle = function () { return (!idle || idle()) && bj.hidden && !NB.peer; };
+  /* fuer die Freundesliste */
+  window.BJ = {
+    state: function () { return { on: !bj.hidden, role: NB.role, code: NB.code }; },
+    join: function (code) { $('#profile').hidden = true; $('#friends').hidden = true; setPage(1, false); openFriends('join', code); }
+  };
+})();
+</script>
+
+<script>
+/* Freunde: jeder hat einen festen Spielercode (steht im Profil). Wer den Code eines anderen eintraegt,
+   ist mit ihm befreundet (gilt fuer beide). Solange die Seite offen ist, meldet sich jeder unter
+   "pokerrunde-u-<code>" beim Vermittlungsserver an. Zu Freunden, die gerade da sind, bleibt eine direkte
+   Verbindung offen: darueber laufen Name, Farbe, wo man gerade ist (Menue, Pokertisch, Blackjack-Tisch)
+   und Einladungen an den eigenen Tisch. Ist jemand nicht erreichbar, gilt er als offline. */
+(function () {
+  'use strict';
+  var PR = window.PR;
+  if (!PR) return;
+  var Snd = PR.Snd;
+  function $(s) { return document.querySelector(s); }
+  function all(s) { return [].slice.call(document.querySelectorAll(s)); }
+
+  var PREFIX = 'pokerrunde-u-', CHARS = 'ABCDEFGHJKMNPQRSTUVWXYZ23456789', MAX_FRIENDS = 50;
+  var RETRY_MS = 40000, PING_MS = 15000, DEAD_MS = 45000;
+
+  /* ---------- eigener Spielercode (einmal erzeugt, bleibt fuer immer) ---------- */
+  var MY = '';
+  try { MY = localStorage.getItem('pr-pcode') || ''; } catch (e) {}
+  if (!/^[A-Z2-9]{6}$/.test(MY)) {
+    var a = new Uint8Array(6);
+    try { window.crypto.getRandomValues(a); } catch (e) { for (var i = 0; i < 6; i++) a[i] = Math.floor(Math.random() * 256); }
+    MY = ''; for (var j = 0; j < 6; j++) MY += CHARS[a[j] % CHARS.length];
+    try { localStorage.setItem('pr-pcode', MY); } catch (e) {}
+  }
+  function cleanPCode(v) { return String(v || '').toUpperCase().replace(/[^A-Z0-9]/g, '').slice(0, 6); }
+  function idOf(code) { return PREFIX + code.toLowerCase(); }
+  function codeOf(peerId) { var m = /^pokerrunde-u-([a-z0-9]{6})$/.exec(String(peerId || '')); return m ? m[1].toUpperCase() : ''; }
+  function inviteLink() { return PR.SITE_URL + '#f-' + MY; }
+
+  /* ---------- Freundesliste (gespeichert) und Verbindungen (nur zur Laufzeit) ---------- */
+  var FR = [];   // { code, name, color, pending: true = selbst hinzugefuegt, der andere weiss es noch nicht }
+  try {
+    var raw = JSON.parse(localStorage.getItem('pr-friends') || '[]');
+    if (Array.isArray(raw)) raw.forEach(function (f) {
+      if (f && /^[A-Z2-9]{6}$/.test(f.code) && f.code !== MY && !friend(f.code)) FR.push(cleanFriend(f));
+    });
+  } catch (e) {}
+  function cleanFriend(f) {
+    var nm = String(f.name == null ? '' : f.name).slice(0, 14).trim();
+    return { code: f.code, name: nm, color: (typeof f.color === 'string' && /^#[0-9a-f]{6}$/i.test(f.color)) ? f.color : PR.AV[0], pending: !!f.pending };
+  }
+  function friend(code) { for (var i = 0; i < FR.length; i++) if (FR[i].code === code) return FR[i]; return null; }
+  function saveFR() { try { localStorage.setItem('pr-friends', JSON.stringify(FR.slice(0, MAX_FRIENDS))); } catch (e) {} }
+  var LIVE = {};   // code -> { conn, try: Verbindungsversuch, on, st, last, next, inv }
+  function live(code) { return LIVE[code] || (LIVE[code] = { conn: null, try: null, on: false, st: null, last: 0, next: 0, inv: 0 }); }
+  function isOn(code) { var L = LIVE[code]; return !!(L && L.on && L.conn && L.conn.open); }
+  function onlineCount() { return FR.filter(function (f) { return isOn(f.code); }).length; }
+
+  /* ---------- wo bin ich gerade? ---------- */
+  function myStatus() {
+    var b = window.BJ ? window.BJ.state() : {}, n = PR.poker();
+    if (b.on) return { g: 'bj', code: b.code || '' };
+    if (n.role) return { g: 'poker', code: n.code || '' };
+    if (n.playing) return { g: 'poker', code: '' };
+    return { g: 'menu', code: '' };
+  }
+  function cleanSt(s) {
+    s = (s && typeof s === 'object') ? s : {};
+    return { g: s.g === 'poker' || s.g === 'bj' ? s.g : 'menu', code: typeof s.code === 'string' && /^[A-Z2-9]{5}$/.test(s.code) ? s.code : '' };
+  }
+  function stText(st) {
+    if (!st) return 'Online';
+    if (st.g === 'bj') return st.code ? 'Am Blackjack-Tisch' : 'Spielt Blackjack';
+    if (st.g === 'poker') return st.code ? 'Am Pokertisch' : 'Spielt Poker gegen Bots';
+    return 'Online';
+  }
+  function myPub() { var P = PR.prof(); return { name: PR.profName(), color: P.color }; }
+
+  /* ---------- Vermittlung ---------- */
+  var peer = null, startT = 0, alive = false;
+  function start() {
+    clearTimeout(startT);
+    if (!PR.netAvail()) return;
+    if (peer && !peer.destroyed) { if (peer.disconnected) { try { peer.reconnect(); } catch (e) {} } return; }
+    var p;
+    try { p = new window.Peer(idOf(MY), PR.peerOpts()); } catch (e) { startT = setTimeout(start, 30000); return; }
+    peer = p; alive = false;
+    p.on('open', function () { if (peer !== p) return; alive = true; poll(true); });
+    p.on('connection', function (c) { if (peer === p) incoming(c); });
+    p.on('disconnected', function () { if (peer === p) setTimeout(function () { if (peer === p && !p.destroyed) { try { p.reconnect(); } catch (e) {} } }, 3000); });
+    p.on('close', function () { if (peer === p) { peer = null; alive = false; dropAll(); startT = setTimeout(start, 20000); } });
+    p.on('error', function (err) {
+      if (peer !== p) return;
+      var type = err && err.type;
+      if (type === 'peer-unavailable') {
+        var m = /Could not connect to peer (\S+)/.exec(err.message || ''), code = m ? codeOf(m[1]) : '';
+        if (code) failed(code);
+        return;
+      }
+      /* Code schon belegt (Seite in einem zweiten Fenster offen) oder Server weg: spaeter nochmal */
+      if (type === 'unavailable-id' || type === 'server-error' || type === 'socket-error' || type === 'socket-closed' || type === 'network' || type === 'browser-incompatible') {
+        peer = null; alive = false; dropAll(); try { p.destroy(); } catch (e) {}
+        startT = setTimeout(start, type === 'unavailable-id' ? 60000 : 25000);
+      }
+    });
+  }
+  function dropAll() { Object.keys(LIVE).forEach(function (c) { var L = LIVE[c]; L.on = false; L.conn = null; L.try = null; }); changed(); }
+  function failed(code) {
+    var L = live(code);
+    if (L.try) { try { L.try.close(); } catch (e) {} }
+    L.try = null; L.next = Date.now() + RETRY_MS;
+  }
+  /* Freunde ohne Verbindung regelmaessig anklopfen */
+  function poll(now) {
+    if (!peer || !alive || peer.disconnected || document.hidden) return;
+    var t = Date.now();
+    FR.forEach(function (f) {
+      var L = live(f.code);
+      if ((L.conn && L.conn.open) || L.try) return;
+      if (!now && t < L.next) return;
+      dial(f.code);
+    });
+  }
+  function dial(code) {
+    var L = live(code), c;
+    try { c = peer.connect(idOf(code), { serialization: 'json', reliable: true }); } catch (e) { L.next = Date.now() + RETRY_MS; return; }
+    if (!c) { L.next = Date.now() + RETRY_MS; return; }
+    L.try = c;
+    var to = setTimeout(function () { if (L.try === c) failed(code); }, 15000);
+    c.on('open', function () { clearTimeout(to); if (L.try === c) L.try = null; attach(code, c, true); });
+    wire(code, c);
+  }
+  function incoming(c) {
+    var code = codeOf(c.peer);
+    if (!code || code === MY) { try { c.close(); } catch (e) {} return; }
+    c.on('open', function () { attach(code, c, false); });
+    wire(code, c);
+  }
+  /* Beide Seiten koennen gleichzeitig anklopfen. Dann gilt die Verbindung, die der kleinere Code aufgebaut hat. */
+  function attach(code, c, mine) {
+    var L = live(code);
+    if (L.conn && L.conn !== c && L.conn.open) {
+      var canon = mine ? MY < code : code < MY;
+      if (!canon) { try { c.close(); } catch (e) {} return; }
+      var old = L.conn; L.conn = c; try { old.close(); } catch (e) {}
+    } else L.conn = c;
+    L.last = Date.now();
+    var f = friend(code);
+    send(c, { t: 'hi', p: myPub(), s: lastSt || myStatus(), add: !!(f && f.pending) });
+  }
+  function wire(code, c) {
+    c.on('data', function (d) { if (d && typeof d === 'object') msg(code, c, d); });
+    function gone() {
+      var L = live(code);
+      if (L.try === c) { L.try = null; L.next = Date.now() + RETRY_MS; }
+      if (L.conn === c) { L.conn = null; L.on = false; L.next = Date.now() + 5000; changed(); }
+    }
+    c.on('close', gone); c.on('error', gone);
+  }
+  function send(c, m) { try { if (c && c.open) c.send(m); } catch (e) {} }
+  function msg(code, c, d) {
+    var L = live(code);
+    if (L.conn !== c) return;
+    L.last = Date.now();
+    var f = friend(code);
+    if (d.t === 'hi') {
+      if (!f) {
+        /* jemand hat meinen Code eingetragen: dann sind wir jetzt befreundet. Sonst (von mir entfernt): abmelden. */
+        if (d.add && FR.length < MAX_FRIENDS) { f = cleanFriend({ code: code, name: d.p && d.p.name, color: d.p && d.p.color }); FR.push(f); toast((f.name || code) + ' ist jetzt dein Freund'); Snd.ping(); }
+        else { send(c, { t: 'rm' }); setTimeout(function () { try { c.close(); } catch (e) {} }, 300); return; }
+      }
+      var g = cleanFriend({ code: code, name: d.p && d.p.name, color: d.p && d.p.color });
+      if (g.name) f.name = g.name;
+      f.color = g.color;
+      if (f.pending) { f.pending = false; toast((f.name || code) + ' ist jetzt dein Freund'); }
+      saveFR();
+      L.on = true; L.st = cleanSt(d.s);
+      changed();
+    } else if (d.t === 'bye') {
+      L.conn = null; L.on = false; L.next = Date.now() + 5000; try { c.close(); } catch (e) {} changed();
+    } else if (!f) return;
+    else if (d.t === 'st') {
+      L.st = cleanSt(d.s);
+      if (d.p) { var h = cleanFriend({ code: code, name: d.p.name, color: d.p.color }); if (h.name) f.name = h.name; f.color = h.color; saveFR(); }
+      changed();
+    } else if (d.t === 'inv') {
+      var st = cleanSt({ g: d.g, code: d.code });
+      if (st.code && st.g !== 'menu') showInvite(f, st);
+    } else if (d.t === 'rm') {
+      removeFriend(code, false);
+    }
+  }
+  /* Lebenszeichen: wer 45 Sekunden nichts schickt (Handy gesperrt, App zu), gilt als offline */
+  setInterval(function () {
+    var t = Date.now();
+    Object.keys(LIVE).forEach(function (code) {
+      var L = LIVE[code];
+      if (!L.conn || !L.conn.open) return;
+      if (t - L.last > DEAD_MS) { var c = L.conn; L.conn = null; L.on = false; L.next = t + 5000; try { c.close(); } catch (e) {} changed(); return; }
+      send(L.conn, { t: 'ping' });
+    });
+  }, PING_MS);
+  setInterval(function () { poll(false); }, 5000);
+  document.addEventListener('visibilitychange', function () {
+    if (document.hidden) return;
+    if (!peer || peer.destroyed) start(); else if (peer.disconnected) { try { peer.reconnect(); } catch (e) {} }
+    poll(true);
+  });
+
+  /* App wird geschlossen: Freunde sehen sofort "Offline" statt erst nach 45 Sekunden */
+  window.addEventListener('pagehide', function () {
+    Object.keys(LIVE).forEach(function (code) { var L = LIVE[code]; if (L.conn && L.conn.open) send(L.conn, { t: 'bye' }); });
+    var p = peer; peer = null; alive = false;
+    if (p) setTimeout(function () { try { p.destroy(); } catch (e) {} }, 0);
+  });
+  window.addEventListener('pageshow', function (e) { if (e.persisted) start(); });
+
+  /* eigenen Stand (Name, Farbe, Tisch) an alle Freunde weitergeben, sobald er sich aendert */
+  var lastSt = null, lastKey = '';
+  setInterval(function () {
+    var st = myStatus(), p = myPub(), k = JSON.stringify([st, p]);
+    if (k === lastKey) return;
+    lastKey = k; lastSt = st;
+    Object.keys(LIVE).forEach(function (code) { var L = LIVE[code]; if (L.on) send(L.conn, { t: 'st', s: st, p: p }); });
+    changed();
+  }, 1500);
+
+  /* ---------- Freunde hinzufuegen / entfernen ---------- */
+  function addFriend(code) {
+    code = cleanPCode(code);
+    if (code.length !== 6) return 'Ein Spielercode hat 6 Zeichen.';
+    if (code === MY) return 'Das ist dein eigener Spielercode.';
+    if (friend(code)) return 'Ihr seid schon befreundet.';
+    if (FR.length >= MAX_FRIENDS) return 'Du hast schon ' + MAX_FRIENDS + ' Freunde.';
+    FR.push({ code: code, name: '', color: PR.AV[0], pending: true }); saveFR();
+    var L = live(code); L.next = 0;
+    if (L.conn && L.conn.open) send(L.conn, { t: 'hi', p: myPub(), s: lastSt || myStatus(), add: true });
+    else if (peer && alive && !L.try) dial(code);
+    changed();
+    return '';
+  }
+  function removeFriend(code, tell) {
+    FR = FR.filter(function (f) { return f.code !== code; }); saveFR();
+    var L = LIVE[code];
+    if (L && L.conn) { var c = L.conn; if (tell) send(c, { t: 'rm' }); setTimeout(function () { try { c.close(); } catch (e) {} }, 300); }
+    delete LIVE[code];
+    if (openRow === code) openRow = '';
+    changed();
+  }
+
+  /* ---------- Anzeige ---------- */
+  var openRow = '', invited = {};
+  function avatar(f) {
+    var a = document.createElement('span'); a.className = 'pav';
+    a.style.setProperty('--av', f.color); a.textContent = (f.name || '?').charAt(0).toUpperCase();
+    a.appendChild(document.createElement('i'));
+    return a;
+  }
+  function sorted() {
+    return FR.slice().sort(function (a, b) {
+      return (isOn(b.code) - isOn(a.code)) || (a.name || 'zzz').localeCompare(b.name || 'zzz', 'de');
+    });
+  }
+  /* Zeile in der Freundesliste: Beitreten, wenn der Freund an einem Online-Tisch sitzt */
+  function friendRow(f, me) {
+    var on = isOn(f.code), st = on ? LIVE[f.code].st : null;
+    var el = document.createElement('div'); el.className = 'fl' + (on ? ' on' : '') + (openRow === f.code ? ' open' : '');
+    var r = document.createElement('div'); r.className = 'flr';
+    r.appendChild(avatar(f));
+    var n = document.createElement('div'); n.className = 'fln';
+    var b = document.createElement('b'); b.textContent = f.name || 'Code ' + f.code;
+    var sm = document.createElement('small');
+    sm.textContent = f.pending ? 'Wartet, bis ' + (f.name || 'dein Freund') + ' online ist' : on ? stText(st) : 'Offline';
+    n.appendChild(b); n.appendChild(sm); r.appendChild(n);
+    if (on && st.code && st.code !== me.code) {
+      var go = document.createElement('button'); go.type = 'button'; go.className = 'btn primary'; go.textContent = 'Beitreten';
+      go.addEventListener('click', function () { joinTable(st); });
+      r.appendChild(go);
+    }
+    var more = document.createElement('button'); more.type = 'button'; more.className = 'flm'; more.setAttribute('aria-label', 'Mehr zu ' + (f.name || f.code));
+    more.innerHTML = '<svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><circle cx="5" cy="12" r="1.8"/><circle cx="12" cy="12" r="1.8"/><circle cx="19" cy="12" r="1.8"/></svg>';
+    more.addEventListener('click', function () { openRow = openRow === f.code ? '' : f.code; render(true); });
+    r.appendChild(more);
+    el.appendChild(r);
+    var x = document.createElement('div'); x.className = 'flx';
+    var cd = document.createElement('span'); cd.className = 'fnote'; cd.style.marginRight = 'auto'; cd.style.alignSelf = 'center'; cd.textContent = 'Code ' + f.code;
+    var rm = document.createElement('button'); rm.type = 'button'; rm.className = 'btn'; rm.textContent = 'Entfernen';
+    rm.addEventListener('click', function () { removeFriend(f.code, true); });
+    x.appendChild(cd); x.appendChild(rm); el.appendChild(x);
+    return el;
+  }
+  /* Zeile in "Freunde einladen" (am eigenen Tisch) */
+  function inviteRow(f, me) {
+    var st = LIVE[f.code].st;
+    var el = document.createElement('div'); el.className = 'fl on';
+    var r = document.createElement('div'); r.className = 'flr';
+    r.appendChild(avatar(f));
+    var n = document.createElement('div'); n.className = 'fln';
+    var b = document.createElement('b'); b.textContent = f.name || f.code;
+    var sm = document.createElement('small'); sm.textContent = st && st.code === me.code ? 'Sitzt schon an deinem Tisch' : stText(st);
+    n.appendChild(b); n.appendChild(sm); r.appendChild(n);
+    if (!(st && st.code === me.code)) {
+      var done = invited[f.code + ':' + me.code] > Date.now();
+      var go = document.createElement('button'); go.type = 'button'; go.className = 'btn' + (done ? '' : ' primary');
+      go.textContent = done ? 'Eingeladen' : 'Einladen'; go.disabled = done;
+      go.addEventListener('click', function () {
+        var L = LIVE[f.code]; if (!L || !L.on) return;
+        send(L.conn, { t: 'inv', g: me.g, code: me.code });
+        invited[f.code + ':' + me.code] = Date.now() + 30000;
+        render(true);
+        setTimeout(function () { render(true); }, 30100);
+      });
+      r.appendChild(go);
+    }
+    el.appendChild(r);
+    return el;
+  }
+  function setupList(host) {
+    host.innerHTML = '<div class="psec">Deine Freunde <span></span></div><div class="flist"></div>' +
+      '<div class="fadd"><input type="text" maxlength="6" autocomplete="off" autocapitalize="characters" spellcheck="false" placeholder="Spielercode eines Freundes" aria-label="Spielercode eines Freundes"><button class="btn primary" type="button" disabled>Hinzufügen</button></div>' +
+      '<p class="fnote"></p>';
+    var inp = host.querySelector('input'), btn = host.querySelector('.fadd .btn'), note = host.querySelector('.fnote');
+    function base() { note.textContent = 'Dein eigener Spielercode steht im Profil: ' + MY; note.classList.remove('warn'); }
+    base();
+    inp.addEventListener('input', function () { var v = cleanPCode(inp.value); if (inp.value !== v) inp.value = v; btn.disabled = v.length !== 6; });
+    inp.addEventListener('keydown', function (e) { if (e.key === 'Enter' && !btn.disabled) btn.click(); });
+    btn.addEventListener('click', function () {
+      var err = addFriend(inp.value);
+      if (err) { note.textContent = err; note.classList.add('warn'); return; }
+      inp.value = ''; btn.disabled = true; inp.blur();
+      note.textContent = 'Hinzugefügt. Sobald ihr beide online seid, seht ihr euch gegenseitig in der Liste.'; note.classList.remove('warn');
+      setTimeout(base, 6000);
+    });
+    host._f = { inp: inp };
+  }
+  var renderKey = '';
+  function render(force) {
+    var me = lastSt || myStatus();
+    var k = JSON.stringify([FR, me, openRow, Object.keys(LIVE).map(function (c) { return [c, isOn(c), LIVE[c].st]; })]);
+    if (!force && k === renderKey) return;
+    renderKey = k;
+    var n = onlineCount();
+    all('.odot').forEach(function (d) { d.hidden = n === 0; });
+    all('[data-fl]').forEach(function (host) {
+      if (!host._f) setupList(host);
+      host.querySelector('.psec span').textContent = n ? n + ' online' : '';
+      var list = host.querySelector('.flist'); list.innerHTML = '';
+      if (!FR.length) {
+        var e = document.createElement('div'); e.className = 'fempty';
+        e.textContent = 'Noch keine Freunde. Trag unten den Spielercode eines Freundes ein, dann seht ihr, wann der andere online ist.';
+        list.appendChild(e);
+      } else sorted().forEach(function (f) { list.appendChild(friendRow(f, me)); });
+    });
+    all('[data-fi]').forEach(function (host) {
+      host.innerHTML = '';
+      if (!me.code || !FR.length) return;
+      var t = document.createElement('div'); t.className = 'psec'; t.textContent = 'Freunde einladen';
+      host.appendChild(t);
+      var list = document.createElement('div'); list.className = 'flist';
+      var on = sorted().filter(function (f) { return isOn(f.code); });
+      if (!on.length) { var e = document.createElement('div'); e.className = 'fempty'; e.textContent = 'Gerade ist keiner deiner Freunde online.'; list.appendChild(e); }
+      on.forEach(function (f) { list.appendChild(inviteRow(f, me)); });
+      host.appendChild(list);
+    });
+  }
+  function changed() { render(false); }
+  setInterval(function () { render(false); }, 2000);
+
+  var ftT = 0, ftEl = document.createElement('div');
+  ftEl.id = 'fToast'; $('#app').appendChild(ftEl);
+  function toast(t) { ftEl.textContent = t; ftEl.classList.add('on'); clearTimeout(ftT); ftT = setTimeout(function () { ftEl.classList.remove('on'); }, 3200); }
+
+  /* ---------- an einen Tisch gehen (aus der Liste oder einer Einladung) ---------- */
+  function joinTable(st) {
+    $('#invBan').hidden = true;
+    if (!window.prIdle()) { toast('Verlass erst dein laufendes Spiel'); return; }
+    if (st.g === 'bj') { $('#friends').hidden = true; window.BJ.join(st.code); }
+    else { $('#bjf').hidden = true; PR.pokerJoin(st.code); }
+  }
+  var invSt = null;
+  function showInvite(f, st) {
+    var me = lastSt || myStatus();
+    if (me.code === st.code) return;
+    invSt = st;
+    var av = $('#ibAv'); av.style.setProperty('--av', f.color); av.textContent = (f.name || '?').charAt(0).toUpperCase();
+    $('#ibName').textContent = f.name || f.code;
+    $('#ibText').textContent = (st.g === 'bj' ? 'lädt dich an den Blackjack-Tisch ein' : 'lädt dich an den Pokertisch ein') +
+      (window.prIdle() ? '' : ' (erst nach deinem Spiel)');
+    $('#ibGo').hidden = !window.prIdle();
+    $('#invBan').hidden = false;
+    Snd.ping();
+  }
+  $('#ibGo').addEventListener('click', function () { if (invSt) joinTable(invSt); });
+  $('#ibX').addEventListener('click', function () { $('#invBan').hidden = true; });
+
+  /* ---------- Profil: eigener Spielercode zum Weitergeben ---------- */
+  $('#myCode').textContent = MY;
+  $('#myCodeWa').href = 'https://wa.me/?text=' + encodeURIComponent('Füg mich in der Pokerrunde als Freund hinzu! Mein Spielercode: ' + MY + '\n' + inviteLink());
+  $('#myCodeCopy').addEventListener('click', function () {
+    var b = $('#myCodeCopy'), done = function (t) { b.textContent = t; setTimeout(function () { b.textContent = 'Code kopieren'; }, 1600); };
+    try { navigator.clipboard.writeText(MY).then(function () { done('Kopiert'); }, function () { done('Code oben markieren'); }); }
+    catch (e) { done('Code oben markieren'); }
+  });
+
+  /* Link ...#f-K7M2PX: Freund gleich eintragen */
+  (function () {
+    var m = /^#f-([A-Za-z0-9]{6})$/.exec(location.hash || '');
+    if (!m) return;
+    var code = cleanPCode(m[1]);
+    render(true);
+    $('#friends').hidden = false;
+    var host = $('#frMain [data-fl]');
+    if (host && host._f && code !== MY && !friend(code)) { host._f.inp.value = code; host._f.inp.dispatchEvent(new Event('input')); }
+  })();
+
+  render(true);
+  start();
 })();
 </script>
 
