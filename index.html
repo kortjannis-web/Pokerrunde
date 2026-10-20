@@ -469,6 +469,24 @@ input[type=range]::-moz-range-thumb {
 #menu.shown .menucard > * { opacity: 1; transform: none; animation: none; }
 .profchip { position: absolute; left: 16px; top: 16px; display: flex; align-items: center; gap: 10px; height: 46px; padding: 0 14px 0 5px; border-radius: 999px; background: rgba(16,18,19,.7); border: 1px solid var(--line); color: var(--ink); font: 700 14px var(--ui); z-index: 2; }
 .profchip svg { width: 14px; height: 14px; opacity: .6; display: block; }
+/* Shop: runder Knopf unter dem Profil, Tomaten unter den Chips */
+.shopbtn { position: absolute; left: 16px; top: 72px; z-index: 2; width: 46px; height: 46px; border-radius: 50%; padding: 0; display: grid; place-items: center; background: rgba(16,18,19,.7); border: 1px solid rgba(224,170,74,.55); color: var(--brass); }
+.shopbtn svg { width: 22px; height: 22px; display: block; }
+.shopbtn:active { transform: scale(.94); }
+.tomchip { position: absolute; right: 16px; top: 62px; z-index: 2; display: inline-flex; align-items: center; gap: 6px; height: 30px; padding: 0 12px 0 8px; border-radius: 999px; background: rgba(16,18,19,.7); border: 1px solid var(--line); font: 800 14px var(--ui); color: var(--ink); font-variant-numeric: tabular-nums; }
+.tomchip i { font-style: normal; font-size: 16px; line-height: 1; }
+.tomchip.pop { animation: pop .4s cubic-bezier(.2,.9,.3,1.4); }
+#shop { z-index: 70; }
+#shop .endcard { display: flex; flex-direction: column; gap: 14px; }
+#shop h2 { margin: 0; }
+.shopitem { display: flex; align-items: center; gap: 12px; padding: 12px; border-radius: 16px; background: var(--bg); border: 1px solid var(--line); text-align: left; }
+.shopitem .si { width: 52px; height: 52px; flex: none; border-radius: 14px; display: grid; place-items: center; font-size: 32px; background: radial-gradient(circle at 40% 35%, rgba(255,120,90,.25), rgba(255,120,90,.05)); }
+.shopitem .sn { flex: 1; min-width: 0; display: flex; flex-direction: column; gap: 3px; }
+.shopitem .sn b { font: 800 16px var(--ui); color: var(--ink); }
+.shopitem .sn small { font: 600 12px var(--ui); color: var(--muted); display: flex; align-items: center; gap: 5px; }
+.shopitem .sn small .bchip { width: 13px; height: 13px; }
+.shopitem .btn { height: 42px; padding: 0 16px; font-size: 14px; flex: none; }
+.shopown { margin: 0; font: 600 13px var(--ui); color: var(--muted); }
 .profchip #pnameMenu { display: block; line-height: 1; }
 .pav { width: 36px; height: 36px; border-radius: 50%; display: grid; place-items: center; background: var(--av, #7f776a); color: #fff; font: 800 17px/1 var(--display); padding-bottom: .06em; box-sizing: border-box; box-shadow: inset 0 0 0 2px rgba(255,255,255,.14); flex: none; }
 #friends { position: absolute; inset: 0; z-index: 70; overflow-y: auto; padding: 16px 20px 28px; background: radial-gradient(ellipse at 50% 0%, var(--felt2), var(--bg) 60%); }
@@ -1197,6 +1215,8 @@ input.bprange[type=range]::-moz-range-thumb { width: 20px; height: 20px; border-
       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M9 5l7 7-7 7"/></svg>
     </button>
     <div class="bank" role="status" aria-label="Deine Chips"><i class="bchip" aria-hidden="true"></i><span id="bankVal">1.000</span></div>
+    <button class="shopbtn" id="shopBtn" type="button" aria-label="Shop öffnen"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 9.5V20h16V9.5"/><path d="M3 9.5l1.6-5h14.8l1.6 5"/><path d="M3 9.5c0 1.4 1.1 2.5 2.5 2.5S8 10.9 8 9.5c0 1.4 1.1 2.5 2.5 2.5S13 10.9 13 9.5c0 1.4 1.1 2.5 2.5 2.5S18 10.9 18 9.5c0 1.4 1.1 2.5 2.5 2.5S21 10.9 21 9.5"/><path d="M10 20v-5h4v5"/></svg></button>
+    <div class="tomchip" id="tomChip" role="status" aria-label="Deine Tomaten"><i aria-hidden="true">🍅</i><span id="tomVal">0</span></div>
     <div class="menucard">
       <div class="mswipe" id="mSwipe">
         <div class="mtrack" id="mTrack">
@@ -1649,6 +1669,19 @@ input.bprange[type=range]::-moz-range-thumb { width: 20px; height: 20px; border-
     <div class="ibtxt"><b id="ibName"></b><span id="ibText"></span></div>
     <button class="btn primary" id="ibGo" type="button">Beitreten</button>
     <button class="ibx" id="ibX" type="button" aria-label="Einladung schließen"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" aria-hidden="true"><path d="M6 6l12 12M18 6L6 18"/></svg></button>
+  </div>
+
+  <div id="shop" class="overlay" hidden>
+    <div class="endcard">
+      <h2>Shop</h2>
+      <div class="shopitem">
+        <span class="si" aria-hidden="true">🍅</span>
+        <span class="sn"><b>Tomate</b><small><i class="bchip" aria-hidden="true"></i><span id="shopPrice">500</span> Chips</small></span>
+        <button class="btn primary" id="shopBuy" type="button">Kaufen</button>
+      </div>
+      <p class="shopown" id="shopOwn"></p>
+      <button class="btn wide" id="shopClose" type="button">Schließen</button>
+    </div>
   </div>
 
   <div id="askBan" hidden role="alert">
@@ -6165,7 +6198,7 @@ input.bprange[type=range]::-moz-range-thumb { width: 20px; height: 20px; border-
   } catch (e) {}
   [].forEach.call(document.querySelectorAll('.mdots button'), function (b) { b.addEventListener('click', function () { setPage(+b.dataset.p, true); }); });
   menu.addEventListener('pointerdown', function (e) {
-    if (e.target.closest('.profchip, .bank') || (e.pointerType === 'mouse' && e.button !== 0)) return;
+    if (e.target.closest('.profchip, .bank, .shopbtn, .tomchip') || (e.pointerType === 'mouse' && e.button !== 0)) return;
     sw = { x: e.clientX, y: e.clientY, id: e.pointerId, on: false, dx: 0, w: $('#mSwipe').offsetWidth || 300 };
   });
   menu.addEventListener('pointermove', function (e) {
@@ -7559,7 +7592,7 @@ input.bprange[type=range]::-moz-range-thumb { width: 20px; height: 20px; border-
   function menuFree() {
     if ($('#menu').hidden || !$('#splash').hidden || !$('#daily').hidden) return false;
     if (window.prIdle && !window.prIdle()) return false;
-    return ['#friends', '#bjf', '#profile', '#pview', '#chipdlg', '#invBan', '#askBan'].every(function (s) { var e = $(s); return !e || e.hidden; });
+    return ['#friends', '#bjf', '#profile', '#pview', '#chipdlg', '#invBan', '#askBan', '#shop'].every(function (s) { var e = $(s); return !e || e.hidden; });
   }
   function showDaily() {
     var d = loadDaily(); if (d.day === today()) return;
@@ -7596,6 +7629,40 @@ input.bprange[type=range]::-moz-range-thumb { width: 20px; height: 20px; border-
   });
   $('#profBtn').addEventListener('click', function () { renderVib(); });
   renderVib();
+})();
+</script>
+
+<script>
+/* Shop im Hauptmenue: Tomaten fuer je 500 Chips, die Anzahl steht unter den Chips oben rechts */
+(function () {
+  'use strict';
+  var PR = window.PR;
+  if (!PR) return;
+  var Snd = PR.Snd, fmt = PR.fmt, PRICE = 500;
+  function $(s) { return document.querySelector(s); }
+  function tomatoes() { var n = 0; try { n = parseInt(localStorage.getItem('pr-tom') || '0', 10); } catch (e) {} return isFinite(n) && n > 0 ? Math.min(n, 1e9) : 0; }
+  function render(pop) {
+    var n = tomatoes(), bank = PR.prof().bank | 0;
+    $('#tomVal').textContent = fmt(n);
+    if (pop) { var c = $('#tomChip'); c.classList.remove('pop'); void c.offsetWidth; c.classList.add('pop'); }
+    $('#shopPrice').textContent = fmt(PRICE);
+    $('#shopBuy').disabled = bank < PRICE;
+    $('#shopOwn').textContent = 'Du hast ' + fmt(n) + (n === 1 ? ' Tomate' : ' Tomaten') + ' · Guthaben ' + fmt(bank) + ' Chips' + (bank < PRICE ? ' – zu wenig für eine Tomate' : '');
+  }
+  $('#shopBtn').addEventListener('click', function () { Snd.unlock(); render(false); $('#shop').hidden = false; });
+  $('#shopClose').addEventListener('click', function () { $('#shop').hidden = true; });
+  $('#shop').addEventListener('click', function (e) { if (e.target === this) this.hidden = true; });
+  $('#shopBuy').addEventListener('click', function () {
+    var P = PR.prof();
+    if ((P.bank | 0) < PRICE) { render(false); return; }
+    P.bank -= PRICE; PR.saveProf(); PR.renderBank();
+    try { localStorage.setItem('pr-tom', String(tomatoes() + 1)); } catch (e) {}
+    Snd.chip(2, 0, true);
+    render(true);
+  });
+  /* Guthaben kann sich ueberall aendern (Spiele, taegliche Belohnung): Anzeige im Menue aktuell halten */
+  setInterval(function () { if (!$('#menu').hidden) render(false); }, 1500);
+  render(false);
 })();
 </script>
 
