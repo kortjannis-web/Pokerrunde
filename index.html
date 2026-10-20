@@ -585,7 +585,7 @@ input.bprange[type=range]::-moz-range-thumb { width: 20px; height: 20px; border-
 #menu::before { content: ''; position: absolute; inset: 0; z-index: 0; pointer-events: none; background: radial-gradient(ellipse at 50% 30%, var(--bj2), var(--bg) 70%); opacity: var(--mix, 0); transition: opacity .4s ease; }
 #menu.drag::before { transition: none; }
 #menu .menucard { position: relative; z-index: 1; }
-.mswipe { overflow: hidden; margin: 0 -24px; cursor: grab; }
+.mswipe { overflow: hidden; margin: -10px -24px 0; padding-top: 10px; cursor: grab; }   /* oben Luft, sonst schneidet der Rand die schraege Ass-Karte ab */
 .mtrack { display: flex; transition: transform .42s cubic-bezier(.2,.9,.3,1); }
 .mpage { flex: 0 0 100%; padding: 0 24px; display: flex; flex-direction: column; gap: 12px; }
 .mpage .menusub { margin-bottom: 0; }
@@ -740,6 +740,9 @@ input.bprange[type=range]::-moz-range-thumb { width: 20px; height: 20px; border-
 #bjSpot b.zero { font: 700 11px var(--ui); color: rgba(236,231,218,.6); letter-spacing: .12em; text-transform: uppercase; }
 #bjSpot .stk { position: relative; min-height: 18px; }
 #bjSpot.off { opacity: 0; transform: scale(.85); pointer-events: none; }
+#bjSpot .ring { transition: border-color .2s, background .2s; }
+#bjSpot.hot { transform: scale(1.08); }
+#bjSpot.hot .ring { border-style: solid; border-color: var(--brass); background: rgba(224,170,74,.2); }
 #bjFly { position: absolute; inset: 0; pointer-events: none; z-index: 8; }
 #bjFly .card { position: absolute; transition: transform .45s cubic-bezier(.4,0,.6,1), opacity .45s; }
 .bjtoast { position: absolute; left: 50%; top: 6px; transform: translate(-50%, -12px); z-index: 9; padding: 7px 16px; border-radius: 999px; background: var(--brass); color: var(--brass-ink); font: 800 13px var(--ui); opacity: 0; pointer-events: none; transition: opacity .35s, transform .35s; white-space: nowrap; box-shadow: 0 6px 18px rgba(0,0,0,.5); }
@@ -749,8 +752,10 @@ input.bprange[type=range]::-moz-range-thumb { width: 20px; height: 20px; border-
 #bjStatus { text-align: center; font: 500 13px var(--ui); color: var(--muted); min-height: 18px; font-variant-numeric: tabular-nums; }
 #bjStatus b { color: var(--ink); font-weight: 700; }
 #bjBetUI, #bjActUI { display: grid; gap: 8px; }
-#bjActUI { grid-template-columns: 1fr 1fr; }
-#bjActUI .btn { height: 50px; }
+#bjActUI { grid-template-columns: 62px 1fr 1fr 62px; align-items: center; }
+#bjActUI .btn { height: 68px; font: 800 20px var(--ui); border-radius: 16px; }
+#bjActUI .btn.side { height: 50px; padding: 0 2px; font: 700 10.5px var(--ui); border-radius: 12px; }
+#bjActUI .btn.side small { font-size: 10px; }
 .bjchiprow { display: flex; justify-content: center; gap: 14px; }
 .bjchip { position: relative; width: 50px; height: 50px; border-radius: 50%; border: 0; padding: 0; display: grid; place-items: center;
   background: repeating-conic-gradient(#efe8d8 0 13deg, var(--cc) 13deg 45deg); box-shadow: 0 3px 6px rgba(0,0,0,.55); transition: transform .12s, opacity .2s; }
@@ -758,6 +763,10 @@ input.bprange[type=range]::-moz-range-thumb { width: 20px; height: 20px; border-
 .bjchip b { position: relative; font: 800 13px var(--ui); color: #f7f1e3; }
 .bjchip:active:not(:disabled) { transform: scale(.92) translateY(-2px); }
 .bjchip:disabled { opacity: .3; cursor: default; }
+.bjchip { touch-action: none; }
+/* Chip, der gerade ins Einsatzfeld gezogen wird */
+.bjchip.ghost { position: fixed; left: 0; top: 0; z-index: 99; pointer-events: none; transition: none; box-shadow: 0 12px 22px rgba(0,0,0,.6); }
+.bjchip.ghost.go { transition: transform .26s cubic-bezier(.3,.1,.3,1), opacity .26s; }
 .bjrow2 { display: grid; grid-template-columns: 1fr 1.6fr; gap: 10px; }
 .bjrow2 .btn { height: 50px; }
 #bjPause .endcard, #bjEnd .endcard { max-height: 100%; overflow-y: auto; }
@@ -947,10 +956,10 @@ input.bprange[type=range]::-moz-range-thumb { width: 20px; height: 20px; border-
         </div>
       </div>
       <div id="bjActUI" hidden>
+        <button class="btn raise side" id="bjDouble" type="button"><span>Verdoppeln</span><small></small></button>
         <button class="btn primary" id="bjHit" type="button">Karte</button>
         <button class="btn" id="bjStand" type="button">Stehen</button>
-        <button class="btn raise" id="bjDouble" type="button"><span>Verdoppeln</span><small></small></button>
-        <button class="btn" id="bjSplit" type="button"><span>Teilen</span><small></small></button>
+        <button class="btn side" id="bjSplit" type="button"><span>Teilen</span><small></small></button>
       </div>
     </footer>
     <div id="bjPause" class="overlay" hidden>
@@ -4743,7 +4752,7 @@ input.bprange[type=range]::-moz-range-thumb { width: 20px; height: 20px; border-
       go.querySelector('small').textContent = rd ? 'warte auf die anderen' : myBet ? 'Einsatz ' + fmt(myBet) : 'mindestens ' + fmt(t.min);
       if (rd) st = 'Du bist bereit' + (sec ? ' · es geht in <b>' + sec + ' s</b> los' : ' · warte auf die anderen');
       else if (sec) st = 'Setz deinen Einsatz · Austeilen in <b>' + sec + ' s</b>';
-      else st = 'Tipp auf die Chips, um zu setzen · mindestens <b>' + fmt(t.min) + '</b>';
+      else st = 'Chips antippen oder ins Feld ziehen · mindestens <b>' + fmt(t.min) + '</b>';
     } else {
       var myTurn = !!(my && t.phase === 'play' && t.seats[t.turn] === my && !(H && H.busy));
       var h = myTurn ? my.hands[my.cur] : null, ok = !!(h && h.cards.length >= 2 && !h.done);
@@ -4785,13 +4794,57 @@ input.bprange[type=range]::-moz-range-thumb { width: 20px; height: 20px; border-
       [].forEach.call(document.querySelectorAll('#bjActUI .btn'), function (b) { b.disabled = true; });   // bis der naechste Stand kommt
     } else hAct(ME, a);
   }
+  function addChip(v) {
+    var my = seatOf(ME);
+    if (!T || T.phase !== 'bet' || !my || my.ready) return false;
+    if (myBet + v > my.chips) return false;
+    myBet += v; Snd.chip(1, 0); view(T, ME); return true;
+  }
+  /* Chips antippen oder ins Einsatzfeld ziehen */
+  var spotEl = $('#bjSpot'), CD = null, dragAt = 0;
+  function spotMid() { var r = spotEl.getBoundingClientRect(); return { x: r.left + r.width / 2, y: r.top + r.height / 2, r: r.width / 2 }; }
+  function overSpot(x, y) {
+    if (spotEl.classList.contains('off')) return false;
+    var m = spotMid(), rad = m.r + 28;   // etwas grosszuegiger als der Ring, auf dem Handy trifft man sonst schwer
+    return (x - m.x) * (x - m.x) + (y - m.y) * (y - m.y) <= rad * rad;
+  }
+  function ghostTo(g, x, y, sc, op) {
+    g.classList.add('go'); g.style.transform = 'translate(' + x + 'px,' + y + 'px) scale(' + sc + ')'; g.style.opacity = op;
+    setTimeout(function () { g.remove(); }, 280);
+  }
+  function chipUp(e, cancel) {
+    if (!CD || CD.id !== e.pointerId) return;
+    var d = CD; CD = null; spotEl.classList.remove('hot');
+    if (!d.g) return;   // nicht bewegt: normaler Klick
+    dragAt = Date.now();
+    if (!cancel && overSpot(e.clientX, e.clientY) && addChip(+d.b.dataset.v)) {
+      var m = spotMid();
+      ghostTo(d.g, m.x - d.w / 2, m.y - d.w / 2, .55, 0);
+    } else ghostTo(d.g, d.r.left, d.r.top, 1, 1);
+  }
   [].forEach.call(document.querySelectorAll('.bjchip'), function (b) {
+    b.addEventListener('pointerdown', function (e) {
+      if (b.disabled || CD || (e.pointerType === 'mouse' && e.button !== 0)) return;
+      var r = b.getBoundingClientRect();
+      CD = { b: b, id: e.pointerId, x0: e.clientX, y0: e.clientY, dx: e.clientX - r.left, dy: e.clientY - r.top, r: r, w: r.width, g: null };
+      try { b.setPointerCapture(e.pointerId); } catch (er) {}
+    });
+    b.addEventListener('pointermove', function (e) {
+      if (!CD || CD.id !== e.pointerId) return;
+      if (!CD.g) {
+        if (Math.abs(e.clientX - CD.x0) + Math.abs(e.clientY - CD.y0) < 8) return;
+        var g = b.cloneNode(true);
+        g.classList.add('ghost'); g.setAttribute('aria-hidden', 'true'); g.tabIndex = -1;
+        document.body.appendChild(g); CD.g = g;
+      }
+      CD.g.style.transform = 'translate(' + (e.clientX - CD.dx) + 'px,' + (e.clientY - CD.dy) + 'px) scale(1.12)';
+      spotEl.classList.toggle('hot', overSpot(e.clientX, e.clientY));
+    });
+    b.addEventListener('pointerup', function (e) { chipUp(e, false); });
+    b.addEventListener('pointercancel', function (e) { chipUp(e, true); });
     b.addEventListener('click', function () {
-      var my = seatOf(ME);
-      if (!T || T.phase !== 'bet' || !my || my.ready) return;
-      var v = +b.dataset.v;
-      if (myBet + v > my.chips) return;
-      myBet += v; Snd.chip(1, 0); view(T, ME);
+      if (Date.now() - dragAt < 400) return;   // gerade gezogen, kein zusaetzlicher Klick
+      addChip(+b.dataset.v);
     });
   });
   $('#bjClear').addEventListener('click', function () { myBet = 0; if (T) view(T, ME); });
