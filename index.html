@@ -954,6 +954,7 @@ input.bprange[type=range]::-moz-range-thumb { width: 20px; height: 20px; border-
 #slSpin.free:active:not(:disabled), #slSpin.free.down { box-shadow: 0 1px 0 #2a1060, 0 5px 12px rgba(0,0,0,.5), inset 0 2px 0 rgba(255,255,255,.25); }
 #slSpin.free span { display: block; line-height: 1.05; }
 #slSpin.free b { display: block; font-size: 22px; }
+#slSpin.free b.pop { animation: slpop .5s cubic-bezier(.2,.9,.3,1.4); }
 /* ---------- Slots: zweiter Automat, Jackpot, Joker, Stein-Kirschen, Risikoleiter ---------- */
 /* Automat waehlen */
 .slpick { display: flex; gap: 6px; padding: 3px; border-radius: 999px; background: rgba(0,0,0,.35); border: 1px solid var(--line); }
@@ -6287,6 +6288,9 @@ input.bprange[type=range]::-moz-range-thumb { width: 20px; height: 20px; border-
   var sl = $('#sl'), mach = $('#slMachine'), winEl = $('#slWin'), reels = [];
   var busy = false, gen = 0, shown = 0, toastT = 0, bigT = 0, holdT = 0;
   var riskAmt = 0, payKey = '';
+  /* waehrend des Drehs zeigen Knopf und Anzeige erst, was schon zu sehen war: neue Gratis-Drehs kommen erst mit dem
+     Extra-Spin-Schild dazu, der hoehere Multiplikator erst mit dem Gewinn (verbucht ist beides schon beim Druecken) */
+  var vis = null;
 
   function build() {
     var mc = cur, h = '';
@@ -6311,7 +6315,7 @@ input.bprange[type=range]::-moz-range-thumb { width: 20px; height: 20px; border-
   }
   function cellEl(i, r, row) { return reels[i].children[r + cur.N + row - 1]; }
 
-  function curBet() { var f = fsOf(cur); return f.free > 0 ? f.fbet : bet; }
+  function curBet() { if (busy && vis) return vis.b; var f = fsOf(cur); return f.free > 0 ? f.fbet : bet; }
   function lineAmt(m, b) { return fmt(Math.round(m * b)); }
   function paytable(el) {
     var b = curBet(), mc = cur;
@@ -6379,9 +6383,9 @@ input.bprange[type=range]::-moz-range-thumb { width: 20px; height: 20px; border-
     if (fsOf(cur).free > 0) toast('Du hast hier noch ' + fsOf(cur).free + ' Extra Spins');
   }
   function renderAll() {
-    var f = fsOf(cur), fr = f.free > 0, b = curBet();
+    var f = fsOf(cur), v = busy && vis ? vis : { free: f.free, fr: f.free > 0, mult: f.mult }, fr = v.fr, b = curBet();
     $('#slBet').textContent = fmt(b); $('#slBetL').textContent = fmt(b);
-    $('#slBetLT').textContent = fr ? 'Gratis ×' + f.mult : 'Einsatz';
+    $('#slBetLT').textContent = fr ? 'Gratis ×' + v.mult : 'Einsatz';
     $('#sl .sllcd').classList.toggle('free', fr);
     var i = BETS.indexOf(bet), lockBet = busy || fr;
     $('#slMinus').disabled = lockBet || i <= 0;
@@ -6389,7 +6393,7 @@ input.bprange[type=range]::-moz-range-thumb { width: 20px; height: 20px; border-
     var sp = $('#slSpin');
     sp.disabled = busy;
     sp.classList.toggle('free', fr);
-    sp.innerHTML = fr ? '<span>Gratis<b>' + f.free + '</b></span>' : 'Drehen';
+    sp.innerHTML = fr ? '<span>Gratis<b>' + v.free + '</b></span>' : 'Drehen';
     $('#slRisk').hidden = busy || !riskAmt;
     var pk = cur.id + ':' + b;
     if (pk !== payKey) { payKey = pk; paytable($('#slPay')); paytable($('#slPay2')); $('#slRules').innerHTML = rulesText(); }
@@ -6498,6 +6502,7 @@ input.bprange[type=range]::-moz-range-thumb { width: 20px; height: 20px; border-
     if (sc0) { if (!fr) { f.fbet = b; f.mult = 1; f.fwon = 0; } f.free += FREE_N; }
     if (fr || sc0) f.fwon += total;
     /* gleich verbuchen: geht die Seite mitten im Drehen zu, ist nichts verloren */
+    vis = { free: f.free - (sc0 ? FREE_N : 0), fr: fr, mult: steps[0].mult, b: b };
     var before = P.bank;
     P.bank = before - cost + total; PR.saveProf(); PR.renderBank(); saveState();
     var st = slStat(total - cost, total, jpAny);
@@ -6582,7 +6587,7 @@ input.bprange[type=range]::-moz-range-thumb { width: 20px; height: 20px; border-
       strong = s.jpWin > 0 || (mc === M1 ? s.ev.k !== 'C' && s.ev.k !== 'CC' : x >= 4);
       if (strong) { winEl.classList.add('line'); hold = s.jpWin ? 4200 : x >= 40 ? 3000 : x >= 12 ? 2400 : 1800; }
       if (mc === M2) drawLines(s.ev.wins, strong);
-      if (s.multUp) { $('#slBetLT').textContent = 'Gratis ×' + (s.mult + 1); var bl = $('#slBetL'); bl.classList.remove('pop'); void bl.offsetWidth; bl.classList.add('pop'); }
+      if (s.multUp) { vis.mult = s.mult + 1; $('#slBetLT').textContent = 'Gratis ×' + (s.mult + 1); var bl = $('#slBetL'); bl.classList.remove('pop'); void bl.offsetWidth; bl.classList.add('pop'); }
       if (s.jpWin || x >= 10 || s.wheel !== null) {
         mach.classList.add('won');
         big(s.jpWin ? 'Jackpot' : s.wheel !== null ? 'Glücksrad ×' + WHEEL[s.wheel].m : x >= 40 ? 'Riesengewinn' : x >= 20 ? 'Großer Gewinn' : s.mult > 1 ? 'Gewinn ×' + s.mult : 'Gewinn', '+' + fmt(s.win));
@@ -6599,6 +6604,8 @@ input.bprange[type=range]::-moz-range-thumb { width: 20px; height: 20px; border-
         if (gg !== gen) return;
         mach.classList.add('won');
         big(c.fr ? 'Noch mal' : 'Extra Spins', '+' + FREE_N + ' Gratis');
+        vis.free += FREE_N; vis.fr = true; renderAll();
+        var nb = $('#slSpin b'); if (nb) { nb.classList.remove('pop'); void nb.offsetWidth; nb.classList.add('pop'); }
         Snd.win(); setTimeout(function () { Snd.ping(); }, 500); coins(24);
       }, at);
       hold = at + 2600;
