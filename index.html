@@ -3012,8 +3012,9 @@ input.bprange[type=range]::-moz-range-thumb { width: 20px; height: 20px; border-
     var board = $('#board'); board.style.left = cx + 'px'; board.style.top = (cy + ry * 0.2) + 'px';
     var winC = $('#win'); winC.style.left = cx + 'px'; winC.style.top = (cy + ry * 0.62) + 'px';
     var topSeat = (POSMAP[NSEATS] || POSMAP[5]).indexOf(5) >= 0;
-    if (topSeat) { deckEl.style.left = (cx - rx * 0.62) + 'px'; deckEl.style.top = (cy - ry * 0.4) + 'px'; }
-    else { deckEl.style.left = cx + 'px'; deckEl.style.top = (cy - ry * 0.66) + 'px'; }
+    /* Kartenstapel auf dem Filz, nicht am Rand: mit Platz oben in der Mitte schraeg links ueber dem Pot, sonst mittig darueber */
+    if (topSeat) { deckEl.style.left = (cx - rx * 0.48) + 'px'; deckEl.style.top = (cy - ry * 0.5) + 'px'; }
+    else { deckEl.style.left = cx + 'px'; deckEl.style.top = (cy - ry * 0.56) + 'px'; }
 
     var pm = POSMAP[NSEATS] || POSMAP[5];
     for (var i = 0; i < 5; i++) {
