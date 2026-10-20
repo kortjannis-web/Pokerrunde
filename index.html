@@ -1047,11 +1047,16 @@ input.bprange[type=range]::-moz-range-thumb { width: 20px; height: 20px; border-
           <div class="frhint" id="bjfMinHint"></div>
         </div>
         <div>
+          <div class="psec">Plätze</div>
+          <div class="seg" id="bjfSeats" role="radiogroup" aria-label="Anzahl Plätze"></div>
+          <div class="frhint" id="bjfSeatsHint"></div>
+        </div>
+        <div>
           <div class="psec">Chips mitbringen</div>
           <div id="bjkCreate" style="margin-top:8px"></div>
         </div>
         <button class="btn primary wide" id="bjfMake" type="button">Tisch eröffnen</button>
-        <p class="frnote" id="bjfMakeMsg">Bis zu 5 Spieler. Jeder spielt für sich gegen den Dealer, gesetzt wird mit den Chips, die du mitbringst.</p>
+        <p class="frnote" id="bjfMakeMsg">Jeder spielt für sich gegen den Dealer, gesetzt wird mit den Chips, die du mitbringst.</p>
       </div>
       <div class="frview" id="bjfJoinV" hidden>
         <div class="pfield">
@@ -4380,7 +4385,7 @@ input.bprange[type=range]::-moz-range-thumb { width: 20px; height: 20px; border-
 
   var DECKS = 6, CUT = 78, MAX_HANDS = 4, MAX_SEATS = 5, TURN_MS = 25000, BET_MS = 15000;
   var GIFT = 50;   // so viele Chips gibt es, wenn man pleite ist und auch im Guthaben nichts mehr hat
-  var MIN_OPTS = [10, 25, 50];
+  var MIN_OPTS = [10, 25, 50], SEAT_OPTS = [2, 3, 4, 5];
   var PEER_PREFIX = 'pokerrunde-bj-';
 
   /* ---------- Karten und Werte ---------- */
@@ -4428,9 +4433,9 @@ input.bprange[type=range]::-moz-range-thumb { width: 20px; height: 20px; border-
   }
   function say(t) { T.say = t; T.sayN = (T.sayN | 0) + 1; }
 
-  function hostStart(min, me, chips) {
+  function hostStart(min, me, chips, cap) {
     H = { shoe: newShoe(), hole: null, cid: 0, dl: 0, tt: 0, bt: 0, busy: false };
-    T = { phase: 'bet', round: 0, min: min, seats: [], dealer: [], turn: -1, left: 0, shuf: 0, shoe: H.shoe.length, say: '', sayN: 0 };
+    T = { phase: 'bet', round: 0, min: min, cap: cap || MAX_SEATS, seats: [], dealer: [], turn: -1, left: 0, shuf: 0, shoe: H.shoe.length, say: '', sayN: 0 };
     ME = me;
     addSeat(me, { name: PR.profName(), color: PR.prof().color, chips: chips, res: BW });
     betPhase();
@@ -5002,12 +5007,13 @@ input.bprange[type=range]::-moz-range-thumb { width: 20px; height: 20px; border-
   });
 
   /* ---------- Mit Freunden: Tisch eroeffnen / beitreten ---------- */
-  var ROOM = { code: '', min: 10, buy: 1000 };
+  var ROOM = { code: '', min: 10, buy: 1000, seats: MAX_SEATS };
   try {
     var rr = JSON.parse(localStorage.getItem('pr-bjroom') || 'null');
     if (rr) {
       if (typeof rr.code === 'string' && /^[A-Z2-9]{5}$/.test(rr.code)) ROOM.code = rr.code;
       if (MIN_OPTS.indexOf(rr.min) >= 0) ROOM.min = rr.min;
+      if (SEAT_OPTS.indexOf(rr.seats) >= 0) ROOM.seats = rr.seats;
       if (typeof rr.buy === 'number' && isFinite(rr.buy) && rr.buy > 0) ROOM.buy = Math.round(rr.buy);
     }
   } catch (e) {}
@@ -5073,6 +5079,10 @@ input.bprange[type=range]::-moz-range-thumb { width: 20px; height: 20px; border-
     $('#bjfCode').textContent = ROOM.code;
     PR.seg($('#bjfMin'), MIN_OPTS, ROOM.min, function (v) { return fmt(v); }, function (v) { ROOM.min = v; saveRoom(); renderRoom(); });
     $('#bjfMinHint').textContent = 'Jeder setzt pro Runde mindestens ' + fmt(ROOM.min) + ' Chips.';
+    PR.seg($('#bjfSeats'), SEAT_OPTS, ROOM.seats, function (v) { return String(v); }, function (v) { ROOM.seats = v; saveRoom(); renderRoom(); });
+    var fr = ROOM.seats - 1;
+    $('#bjfSeatsHint').textContent = ROOM.seats + ' Plätze am Tisch: du und ' + (fr === 1 ? 'ein Freund.' : 'bis zu ' + fr + ' Freunde.');
+    makeMsg(makeTxt(), false);
     floorBank(); kCreate.set(ROOM.buy);
   }
   function openFriends(view, code) {
@@ -5089,6 +5099,7 @@ input.bprange[type=range]::-moz-range-thumb { width: 20px; height: 20px; border-
     $('#bjfGo').disabled = c.length !== 5;
   }
   function joinMsg(m, warn) { var el = $('#bjfJoinMsg'); el.textContent = m; el.classList.toggle('warn', !!warn); }
+  function makeTxt() { return 'Bis zu ' + ROOM.seats + ' Spieler. Jeder spielt für sich gegen den Dealer, gesetzt wird mit den Chips, die du mitbringst.'; }
   function makeMsg(m, warn) { var el = $('#bjfMakeMsg'); el.textContent = m; el.classList.toggle('warn', !!warn); }
   $('#bjFriends').addEventListener('click', function () { openFriends(); });
   $('#bjfBack').addEventListener('click', function () {
@@ -5121,7 +5132,7 @@ input.bprange[type=range]::-moz-range-thumb { width: 20px; height: 20px; border-
 
   /* --- Ersteller: der Tisch ist sofort offen, Freunde setzen sich in der naechsten Setzrunde dazu --- */
   $('#bjfMake').addEventListener('click', function () {
-    makeMsg('Bis zu 5 Spieler. Jeder spielt für sich gegen den Dealer, gesetzt wird mit den Chips, die du mitbringst.', false);
+    makeMsg(makeTxt(), false);
     if (!PR.netAvail()) { makeMsg(PR.MSG_NOLIB, true); return; }
     var b = $('#bjfMake'); b.disabled = true; b.textContent = 'Eröffne …';
     wipe(false);
@@ -5141,7 +5152,7 @@ input.bprange[type=range]::-moz-range-thumb { width: 20px; height: 20px; border-
         NB.peer = peer; NB.role = 'host'; NB.code = ROOM.code; NB.conns = [];
         peer.on('connection', function (c) { hostAccept(c, g); });
         resetJoinBtns(); resetView();
-        hostStart(ROOM.min, 'host', takeBuy(kCreate.get()));
+        hostStart(ROOM.min, 'host', takeBuy(kCreate.get()), ROOM.seats);
         openTable();
       });
       peer.on('disconnected', function () { if (g === NB.gen && done) { try { peer.reconnect(); } catch (e) {} } });
@@ -5164,8 +5175,8 @@ input.bprange[type=range]::-moz-range-thumb { width: 20px; height: 20px; border-
         return;
       }
       if (d.t !== 'hello' || d.g !== 'bj') return;
-      if (T.seats.filter(function (s) { return !s.gone; }).length >= MAX_SEATS) {
-        try { conn.send({ t: 'full' }); } catch (e) {} setTimeout(function () { try { conn.close(); } catch (e) {} }, 400); return;
+      if (T.seats.filter(function (s) { return !s.gone; }).length >= (T.cap || MAX_SEATS)) {
+        try { conn.send({ t: 'full', n: T.cap || MAX_SEATS }); } catch (e) {} setTimeout(function () { try { conn.close(); } catch (e) {} }, 400); return;
       }
       var old = seatOf(conn.peer); if (old) T.seats = T.seats.filter(function (s) { return s !== old; });
       conn._bj = true; NB.conns.push(conn);
@@ -5211,7 +5222,7 @@ input.bprange[type=range]::-moz-range-thumb { width: 20px; height: 20px; border-
       });
       conn.on('data', function (d) {
         if (g !== NB.gen || !d || typeof d !== 'object') return;
-        if (d.t === 'full') { fail('Der Tisch ist voll (5 Spieler).'); return; }
+        if (d.t === 'full') { fail('Der Tisch ist voll' + (d.n >= 2 && d.n <= MAX_SEATS ? ' (' + d.n + ' Plätze).' : '.')); return; }
         if (d.t === 'closed') {
           if (!finished) fail('Der Tisch wurde geschlossen.');
           else endCard('Tisch geschlossen', 'Der Ersteller hat den Tisch verlassen. Deine Chips bleiben in deinem Guthaben.');
