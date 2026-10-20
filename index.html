@@ -668,6 +668,14 @@ input.bprange[type=range]::-moz-range-thumb { width: 20px; height: 20px; border-
 #bjTip:active { transform: scale(.95); }
 #bjActUI .btn.tipped { animation: tipped .65s ease-in-out 4; }
 @keyframes tipped { 0%, 100% { box-shadow: 0 0 0 0 rgba(224,170,74,0); } 50% { box-shadow: 0 0 0 3px var(--ink), 0 0 22px 6px rgba(224,170,74,.8); } }
+#bjReact { position: absolute; left: 8px; bottom: 6px; z-index: 6; width: 40px; height: 40px; border-radius: 50%; border: 1px solid var(--line); background: rgba(16,18,19,.85); font-size: 20px; line-height: 1; padding: 0; }
+.bjrpanel { position: absolute; left: 8px; bottom: 52px; z-index: 12; display: flex; gap: 2px; padding: 5px 6px; border-radius: 999px; background: var(--bg2); border: 1px solid var(--line); box-shadow: 0 10px 28px rgba(0,0,0,.55); }
+.bjrpanel[hidden] { display: none; }
+.bjrpanel button { width: 40px; height: 40px; border-radius: 50%; border: 0; background: transparent; font-size: 24px; line-height: 1; padding: 0; }
+.bjo { position: relative; }
+#bjMe > .react { bottom: auto; top: -44px; z-index: 9; }
+.bjre { position: absolute; left: 50%; top: 40%; transform: translate(-50%, -50%); z-index: 20; padding: 12px 18px; border-radius: 14px; background: rgba(16,18,19,.92); border: 1px solid rgba(224,170,74,.55); font: 700 14px var(--ui); white-space: nowrap; box-shadow: 0 10px 28px rgba(0,0,0,.55); }
+.bjre i { font-style: normal; }
 /* ---------- Taegliche Belohnung ---------- */
 #daily { z-index: 92; }
 #daily .endcard { display: flex; flex-direction: column; gap: 12px; }
@@ -1072,6 +1080,11 @@ input.bprange[type=range]::-moz-range-thumb { width: 20px; height: 20px; border-
       <div id="bjMe"><div class="bjhands"></div></div>
       <div id="bjFly"></div>
       <div class="bjtoast" id="bjToast"></div>
+      <div class="bjre" id="bjRe" hidden><i class="dots">Verbindung weg · verbinde neu</i></div>
+      <button class="bjreact" id="bjReact" type="button" hidden aria-label="Reaktion senden">😊</button>
+      <div class="bjrpanel" id="bjRPanel" hidden>
+        <button type="button" data-e="😂">😂</button><button type="button" data-e="😱">😱</button><button type="button" data-e="😭">😭</button><button type="button" data-e="🤑">🤑</button><button type="button" data-e="👍">👍</button><button type="button" data-e="🔥">🔥</button>
+      </div>
       <button class="bjtip" id="bjTip" type="button" hidden aria-label="Tipp: was wäre jetzt richtig?">💡 Tipp</button>
     </main>
     <footer id="bjCtl">
@@ -4584,7 +4597,7 @@ input.bprange[type=range]::-moz-range-thumb { width: 20px; height: 20px; border-
   var GIFT = 50;   // so viele Chips gibt es, wenn man pleite ist und auch im Guthaben nichts mehr hat
   var MIN_OPTS = [10, 25, 50], SEAT_OPTS = [2, 3, 4, 5];
   var PEER_PREFIX = 'pokerrunde-bj-';
-  var BJ_V = 2;   // Version des Tisch-Protokolls: Ersteller und Mitspieler muessen gleich sein
+  var BJ_V = 3;   // Version des Tisch-Protokolls: Ersteller und Mitspieler muessen gleich sein
 
   /* ---------- Karten und Werte ---------- */
   function randInt(n) {
@@ -4632,7 +4645,7 @@ input.bprange[type=range]::-moz-range-thumb { width: 20px; height: 20px; border-
   function say(t) { T.say = t; T.sayN = (T.sayN | 0) + 1; }
 
   function hostStart(min, me, chips, cap) {
-    H = { shoe: newShoe(), hole: null, cid: 0, dl: 0, tt: 0, bt: 0, busy: false };
+    H = { shoe: newShoe(), hole: null, cid: 0, dl: 0, tt: 0, bt: 0, busy: false, rid: {} };   // rid: Wiederkehr-Kennung -> Platz
     T = { phase: 'bet', round: 0, min: min, cap: cap || MAX_SEATS, seats: [], dealer: [], turn: -1, left: 0, shuf: 0, shoe: H.shoe.length, say: '', sayN: 0 };
     ME = me;
     addSeat(me, { name: PR.profName(), color: PR.prof().color, chips: chips, res: BW });
@@ -4942,6 +4955,7 @@ input.bprange[type=range]::-moz-range-thumb { width: 20px; height: 20px; border-
     /* andere Spieler */
     var others = t.seats.filter(function (s) { return s.id !== me; });
     stage.classList.toggle('solo', !others.length);
+    $('#bjReact').hidden = !multi(); if (!multi()) $('#bjRPanel').hidden = true;
     /* die ersten beiden links am Rand, weitere rechts */
     var cols = [$('#bjOthers .l'), $('#bjOthers .r')];
     cols.forEach(function (col, c) { var n = c ? Math.max(0, others.length - 2) : Math.min(2, others.length); while (col.children.length > n) col.removeChild(col.lastChild); });
@@ -4953,6 +4967,7 @@ input.bprange[type=range]::-moz-range-thumb { width: 20px; height: 20px; border-
         col.appendChild(el);
       }
       var turn = t.phase === 'play' && t.seats[t.turn] === s;
+      el._sid = s.id;
       var hs = el.querySelector('.bjhands');
       s.hands.forEach(function (h, j) { fillHand(handBox(hs, j), h, turn && s.cur === j && s.hands.length > 1, true); });
       trimBoxes(hs, s.hands.length);
@@ -4975,6 +4990,7 @@ input.bprange[type=range]::-moz-range-thumb { width: 20px; height: 20px; border-
       }
       var sub = el.querySelector('.bjsub'), st = '';
       if (s.gone) st = 'weg';
+      else if (s.away) st = 'Verbindung weg …';
       else if (t.phase === 'bet') st = s.ready ? 'Bereit' : amt ? 'setzt …' : fmt(s.chips) + ' Chips';
       else if (!s.inR) st = 'setzt aus';
       else if (turn) st = 'ist dran';
@@ -5199,6 +5215,49 @@ input.bprange[type=range]::-moz-range-thumb { width: 20px; height: 20px; border-
   $('#bjSplit').addEventListener('click', function () { Snd.chip(2, 0); sendAct('split'); });
 
   /* ---------- Starten und Verlassen ---------- */
+  /* ---------- Reaktionen (nur am Online-Tisch): hoechstens 3 in 9 Sekunden pro Spieler ---------- */
+  var EMOS = ['😂', '😱', '😭', '🤑', '👍', '🔥'], reactLog = {};
+  function reactOk(id) {
+    var now = Date.now(), l = (reactLog[id] || []).filter(function (x) { return now - x < 9000; });
+    reactLog[id] = l;
+    if (l.length >= 3) return false;
+    l.push(now); return true;
+  }
+  function showBjReact(id, emo) {
+    if (EMOS.indexOf(emo) < 0) return;
+    var host = null;
+    if (id === ME) host = $('#bjMe');
+    else [].forEach.call(document.querySelectorAll('#bjOthers .bjo'), function (el) { if (el._sid === id) host = el; });
+    if (!host) return;
+    var old = host.querySelector(':scope > .react'); if (old) old.remove();
+    var b = document.createElement('div'); b.className = 'react'; b.textContent = emo;
+    host.appendChild(b);
+    if (b.animate) b.animate([{ transform: 'translateX(-50%) translateY(8px) scale(.4)', opacity: 0 }, { transform: 'translateX(-50%) translateY(-4px) scale(1.15)', opacity: 1, offset: .18 }, { transform: 'translateX(-50%) scale(1)', opacity: 1, offset: .28 }, { transform: 'translateX(-50%) scale(1)', opacity: 1, offset: .82 }, { transform: 'translateX(-50%) translateY(-10px) scale(.9)', opacity: 0 }], { duration: 2200, easing: 'ease-out' });
+    setTimeout(function () { if (b.parentNode) b.remove(); }, 2200);
+  }
+  /* beim Ersteller: an alle weitergeben */
+  function hReact(id, emo) {
+    if (!T || EMOS.indexOf(emo) < 0 || !seatOf(id) || !reactOk(id)) return;
+    NB.conns.forEach(function (c) { if (c._bj) { try { c.send({ t: 'react', id: id, e: emo }); } catch (e) {} } });
+    showBjReact(id, emo);
+  }
+  $('#bjReact').addEventListener('click', function () { $('#bjRPanel').hidden = !$('#bjRPanel').hidden; });
+  [].forEach.call(document.querySelectorAll('#bjRPanel button'), function (b) {
+    b.addEventListener('click', function () {
+      var emo = b.dataset.e;
+      $('#bjRPanel').hidden = true;
+      if (!T || !multi()) return;
+      if (NB.role === 'guest') {
+        var now = Date.now(), l = (reactLog.me || []).filter(function (x) { return now - x < 9000; });
+        if (l.length >= 3) { bjToast('Kurz warten …'); return; }
+        reactLog.me = l.concat(now);
+        try { NB.conn.send({ t: 'react', e: emo }); } catch (e) {}
+      } else if (!reactOk(ME)) { bjToast('Kurz warten …'); return; }
+      else { NB.conns.forEach(function (c) { if (c._bj) { try { c.send({ t: 'react', id: ME, e: emo }); } catch (e) {} } }); showBjReact(ME, emo); }
+    });
+  });
+  document.addEventListener('pointerdown', function (e) { if (!$('#bjRPanel').hidden && !e.target.closest('#bjRPanel, #bjReact')) $('#bjRPanel').hidden = true; });
+
   function resetView() {
     CEL = {}; fly.innerHTML = '';
     $('#bjDealer .bjc').innerHTML = ''; $('#bjOthers .l').innerHTML = ''; $('#bjOthers .r').innerHTML = ''; $('#bjMe .bjhands').innerHTML = '';
@@ -5224,6 +5283,8 @@ input.bprange[type=range]::-moz-range-thumb { width: 20px; height: 20px; border-
     setTimeout(function () { try { peer.destroy(); } catch (e) {} }, bye ? 250 : 0);
   }
   function leave() {
+    if (NB.role === 'guest' && NB.conn) { try { NB.conn.send({ t: 'bye' }); } catch (e) {} }
+    $('#bjRe').hidden = true;
     wipe(true); resetView();
     Snd.stopAll();
     bj.hidden = true; $('#menu').hidden = false;
@@ -5428,6 +5489,8 @@ input.bprange[type=range]::-moz-range-thumb { width: 20px; height: 20px; border-
         else if (d.t === 'act') hAct(conn.peer, String(d.a));
         else if (d.t === 'add') hTop(conn.peer, d.a, d.r);
         else if (d.t === 'bet') hBet(conn.peer, d.a);
+        else if (d.t === 'react') hReact(conn.peer, d.e);
+        else if (d.t === 'bye') { conn._bj = false; NB.conns = NB.conns.filter(function (c) { return c !== conn; }); hostGone(conn.peer); }
         return;
       }
       if (d.t !== 'hello' || d.g !== 'bj') return;
@@ -5437,12 +5500,25 @@ input.bprange[type=range]::-moz-range-thumb { width: 20px; height: 20px; border-
         bjToast('Jemand mit einer anderen App-Version wollte beitreten');
         return;
       }
+      /* Wiederkehr nach Verbindungsabbruch: derselbe Platz mit allen Chips und Karten */
+      var rid = typeof d.rid === 'string' && /^[a-z0-9]{12,32}$/.test(d.rid) ? d.rid : '';
+      var back = rid && H.rid[rid];
+      if (back && !back.gone && T.seats.indexOf(back) >= 0) {
+        NB.conns.forEach(function (c) { if (c !== conn && c.peer === back.id) { c._bj = false; try { c.close(); } catch (e) {} } });
+        NB.conns = NB.conns.filter(function (c) { return c._bj; });
+        clearTimeout(back._aw); back._aw = 0; back.away = false; back.id = conn.peer;
+        conn._bj = true; NB.conns.push(conn);
+        bjToast(back.name + ' ist wieder da');
+        push();
+        return;
+      }
       if (T.seats.filter(function (s) { return !s.gone; }).length >= (T.cap || MAX_SEATS)) {
         try { conn.send({ t: 'full', n: T.cap || MAX_SEATS }); } catch (e) {} setTimeout(function () { try { conn.close(); } catch (e) {} }, 400); return;
       }
       var old = seatOf(conn.peer); if (old) T.seats = T.seats.filter(function (s) { return s !== old; });
       conn._bj = true; NB.conns.push(conn);
       addSeat(conn.peer, cleanProf(d.p));
+      if (rid) H.rid[rid] = T.seats[T.seats.length - 1];
       bjToast(T.seats[T.seats.length - 1].name + ' sitzt mit am Tisch');
       Snd.ping();
       if (T.phase === 'bet') { var s = seatOf(conn.peer); if (s.chips < T.min && s.chips + s.res < T.min) { s.gift = Math.max(GIFT, T.min) - s.chips; s.chips += s.gift; } s.bet = Math.min(T.min, s.chips); s.pend = s.bet >= T.min ? s.bet : 0; checkDeal(); }
@@ -5452,7 +5528,18 @@ input.bprange[type=range]::-moz-range-thumb { width: 20px; height: 20px; border-
       if (g !== NB.gen || !conn._bj) return;
       conn._bj = false;
       NB.conns = NB.conns.filter(function (c) { return c !== conn; });
-      if (T) hostGone(conn.peer);
+      if (!T) return;
+      /* Verbindung abgerissen (nicht abgemeldet): Platz 90 Sekunden freihalten, so lange kann er neu verbinden */
+      var s = seatOf(conn.peer), h = H;
+      if (s && !s.gone && Object.keys(H.rid).some(function (k) { return H.rid[k] === s; })) {
+        s.away = true; bjToast(s.name + ': Verbindung weg, wartet auf Rückkehr');
+        clearTimeout(s._aw);
+        s._aw = setTimeout(function () { if (H === h && s.away) { s.away = false; hostGone(s.id); } }, 90000);
+        if (T.phase === 'bet') checkDeal();
+        push();
+        return;
+      }
+      hostGone(conn.peer);
     }
     conn.on('close', gone); conn.on('error', gone);
   }
@@ -5480,7 +5567,8 @@ input.bprange[type=range]::-moz-range-thumb { width: 20px; height: 20px; border-
       var conn = peer.connect(PEER_PREFIX + code.toLowerCase(), { serialization: 'json', reliable: true });
       conn.on('open', function () {
         var P = PR.prof(), buy = takeBuy(kJoin.get());
-        try { conn.send({ t: 'hello', g: 'bj', v: BJ_V, p: { name: PR.profName(), color: P.color, chips: buy, res: BW } }); } catch (e) {}
+        NB.rid = newRid();
+        try { conn.send({ t: 'hello', g: 'bj', v: BJ_V, rid: NB.rid, p: { name: PR.profName(), color: P.color, chips: buy, res: BW } }); } catch (e) {}
       });
       conn.on('data', function (d) {
         if (g !== NB.gen || !d || typeof d !== 'object') return;
@@ -5490,6 +5578,7 @@ input.bprange[type=range]::-moz-range-thumb { width: 20px; height: 20px; border-
           else endCard('Tisch geschlossen', 'Der Ersteller hat den Tisch verlassen. Deine Chips bleiben in deinem Guthaben.');
           return;
         }
+        if (d.t === 'react' && finished) { showBjReact(String(d.id), String(d.e)); return; }
         if (d.t === 'old') {
           fail((d.v | 0) > BJ_V ? 'Deine App ist nicht aktuell. Schließ sie einmal ganz und öffne sie neu, dann klappt es.'
                                 : 'Der Ersteller hat noch eine ältere App-Version. Er sollte die App einmal ganz schließen und neu öffnen.');
@@ -5511,12 +5600,56 @@ input.bprange[type=range]::-moz-range-thumb { width: 20px; height: 20px; border-
       function lost() {
         if (g !== NB.gen) return;
         if (!finished) fail('Verbindung zum Tisch fehlgeschlagen.');
-        else endCard('Verbindung weg', 'Die Verbindung zum Tisch ist abgebrochen. Deine Chips bleiben in deinem Guthaben.');
+        else reconnect(code);
       }
       conn.on('close', lost); conn.on('error', lost);
     });
   });
   window.addEventListener('pagehide', function () { if (NB.peer) { try { NB.peer.destroy(); } catch (e) {} } });
+
+  /* --- Verbindung zum Tisch abgerissen: bis zu 90 Sekunden immer wieder neu verbinden, der Ersteller haelt den Platz frei --- */
+  function newRid() {
+    var a = new Uint8Array(12), out = '';
+    try { window.crypto.getRandomValues(a); } catch (e) { for (var i = 0; i < 12; i++) a[i] = Math.floor(Math.random() * 256); }
+    for (var j = 0; j < 12; j++) out += (a[j] % 36).toString(36);
+    return out;
+  }
+  function reconnect(code) {
+    if (!T || NB.role !== 'guest') return;
+    var g = ++NB.gen, until = Date.now() + 90000, old = NB.peer;
+    NB.peer = null; NB.conn = null;
+    try { if (old) old.destroy(); } catch (e) {}
+    $('#bjRe').hidden = false;
+    (function attempt() {
+      if (g !== NB.gen) return;
+      if (Date.now() > until) { $('#bjRe').hidden = true; endCard('Verbindung weg', 'Die Verbindung zum Tisch ist abgebrochen. Deine Chips bleiben in deinem Guthaben.'); return; }
+      var peer, done = false;
+      try { peer = new window.Peer(undefined, PR.peerOpts()); } catch (e) { setTimeout(attempt, 4000); return; }
+      NB.peer = peer;
+      function retry() { if (done || g !== NB.gen) return; done = true; clearTimeout(to); try { peer.destroy(); } catch (e) {} setTimeout(attempt, 2500); }
+      var to = setTimeout(retry, 10000);
+      peer.on('error', retry);
+      peer.on('open', function () {
+        if (g !== NB.gen) return;
+        var conn = peer.connect(PEER_PREFIX + code.toLowerCase(), { serialization: 'json', reliable: true }), back = false;
+        conn.on('open', function () {
+          var my = seatOf(ME), P = PR.prof();
+          try { conn.send({ t: 'hello', g: 'bj', v: BJ_V, rid: NB.rid, p: { name: PR.profName(), color: P.color, chips: my ? my.chips : 0, res: BW } }); } catch (e) {}
+        });
+        conn.on('data', function (d) {
+          if (g !== NB.gen || !d || typeof d !== 'object') return;
+          if (d.t === 'snap' && (d.v | 0) === BJ_V && d.s && Array.isArray(d.s.seats)) {
+            if (!back) { back = true; done = true; clearTimeout(to); NB.conn = conn; $('#bjRe').hidden = true; bjToast('Wieder verbunden'); }
+            view(d.s, peer.id);
+          } else if (d.t === 'react' && back) showBjReact(String(d.id), String(d.e));
+          else if (d.t === 'closed') { $('#bjRe').hidden = true; endCard('Tisch geschlossen', 'Der Ersteller hat den Tisch verlassen. Deine Chips bleiben in deinem Guthaben.'); }
+          else if (d.t === 'full' || d.t === 'old') { $('#bjRe').hidden = true; endCard('Verbindung weg', 'Dein Platz am Tisch ist nicht mehr frei. Deine Chips bleiben in deinem Guthaben.'); }
+        });
+        function lost() { if (g !== NB.gen) return; if (back) reconnect(code); else retry(); }
+        conn.on('close', lost); conn.on('error', lost);
+      });
+    })();
+  }
 
   /* ---------- Hauptmenue: Poker in der Mitte, zur einen Seite wischen = Blackjack, zur anderen = Slots ---------- */
   var GAMES = ['slots', 'poker', 'bj'], NP = GAMES.length, PK = 1, BJP = 2;
