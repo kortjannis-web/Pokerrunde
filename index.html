@@ -341,6 +341,14 @@ button { font: inherit; color: inherit; cursor: pointer; }
 .btn.raise { background: linear-gradient(180deg, var(--oak1), var(--oak2)); color: #1d1307; border-color: transparent; }
 .btn:disabled { opacity: .32; cursor: default; }
 .btn:not(:disabled) { transition: transform .12s; }   /* freigeben sofort, nur das Sperren blendet weich aus */
+/* Vormerken, solange man nicht dran ist: kleiner Kasten oben links im Knopf */
+.btns .btn { position: relative; }
+.pbox { display: none; position: absolute; left: 7px; top: 7px; width: 16px; height: 16px; border-radius: 4px; border: 1.5px solid currentColor; opacity: .7; font: 800 12px/13px var(--ui); text-align: center; }
+.btns.pre .btn:not(:disabled) .pbox { display: block; }
+.btns.pre .btn:not(:disabled) { opacity: .5; }
+.btns.pre .btn.on { opacity: 1; box-shadow: 0 0 0 2px var(--ink); }
+.btns.pre .btn.on .pbox { opacity: 1; background: currentColor; }
+.btns.pre .btn.on .pbox::after { content: '\2713'; display: block; filter: invert(1); }
 .btn:active:not(:disabled) { transform: scale(.97); }
 .btn.wide { width: 100%; height: 58px; }
 #rpanel { display: flex; flex-direction: column; gap: 8px; }
@@ -593,9 +601,9 @@ input.bprange[type=range]::-moz-range-thumb { width: 20px; height: 20px; border-
   <footer id="controls">
     <div id="status" aria-live="polite"></div>
     <div class="btns" id="btns">
-      <button class="btn" id="bFold" type="button"><span>Passen</span></button>
-      <button class="btn primary" id="bCall" type="button"><span>Check</span><small></small></button>
-      <button class="btn raise" id="bRaise" type="button"><span>Erhöhen</span></button>
+      <button class="btn" id="bFold" type="button"><span>Passen</span><i class="pbox" aria-hidden="true"></i></button>
+      <button class="btn primary" id="bCall" type="button"><span>Check</span><small></small><i class="pbox" aria-hidden="true"></i></button>
+      <button class="btn raise" id="bRaise" type="button"><span>Erhöhen</span><small></small><i class="pbox" aria-hidden="true"></i></button>
     </div>
     <div id="rpanel" hidden>
       <div class="presets" id="presets"></div>
@@ -1628,6 +1636,7 @@ input.bprange[type=range]::-moz-range-thumb { width: 20px; height: 20px; border-
         if (live().length <= 1) break;
         var rb = roundBets();
         collectRound();
+        S.phase = 'collect';   // Einsaetze wandern in den Pot, die naechste Karte kommt gleich
         if (rb > 0) { H.render(); await H.sleep(1100); }
         if (canActList().length < 2) live().forEach(function (p) { p.revealed = true; });
         for (var j = 0; j < streets[si]; j++) S.board.push(S.deck.pop());
@@ -1697,6 +1706,9 @@ input.bprange[type=range]::-moz-range-thumb { width: 20px; height: 20px; border-
   var INWARD = [0, 54, 36, 36, 54];
 
   var humanResolve = null, nextResolve = null, nextTimer = 0;
+  /* Vorgemerkter Zug, solange man noch nicht dran ist: { type: 'fold'|'call'|'raise', bet: Einsatzhoehe beim Vormerken, hand, street, to }
+     Passen bleibt die ganze Hand stehen (checkt, wenn es gratis ist); Check/Mitgehen/Setzen gelten nur, solange niemand anders setzt. */
+  var pre = null, preRaise = false;
   var raiseMode = false, raiseCfg = null, lastHand = -1, flashMsg = '', flashTimer = 0;
   var geo = { w: 0, h: 0 };
   var deckEl = $('#deck');
@@ -1926,11 +1938,12 @@ input.bprange[type=range]::-moz-range-thumb { width: 20px; height: 20px; border-
     humanAction: function (S0, pl) {
       if (pl && pl.id !== 0 && MP.on) return remoteAction(pl);
       return new Promise(function (res) {
-        humanResolve = res; raiseMode = false;
+        humanResolve = res; turnStart();
         seats[0].el.classList.remove('timed'); void seats[0].el.offsetWidth;
         clearTimeout(turnTimer);
         turnTimer = setTimeout(function () { act({ type: toCallNow() > 0 ? 'fold' : 'check' }); }, TURN_MS);
         render();
+        runPre();
       });
     },
     waitNext: function () {
@@ -2427,10 +2440,17 @@ input.bprange[type=range]::-moz-range-thumb { width: 20px; height: 20px; border-
     var result = S.phase === 'result';
     var st = $('#status');
     var btns = $('#btns'), rp = $('#rpanel'), nx = $('#bNext');
+    var preOk = canPre();
+    checkPre(preOk);
+    if (raiseMode && !myTurn && !preOk) { raiseMode = false; preRaise = false; }
+    if (raiseMode && preRaise && raiseCfg && S.phase !== 'collect' && (raiseCfg.bet !== S.currentBet || raiseCfg.street !== S.board.length)) {
+      if (me.chips > toCallNow()) { openRaise(true); return; }
+      raiseMode = false; preRaise = false;
+    }
     btns.hidden = result || raiseMode;
-    rp.hidden = !(myTurn && raiseMode);
+    rp.hidden = !((myTurn || preOk) && raiseMode);
     nx.hidden = true;
-    st.hidden = raiseMode && myTurn;
+    st.hidden = raiseMode;
 
     if (result) {
       nx.textContent = me.chips <= 0 || S.players.filter(function (p) { return p.chips > 0; }).length === 1 ? 'Weiter' : 'Nächste Hand';
@@ -2441,11 +2461,18 @@ input.bprange[type=range]::-moz-range-thumb { width: 20px; height: 20px; border-
 
     var toCall = toCallNow();
     var bFold = $('#bFold'), bCall = $('#bCall'), bRaise = $('#bRaise');
-    bFold.disabled = !myTurn;
-    bCall.disabled = !myTurn;
-    var canRaise = myTurn && me.chips > toCall;
+    bFold.disabled = !myTurn && !preOk;
+    // Schon gehandelt und gleichgezogen: in dieser Runde kommt man nur wieder dran, wenn jemand erhoeht – dann hilft nur Passen
+    var preMore = preOk && !(me.acted && me.bet >= S.currentBet && S.phase === 'bet');
+    bCall.disabled = !myTurn && !preMore;
+    var canRaise = (myTurn || preMore) && me.chips > toCall;
     bRaise.disabled = !canRaise;
     bRaise.firstChild.textContent = S.currentBet === 0 ? 'Setzen' : 'Erhöhen';
+    btns.classList.toggle('pre', !myTurn && preOk);
+    bFold.classList.toggle('on', !!pre && pre.type === 'fold');
+    bCall.classList.toggle('on', !!pre && pre.type === 'call');
+    bRaise.classList.toggle('on', !!pre && pre.type === 'raise');
+    bRaise.querySelector('small').textContent = pre && pre.type === 'raise' ? 'auf ' + fmt(pre.to) : '';
     var cs = bCall.querySelector('span'), cm = bCall.querySelector('small');
     if (toCall === 0) { cs.textContent = 'Check'; cm.textContent = ''; }
     else if (toCall >= me.chips) { cs.textContent = 'All-in'; cm.textContent = fmt(me.chips); }
@@ -2454,6 +2481,7 @@ input.bprange[type=range]::-moz-range-thumb { width: 20px; height: 20px; border-
     var txt;
     if (flashMsg) txt = flashMsg;
     else if (myTurn) txt = '<b>Du bist dran</b> · ' + (toCall > 0 ? fmt(Math.min(toCall, me.chips)) + ' zum Mitgehen' : 'Check ist gratis');
+    else if (pre) txt = 'Vorgemerkt: <b>' + preName() + '</b> · nochmal tippen zum Aufheben';
     else if (S.phase === 'deal') txt = 'Karten werden gegeben …';
     else if (S.phase === 'runout') txt = 'Alle All-in – die Karten werden aufgedeckt';
     else if (S.phase === 'showdown') txt = 'Showdown …';
@@ -2498,15 +2526,78 @@ input.bprange[type=range]::-moz-range-thumb { width: 20px; height: 20px; border-
     var r = humanResolve;
     if (!r) return;
     clearTimeout(turnTimer);
-    humanResolve = null; raiseMode = false; flashMsg = '';
+    humanResolve = null; raiseMode = false; preRaise = false; flashMsg = '';
+    if (!(a.auto && pre && pre.type === 'fold')) pre = null;   // vorgemerktes Passen bleibt stehen, solange es nur checkt
     if (a.type === 'fold') { tossed = []; clearTimeout(tossTimer); } else restoreTossed();
     r(a);
   }
-  $('#bFold').addEventListener('click', function () { act({ type: 'fold' }); });
-  $('#bCall').addEventListener('click', function () { act({ type: toCallNow() > 0 ? 'call' : 'check' }); });
-  $('#bRaise').addEventListener('click', openRaise);
-  $('#rBack').addEventListener('click', function () { raiseMode = false; renderControls(); });
-  $('#rGo').addEventListener('click', function () { if (document.activeElement === $('#ramt')) commitAmt(); act({ type: 'raise', to: +$('#rslider').value }); });
+
+  /* ---------- Vormerken (Pre-Zug), solange man nicht dran ist ---------- */
+  function canPre() {
+    var me = S.players[0];
+    return !humanResolve && !!me && me.inHand && !me.folded && !me.allIn && !me.out && (S.phase === 'bet' || S.phase === 'deal' || S.phase === 'collect');
+  }
+  function preName() {
+    if (pre.type === 'fold') return 'Passen';
+    if (pre.type === 'raise') return (pre.bet === 0 ? 'Setzen auf ' : 'Erhöhen auf ') + fmt(pre.to);
+    var c = Math.max(0, pre.bet - S.players[0].bet);
+    return c > 0 ? 'Mitgehen ' + fmt(c) : 'Check';
+  }
+  /* Hat sich die Lage geaendert (jemand setzt/erhoeht, neue Karte, neue Hand), wird Check/Mitgehen/Setzen aufgehoben */
+  function checkPre(preOk) {
+    if (!pre) return;
+    if (pre.hand !== S.handNo || (!preOk && !humanResolve)) { pre = null; return; }
+    if (pre.type === 'fold') return;
+    if (pre.street === -1) {   // waehrend des Einsammelns vorgemerkt: gilt fuer die naechste Karte
+      if (S.phase === 'collect') return;
+      pre.street = S.board.length; pre.bet = S.currentBet;
+    }
+    if (pre.street !== S.board.length || pre.bet !== S.currentBet) {
+      var was = preName(), pre0street = pre.street;
+      pre = null;
+      flashMsg = '<b>' + was + '</b> aufgehoben · ' + (pre0street !== S.board.length ? 'neue Karte' : 'es wurde gesetzt');
+      clearTimeout(flashTimer);
+      flashTimer = setTimeout(function () { flashMsg = ''; renderControls(); }, 2200);
+    }
+  }
+  function setPre(type, to) {
+    if (pre && pre.type === type && type !== 'raise') pre = null;
+    else pre = { type: type, bet: S.currentBet, hand: S.handNo, street: S.phase === 'collect' ? -1 : S.board.length, to: to };
+    flashMsg = '';
+    renderControls();
+  }
+  /* Beim eigenen Zug kurz pruefen und den vorgemerkten Zug sofort ausfuehren */
+  function runPre() {
+    if (!pre || !humanResolve) return;
+    var r0 = humanResolve;
+    checkPre(true);
+    if (!pre) { renderControls(); return; }
+    var toCall = toCallNow(), me = S.players[0], p0 = pre;
+    setTimeout(function () {
+      if (humanResolve !== r0 || pre !== p0) return;
+      if (p0.type === 'fold') return act({ type: toCall > 0 ? 'fold' : 'check', auto: true });
+      if (p0.type === 'call') return act({ type: toCall > 0 ? 'call' : 'check' });
+      var maxTo = me.bet + me.chips, minTo = Math.min(maxTo, S.currentBet + S.lastRaise);
+      act({ type: 'raise', to: Math.max(minTo, Math.min(maxTo, p0.to)) });
+    }, 120);
+  }
+  function turnStart() {
+    if (raiseMode && preRaise) { preRaise = false; openRaise(true); }   // offenes Vormerk-Fenster wird zum normalen Erhoehen
+    else raiseMode = false;
+  }
+  $('#bFold').addEventListener('click', function () { if (!humanResolve) return setPre('fold'); act({ type: 'fold' }); });
+  $('#bCall').addEventListener('click', function () { if (!humanResolve) return setPre('call'); act({ type: toCallNow() > 0 ? 'call' : 'check' }); });
+  $('#bRaise').addEventListener('click', function () {
+    if (!humanResolve && pre && pre.type === 'raise') { pre = null; return renderControls(); }
+    preRaise = !humanResolve;
+    openRaise();
+  });
+  $('#rBack').addEventListener('click', function () { raiseMode = false; preRaise = false; renderControls(); });
+  $('#rGo').addEventListener('click', function () {
+    if (document.activeElement === $('#ramt')) commitAmt();
+    if (!humanResolve) { raiseMode = false; preRaise = false; return setPre('raise', +$('#rslider').value); }
+    act({ type: 'raise', to: +$('#rslider').value });
+  });
   $('#bNext').addEventListener('click', function () {
     var r = nextResolve;
     if (r) { nextResolve = null; r(); }
@@ -2514,7 +2605,7 @@ input.bprange[type=range]::-moz-range-thumb { width: 20px; height: 20px; border-
   function prepTable() {
     gen++;
     clearTimeout(turnTimer); clearTimeout(nextTimer); clearTimeout(tossTimer);
-    humanResolve = null; nextResolve = null; raiseMode = false; flashMsg = ''; tossed = [];
+    humanResolve = null; nextResolve = null; raiseMode = false; preRaise = false; pre = null; flashMsg = ''; tossed = [];
     $('#end').hidden = true; $('#pause').hidden = true; $('#menu').hidden = true;
     $('#fly').innerHTML = ''; $('#toast').classList.remove('on');
     handEl.style.transform = ''; handEl.style.opacity = ''; handEl.style.transition = '';
@@ -2535,7 +2626,7 @@ input.bprange[type=range]::-moz-range-thumb { width: 20px; height: 20px; border-
   function toMenu() {
     gen++;
     clearTimeout(turnTimer); clearTimeout(nextTimer); clearTimeout(tossTimer);
-    humanResolve = null; nextResolve = null; raiseMode = false; flashMsg = ''; tossed = [];
+    humanResolve = null; nextResolve = null; raiseMode = false; preRaise = false; pre = null; flashMsg = ''; tossed = [];
     $('#end').hidden = true; $('#pause').hidden = true;
     $('#fly').innerHTML = '';
     clearShow();
@@ -3041,7 +3132,7 @@ input.bprange[type=range]::-moz-range-thumb { width: 20px; height: 20px; border-
       var r = (g + v) % n, p = S.players[r], st = MP.seats[r];
       var open = v === 0 || p.revealed;
       pl.push({
-        name: v === 0 ? 'Du' : st.name, color: st.color, chips: p.chips, bet: p.bet, total: p.total, folded: p.folded, allIn: p.allIn, inHand: p.inHand,
+        name: v === 0 ? 'Du' : st.name, color: st.color, chips: p.chips, bet: p.bet, total: p.total, folded: p.folded, allIn: p.allIn, acted: p.acted, inHand: p.inHand,
         label: p.label, win: p.win, revealed: p.revealed,
         hole: open ? p.hole : p.hole.map(function () { return { r: 2, s: 0 }; }),
         value: p.revealed ? p.value : undefined
@@ -3192,7 +3283,7 @@ input.bprange[type=range]::-moz-range-thumb { width: 20px; height: 20px; border-
     if (!d || !Array.isArray(d.pl) || d.pl.length !== MP.n) return;
     var G = guestGame.S;
     G.players = d.pl.map(function (p, i) {
-      return { id: i, name: String(p.name || '').slice(0, 14), color: p.color, chips: p.chips | 0, bet: p.bet | 0, total: p.total | 0, folded: !!p.folded, allIn: !!p.allIn,
+      return { id: i, name: String(p.name || '').slice(0, 14), color: p.color, chips: p.chips | 0, bet: p.bet | 0, total: p.total | 0, folded: !!p.folded, allIn: !!p.allIn, acted: !!p.acted,
                inHand: !!p.inHand, label: String(p.label || ''), win: p.win | 0, revealed: !!p.revealed, hole: Array.isArray(p.hole) ? p.hole : [], value: p.value };
     });
     G.board = Array.isArray(d.bd) ? d.bd : []; G.phase = d.ph; G.dealer = d.dl; G.sbIdx = d.sbI; G.bbIdx = d.bbI; G.glow = d.gl; G.toAct = d.ta;
@@ -3203,10 +3294,13 @@ input.bprange[type=range]::-moz-range-thumb { width: 20px; height: 20px; border-
     if (mine && !humanResolve && d.tk !== MP.doneTk) {
       var tk = d.tk;
       humanResolve = function (a) { MP.doneTk = tk; try { MP.conn.send({ t: 'act', tk: tk, a: a }); } catch (e) {} };
-      raiseMode = false;
+      turnStart();
       seats[0].el.classList.remove('timed'); void seats[0].el.offsetWidth;
       clearTimeout(turnTimer);
       turnTimer = setTimeout(function () { act({ type: toCallNow() > 0 ? 'fold' : 'check' }); }, TURN_MS);
+      render();
+      runPre();
+      return;
     } else if (!mine && humanResolve) {
       clearTimeout(turnTimer); humanResolve = null; raiseMode = false; seats[0].el.classList.remove('timed');
     }
@@ -3319,15 +3413,16 @@ input.bprange[type=range]::-moz-range-thumb { width: 20px; height: 20px; border-
   $('#bMenu').addEventListener('click', toMenu);
 
   function round10(v) { return Math.round(v / 10) * 10; }
-  function openRaise() {
+  function openRaise(keep) {
+    var keepV = keep ? +$('#rslider').value : 0;
     var me = S.players[0];
     var toCall = toCallNow();
     var maxTo = me.bet + me.chips;
     var minTo = Math.min(maxTo, S.currentBet + S.lastRaise);
     var pot = game.totalPot();
-    raiseCfg = { min: minTo, max: maxTo };
+    raiseCfg = { min: minTo, max: maxTo, bet: S.currentBet, street: S.board.length };
     var sl = $('#rslider');
-    sl.min = minTo; sl.max = maxTo; sl.step = 1; sl.value = minTo;
+    sl.min = minTo; sl.max = maxTo; sl.step = 1; sl.value = keep ? Math.max(minTo, Math.min(maxTo, keepV)) : minTo;
     sl.disabled = minTo >= maxTo; $('#ramt').disabled = minTo >= maxTo;
     function sized(f) { return Math.max(minTo, Math.min(maxTo, S.currentBet + round10((pot + toCall) * f))); }
     var presets = [['Min', minTo], ['½ Pot', sized(0.5)], ['¾ Pot', sized(0.75)], ['Pot', sized(1)], ['All-in', maxTo]];
@@ -3349,8 +3444,8 @@ input.bprange[type=range]::-moz-range-thumb { width: 20px; height: 20px; border-
     sl.style.setProperty('--fill', (span > 0 ? (to - raiseCfg.min) / span * 100 : 100) + '%');
     var ra = $('#ramt'); if (document.activeElement !== ra) ra.value = fmt(to);
     var allin = to >= raiseCfg.max;
-    if (!$('#rlim').classList.contains('flash')) $('#rlim').textContent = 'Minimum ' + fmt(raiseCfg.min) + ' \u00b7 Maximum ' + fmt(raiseCfg.max);
-    $('#rGo').textContent = allin ? 'All-in ' + fmt(raiseCfg.max) : (S.currentBet === 0 ? 'Setzen auf ' : 'Erhöhen auf ') + fmt(to);
+    if (!$('#rlim').classList.contains('flash')) $('#rlim').textContent = (preRaise ? 'Wird gesetzt, sobald du dran bist \u00b7 ' : '') + 'Minimum ' + fmt(raiseCfg.min) + ' \u00b7 Maximum ' + fmt(raiseCfg.max);
+    $('#rGo').textContent = (preRaise ? 'Vormerken: ' : '') + (allin ? 'All-in ' + fmt(raiseCfg.max) : (S.currentBet === 0 ? 'Setzen auf ' : 'Erhöhen auf ') + fmt(to));
   }
   /* Schieben rastet auf 10er ein (Minimum und All-in bleiben exakt); eingetippte Zahlen duerfen beliebig sein, z. B. 21 */
   $('#rslider').addEventListener('input', function () {
