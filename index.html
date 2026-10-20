@@ -490,10 +490,10 @@ input.bprange[type=range]::-moz-range-thumb { width: 20px; height: 20px; border-
 .bppre button.on { background: var(--brass); color: var(--brass-ink); border-color: transparent; }
 .bphint { color: var(--muted); font: 500 13px var(--ui); text-align: center; }
 .bphint.warn { color: var(--brass); font-weight: 700; }
-#chipdlg { z-index: 80; }
-#chipdlg .endcard { display: flex; flex-direction: column; gap: 14px; }
-#chipdlg .endcard h2, #chipdlg .endcard p { margin: 0; }
-#chipdlg .btn + .btn { margin-top: -4px; }
+#chipdlg, #bjChipDlg { z-index: 80; }
+#chipdlg .endcard, #bjChipDlg .endcard { display: flex; flex-direction: column; gap: 14px; }
+#chipdlg .endcard h2, #chipdlg .endcard p, #bjChipDlg .endcard h2, #bjChipDlg .endcard p { margin: 0; }
+#chipdlg .btn + .btn, #bjChipDlg .btn + .btn { margin-top: -4px; }
 #pview { position: absolute; inset: 0; z-index: 75; overflow-y: auto; padding: 16px 20px 28px; background: radial-gradient(ellipse at 50% 0%, var(--felt2), var(--bg) 60%); }
 #pview[hidden] { display: none; }
 #pview .pav { width: 84px; height: 84px; font-size: 38px; padding-bottom: .02em; }
@@ -660,6 +660,9 @@ input.bprange[type=range]::-moz-range-thumb { width: 20px; height: 20px; border-
 #bj { position: absolute; inset: 0; z-index: 58; display: flex; flex-direction: column; background: radial-gradient(120% 70% at 50% 30%, #2b2224, var(--bg) 70%); background-color: var(--bg); }
 .bjbar { flex: 0 0 auto; height: 50px; display: flex; align-items: center; justify-content: space-between; gap: 8px; }
 .bjbar .right { gap: 8px; }
+/* mit Tisch-Code wird es auf schmalen Handys eng: dann ohne Schriftzug, Chips, Aufladen und Pause bleiben sichtbar */
+@media (max-width: 440px) { .bjbar.coded .brand { display: none; } .bjbar.coded .right { margin-left: auto; } }
+@media (max-width: 360px) { .bjbar .bjcode { font-size: 0; } .bjbar .bjcode b { margin-left: 0; } }
 .bjbank { position: static; height: 32px; }
 .bjcode { height: 32px; padding: 0 12px; border-radius: 999px; border: 1px solid rgba(224,170,74,.5); background: rgba(16,18,19,.7); font: 600 12px var(--ui); color: var(--muted); letter-spacing: .06em; }
 .bjcode b { color: var(--brass); font: 800 14px var(--display); letter-spacing: .12em; margin-left: 4px; }
@@ -923,7 +926,8 @@ input.bprange[type=range]::-moz-range-thumb { width: 20px; height: 20px; border-
       <span class="brand">Blackjack</span>
       <div class="right">
         <button class="bjcode" id="bjCodeBtn" type="button" hidden>Code<b id="bjCodeTxt">-----</b></button>
-        <div class="bank bjbank" role="status" aria-label="Deine Chips"><i class="bchip" aria-hidden="true"></i><span id="bjChips">0</span></div>
+        <div class="bank bjbank" role="status" aria-label="Deine Chips am Tisch"><i class="bchip" aria-hidden="true"></i><span id="bjChips">0</span></div>
+        <button class="iconbtn" id="bjTopBtn" type="button" aria-label="Chips aufladen"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path d="M12 8v8M8 12h8"/></svg></button>
         <button class="iconbtn" id="bjPauseBtn" type="button" aria-label="Pause"><svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><rect x="6" y="5" width="4" height="14" rx="1.2"/><rect x="14" y="5" width="4" height="14" rx="1.2"/></svg></button>
       </div>
     </header>
@@ -988,6 +992,17 @@ input.bprange[type=range]::-moz-range-thumb { width: 20px; height: 20px; border-
         <button class="btn primary wide" id="bjEndGo" type="button">Zum Hauptmenü</button>
       </div>
     </div>
+    <div id="bjChipDlg" class="overlay" hidden>
+      <div class="endcard">
+        <h2 id="bjcdT">Chips mitbringen</h2>
+        <p id="bjcdX"></p>
+        <div id="bjcdPick"></div>
+        <div>
+          <button class="btn primary wide" id="bjcdGo" type="button">Spielen</button>
+          <button class="btn wide" id="bjcdNo" type="button" style="margin-top:10px">Abbrechen</button>
+        </div>
+      </div>
+    </div>
   </div>
 
   <div id="bjf" hidden>
@@ -1016,13 +1031,21 @@ input.bprange[type=range]::-moz-range-thumb { width: 20px; height: 20px; border-
           <div class="seg" id="bjfMin" role="radiogroup" aria-label="Mindesteinsatz"></div>
           <div class="frhint" id="bjfMinHint"></div>
         </div>
+        <div>
+          <div class="psec">Chips mitbringen</div>
+          <div id="bjkCreate" style="margin-top:8px"></div>
+        </div>
         <button class="btn primary wide" id="bjfMake" type="button">Tisch eröffnen</button>
-        <p class="frnote" id="bjfMakeMsg">Bis zu 5 Spieler. Jeder spielt für sich gegen den Dealer, gesetzt wird aus deinem Guthaben.</p>
+        <p class="frnote" id="bjfMakeMsg">Bis zu 5 Spieler. Jeder spielt für sich gegen den Dealer, gesetzt wird mit den Chips, die du mitbringst.</p>
       </div>
       <div class="frview" id="bjfJoinV" hidden>
         <div class="pfield">
           <label for="bjCodeIn">Code</label>
           <input id="bjCodeIn" type="text" inputmode="text" maxlength="5" autocomplete="off" autocapitalize="characters" spellcheck="false" placeholder="•••••">
+        </div>
+        <div>
+          <div class="psec">Chips mitbringen</div>
+          <div id="bjkJoin" style="margin-top:8px"></div>
         </div>
         <button class="btn primary wide" id="bjfGo" type="button" disabled>Beitreten</button>
         <p class="frnote" id="bjfJoinMsg">Den Code bekommst du vom Ersteller, zum Beispiel per WhatsApp.</p>
@@ -4318,7 +4341,7 @@ input.bprange[type=range]::-moz-range-thumb { width: 20px; height: 20px; border-
   window.PR = {
     Snd: Snd, fmt: fmt, REBUY: P.REBUY, SITE_URL: SITE_URL, AV: AV,
     prof: function () { return PROF; }, saveProf: saveProf, renderBank: renderBank, profName: profName,
-    cardEl: cardEl, setFace: setFace, chipStack: chipStack, seg: seg,
+    cardEl: cardEl, setFace: setFace, chipStack: chipStack, seg: seg, Picker: Picker,
     newCode: newCode, cleanCode: cleanCode, netAvail: netAvail, peerOpts: peerOpts, MSG_NOLIB: MSG_NOLIB,
     /* fuer die Freundesliste: wo bin ich gerade (Menue, Bots, Online-Tisch mit Code) */
     poker: function () { return { role: NET.role, code: NET.code, playing: playing }; },
@@ -4389,15 +4412,23 @@ input.bprange[type=range]::-moz-range-thumb { width: 20px; height: 20px; border-
   }
   function say(t) { T.say = t; T.sayN = (T.sayN | 0) + 1; }
 
-  function hostStart(min, me) {
+  function hostStart(min, me, chips) {
     H = { shoe: newShoe(), hole: null, cid: 0, dl: 0, tt: 0, bt: 0, busy: false };
     T = { phase: 'bet', round: 0, min: min, seats: [], dealer: [], turn: -1, left: 0, shuf: 0, shoe: H.shoe.length, say: '', sayN: 0 };
     ME = me;
-    addSeat(me, { name: PR.profName(), color: PR.prof().color, chips: PR.prof().bank });
+    addSeat(me, { name: PR.profName(), color: PR.prof().color, chips: chips, res: BW });
     betPhase();
   }
   function addSeat(id, p) {
-    T.seats.push({ id: id, name: p.name, color: p.color, chips: p.chips, bet: 0, last: 0, ready: false, hands: [], cur: 0, inR: false, gone: false, gift: 0 });
+    /* res: was der Spieler noch im Guthaben hat (nicht am Tisch), add: so viel hat er schon nachgeladen */
+    T.seats.push({ id: id, name: p.name, color: p.color, chips: p.chips, res: p.res || 0, add: 0, bet: 0, last: 0, ready: false, hands: [], cur: 0, inR: false, gone: false, gift: 0 });
+  }
+  /* Chips aus dem Guthaben an den Tisch holen: liegen sofort bereit, auch mitten in der Runde */
+  function hTop(id, v, r) {
+    var s = seatOf(id); v = Math.round(+v || 0);
+    if (!s || s.gone || !(v > 0) || v > 1e9) return;
+    s.chips += v; s.add += v; s.res = Math.min(1e9, Math.max(0, Math.round(+r || 0)));
+    push();
   }
   function betPhase() {
     clearTimeout(H.tt); clearTimeout(H.bt); H.dl = 0; H.busy = false;
@@ -4405,8 +4436,8 @@ input.bprange[type=range]::-moz-range-thumb { width: 20px; height: 20px; border-
     T.phase = 'bet'; T.turn = -1; T.dealer = []; H.hole = null;
     T.seats.forEach(function (s) {
       s.hands = []; s.cur = 0; s.inR = false; s.ready = false; s.gift = 0;
-      /* pleite: wie beim Poker gibt es wieder Chips zum Weiterspielen */
-      if (s.chips < T.min) { s.gift = Math.max(PR.REBUY, T.min) - s.chips; s.chips += s.gift; }
+      /* pleite und auch im Guthaben nichts mehr: wie beim Poker gibt es wieder Chips zum Weiterspielen */
+      if (s.chips < T.min && s.chips + s.res < T.min) { s.gift = Math.max(PR.REBUY, T.min) - s.chips; s.chips += s.gift; }
       s.bet = Math.min(s.last || T.min, s.chips);
     });
     push();
@@ -4557,7 +4588,9 @@ input.bprange[type=range]::-moz-range-thumb { width: 20px; height: 20px; border-
   /* ---------- Anzeige (gleich fuer Ersteller, Mitspieler und Einzelspiel) ---------- */
   var bj = $('#bj'), stage = $('#bjStage'), fly = $('#bjFly');
   var CEL = {};          // Karten-ID -> Element, damit Karten beim Neuzeichnen liegen bleiben
-  var V = { phase: '', round: -1, shuf: -1, sayN: -1, turnKey: '', doneKey: '', giftKey: '', betKey: '', quiet: true };
+  var V = { phase: '', round: -1, shuf: -1, sayN: -1, turnKey: '', doneKey: '', giftKey: '', betKey: '', brokeKey: '', quiet: true };
+  /* BW: Chips, die im Guthaben geblieben sind (nicht am Tisch). ADD: insgesamt nachgeladen in dieser Sitzung. */
+  var BW = 0, ADD = 0, dlg = null;
   var myBet = 0, tick = 0, toastT = 0;
   function bjToast(t) {
     var el = $('#bjToast'); el.textContent = t; el.classList.add('on'); clearTimeout(toastT);
@@ -4657,14 +4690,18 @@ input.bprange[type=range]::-moz-range-thumb { width: 20px; height: 20px; border-
     if (t.shuf !== V.shuf) { V.shuf = t.shuf; Snd.shuffle(); }
     if (t.sayN !== V.sayN) { V.sayN = t.sayN; if (t.say) bjToast(t.say); }
     var my = seatOf(me);
-    /* eigenes Guthaben = Chips am Tisch (ein laufender Einsatz verfaellt beim Verlassen) */
+    /* eigenes Guthaben = Chips im Beutel + am Tisch + Nachgeladenes, das beim Ersteller noch nicht angekommen ist
+       (ein laufender Einsatz verfaellt beim Verlassen) */
     if (my) {
-      var P = PR.prof();
-      if (P.bank !== my.chips) { P.bank = Math.max(0, Math.round(my.chips)); PR.saveProf(); PR.renderBank(); }
+      var P = PR.prof(), nb = Math.max(0, Math.round(BW + my.chips + Math.max(0, ADD - (my.add | 0))));
+      if (P.bank !== nb) { P.bank = nb; PR.saveProf(); PR.renderBank(); }
       var gk = t.round + ':' + my.gift;
       if (my.gift > 0 && t.phase === 'bet' && V.giftKey !== gk) { V.giftKey = gk; if (!V.quiet) bjToast('Pleite – du bekommst ' + fmt(my.gift) + ' Chips zum Weiterspielen'); }
     }
     $('#bjChips').textContent = fmt(my ? my.chips : PR.prof().bank);
+    /* keine Chips mehr am Tisch, aber noch im Guthaben: wie beim Poker gleich zum Nachladen fragen */
+    if (my && t.phase === 'bet' && !my.ready && my.chips < t.min && BW > 0 && ADD <= (my.add | 0) && !dlg
+        && V.brokeKey !== String(t.round) && $('#bjPause').hidden && $('#bjEnd').hidden) { V.brokeKey = String(t.round); openDlg('broke'); }
     /* Einsatz vorbelegen, sobald eine neue Setzrunde beginnt */
     var bk = t.round + ':' + (my ? 1 : 0);
     if (t.phase === 'bet' && V.betKey !== bk) { V.betKey = bk; myBet = my ? Math.min(my.bet, my.chips) : 0; if (myBet < t.min) myBet = 0; }
@@ -4752,6 +4789,7 @@ input.bprange[type=range]::-moz-range-thumb { width: 20px; height: 20px; border-
       go.querySelector('small').textContent = rd ? 'warte auf die anderen' : myBet ? 'Einsatz ' + fmt(myBet) : 'mindestens ' + fmt(t.min);
       if (rd) st = 'Du bist bereit' + (sec ? ' · es geht in <b>' + sec + ' s</b> los' : ' · warte auf die anderen');
       else if (sec) st = 'Setz deinen Einsatz · Austeilen in <b>' + sec + ' s</b>';
+      else if (my.chips < t.min && BW > 0) st = 'Lade Chips nach (+ oben), um weiterzuspielen';
       else st = 'Chips antippen oder ins Feld ziehen · mindestens <b>' + fmt(t.min) + '</b>';
     } else {
       var myTurn = !!(my && t.phase === 'play' && t.seats[t.turn] === my && !(H && H.busy));
@@ -4858,17 +4896,17 @@ input.bprange[type=range]::-moz-range-thumb { width: 20px; height: 20px; border-
   function resetView() {
     CEL = {}; fly.innerHTML = '';
     $('#bjDealer .bjc').innerHTML = ''; $('#bjOthers').innerHTML = ''; $('#bjMe .bjhands').innerHTML = '';
-    V = { phase: '', round: -1, shuf: -1, sayN: -1, turnKey: '', doneKey: '', giftKey: '', betKey: '', quiet: true };
-    myBet = 0; $('#bjPause').hidden = true; $('#bjEnd').hidden = true; $('#bjToast').classList.remove('on');
+    V = { phase: '', round: -1, shuf: -1, sayN: -1, turnKey: '', doneKey: '', giftKey: '', betKey: '', brokeKey: '', quiet: true };
+    myBet = 0; dlg = null; $('#bjChipDlg').hidden = true; $('#bjPause').hidden = true; $('#bjEnd').hidden = true; $('#bjToast').classList.remove('on');
   }
   function openTable() {
     $('#menu').hidden = true; $('#bjf').hidden = true; bj.hidden = false;
-    $('#bjCodeBtn').hidden = !NB.code; $('#bjCodeTxt').textContent = NB.code;
+    $('#bjCodeBtn').hidden = !NB.code; $('#bjCodeTxt').textContent = NB.code; $('.bjbar').classList.toggle('coded', !!NB.code);
   }
   function playSolo() {
     Snd.unlock(); wipe(false); resetView();
-    hostStart(10, 'me');
     openTable();
+    openDlg('buyin');
   }
   function wipe(bye) {
     var peer = NB.peer, conns = NB.conns.slice(), host = NB.role === 'host';
@@ -4883,12 +4921,13 @@ input.bprange[type=range]::-moz-range-thumb { width: 20px; height: 20px; border-
     wipe(true); resetView();
     Snd.stopAll();
     bj.hidden = true; $('#menu').hidden = false;
+    BW = 0; ADD = 0;
     PR.renderBank();
   }
   function endCard(title, text) {
     if (!T || !bj.hidden && !$('#bjEnd').hidden) return;
     $('#bjEndT').textContent = title; $('#bjEndX').textContent = text;
-    $('#bjPause').hidden = true; $('#bjEnd').hidden = false;
+    $('#bjPause').hidden = true; $('#bjChipDlg').hidden = true; dlg = null; $('#bjEnd').hidden = false;
     wipe(false);
   }
   $('#bjEndGo').addEventListener('click', leave);
@@ -4918,15 +4957,68 @@ input.bprange[type=range]::-moz-range-thumb { width: 20px; height: 20px; border-
   });
 
   /* ---------- Mit Freunden: Tisch eroeffnen / beitreten ---------- */
-  var ROOM = { code: '', min: 10 };
+  var ROOM = { code: '', min: 10, buy: 1000 };
   try {
     var rr = JSON.parse(localStorage.getItem('pr-bjroom') || 'null');
     if (rr) {
       if (typeof rr.code === 'string' && /^[A-Z2-9]{5}$/.test(rr.code)) ROOM.code = rr.code;
       if (MIN_OPTS.indexOf(rr.min) >= 0) ROOM.min = rr.min;
+      if (typeof rr.buy === 'number' && isFinite(rr.buy) && rr.buy > 0) ROOM.buy = Math.round(rr.buy);
     }
   } catch (e) {}
   function saveRoom() { try { localStorage.setItem('pr-bjroom', JSON.stringify(ROOM)); } catch (e) {} }
+
+  /* ---------- Chips mitbringen und nachladen (wie beim Poker) ---------- */
+  function floorBank() { var P = PR.prof(); if (P.bank < PR.REBUY) { P.bank = PR.REBUY; PR.saveProf(); PR.renderBank(); } }
+  function maxBuy() { return Math.max(PR.REBUY, PR.prof().bank | 0); }
+  function minBuy() { return Math.min(PR.REBUY, maxBuy()); }
+  function maxTop() { return Math.max(0, BW | 0); }
+  function minTop() { return Math.min(maxTop(), T ? T.min : 10); }
+  function setBuy(v) { ROOM.buy = v; saveRoom(); }
+  /* zu Beginn: so viel geht an den Tisch, der Rest bleibt im Guthaben */
+  function takeBuy(v) { var P = PR.prof(); v = Math.max(Math.min(minBuy(), P.bank), Math.min(P.bank, v)); BW = P.bank - v; ADD = 0; return v; }
+  var dPick = PR.Picker($('#bjcdPick'), function () { return dlg && dlg !== 'buyin' ? minTop() : minBuy(); },
+                                        function () { return dlg && dlg !== 'buyin' ? maxTop() : maxBuy(); });
+  var kCreate = PR.Picker($('#bjkCreate'), minBuy, maxBuy, setBuy);
+  var kJoin = PR.Picker($('#bjkJoin'), minBuy, maxBuy, setBuy);
+  function openDlg(mode) {
+    dlg = mode;
+    var t = $('#bjcdT'), x = $('#bjcdX'), go = $('#bjcdGo'), no = $('#bjcdNo');
+    go.disabled = false; no.textContent = 'Abbrechen';
+    if (mode === 'buyin') {
+      floorBank();
+      t.textContent = 'Chips mitbringen'; x.textContent = 'Mit wie vielen Chips setzt du dich an den Tisch? Den Rest behältst du im Guthaben.';
+      go.textContent = 'Spielen'; dPick.set(ROOM.buy);
+    } else if (mode === 'top') {
+      t.textContent = 'Chips aufladen';
+      x.textContent = maxTop() > 0 ? 'Die Chips kommen aus deinem Guthaben und liegen sofort bei dir am Tisch.' : 'Dein Guthaben ist aufgebraucht, es gibt nichts zum Aufladen.';
+      go.textContent = 'Aufladen'; go.disabled = maxTop() <= 0; dPick.set(ROOM.buy);
+    } else {
+      t.textContent = 'Keine Chips mehr am Tisch'; x.textContent = 'Lade Chips aus deinem Guthaben nach, um weiterzuspielen.';
+      go.textContent = 'Nachladen'; no.textContent = 'Zum Hauptmenü'; dPick.set(ROOM.buy);
+    }
+    $('#bjChipDlg').hidden = false;
+  }
+  function topUp(v) {
+    if (!T || !(v > 0) || v > BW) return;
+    BW -= v; ADD += v;
+    if (NB.role === 'guest') { try { NB.conn.send({ t: 'add', a: v, r: BW }); } catch (e) {} view(T, ME); }
+    else hTop(ME, v, BW);
+    Snd.chip(2, 0); bjToast('+' + fmt(v) + ' Chips am Tisch');
+  }
+  $('#bjcdGo').addEventListener('click', function () {
+    var m = dlg; if (!m) return;
+    var v = dPick.get();
+    $('#bjChipDlg').hidden = true; dlg = null;
+    if (m === 'buyin') { setBuy(v); hostStart(10, 'me', takeBuy(v)); }
+    else topUp(v);
+  });
+  $('#bjcdNo').addEventListener('click', function () {
+    var m = dlg; if (!m) return;
+    if (m !== 'top') { leave(); return; }
+    $('#bjChipDlg').hidden = true; dlg = null;
+  });
+  $('#bjTopBtn').addEventListener('click', function () { if (T && !dlg) openDlg('top'); });
   function fShow(v) {
     ['bjfMain', 'bjfCreateV', 'bjfJoinV'].forEach(function (id) { $('#' + id).hidden = id !== v; });
     $('#bjfTitle').textContent = v === 'bjfCreateV' ? 'Tisch eröffnen' : v === 'bjfJoinV' ? 'Tisch beitreten' : 'Blackjack mit Freunden';
@@ -4936,13 +5028,14 @@ input.bprange[type=range]::-moz-range-thumb { width: 20px; height: 20px; border-
     $('#bjfCode').textContent = ROOM.code;
     PR.seg($('#bjfMin'), MIN_OPTS, ROOM.min, function (v) { return fmt(v); }, function (v) { ROOM.min = v; saveRoom(); renderRoom(); });
     $('#bjfMinHint').textContent = 'Jeder setzt pro Runde mindestens ' + fmt(ROOM.min) + ' Chips.';
+    floorBank(); kCreate.set(ROOM.buy);
   }
   function openFriends(view, code) {
     Snd.unlock(); $('#bjf').hidden = false; $('#bjfMsg').hidden = true;
     if (view === 'join') openJoin(code); else fShow('bjfMain');
   }
   function openJoin(code) {
-    $('#bjCodeIn').value = code || ''; syncJoin(); fShow('bjfJoinV');
+    $('#bjCodeIn').value = code || ''; syncJoin(); floorBank(); kJoin.set(ROOM.buy); fShow('bjfJoinV');
     joinMsg('Den Code bekommst du vom Ersteller, zum Beispiel per WhatsApp.', false);
   }
   function syncJoin() {
@@ -4978,12 +5071,12 @@ input.bprange[type=range]::-moz-range-thumb { width: 20px; height: 20px; border-
     p = (p && typeof p === 'object') ? p : {};
     var nm = String(p.name == null ? '' : p.name).slice(0, 14).trim();
     return { name: nm || 'Spieler', color: (typeof p.color === 'string' && /^#[0-9a-f]{6}$/i.test(p.color)) ? p.color : PR.AV[0],
-             chips: Math.min(1e9, Math.max(0, Math.round(+p.chips || 0))) };
+             chips: Math.min(1e9, Math.max(0, Math.round(+p.chips || 0))), res: Math.min(1e9, Math.max(0, Math.round(+p.res || 0))) };
   }
 
   /* --- Ersteller: der Tisch ist sofort offen, Freunde setzen sich in der naechsten Setzrunde dazu --- */
   $('#bjfMake').addEventListener('click', function () {
-    makeMsg('Bis zu 5 Spieler. Jeder spielt für sich gegen den Dealer, gesetzt wird aus deinem Guthaben.', false);
+    makeMsg('Bis zu 5 Spieler. Jeder spielt für sich gegen den Dealer, gesetzt wird mit den Chips, die du mitbringst.', false);
     if (!PR.netAvail()) { makeMsg(PR.MSG_NOLIB, true); return; }
     var b = $('#bjfMake'); b.disabled = true; b.textContent = 'Eröffne …';
     wipe(false);
@@ -5003,7 +5096,7 @@ input.bprange[type=range]::-moz-range-thumb { width: 20px; height: 20px; border-
         NB.peer = peer; NB.role = 'host'; NB.code = ROOM.code; NB.conns = [];
         peer.on('connection', function (c) { hostAccept(c, g); });
         resetJoinBtns(); resetView();
-        hostStart(ROOM.min, 'host');
+        hostStart(ROOM.min, 'host', takeBuy(kCreate.get()));
         openTable();
       });
       peer.on('disconnected', function () { if (g === NB.gen && done) { try { peer.reconnect(); } catch (e) {} } });
@@ -5021,6 +5114,7 @@ input.bprange[type=range]::-moz-range-thumb { width: 20px; height: 20px; border-
       if (conn._bj) {
         if (d.t === 'ready') hReady(conn.peer, d.a);
         else if (d.t === 'act') hAct(conn.peer, String(d.a));
+        else if (d.t === 'add') hTop(conn.peer, d.a, d.r);
         return;
       }
       if (d.t !== 'hello' || d.g !== 'bj') return;
@@ -5032,7 +5126,7 @@ input.bprange[type=range]::-moz-range-thumb { width: 20px; height: 20px; border-
       addSeat(conn.peer, cleanProf(d.p));
       bjToast(T.seats[T.seats.length - 1].name + ' sitzt mit am Tisch');
       Snd.ping();
-      if (T.phase === 'bet') { var s = seatOf(conn.peer); if (s.chips < T.min) { s.gift = Math.max(PR.REBUY, T.min) - s.chips; s.chips += s.gift; } s.bet = Math.min(T.min, s.chips); checkDeal(); }
+      if (T.phase === 'bet') { var s = seatOf(conn.peer); if (s.chips < T.min && s.chips + s.res < T.min) { s.gift = Math.max(PR.REBUY, T.min) - s.chips; s.chips += s.gift; } s.bet = Math.min(T.min, s.chips); checkDeal(); }
       push();
     });
     function gone() {
@@ -5066,8 +5160,8 @@ input.bprange[type=range]::-moz-range-thumb { width: 20px; height: 20px; border-
       if (finished || g !== NB.gen) return;
       var conn = peer.connect(PEER_PREFIX + code.toLowerCase(), { serialization: 'json', reliable: true });
       conn.on('open', function () {
-        var P = PR.prof();
-        try { conn.send({ t: 'hello', g: 'bj', v: 1, p: { name: PR.profName(), color: P.color, chips: P.bank } }); } catch (e) {}
+        var P = PR.prof(), buy = takeBuy(kJoin.get());
+        try { conn.send({ t: 'hello', g: 'bj', v: 2, p: { name: PR.profName(), color: P.color, chips: buy, res: BW } }); } catch (e) {}
       });
       conn.on('data', function (d) {
         if (g !== NB.gen || !d || typeof d !== 'object') return;
