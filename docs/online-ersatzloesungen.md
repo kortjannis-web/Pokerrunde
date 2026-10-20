@@ -1,4 +1,4 @@
-# Ersatzlösung: Supabase statt öffentlichem PeerJS-Server
+# Ersatzlösungen für das Online-Spiel: Supabase und Cloudflare
 
 Stand heute laufen Online-Tische (Poker, Blackjack) und Freunde ohne eigenen Server:
 
@@ -7,7 +7,8 @@ Stand heute laufen Online-Tische (Poker, Blackjack) und Freunde ohne eigenen Ser
 - **Spieldaten:** direkt von Handy zu Handy (WebRTC), der Ersteller rechnet das Spiel
 - **Gespeichert:** nur im Browser (Chips, Statistik, Spielercode `pr-pcode`, Freunde `pr-friends`)
 
-Diese Datei ist die sofort einsetzbare zweite Lösung, falls das Probleme macht.
+Diese Datei enthält die sofort einsetzbaren Ersatzlösungen, falls das Probleme macht:
+**Supabase** (zweite Lösung) und **Cloudflare** (dritte Lösung, oder wenn Supabase selbst Probleme macht).
 
 ## Wann umsteigen
 
@@ -17,6 +18,8 @@ Typische Anzeichen (Meldungen aus der App oder vom Nutzer):
 - „Verbindung zum Tisch fehlgeschlagen“ / Beitreten klappt nur in manchen Netzen (oft Mobilfunk)
 - Freunde werden nie als online angezeigt, obwohl beide die App offen haben
 - Verbindungen brechen während des Spiels häufig ab
+- Beschwerden: „Server hängt“, „geht schon wieder nicht“, alles sehr langsam
+- Auslastung: Vermittlungsserver überlastet, Limits/Kontingente erreicht (auch bei Supabase oder Cloudflare)
 - Wunsch nach Konto, Chips auf mehreren Geräten, Einladungen an Freunde, die gerade offline sind
 
 ## Stufe 1: nur die Vermittlung ersetzen (schnell, ohne Datenbank)
@@ -71,8 +74,37 @@ Zusätzlich vom Nutzer:
 Beim Umstieg den bestehenden Spielercode (`pr-pcode`) und die Freundesliste (`pr-friends`) aus dem
 Browser ins Konto übernehmen, damit niemand neu anfangen muss.
 
+## Cloudflare (dritte Lösung, oder wenn Supabase Probleme macht)
+
+Statt eines fremden Gemeinschaftsservers läuft die Vermittlung auf einem eigenen kleinen Cloudflare Worker.
+Kostenloser Plan reicht für eine Freundesrunde (Grenzen vor dem Umstieg auf cloudflare.com nachsehen).
+
+### Was der Nutzer tun muss (ca. 10 Minuten)
+
+1. Auf https://dash.cloudflare.com kostenlos registrieren (E-Mail bestätigen).
+2. Claude legt vorher den Worker-Code im Repo unter `cloudflare/` ab (mit `wrangler.toml`).
+3. Im Dashboard **Workers & Pages → Create → Import a repository** wählen, GitHub verbinden,
+   Repository `Pokerrunde` auswählen, als **Root directory** `cloudflare` eintragen, **Deploy**.
+   Ab dann aktualisiert Cloudflare den Worker bei jedem Push nach `main` von selbst.
+4. Die Adresse des Workers (`https://pokerrunde.<name>.workers.dev`) in den Chat schicken. Fertig.
+
+### Was Claude dann umbaut
+
+- **Worker mit Durable Objects:** ein Objekt pro Tisch (`table:<CODE>`) und eins pro Spieler (`user:<SPIELERCODE>`),
+  jeweils mit WebSocket-Verbindungen (Hibernation-API, spart Kontingent). Der Worker leitet nur Nachrichten weiter:
+  Mitspieler → Ersteller, Ersteller → einzelne oder alle; beim Spieler-Objekt: online/offline, Status, Einladungen,
+  Freund hinzufügen/entfernen. Optional speichert das Spieler-Objekt Einladungen für Offline-Freunde.
+- Im Spiel dieselbe Transportschicht wie bei Supabase (`send`, `on('data')`, `on('close')`), nur gegen den Worker.
+- **TURN über Cloudflare** (Realtime TURN), falls direkte WebRTC-Verbindungen in manchen Netzen scheitern und PeerJS
+  bleiben soll: der Worker erzeugt kurzlebige TURN-Zugangsdaten, die App trägt sie in `iceServers` ein.
+  Dafür im Dashboard unter **Realtime → TURN** einen Schlüssel anlegen und Key-ID + API-Token als Secret im Worker
+  hinterlegen (Claude sagt die genauen Namen).
+- **Hosting-Alternative:** Ist GitHub Pages selbst überlastet oder gestört, die Seite zusätzlich über
+  **Cloudflare Pages** ausliefern (gleiches Repo, kein Build-Befehl, Ausgabeordner `/`).
+  Dann `SITE_URL` und die Einladungslinks anpassen.
+
 ## Kleinere Alternative
 
 Wenn nur in einzelnen Netzen keine direkte Verbindung zustande kommt (Vermittlung selbst funktioniert),
 reicht auch ein TURN-Weiterleitungsserver in `iceServers` (über `window.PR_PEER_OPTS.config`), z. B. ein
-kostenloser Zugang bei Metered oder Cloudflare Calls. Supabase Stufe 1 löst das Problem aber mit.
+kostenloser Zugang bei Metered oder Cloudflare (siehe oben). Supabase Stufe 1 und Cloudflare lösen das Problem aber mit.

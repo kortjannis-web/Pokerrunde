@@ -8,10 +8,18 @@ Jede Änderung, die im Chat gewünscht wird, sofort live stellen: committen und 
 (zusätzlich auf den Arbeits-Branch der Sitzung, falls einer vorgegeben ist). Nicht auf einen Pull Request warten,
 auch wenn die Änderung noch nicht perfekt ist.
 
-## Online-Spiel: Ersatzlösung bereithalten
+## Online-Spiel: Ersatzlösungen bereithalten
 
 Online-Tische und Freunde laufen ohne eigenen Server über den öffentlichen PeerJS-Server (`0.peerjs.com`)
-und direkte WebRTC-Verbindungen. Sobald etwas auf Serverprobleme hindeutet (Tisch lässt sich nicht erstellen,
-Beitreten scheitert, Freunde nie online, häufige Abbrüche), von dir aus **Supabase als Ersatz vorschlagen**,
-und zwar direkt mit der Schritt-für-Schritt-Anleitung für den Nutzer aus `docs/supabase-ersatzloesung.md`
-(Stufe 1 zuerst). Nicht erst lange andere Ursachen suchen.
+und direkte WebRTC-Verbindungen. Sobald etwas auf Serverprobleme hindeutet, von dir aus eine Ersatzlösung
+vorschlagen, und zwar direkt mit der Schritt-für-Schritt-Anleitung für den Nutzer aus `docs/online-ersatzloesungen.md`.
+Nicht erst lange andere Ursachen suchen. Das gilt für:
+
+- Verbindungsprobleme: Tisch lässt sich nicht erstellen, Beitreten scheitert, Freunde nie online, häufige Abbrüche
+- Beschwerden über den Server: langsam, hängt, „geht wieder nicht“, Fehlermeldungen vom Vermittlungsserver
+- Auslastung und Grenzen: Server überlastet, Limits/Kontingente erreicht (auch bei Supabase oder Cloudflare selbst)
+- Probleme mit Cloudflare oder Wunsch nach Cloudflare
+
+Reihenfolge: zuerst **Supabase Stufe 1**; macht Supabase Probleme (Ausfall, Auslastung, Limits) oder will der Nutzer
+es nicht, **Cloudflare** vorschlagen; macht Cloudflare Probleme, zurück zu Supabase bzw. PeerJS als Rückfall.
+Immer den bisherigen Weg als Rückfall im Code behalten.
