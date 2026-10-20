@@ -470,9 +470,9 @@ a.btn { text-decoration: none; }
 .frhint { margin-top: 8px; color: var(--muted); font: 500 13px var(--ui); }
 .frnote { margin: 0; color: var(--muted); font: 500 13px/1.45 var(--ui); text-align: center; }
 .frnote.warn { color: var(--brass); }
-#frCodeIn { height: 64px; border-radius: 14px; background: var(--bg2); border: 1px solid var(--line); color: var(--brass); font: 800 34px var(--display); letter-spacing: .16em; text-align: center; text-transform: uppercase; padding: 0 0 0 .16em; outline: none; width: 100%; box-sizing: border-box; }
-#frCodeIn:focus { border-color: var(--brass); }
-#frCodeIn::placeholder { color: rgba(236,231,218,.22); }
+#frCodeIn, #bjCodeIn { height: 64px; border-radius: 14px; background: var(--bg2); border: 1px solid var(--line); color: var(--brass); font: 800 34px var(--display); letter-spacing: .16em; text-align: center; text-transform: uppercase; padding: 0 0 0 .16em; outline: none; width: 100%; box-sizing: border-box; }
+#frCodeIn:focus, #bjCodeIn:focus { border-color: var(--brass); }
+#frCodeIn::placeholder, #bjCodeIn::placeholder { color: rgba(236,231,218,.22); }
 .bpick { display: flex; flex-direction: column; gap: 12px; text-align: left; }
 .bpnum { width: 100%; box-sizing: border-box; height: 58px; border-radius: 14px; background: var(--bg2); border: 1px solid var(--line); color: var(--brass); font: 800 30px var(--display); text-align: center; outline: none; font-variant-numeric: tabular-nums; padding: 0 12px; }
 .bpnum:focus { border-color: var(--brass); }
@@ -579,6 +579,143 @@ input.bprange[type=range]::-moz-range-thumb { width: 20px; height: 20px; border-
 .endcard { width: min(340px, 100%); text-align: center; padding: 28px 24px 24px; border-radius: 20px; background: var(--bg2); border: 1px solid var(--line); box-shadow: 0 24px 60px rgba(0,0,0,.6); }
 .endcard h2 { margin: 0 0 8px; font: 800 28px var(--display); }
 .endcard p { margin: 0 0 22px; color: var(--muted); font-size: 15px; line-height: 1.45; }
+
+/* ---------- Hauptmenue: zur Seite wischen = Poker <-> Blackjack ---------- */
+#menu { touch-action: pan-y; grid-template-columns: minmax(0, 1fr); }
+#menu::before { content: ''; position: absolute; inset: 0; z-index: 0; pointer-events: none; background: radial-gradient(ellipse at 50% 30%, var(--bj2), var(--bg) 70%); opacity: var(--mix, 0); transition: opacity .4s ease; }
+#menu.drag::before { transition: none; }
+#menu .menucard { position: relative; z-index: 1; }
+.mswipe { overflow: hidden; margin: 0 -24px; cursor: grab; }
+.mtrack { display: flex; transition: transform .42s cubic-bezier(.2,.9,.3,1); }
+.mpage { flex: 0 0 100%; padding: 0 24px; display: flex; flex-direction: column; gap: 12px; }
+.mpage .menusub { margin-bottom: 0; }
+.mtrack.hint { animation: mhint 1.1s .9s ease-in-out both; }
+@keyframes mhint { 0%, 100% { transform: translateX(0); } 40% { transform: translateX(-16%); } 60% { transform: translateX(-16%); } }
+.mdots { display: flex; justify-content: center; gap: 4px; margin: -2px 0 6px; }
+.mdots button { width: 26px; height: 22px; padding: 0; border: 0; background: none; display: grid; place-items: center; }
+.mdots button::before { content: ''; width: 7px; height: 7px; border-radius: 999px; background: rgba(236,231,218,.28); transition: width .25s, background .25s; }
+.mdots button.on::before { width: 20px; background: var(--brass); }
+.mbtns { display: grid; }
+.mgrp { grid-area: 1 / 1; display: flex; flex-direction: column; gap: 12px; transition: opacity .25s, visibility .25s; }
+.mgrp.off { opacity: 0; visibility: hidden; pointer-events: none; }
+/* Blackjack-Zeichen: Ass und Koenig, zusammen 21 */
+.bjlogo { display: flex; justify-content: center; height: 41px; align-items: flex-end; }
+.bjlogo i { position: relative; width: 30px; height: 41px; border-radius: 4px; background: linear-gradient(160deg, #f7f2e6, #e6dec9); color: var(--card-ink); font: 800 14px/1 var(--display); font-style: normal; box-shadow: 0 4px 10px rgba(0,0,0,.45); display: flex; flex-direction: column; align-items: center; padding-top: 4px; }
+.bjlogo i span { font-size: 15px; margin-top: 2px; }
+.bjlogo i.r { color: var(--card-red); }
+.bjlogo i:first-child { transform: rotate(-10deg) translateX(5px); }
+.bjlogo i:last-child { transform: rotate(10deg) translate(-5px, -2px); }
+.bjlogo b { align-self: center; margin-left: 12px; font: 800 30px/1 var(--display); color: var(--brass); }
+
+/* ---------- Blackjack: Farben (Weinrot statt Gruen) ---------- */
+:root { --bj1: #8b3442; --bj2: #5a1b26; --bj3: #2e0d13; }
+#bj { position: absolute; inset: 0; z-index: 58; display: flex; flex-direction: column; background: radial-gradient(120% 70% at 50% 30%, #2b2224, var(--bg) 70%); background-color: var(--bg); }
+.bjbar { flex: 0 0 auto; height: 50px; display: flex; align-items: center; justify-content: space-between; gap: 8px; }
+.bjbar .right { gap: 8px; }
+.bjbank { position: static; height: 32px; }
+.bjcode { height: 32px; padding: 0 12px; border-radius: 999px; border: 1px solid rgba(224,170,74,.5); background: rgba(16,18,19,.7); font: 600 12px var(--ui); color: var(--muted); letter-spacing: .06em; }
+.bjcode b { color: var(--brass); font: 800 14px var(--display); letter-spacing: .12em; margin-left: 4px; }
+#bjStage { position: relative; flex: 1 1 auto; min-height: 0; --cw: clamp(54px, min(17cqw, 11.5vh), 84px); }
+.bjrail, .bjfelt { position: absolute; border-radius: 28px 28px 50% 50% / 28px 28px 36% 36%; }
+.bjrail { left: -4px; right: -4px; top: 0; bottom: 6px;
+  background: repeating-linear-gradient(97deg, rgba(0,0,0,.07) 0 2px, rgba(255,255,255,.035) 2px 5px, transparent 5px 12px), linear-gradient(170deg, var(--oak1), var(--oak2) 58%, var(--oak3));
+  box-shadow: 0 22px 44px rgba(0,0,0,.55), inset 0 2px 0 rgba(255,255,255,.2), inset 0 -8px 14px rgba(0,0,0,.35); }
+.bjfelt { left: 6px; right: 6px; top: 8px; bottom: 16px; border-radius: 22px 22px 50% 50% / 22px 22px 35% 35%;
+  background: radial-gradient(ellipse at 50% 30%, var(--bj1), var(--bj2) 62%, var(--bj3));
+  box-shadow: inset 0 0 40px rgba(0,0,0,.5), inset 0 0 0 2px rgba(0,0,0,.35); }
+.bjarc { position: absolute; left: 6%; width: 88%; top: calc(var(--cw) * 1.4 + 52px); height: auto; pointer-events: none; overflow: visible; }
+.bjarc text { font-family: var(--ui); text-transform: uppercase; }
+.bjarc .a { fill: var(--brass); font-size: 12.5px; font-weight: 800; letter-spacing: .16em; opacity: .9; }
+.bjarc .b { fill: rgba(236,231,218,.5); font-size: 8.5px; font-weight: 700; letter-spacing: .14em; }
+#bjDealer { position: absolute; left: 50%; top: 22px; transform: translateX(-50%); display: flex; flex-direction: column; align-items: center; gap: 6px; }
+#bjDealer .bjc { --w: var(--cw); min-height: calc(var(--w) * 1.4); }
+.bjc { display: flex; justify-content: center; }
+.bjc .card + .card { margin-left: calc(var(--w) * -.6); }
+.bjc .face { box-shadow: 0 6px 14px rgba(0,0,0,.45), inset 0 0 0 1px rgba(0,0,0,.08); }
+.bjv { min-width: 34px; padding: 2px 9px 3px; border-radius: 999px; background: rgba(16,18,19,.9); border: 1px solid var(--line); font: 800 14px var(--ui); text-align: center; font-variant-numeric: tabular-nums; white-space: nowrap; }
+.bjv.bust { color: #ff8a76; }
+.bjv.bj { background: var(--brass); color: var(--brass-ink); border-color: transparent; }
+.bjv:empty { visibility: hidden; }
+/* andere Spieler: kleine Karten in einer Reihe auf dem Tisch */
+#bjOthers { position: absolute; left: 4px; right: 4px; top: calc(var(--cw) * 1.4 + 68px); display: flex; justify-content: space-around; align-items: flex-start; }
+.bjo { position: relative; flex: 0 1 25%; min-width: 0; display: flex; flex-direction: column; align-items: center; gap: 4px; transition: opacity .3s; }
+.bjo.out { opacity: .5; }
+.bjo .bjhands { display: flex; gap: 4px; min-height: 42px; align-items: flex-start; }
+.bjo .bjb { display: none; }
+.bjo .bjv { position: relative; z-index: 1; margin-top: -9px; }
+.bjo .bjh { display: flex; flex-direction: column; align-items: center; gap: 3px; }
+.bjo .bjc { --w: 30px; }
+.bjo.many .bjc { --w: 24px; }
+.bjo .card .pip, .bjo .card .corner.br { display: none; }
+.bjo .card .corner.tl { top: 50%; left: 50%; transform: translate(-50%, -50%); font-size: 1.25em; }
+.bjo .bjc .card + .card { margin-left: calc(var(--w) * -.35); }
+.bjo .bjv { font-size: 11px; padding: 1px 6px 2px; min-width: 24px; }
+.bjo .bjh.act .bjv { background: var(--brass); color: var(--brass-ink); border-color: transparent; }
+.bjwho { display: flex; align-items: center; gap: 5px; max-width: 100%; padding: 2px 8px 2px 2px; border-radius: 999px; background: rgba(16,18,19,.88); border: 1px solid var(--line); }
+.bjwho .pav { width: 22px; height: 22px; font-size: 11px; }
+.bjo.turn .bjwho .pav { box-shadow: 0 0 0 2px var(--brass), 0 0 10px 2px rgba(224,170,74,.6); }
+.bjwho span { font: 700 11px var(--ui); overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.bjsub { font: 600 11px var(--ui); color: rgba(236,231,218,.75); font-variant-numeric: tabular-nums; white-space: nowrap; text-shadow: 0 1px 3px rgba(0,0,0,.8); }
+.bjsub.ok { color: var(--brass); font-weight: 800; }
+/* eigene Haende */
+#bjMe { position: absolute; left: 0; right: 0; bottom: 30px; display: flex; justify-content: center; pointer-events: none; }
+#bjMe .bjhands { display: flex; gap: 12px; justify-content: center; align-items: flex-end; }
+#bjMe .bjh { display: flex; flex-direction: column; align-items: center; gap: 6px; transition: opacity .3s, transform .3s; }
+#bjMe .bjc { --w: calc(var(--cw) * 1.12); }
+#bjMe.h2 .bjc { --w: calc(var(--cw) * .82); }
+#bjMe.h3 .bjc { --w: calc(var(--cw) * .6); }
+#bjMe .bjc .card + .card { margin-left: calc(var(--w) * -.58); }
+#bjMe.h3 .bjc .card + .card { margin-left: calc(var(--w) * -.5); }
+#bjMe .face { box-shadow: 0 14px 26px rgba(0,0,0,.5), inset 0 0 0 1px rgba(0,0,0,.08); }
+#bjMe.mine .bjh:not(.act) { opacity: .55; }
+#bjMe .bjh.act .bjv { background: var(--brass); color: var(--brass-ink); border-color: transparent; box-shadow: 0 0 14px rgba(224,170,74,.6); }
+.bjb { display: inline-flex; align-items: center; gap: 5px; font: 800 13px var(--ui); color: var(--ink); background: rgba(16,18,19,.9); padding: 2px 9px 3px 5px; border-radius: 999px; border: 1px solid rgba(224,170,74,.5); font-variant-numeric: tabular-nums; white-space: nowrap; }
+.bjb::before { content: ''; width: 12px; height: 12px; border-radius: 50%; background: radial-gradient(circle at 35% 30%, #f4d67f, #d0a040 58%, #a2742a); }
+.bjo .bjb { font-size: 11px; padding: 1px 7px 2px 4px; }
+.bjo .bjb::before { width: 9px; height: 9px; }
+.bjr { font: 800 12px var(--ui); padding: 2px 9px 3px; border-radius: 999px; white-space: nowrap; animation: pop .4s cubic-bezier(.2,.9,.3,1) both; }
+.bjr:empty { display: none; }
+.bjr.win, .bjr.bj { background: var(--brass); color: var(--brass-ink); }
+.bjr.lose, .bjr.bust { background: rgba(16,18,19,.9); color: #ff8a76; border: 1px solid rgba(255,138,118,.4); }
+.bjr.push { background: rgba(16,18,19,.9); color: var(--ink); border: 1px solid var(--line); }
+#bjMe .bjr { font-size: 14px; padding: 3px 12px 4px; min-height: 24px; }
+#bjMe .bjr:empty { display: block; visibility: hidden; }
+#bjStage.solo .bjarc { top: max(calc(var(--cw) * 1.4 + 52px), 36%); }
+.bjo .bjr { display: none; }
+#bjStage:not(.solo) .bjarc { opacity: .4; }
+.bjsub.pos { color: #8fcf9a; font-weight: 800; }
+.bjsub.neg { color: #ff8a76; font-weight: 800; }
+/* Einsatzfeld vor dem eigenen Platz */
+#bjSpot { position: absolute; left: 50%; bottom: 34px; width: 104px; height: 104px; margin-left: -52px; border-radius: 50%; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 4px; transition: opacity .3s, transform .3s; }
+#bjSpot .ring { position: absolute; inset: 0; border-radius: 50%; border: 2px dashed rgba(224,170,74,.6); background: rgba(0,0,0,.12); }
+#bjSpot b { position: relative; font: 800 18px var(--display); font-variant-numeric: tabular-nums; }
+#bjSpot b.zero { font: 700 11px var(--ui); color: rgba(236,231,218,.6); letter-spacing: .12em; text-transform: uppercase; }
+#bjSpot .stk { position: relative; min-height: 18px; }
+#bjSpot.off { opacity: 0; transform: scale(.85); pointer-events: none; }
+#bjFly { position: absolute; inset: 0; pointer-events: none; z-index: 8; }
+#bjFly .card { position: absolute; transition: transform .45s cubic-bezier(.4,0,.6,1), opacity .45s; }
+.bjtoast { position: absolute; left: 50%; top: 6px; transform: translate(-50%, -12px); z-index: 9; padding: 7px 16px; border-radius: 999px; background: var(--brass); color: var(--brass-ink); font: 800 13px var(--ui); opacity: 0; pointer-events: none; transition: opacity .35s, transform .35s; white-space: nowrap; box-shadow: 0 6px 18px rgba(0,0,0,.5); }
+.bjtoast.on { opacity: 1; transform: translate(-50%, 0); }
+/* Bedienung */
+#bjCtl { flex: 0 0 auto; height: 146px; padding: 6px 0 12px; display: flex; flex-direction: column; justify-content: flex-end; gap: 8px; }
+#bjStatus { text-align: center; font: 500 13px var(--ui); color: var(--muted); min-height: 18px; font-variant-numeric: tabular-nums; }
+#bjStatus b { color: var(--ink); font-weight: 700; }
+#bjBetUI, #bjActUI { display: grid; gap: 8px; }
+#bjActUI { grid-template-columns: 1fr 1fr; }
+#bjActUI .btn { height: 50px; }
+.bjchiprow { display: flex; justify-content: center; gap: 14px; }
+.bjchip { position: relative; width: 50px; height: 50px; border-radius: 50%; border: 0; padding: 0; display: grid; place-items: center;
+  background: repeating-conic-gradient(#efe8d8 0 13deg, var(--cc) 13deg 45deg); box-shadow: 0 3px 6px rgba(0,0,0,.55); transition: transform .12s, opacity .2s; }
+.bjchip::before { content: ''; position: absolute; inset: 6px; border-radius: 50%; background: var(--cc); border: 1.5px solid rgba(239,232,216,.75); }
+.bjchip b { position: relative; font: 800 13px var(--ui); color: #f7f1e3; }
+.bjchip:active:not(:disabled) { transform: scale(.92) translateY(-2px); }
+.bjchip:disabled { opacity: .3; cursor: default; }
+.bjrow2 { display: grid; grid-template-columns: 1fr 1.6fr; gap: 10px; }
+.bjrow2 .btn { height: 50px; }
+#bjPause .endcard, #bjEnd .endcard { max-height: 100%; overflow-y: auto; }
+#bjPause .codebox { background: var(--bg); padding: 14px 12px 12px; margin-bottom: 8px; }
+#bjPause .codebox .code { font-size: 36px; }
+#bjf { position: absolute; inset: 0; z-index: 70; overflow-y: auto; padding: 16px 20px 28px; background: radial-gradient(ellipse at 50% 0%, var(--bj2), var(--bg) 60%); }
 
 </style>
 
@@ -692,11 +829,144 @@ input.bprange[type=range]::-moz-range-thumb { width: 20px; height: 20px; border-
     </button>
     <div class="bank" role="status" aria-label="Deine Chips"><i class="bchip" aria-hidden="true"></i><span id="bankVal">1.000</span></div>
     <div class="menucard">
-      <div class="menulogo" aria-hidden="true"><i>♠</i><i class="r">♥</i><i>♣</i><i class="r">♦</i></div>
-      <h1>Pokerrunde</h1>
-      <p class="menusub">Texas Hold’em · bis zu 5 Spieler</p>
-      <button class="btn primary wide" id="bPlay" type="button">Gegen Bots spielen</button>
-      <button class="btn wide" id="bFriends" type="button">Mit Freunden spielen</button>
+      <div class="mswipe" id="mSwipe">
+        <div class="mtrack" id="mTrack">
+          <div class="mpage" aria-label="Poker">
+            <div class="menulogo" aria-hidden="true"><i>♠</i><i class="r">♥</i><i>♣</i><i class="r">♦</i></div>
+            <h1>Pokerrunde</h1>
+            <p class="menusub">Texas Hold’em · bis zu 5 Spieler</p>
+          </div>
+          <div class="mpage" aria-label="Blackjack">
+            <div class="bjlogo" aria-hidden="true"><i>A<span>♠</span></i><i class="r">K<span>♦</span></i><b>21</b></div>
+            <h1>Blackjack</h1>
+            <p class="menusub">Gegen den Dealer · bis zu 5 Spieler</p>
+          </div>
+        </div>
+      </div>
+      <div class="mdots" role="tablist" aria-label="Spiel wählen">
+        <button type="button" data-p="0" role="tab" aria-label="Poker"></button>
+        <button type="button" data-p="1" role="tab" aria-label="Blackjack"></button>
+      </div>
+      <div class="mbtns">
+        <div class="mgrp" id="mPoker">
+          <button class="btn primary wide" id="bPlay" type="button">Gegen Bots spielen</button>
+          <button class="btn wide" id="bFriends" type="button">Mit Freunden spielen</button>
+        </div>
+        <div class="mgrp off" id="mBj">
+          <button class="btn primary wide" id="bjPlay" type="button">Gegen den Dealer spielen</button>
+          <button class="btn wide" id="bjFriends" type="button">Mit Freunden spielen</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div id="bj" hidden>
+    <header class="bjbar">
+      <span class="brand">Blackjack</span>
+      <div class="right">
+        <button class="bjcode" id="bjCodeBtn" type="button" hidden>Code<b id="bjCodeTxt">-----</b></button>
+        <div class="bank bjbank" role="status" aria-label="Deine Chips"><i class="bchip" aria-hidden="true"></i><span id="bjChips">0</span></div>
+        <button class="iconbtn" id="bjPauseBtn" type="button" aria-label="Pause"><svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><rect x="6" y="5" width="4" height="14" rx="1.2"/><rect x="14" y="5" width="4" height="14" rx="1.2"/></svg></button>
+      </div>
+    </header>
+    <main id="bjStage">
+      <div class="bjrail"></div><div class="bjfelt"></div>
+      <svg class="bjarc" viewBox="0 0 300 64" aria-hidden="true">
+        <defs><path id="bjArcA" d="M 14 10 Q 150 78 286 10"/><path id="bjArcB" d="M 48 30 Q 150 82 252 30"/></defs>
+        <text class="a"><textPath href="#bjArcA" startOffset="50%" text-anchor="middle">Blackjack zahlt 3 zu 2</textPath></text>
+        <text class="b"><textPath href="#bjArcB" startOffset="50%" text-anchor="middle">Dealer zieht bis 16 · steht auf 17</textPath></text>
+      </svg>
+      <div id="bjDealer" aria-label="Dealer"><div class="bjc"></div><div class="bjv"></div></div>
+      <div id="bjOthers"></div>
+      <div id="bjSpot" class="off"><div class="ring"></div><div class="stk"></div><b></b></div>
+      <div id="bjMe"><div class="bjhands"></div></div>
+      <div id="bjFly"></div>
+      <div class="bjtoast" id="bjToast"></div>
+    </main>
+    <footer id="bjCtl">
+      <div id="bjStatus" aria-live="polite"></div>
+      <div id="bjBetUI">
+        <div class="bjchiprow">
+          <button class="bjchip c10" type="button" data-v="10" aria-label="10 setzen"><b>10</b></button>
+          <button class="bjchip c50" type="button" data-v="50" aria-label="50 setzen"><b>50</b></button>
+          <button class="bjchip c100" type="button" data-v="100" aria-label="100 setzen"><b>100</b></button>
+          <button class="bjchip c500" type="button" data-v="500" aria-label="500 setzen"><b>500</b></button>
+        </div>
+        <div class="bjrow2">
+          <button class="btn" id="bjClear" type="button">Löschen</button>
+          <button class="btn primary" id="bjDeal" type="button"><span>Austeilen</span><small></small></button>
+        </div>
+      </div>
+      <div id="bjActUI" hidden>
+        <button class="btn primary" id="bjHit" type="button">Karte</button>
+        <button class="btn" id="bjStand" type="button">Stehen</button>
+        <button class="btn raise" id="bjDouble" type="button"><span>Verdoppeln</span><small></small></button>
+        <button class="btn" id="bjSplit" type="button"><span>Teilen</span><small></small></button>
+      </div>
+    </footer>
+    <div id="bjPause" class="overlay" hidden>
+      <div class="endcard">
+        <h2>Pause</h2>
+        <p id="bjPauseTxt"></p>
+        <div class="psettings" id="bjInv" hidden>
+          <div class="psec">Mitspieler einladen</div>
+          <div class="codebox">
+            <div class="code" id="bjPCode">-----</div>
+            <div class="codebtns">
+              <button class="btn" id="bjPCopy" type="button">Code kopieren</button>
+              <a class="btn" id="bjPWa" href="https://wa.me/" target="_blank" rel="noopener">WhatsApp</a>
+            </div>
+          </div>
+        </div>
+        <button class="btn primary wide" id="bjResume" type="button">Weiterspielen</button>
+        <button class="btn wide" id="bjMenu" type="button" style="margin-top:10px">Zum Hauptmenü</button>
+      </div>
+    </div>
+    <div id="bjEnd" class="overlay" hidden>
+      <div class="endcard">
+        <h2 id="bjEndT"></h2>
+        <p id="bjEndX"></p>
+        <button class="btn primary wide" id="bjEndGo" type="button">Zum Hauptmenü</button>
+      </div>
+    </div>
+  </div>
+
+  <div id="bjf" hidden>
+    <div class="profwrap">
+      <div class="proftop">
+        <button class="profback" id="bjfBack" type="button" aria-label="Zurück"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M15 5l-7 7 7 7"/></svg></button>
+        <h2 id="bjfTitle">Blackjack mit Freunden</h2>
+      </div>
+      <div class="frview" id="bjfMain">
+        <button class="frcard hl" id="bjfCreate" type="button"><b>Tisch eröffnen</b><span>Du bekommst einen Code. Freunde können jederzeit dazukommen.</span></button>
+        <button class="frcard" id="bjfJoin" type="button"><b>Tisch beitreten</b><span>Gib den Code ein, den dir ein Freund geschickt hat.</span></button>
+        <p class="frnote warn" id="bjfMsg" hidden></p>
+      </div>
+      <div class="frview" id="bjfCreateV" hidden>
+        <div class="codebox">
+          <div class="psec">Dein Code</div>
+          <div class="code" id="bjfCode">-----</div>
+          <div class="codebtns">
+            <button class="btn" id="bjfCopy" type="button">Code kopieren</button>
+            <button class="btn" id="bjfNew" type="button">Neuer Code</button>
+          </div>
+        </div>
+        <div>
+          <div class="psec">Mindesteinsatz</div>
+          <div class="seg" id="bjfMin" role="radiogroup" aria-label="Mindesteinsatz"></div>
+          <div class="frhint" id="bjfMinHint"></div>
+        </div>
+        <button class="btn primary wide" id="bjfMake" type="button">Tisch eröffnen</button>
+        <p class="frnote" id="bjfMakeMsg">Bis zu 5 Spieler. Jeder spielt für sich gegen den Dealer, gesetzt wird aus deinem Guthaben.</p>
+      </div>
+      <div class="frview" id="bjfJoinV" hidden>
+        <div class="pfield">
+          <label for="bjCodeIn">Code</label>
+          <input id="bjCodeIn" type="text" inputmode="text" maxlength="5" autocomplete="off" autocapitalize="characters" spellcheck="false" placeholder="•••••">
+        </div>
+        <button class="btn primary wide" id="bjfGo" type="button" disabled>Beitreten</button>
+        <p class="frnote" id="bjfJoinMsg">Den Code bekommst du vom Ersteller, zum Beispiel per WhatsApp.</p>
+      </div>
     </div>
   </div>
 
@@ -3964,6 +4234,810 @@ input.bprange[type=range]::-moz-range-thumb { width: 20px; height: 20px; border-
   renderBank();
   /* fuer die Update-Pruefung: darf die Seite gerade neu laden, ohne dass ein Spiel oder Online-Tisch verloren geht? */
   window.prIdle = function () { return !playing && !MP.on && !NET.peer; };
+  /* fuer Blackjack (eigenes Skript weiter unten): gemeinsames Profil, Guthaben, Klaenge, Karten und Online-Vermittlung */
+  window.PR = {
+    Snd: Snd, fmt: fmt, REBUY: P.REBUY, SITE_URL: SITE_URL, AV: AV,
+    prof: function () { return PROF; }, saveProf: saveProf, renderBank: renderBank, profName: profName,
+    cardEl: cardEl, setFace: setFace, chipStack: chipStack, seg: seg,
+    newCode: newCode, cleanCode: cleanCode, netAvail: netAvail, peerOpts: peerOpts, MSG_NOLIB: MSG_NOLIB
+  };
+})();
+</script>
+
+<script>
+/* Blackjack gegen einen unsichtbaren Dealer, allein oder mit Freunden am selben Tisch (bis zu 5 Spieler).
+   Wie beim Poker rechnet der Ersteller des Tisches das Spiel, alle anderen bekommen seine Spielstaende.
+   Regeln: 6 Decks im Schuh, Dealer zieht bis 16 und steht auf allen 17, Blackjack zahlt 3 zu 2,
+   bei offenem Ass oder Zehner schaut der Dealer sofort nach Blackjack. Verdoppeln auf die ersten zwei Karten
+   (auch nach dem Teilen), Teilen bis zu vier Haende, geteilte Asse bekommen nur noch eine Karte. */
+(function () {
+  'use strict';
+  var PR = window.PR;
+  if (!PR) return;
+  var Snd = PR.Snd, fmt = PR.fmt;
+  function $(s) { return document.querySelector(s); }
+
+  var DECKS = 6, CUT = 78, MAX_HANDS = 4, MAX_SEATS = 5, TURN_MS = 25000, BET_MS = 15000;
+  var MIN_OPTS = [10, 25, 50];
+  var PEER_PREFIX = 'pokerrunde-bj-';
+
+  /* ---------- Karten und Werte ---------- */
+  function randInt(n) {
+    try { var a = new Uint32Array(1); window.crypto.getRandomValues(a); return a[0] % n; }
+    catch (e) { return Math.floor(Math.random() * n); }
+  }
+  function newShoe() {
+    var s = [];
+    for (var d = 0; d < DECKS; d++) for (var su = 0; su < 4; su++) for (var r = 2; r <= 14; r++) s.push({ r: r, s: su });
+    for (var i = s.length - 1; i > 0; i--) { var j = randInt(i + 1), t = s[i]; s[i] = s[j]; s[j] = t; }
+    return s;
+  }
+  function cval(c) { return c.r === 14 ? 11 : c.r >= 10 ? 10 : c.r; }
+  /* Summe der offenen Karten; soft = ein Ass zaehlt noch als 11 */
+  function total(cards) {
+    var t = 0, aces = 0;
+    cards.forEach(function (c) { if (c.r == null) return; t += cval(c); if (c.r === 14) aces++; });
+    while (t > 21 && aces) { t -= 10; aces--; }
+    return { t: t, soft: aces > 0 };
+  }
+  function isBJ(h) { return !h.split && h.cards.length === 2 && total(h.cards).t === 21; }
+  function canDouble(s, h) { return h.cards.length === 2 && !h.ace && s.chips >= h.bet; }
+  function canSplit(s, h) { return h.cards.length === 2 && !h.ace && cval(h.cards[0]) === cval(h.cards[1]) && s.hands.length < MAX_HANDS && s.chips >= h.bet; }
+
+  /* ---------- Spielstand ----------
+     T: was alle sehen (die verdeckte Dealerkarte steht nur als { id, down: true } drin).
+     H: nur beim Rechnenden: Schuh, verdeckte Karte, Zeitgeber. */
+  var T = null, H = null, ME = '', DL = 0;
+  var NB = { peer: null, role: '', code: '', conns: [], conn: null, gen: 0 };
+  function multi() { return NB.role !== ''; }
+
+  function seatOf(id) { if (!T) return null; for (var i = 0; i < T.seats.length; i++) if (T.seats[i].id === id) return T.seats[i]; return null; }
+  function later(fn, ms) { var h = H; return setTimeout(function () { if (H === h) fn(); }, ms); }
+  function draw() {
+    if (!H.shoe.length) { H.shoe = newShoe(); T.shuf++; }
+    var c = H.shoe.pop(); T.shoe = H.shoe.length;
+    return { id: ++H.cid, r: c.r, s: c.s };
+  }
+  function push() {
+    T.left = H.dl ? Math.max(0, H.dl - Date.now()) : 0;
+    var msg = { t: 'snap', s: T };
+    NB.conns.forEach(function (c) { if (c._bj) { try { c.send(msg); } catch (e) {} } });
+    view(T, ME);
+  }
+  function say(t) { T.say = t; T.sayN = (T.sayN | 0) + 1; }
+
+  function hostStart(min, me) {
+    H = { shoe: newShoe(), hole: null, cid: 0, dl: 0, tt: 0, bt: 0, busy: false };
+    T = { phase: 'bet', round: 0, min: min, seats: [], dealer: [], turn: -1, left: 0, shuf: 0, shoe: H.shoe.length, say: '', sayN: 0 };
+    ME = me;
+    addSeat(me, { name: PR.profName(), color: PR.prof().color, chips: PR.prof().bank });
+    betPhase();
+  }
+  function addSeat(id, p) {
+    T.seats.push({ id: id, name: p.name, color: p.color, chips: p.chips, bet: 0, last: 0, ready: false, hands: [], cur: 0, inR: false, gone: false, gift: 0 });
+  }
+  function betPhase() {
+    clearTimeout(H.tt); clearTimeout(H.bt); H.dl = 0; H.busy = false;
+    T.seats = T.seats.filter(function (s) { return !s.gone; });
+    T.phase = 'bet'; T.turn = -1; T.dealer = []; H.hole = null;
+    T.seats.forEach(function (s) {
+      s.hands = []; s.cur = 0; s.inR = false; s.ready = false; s.gift = 0;
+      /* pleite: wie beim Poker gibt es wieder Chips zum Weiterspielen */
+      if (s.chips < T.min) { s.gift = Math.max(PR.REBUY, T.min) - s.chips; s.chips += s.gift; }
+      s.bet = Math.min(s.last || T.min, s.chips);
+    });
+    push();
+  }
+  function hReady(id, amt) {
+    var s = seatOf(id);
+    if (!s || s.gone || T.phase !== 'bet' || s.ready) return;
+    amt = Math.round(+amt || 0);
+    if (!(amt >= T.min) || amt > s.chips) { push(); return; }
+    s.bet = amt; s.ready = true;
+    checkDeal(); push();
+  }
+  /* alle bereit: sofort austeilen. Sonst warten die Bereiten hoechstens 15 Sekunden auf den Rest. */
+  function checkDeal() {
+    if (T.phase !== 'bet') return;
+    var act = T.seats.filter(function (s) { return !s.gone; }), rd = act.filter(function (s) { return s.ready; });
+    if (!rd.length) { clearTimeout(H.bt); H.dl = 0; return; }
+    if (rd.length === act.length) { clearTimeout(H.bt); H.dl = 0; startRound(); return; }
+    if (!H.dl) { H.dl = Date.now() + BET_MS; H.bt = later(function () { startRound(); push(); }, BET_MS); }
+  }
+  function startRound() {
+    clearTimeout(H.bt); H.dl = 0;
+    var play = T.seats.filter(function (s) { return !s.gone && s.ready && s.bet >= T.min && s.bet <= s.chips; });
+    if (!play.length) return;
+    T.round++; T.phase = 'deal'; T.dealer = []; T.turn = -1;
+    T.seats.forEach(function (s) { s.hands = []; s.cur = 0; s.inR = false; });
+    play.forEach(function (s) {
+      s.chips -= s.bet; s.last = s.bet; s.inR = true;
+      s.hands = [{ cards: [], bet: s.bet, dbl: false, split: false, ace: false, done: false, res: '', pay: 0 }];
+    });
+    T.seats.forEach(function (s) { s.ready = false; });
+    var wait = 300;
+    if (H.shoe.length < CUT) { H.shoe = newShoe(); T.shuf++; T.shoe = H.shoe.length; say('Neuer Schuh wird gemischt'); wait = 2100; }
+    /* reihum je eine offene Karte, dann der Dealer; zweite Runde, die zweite Dealerkarte liegt verdeckt */
+    var steps = [];
+    for (var k = 0; k < 2; k++) {
+      play.forEach(function (s) { steps.push(function () { s.hands[0].cards.push(draw()); }); });
+      steps.push(k === 0 ? function () { T.dealer.push(draw()); } : function () { H.hole = draw(); T.dealer.push({ id: H.hole.id, down: true }); });
+    }
+    steps.forEach(function (fn, i) { later(function () { fn(); push(); }, wait + i * 380); });
+    later(afterDeal, wait + steps.length * 380 + 350);
+  }
+  function afterDeal() {
+    T.seats.forEach(function (s) { if (s.inR && isBJ(s.hands[0])) s.hands[0].done = true; });
+    if (cval(T.dealer[0]) >= 10 && total([T.dealer[0], H.hole]).t === 21) {
+      reveal(); T.phase = 'dealer'; say('Dealer hat Blackjack'); push();
+      later(settle, 1300);
+      return;
+    }
+    T.phase = 'play';
+    nextTurn();
+  }
+  /* naechste offene Hand in Sitzreihenfolge. Geteilte Haende bekommen erst jetzt ihre zweite Karte. */
+  function nextTurn() {
+    if (T.phase !== 'play') return;
+    clearTimeout(H.tt); H.dl = 0;
+    for (var i = 0; i < T.seats.length; i++) {
+      var s = T.seats[i];
+      if (!s.inR) continue;
+      for (var j = 0; j < s.hands.length; j++) {
+        var h = s.hands[j];
+        if (h.done) continue;
+        if (s.gone) { h.done = true; continue; }
+        T.turn = i; s.cur = j;
+        if (h.cards.length < 2) {
+          push();
+          later(function () { secondCard(h); }, 450);
+          return;
+        }
+        if (multi()) { H.dl = Date.now() + TURN_MS; H.tt = later(function () { hAct(s.id, 'stand'); }, TURN_MS); }
+        push();
+        return;
+      }
+    }
+    T.turn = -1;
+    dealerPlay();
+  }
+  function secondCard(h) {
+    if (h.done || T.phase !== 'play') return;
+    h.cards.push(draw());
+    if (h.ace || total(h.cards).t === 21) h.done = true;
+    push();
+    later(nextTurn, h.done ? 600 : 0);
+  }
+  function hAct(id, a) {
+    if (!T || T.phase !== 'play' || T.turn < 0 || H.busy) return;
+    var s = T.seats[T.turn];
+    if (!s || s.id !== id) return;
+    var h = s.hands[s.cur];
+    if (!h || h.done || h.cards.length < 2) return;
+    if (a === 'double' && !canDouble(s, h)) return;
+    if (a === 'split' && !canSplit(s, h)) return;
+    if (a !== 'hit' && a !== 'stand' && a !== 'double' && a !== 'split') return;
+    clearTimeout(H.tt); H.dl = 0;
+    if (a === 'hit') { h.cards.push(draw()); if (total(h.cards).t >= 21) h.done = true; }
+    else if (a === 'stand') h.done = true;
+    else if (a === 'double') { s.chips -= h.bet; h.bet *= 2; h.dbl = true; h.cards.push(draw()); h.done = true; }
+    else {
+      s.chips -= h.bet;
+      var ace = h.cards[0].r === 14;
+      h.split = true; h.ace = ace;
+      s.hands.splice(s.cur + 1, 0, { cards: [h.cards.pop()], bet: h.bet, dbl: false, split: true, ace: ace, done: false, res: '', pay: 0 });
+    }
+    H.busy = true;
+    push();
+    later(function () { H.busy = false; nextTurn(); }, a === 'hit' && !h.done ? 0 : 550);
+  }
+  function reveal() { if (H.hole) { T.dealer[1] = H.hole; H.hole = null; } }
+  function dealerPlay() {
+    if (T.phase !== 'play') return;
+    T.phase = 'dealer'; T.turn = -1; H.dl = 0;
+    reveal(); push();
+    /* alle ueber 21 oder mit Blackjack: der Dealer muss nicht mehr ziehen */
+    var need = T.seats.some(function (s) { return s.inR && s.hands.some(function (h) { return total(h.cards).t <= 21 && !isBJ(h); }); });
+    (function step() {
+      if (need && total(T.dealer).t < 17) later(function () { T.dealer.push(draw()); push(); step(); }, 800);
+      else later(settle, 800);
+    })();
+  }
+  function settle() {
+    var d = total(T.dealer).t, dbj = T.dealer.length === 2 && d === 21;
+    T.seats.forEach(function (s) {
+      if (!s.inR) return;
+      s.hands.forEach(function (h) {
+        var t = total(h.cards).t, bj = isBJ(h), res, pay = 0;
+        if (t > 21) res = 'bust';
+        else if (bj && !dbj) { res = 'bj'; pay = h.bet + Math.floor(h.bet * 3 / 2); }
+        else if (dbj && !bj) res = 'lose';
+        else if (bj && dbj) { res = 'push'; pay = h.bet; }
+        else if (d > 21 || t > d) { res = 'win'; pay = h.bet * 2; }
+        else if (t === d) { res = 'push'; pay = h.bet; }
+        else res = 'lose';
+        h.res = res; h.pay = pay; h.done = true; s.chips += pay;
+      });
+    });
+    T.phase = 'done'; T.turn = -1; push();
+    later(betPhase, multi() ? 3600 : 2600);
+  }
+  function hostGone(id) {
+    var s = seatOf(id);
+    if (!s) return;
+    s.gone = true;
+    if (T.phase === 'bet') { T.seats = T.seats.filter(function (x) { return x !== s; }); checkDeal(); push(); return; }
+    if (T.phase === 'play' && T.seats[T.turn] === s && !H.busy) { s.hands.forEach(function (h) { h.done = true; }); nextTurn(); return; }
+    push();
+  }
+
+  /* ---------- Anzeige (gleich fuer Ersteller, Mitspieler und Einzelspiel) ---------- */
+  var bj = $('#bj'), stage = $('#bjStage'), fly = $('#bjFly');
+  var CEL = {};          // Karten-ID -> Element, damit Karten beim Neuzeichnen liegen bleiben
+  var V = { phase: '', round: -1, shuf: -1, sayN: -1, turnKey: '', doneKey: '', giftKey: '', betKey: '', quiet: true };
+  var myBet = 0, tick = 0, toastT = 0;
+  function bjToast(t) {
+    var el = $('#bjToast'); el.textContent = t; el.classList.add('on'); clearTimeout(toastT);
+    toastT = setTimeout(function () { el.classList.remove('on'); }, 2600);
+  }
+  function shoePos() { var r = stage.getBoundingClientRect(); return { x: r.right - 34, y: r.top + 18 }; }
+  function dealIn(el) {
+    var r = el.getBoundingClientRect(), sp = shoePos();
+    var dx = sp.x - (r.left + r.width / 2), dy = sp.y - (r.top + r.height / 2);
+    el._fly = true;
+    el.style.transition = 'none';
+    el.style.transform = 'translate(' + dx + 'px,' + dy + 'px) rotate(-50deg) scale(.55)';
+    el.style.opacity = '0';
+    void el.offsetWidth;
+    el.style.transition = 'transform .48s cubic-bezier(.2,.9,.3,1), opacity .18s';
+    el.style.transform = ''; el.style.opacity = '';
+    Snd.card(0);
+    setTimeout(function () {
+      el._fly = false; el.style.transition = '';
+      if (el.dataset.key && el.classList.contains('down')) el.classList.remove('down');
+    }, 300);
+  }
+  function syncCards(box, list) {
+    var keep = [];
+    list.forEach(function (c, i) {
+      var el = CEL[c.id], fresh = !el;
+      if (fresh) { el = PR.cardEl('down'); el._id = c.id; CEL[c.id] = el; }
+      var known = c.r != null;
+      if (known && el.dataset.key !== c.r + '-' + c.s) PR.setFace(el, c);
+      if (box.children[i] !== el) box.insertBefore(el, box.children[i] || null);
+      if (fresh) { if (V.quiet) { if (known) el.classList.remove('down'); } else dealIn(el); }
+      else if (known && !el._fly && el.classList.contains('down')) { el.classList.remove('down'); Snd.flip(0); }
+      keep.push(el);
+    });
+    /* nur aushaengen: beim Teilen wandert die Karte gleich in die neue Hand (aufgeraeumt wird am Ende von view) */
+    [].slice.call(box.children).forEach(function (el) { if (keep.indexOf(el) < 0) box.removeChild(el); });
+  }
+  /* Runde vorbei: alle Karten wandern zum Ablagestapel oben links */
+  function sweep() {
+    var sr = stage.getBoundingClientRect(), any = false;
+    Object.keys(CEL).forEach(function (id) {
+      var el = CEL[id]; delete CEL[id];
+      if (!el.isConnected) return;
+      var r = el.getBoundingClientRect(), w = getComputedStyle(el).getPropertyValue('--w');
+      el.style.setProperty('--w', w || '60px');
+      el.style.left = (r.left - sr.left) + 'px'; el.style.top = (r.top - sr.top) + 'px';
+      el.style.transition = 'none'; el.style.transform = '';
+      fly.appendChild(el); any = true;
+      void el.offsetWidth;
+      el.style.transition = '';
+      el.style.transform = 'translate(' + (34 - (r.left - sr.left)) + 'px,' + (18 - (r.top - sr.top)) + 'px) rotate(40deg) scale(.5)';
+      el.style.opacity = '0';
+      setTimeout(function () { if (el.parentNode) el.parentNode.removeChild(el); }, 520);
+    });
+    if (any) Snd.card(0);
+  }
+  function handBox(host, i) {
+    var el = host.children[i];
+    if (!el) {
+      el = document.createElement('div'); el.className = 'bjh';
+      el.innerHTML = host.parentNode.id === 'bjMe' ? '<div class="bjv"></div><div class="bjc"></div><div class="bjb"></div><div class="bjr"></div>'
+                                                   : '<div class="bjc"></div><div class="bjv"></div><div class="bjb"></div><div class="bjr"></div>';
+      host.appendChild(el);
+    }
+    return el;
+  }
+  function trimBoxes(host, n) { while (host.children.length > n) host.removeChild(host.lastChild); }
+  var RES = { bj: 'Blackjack', win: 'Gewonnen', push: 'Unentschieden', lose: 'Verloren', bust: 'Über 21' };
+  function valText(cards, h) {
+    var known = cards.filter(function (c) { return c.r != null; });
+    if (!known.length) return { t: '', cls: '' };
+    var v = total(known);
+    if (h && isBJ(h)) return { t: 'BJ', cls: 'bj' };
+    if (!h && cards.length === 2 && known.length === 2 && v.t === 21) return { t: 'BJ', cls: 'bj' };
+    if (v.t > 21) return { t: String(v.t), cls: 'bust' };
+    if (h && v.soft && v.t < 21 && !h.done) return { t: (v.t - 10) + '/' + v.t, cls: '' };
+    return { t: String(v.t), cls: '' };
+  }
+  /* small = Hand eines anderen Spielers: nur Karten und Wert, Einsatz und Ergebnis stehen unter dem Namen */
+  function fillHand(box, h, active, small) {
+    syncCards(box.querySelector('.bjc'), h.cards);
+    var vt = valText(h.cards, h), v = box.querySelector('.bjv');
+    v.textContent = vt.t; v.className = 'bjv' + (vt.cls ? ' ' + vt.cls : '');
+    box.classList.toggle('act', !!active);
+    if (small) return;
+    box.querySelector('.bjb').textContent = fmt(h.bet) + (h.dbl ? ' · verdoppelt' : '');
+    var r = box.querySelector('.bjr'), txt = '';
+    if (h.res) { txt = RES[h.res]; if (h.pay > h.bet) txt += ' +' + fmt(h.pay - h.bet); }
+    else if (h.cards.length >= 2 && total(h.cards).t > 21) txt = RES.bust;
+    r.textContent = txt;
+    r.className = 'bjr' + (txt ? ' ' + (h.res || 'bust') : '');
+  }
+  function view(t, me) {
+    T = t; ME = me; DL = t.left ? Date.now() + t.left : 0;
+    if (t.phase === 'bet' && V.phase && V.phase !== 'bet') sweep();
+    if (V.quiet) { V.shuf = t.shuf; V.sayN = t.sayN; }
+    if (t.shuf !== V.shuf) { V.shuf = t.shuf; Snd.shuffle(); }
+    if (t.sayN !== V.sayN) { V.sayN = t.sayN; if (t.say) bjToast(t.say); }
+    var my = seatOf(me);
+    /* eigenes Guthaben = Chips am Tisch (ein laufender Einsatz verfaellt beim Verlassen) */
+    if (my) {
+      var P = PR.prof();
+      if (P.bank !== my.chips) { P.bank = Math.max(0, Math.round(my.chips)); PR.saveProf(); PR.renderBank(); }
+      var gk = t.round + ':' + my.gift;
+      if (my.gift > 0 && t.phase === 'bet' && V.giftKey !== gk) { V.giftKey = gk; if (!V.quiet) bjToast('Pleite – du bekommst ' + fmt(my.gift) + ' Chips zum Weiterspielen'); }
+    }
+    $('#bjChips').textContent = fmt(my ? my.chips : PR.prof().bank);
+    /* Einsatz vorbelegen, sobald eine neue Setzrunde beginnt */
+    var bk = t.round + ':' + (my ? 1 : 0);
+    if (t.phase === 'bet' && V.betKey !== bk) { V.betKey = bk; myBet = my ? Math.min(my.bet, my.chips) : 0; if (myBet < t.min) myBet = 0; }
+
+    /* Dealer */
+    syncCards($('#bjDealer .bjc'), t.dealer);
+    var dv = valText(t.dealer, null), dEl = $('#bjDealer .bjv');
+    dEl.textContent = dv.t; dEl.className = 'bjv' + (dv.cls ? ' ' + dv.cls : '');
+
+    /* andere Spieler */
+    var others = t.seats.filter(function (s) { return s.id !== me; });
+    stage.classList.toggle('solo', !others.length);
+    var oh = $('#bjOthers');
+    while (oh.children.length > others.length) oh.removeChild(oh.lastChild);
+    others.forEach(function (s, i) {
+      var el = oh.children[i];
+      if (!el) {
+        el = document.createElement('div'); el.className = 'bjo';
+        el.innerHTML = '<div class="bjhands"></div><div class="bjwho"><span class="pav"></span><span></span></div><div class="bjsub"></div>';
+        oh.appendChild(el);
+      }
+      var hs = el.querySelector('.bjhands');
+      s.hands.forEach(function (h, j) { fillHand(handBox(hs, j), h, t.phase === 'play' && t.seats[t.turn] === s && s.cur === j && s.hands.length > 1, true); });
+      trimBoxes(hs, s.hands.length);
+      el.classList.toggle('many', s.hands.length > 1);
+      var av = el.querySelector('.pav'); av.style.setProperty('--av', s.color); av.textContent = (s.name.charAt(0) || '?').toUpperCase();
+      el.querySelector('.bjwho span:last-child').textContent = s.name;
+      el.classList.toggle('turn', t.phase === 'play' && t.seats[t.turn] === s);
+      el.classList.toggle('out', s.gone || (t.phase !== 'bet' && !s.inR));
+      var sub = el.querySelector('.bjsub'), st = '';
+      if (s.gone) st = 'weg';
+      else if (t.phase === 'bet') st = s.ready ? 'Bereit · ' + fmt(s.bet) : fmt(s.chips) + ' Chips';
+      else if (!s.inR) st = 'setzt aus';
+      else st = 'Einsatz ' + fmt(s.hands.reduce(function (a, h) { return a + h.bet; }, 0));
+      var net = t.phase === 'done' && s.inR ? s.hands.reduce(function (a, h) { return a + h.pay - h.bet; }, 0) : null;
+      if (net !== null) st = net > 0 ? '+' + fmt(net) : net < 0 ? '−' + fmt(-net) : '±0';
+      sub.textContent = st; sub.classList.toggle('ok', t.phase === 'bet' && s.ready);
+      sub.classList.toggle('pos', net > 0); sub.classList.toggle('neg', net !== null && net < 0);
+    });
+
+    /* eigene Haende */
+    var meEl = $('#bjMe'), mh = meEl.querySelector('.bjhands'), hands = my ? my.hands : [];
+    var myTurn = !!(my && t.phase === 'play' && t.seats[t.turn] === my);
+    meEl.classList.toggle('h2', hands.length === 2);
+    meEl.classList.toggle('h3', hands.length >= 3);
+    meEl.classList.toggle('mine', myTurn && hands.length > 1);
+    hands.forEach(function (h, j) { fillHand(handBox(mh, j), h, myTurn && my.cur === j && hands.length > 1, false); });
+    trimBoxes(mh, hands.length);
+
+    /* Einsatzfeld */
+    var spot = $('#bjSpot'), betting = t.phase === 'bet' && !!my;
+    spot.classList.toggle('off', !betting);
+    if (betting) {
+      var amt = my.ready ? my.bet : myBet, sb = spot.querySelector('b');
+      sb.textContent = amt ? fmt(amt) : 'Einsatz'; sb.classList.toggle('zero', !amt);
+      spot.querySelector('.stk').innerHTML = amt ? PR.chipStack(amt) : '';
+    }
+
+    /* Toene bei Wechseln */
+    var tk = t.round + ':' + t.turn + ':' + (my ? my.cur : 0);
+    if (myTurn && V.turnKey !== tk && multi() && !V.quiet) Snd.ping();
+    V.turnKey = myTurn ? tk : '';
+    if (t.phase === 'done' && V.doneKey !== String(t.round) && my && my.inR) {
+      V.doneKey = String(t.round);
+      var net = my.hands.reduce(function (a, h) { return a + h.pay - h.bet; }, 0);
+      if (!V.quiet) { if (net > 0) Snd.win(); else if (net === 0) Snd.knock(); }
+    }
+    Object.keys(CEL).forEach(function (id) { if (!CEL[id].isConnected) delete CEL[id]; });
+    V.phase = t.phase; V.round = t.round; V.quiet = false;
+    renderCtl();
+  }
+  function secs() { return DL ? Math.max(0, Math.ceil((DL - Date.now()) / 1000)) : 0; }
+  function renderCtl() {
+    if (!T) return;
+    var t = T, my = seatOf(ME), st = '', sec = secs();
+    var betting = t.phase === 'bet' && !!my;
+    $('#bjBetUI').hidden = !betting; $('#bjActUI').hidden = betting;
+    if (betting) {
+      var rd = my.ready;
+      [].forEach.call(document.querySelectorAll('.bjchip'), function (b) { b.disabled = rd || myBet + (+b.dataset.v) > my.chips; });
+      $('#bjClear').disabled = rd || !myBet;
+      var go = $('#bjDeal');
+      go.disabled = rd || myBet < t.min || myBet > my.chips;
+      go.querySelector('span').textContent = rd ? 'Bereit' : multi() ? 'Bereit' : 'Austeilen';
+      go.querySelector('small').textContent = rd ? 'warte auf die anderen' : myBet ? 'Einsatz ' + fmt(myBet) : 'mindestens ' + fmt(t.min);
+      if (rd) st = 'Du bist bereit' + (sec ? ' · es geht in <b>' + sec + ' s</b> los' : ' · warte auf die anderen');
+      else if (sec) st = 'Setz deinen Einsatz · Austeilen in <b>' + sec + ' s</b>';
+      else st = 'Tipp auf die Chips, um zu setzen · mindestens <b>' + fmt(t.min) + '</b>';
+    } else {
+      var myTurn = !!(my && t.phase === 'play' && t.seats[t.turn] === my && !(H && H.busy));
+      var h = myTurn ? my.hands[my.cur] : null, ok = !!(h && h.cards.length >= 2 && !h.done);
+      $('#bjHit').disabled = !ok; $('#bjStand').disabled = !ok;
+      $('#bjDouble').disabled = !(ok && canDouble(my, h)); $('#bjSplit').disabled = !(ok && canSplit(my, h));
+      $('#bjDouble small').textContent = h ? '+' + fmt(h.bet) : ''; $('#bjSplit small').textContent = h ? '+' + fmt(h.bet) : '';
+      if (t.phase === 'deal') st = 'Karten werden ausgeteilt …';
+      else if (t.phase === 'dealer') st = 'Der Dealer ist dran …';
+      else if (t.phase === 'play') {
+        var cur = t.seats[t.turn];
+        if (cur === my) st = '<b>Du bist dran</b>' + (my.hands.length > 1 ? ' · Hand ' + (my.cur + 1) + ' von ' + my.hands.length : '') + (sec ? ' · ' + sec + ' s' : '');
+        else if (cur) {
+          st = '';
+          var b = document.createElement('b'); b.textContent = cur.name;
+          st = b.outerHTML + ' ist dran' + (sec ? ' · ' + sec + ' s' : '');
+        }
+      } else if (t.phase === 'done') {
+        if (my && my.inR) {
+          var net = my.hands.reduce(function (a, x) { return a + x.pay - x.bet; }, 0);
+          st = net > 0 ? 'Gewonnen: <b>+' + fmt(net) + '</b>' : net < 0 ? 'Verloren: <b>−' + fmt(-net) + '</b>' : 'Unentschieden, du bekommst deinen Einsatz zurück';
+        } else st = 'Runde vorbei';
+      }
+      if (my && !my.inR && (t.phase === 'deal' || t.phase === 'play' || t.phase === 'dealer')) st = 'Du setzt diese Runde aus und bist ab der nächsten dabei';
+    }
+    $('#bjStatus').innerHTML = st;
+  }
+  setInterval(function () { if (T && DL && !bj.hidden) renderCtl(); }, 500);
+
+  /* ---------- Eingaben ---------- */
+  function sendReady() {
+    if (!T) return;
+    if (NB.role === 'guest') { try { NB.conn.send({ t: 'ready', a: myBet }); } catch (e) {} var my = seatOf(ME); if (my) { my.ready = true; my.bet = myBet; } view(T, ME); }
+    else hReady(ME, myBet);
+  }
+  function sendAct(a) {
+    if (!T) return;
+    if (NB.role === 'guest') {
+      try { NB.conn.send({ t: 'act', a: a }); } catch (e) {}
+      [].forEach.call(document.querySelectorAll('#bjActUI .btn'), function (b) { b.disabled = true; });   // bis der naechste Stand kommt
+    } else hAct(ME, a);
+  }
+  [].forEach.call(document.querySelectorAll('.bjchip'), function (b) {
+    b.addEventListener('click', function () {
+      var my = seatOf(ME);
+      if (!T || T.phase !== 'bet' || !my || my.ready) return;
+      var v = +b.dataset.v;
+      if (myBet + v > my.chips) return;
+      myBet += v; Snd.chip(1, 0); view(T, ME);
+    });
+  });
+  $('#bjClear').addEventListener('click', function () { myBet = 0; if (T) view(T, ME); });
+  $('#bjDeal').addEventListener('click', function () { Snd.chip(2, 0); sendReady(); });
+  $('#bjHit').addEventListener('click', function () { sendAct('hit'); });
+  $('#bjStand').addEventListener('click', function () { Snd.knock(); sendAct('stand'); });
+  $('#bjDouble').addEventListener('click', function () { Snd.chip(2, 0); sendAct('double'); });
+  $('#bjSplit').addEventListener('click', function () { Snd.chip(2, 0); sendAct('split'); });
+
+  /* ---------- Starten und Verlassen ---------- */
+  function resetView() {
+    CEL = {}; fly.innerHTML = '';
+    $('#bjDealer .bjc').innerHTML = ''; $('#bjOthers').innerHTML = ''; $('#bjMe .bjhands').innerHTML = '';
+    V = { phase: '', round: -1, shuf: -1, sayN: -1, turnKey: '', doneKey: '', giftKey: '', betKey: '', quiet: true };
+    myBet = 0; $('#bjPause').hidden = true; $('#bjEnd').hidden = true; $('#bjToast').classList.remove('on');
+  }
+  function openTable() {
+    $('#menu').hidden = true; $('#bjf').hidden = true; bj.hidden = false;
+    $('#bjCodeBtn').hidden = !NB.code; $('#bjCodeTxt').textContent = NB.code;
+  }
+  function playSolo() {
+    Snd.unlock(); wipe(false); resetView();
+    hostStart(10, 'me');
+    openTable();
+  }
+  function wipe(bye) {
+    var peer = NB.peer, conns = NB.conns.slice(), host = NB.role === 'host';
+    NB.gen++; NB.peer = null; NB.role = ''; NB.code = ''; NB.conns = []; NB.conn = null;
+    if (H) { clearTimeout(H.tt); clearTimeout(H.bt); }
+    H = null; T = null; DL = 0;
+    if (!peer) return;
+    if (bye && host) conns.forEach(function (c) { try { c.send({ t: 'closed' }); } catch (e) {} });
+    setTimeout(function () { try { peer.destroy(); } catch (e) {} }, bye ? 250 : 0);
+  }
+  function leave() {
+    wipe(true); resetView();
+    Snd.stopAll();
+    bj.hidden = true; $('#menu').hidden = false;
+    PR.renderBank();
+  }
+  function endCard(title, text) {
+    if (!T || !bj.hidden && !$('#bjEnd').hidden) return;
+    $('#bjEndT').textContent = title; $('#bjEndX').textContent = text;
+    $('#bjPause').hidden = true; $('#bjEnd').hidden = false;
+    wipe(false);
+  }
+  $('#bjEndGo').addEventListener('click', leave);
+  $('#bjPlay').addEventListener('click', playSolo);
+  function inRound() { var my = seatOf(ME); return !!(T && my && my.inR && T.phase !== 'done' && T.phase !== 'bet'); }
+  function openPause() {
+    $('#bjPauseTxt').textContent = inRound()
+      ? 'Wenn du jetzt zum Hauptmenü gehst, verfällt dein Einsatz in dieser Runde.'
+      : multi() ? 'Am Tisch geht es ohne dich weiter. Deine Chips bleiben in deinem Guthaben.' : 'Deine Chips sind in deinem Guthaben gespeichert.';
+    var on = NB.role === 'host' && !!NB.code;
+    $('#bjInv').hidden = !on;
+    if (on) {
+      $('#bjPCode').textContent = NB.code;
+      $('#bjPWa').href = 'https://wa.me/?text=' + encodeURIComponent('Komm an meinen Blackjack-Tisch! Code: ' + NB.code + '\n' + PR.SITE_URL + '#bj-' + NB.code);
+    }
+    if (NB.role === 'host') $('#bjMenu').textContent = 'Tisch schließen'; else $('#bjMenu').textContent = 'Zum Hauptmenü';
+    $('#bjPause').hidden = false;
+  }
+  $('#bjPauseBtn').addEventListener('click', openPause);
+  $('#bjCodeBtn').addEventListener('click', openPause);
+  $('#bjResume').addEventListener('click', function () { $('#bjPause').hidden = true; });
+  $('#bjMenu').addEventListener('click', leave);
+  $('#bjPCopy').addEventListener('click', function () {
+    var b = $('#bjPCopy'), done = function (t) { b.textContent = t; setTimeout(function () { b.textContent = 'Code kopieren'; }, 1600); };
+    try { navigator.clipboard.writeText(NB.code).then(function () { done('Kopiert'); }, function () { done('Code oben markieren'); }); }
+    catch (e) { done('Code oben markieren'); }
+  });
+
+  /* ---------- Mit Freunden: Tisch eroeffnen / beitreten ---------- */
+  var ROOM = { code: '', min: 10 };
+  try {
+    var rr = JSON.parse(localStorage.getItem('pr-bjroom') || 'null');
+    if (rr) {
+      if (typeof rr.code === 'string' && /^[A-Z2-9]{5}$/.test(rr.code)) ROOM.code = rr.code;
+      if (MIN_OPTS.indexOf(rr.min) >= 0) ROOM.min = rr.min;
+    }
+  } catch (e) {}
+  function saveRoom() { try { localStorage.setItem('pr-bjroom', JSON.stringify(ROOM)); } catch (e) {} }
+  function fShow(v) {
+    ['bjfMain', 'bjfCreateV', 'bjfJoinV'].forEach(function (id) { $('#' + id).hidden = id !== v; });
+    $('#bjfTitle').textContent = v === 'bjfCreateV' ? 'Tisch eröffnen' : v === 'bjfJoinV' ? 'Tisch beitreten' : 'Blackjack mit Freunden';
+    $('#bjf').dataset.view = v; $('#bjf').scrollTop = 0;
+  }
+  function renderRoom() {
+    $('#bjfCode').textContent = ROOM.code;
+    PR.seg($('#bjfMin'), MIN_OPTS, ROOM.min, function (v) { return fmt(v); }, function (v) { ROOM.min = v; saveRoom(); renderRoom(); });
+    $('#bjfMinHint').textContent = 'Jeder setzt pro Runde mindestens ' + fmt(ROOM.min) + ' Chips.';
+  }
+  function openFriends(view, code) {
+    Snd.unlock(); $('#bjf').hidden = false; $('#bjfMsg').hidden = true;
+    if (view === 'join') openJoin(code); else fShow('bjfMain');
+  }
+  function openJoin(code) {
+    $('#bjCodeIn').value = code || ''; syncJoin(); fShow('bjfJoinV');
+    joinMsg('Den Code bekommst du vom Ersteller, zum Beispiel per WhatsApp.', false);
+  }
+  function syncJoin() {
+    var inp = $('#bjCodeIn'), c = PR.cleanCode(inp.value);
+    if (inp.value !== c) inp.value = c;
+    $('#bjfGo').disabled = c.length !== 5;
+  }
+  function joinMsg(m, warn) { var el = $('#bjfJoinMsg'); el.textContent = m; el.classList.toggle('warn', !!warn); }
+  function makeMsg(m, warn) { var el = $('#bjfMakeMsg'); el.textContent = m; el.classList.toggle('warn', !!warn); }
+  $('#bjFriends').addEventListener('click', function () { openFriends(); });
+  $('#bjfBack').addEventListener('click', function () {
+    if ($('#bjf').dataset.view && $('#bjf').dataset.view !== 'bjfMain') { wipe(false); resetJoinBtns(); fShow('bjfMain'); }
+    else $('#bjf').hidden = true;
+  });
+  $('#bjfCreate').addEventListener('click', function () {
+    if (!ROOM.code) { ROOM.code = PR.newCode(); saveRoom(); }
+    renderRoom(); fShow('bjfCreateV');
+  });
+  $('#bjfJoin').addEventListener('click', function () { openJoin(''); });
+  $('#bjfNew').addEventListener('click', function () { ROOM.code = PR.newCode(); saveRoom(); renderRoom(); });
+  $('#bjfCopy').addEventListener('click', function () {
+    var b = $('#bjfCopy'), done = function (t) { b.textContent = t; setTimeout(function () { b.textContent = 'Code kopieren'; }, 1600); };
+    try { navigator.clipboard.writeText(ROOM.code).then(function () { done('Kopiert'); }, function () { done('Code oben markieren'); }); }
+    catch (e) { done('Code oben markieren'); }
+  });
+  $('#bjCodeIn').addEventListener('input', syncJoin);
+  $('#bjCodeIn').addEventListener('keydown', function (e) { if (e.key === 'Enter') $('#bjfGo').click(); });
+  function resetJoinBtns() {
+    var m = $('#bjfMake'); m.disabled = false; m.textContent = 'Tisch eröffnen';
+    $('#bjfGo').textContent = 'Beitreten'; syncJoin();
+  }
+  function cleanProf(p) {
+    p = (p && typeof p === 'object') ? p : {};
+    var nm = String(p.name == null ? '' : p.name).slice(0, 14).trim();
+    return { name: nm || 'Spieler', color: (typeof p.color === 'string' && /^#[0-9a-f]{6}$/i.test(p.color)) ? p.color : PR.AV[0],
+             chips: Math.min(1e9, Math.max(0, Math.round(+p.chips || 0))) };
+  }
+
+  /* --- Ersteller: der Tisch ist sofort offen, Freunde setzen sich in der naechsten Setzrunde dazu --- */
+  $('#bjfMake').addEventListener('click', function () {
+    makeMsg('Bis zu 5 Spieler. Jeder spielt für sich gegen den Dealer, gesetzt wird aus deinem Guthaben.', false);
+    if (!PR.netAvail()) { makeMsg(PR.MSG_NOLIB, true); return; }
+    var b = $('#bjfMake'); b.disabled = true; b.textContent = 'Eröffne …';
+    wipe(false);
+    var g = ++NB.gen, tries = 0;
+    function fail(m) { resetJoinBtns(); makeMsg(m, true); }
+    (function attempt() {
+      var done = false, peer;
+      try { peer = new window.Peer(PEER_PREFIX + ROOM.code.toLowerCase(), PR.peerOpts()); }
+      catch (e) { fail('Verbindung konnte nicht gestartet werden.'); return; }
+      var to = setTimeout(function () {
+        if (done || g !== NB.gen) return; done = true;
+        try { peer.destroy(); } catch (e) {} fail('Keine Verbindung zum Vermittlungsserver. Prüfe dein Internet und versuche es nochmal.');
+      }, 12000);
+      peer.on('open', function () {
+        if (g !== NB.gen) { try { peer.destroy(); } catch (e) {} return; }
+        done = true; clearTimeout(to);
+        NB.peer = peer; NB.role = 'host'; NB.code = ROOM.code; NB.conns = [];
+        peer.on('connection', function (c) { hostAccept(c, g); });
+        resetJoinBtns(); resetView();
+        hostStart(ROOM.min, 'host');
+        openTable();
+      });
+      peer.on('disconnected', function () { if (g === NB.gen && done) { try { peer.reconnect(); } catch (e) {} } });
+      peer.on('error', function (err) {
+        if (g !== NB.gen || done) return;
+        done = true; clearTimeout(to); try { peer.destroy(); } catch (e) {}
+        if (err && err.type === 'unavailable-id' && tries < 4) { tries++; ROOM.code = PR.newCode(); saveRoom(); renderRoom(); attempt(); return; }
+        fail('Der Tisch konnte nicht eröffnet werden. Prüfe dein Internet und versuche es nochmal.');
+      });
+    })();
+  });
+  function hostAccept(conn, g) {
+    conn.on('data', function (d) {
+      if (g !== NB.gen || !T || !d || typeof d !== 'object') return;
+      if (conn._bj) {
+        if (d.t === 'ready') hReady(conn.peer, d.a);
+        else if (d.t === 'act') hAct(conn.peer, String(d.a));
+        return;
+      }
+      if (d.t !== 'hello' || d.g !== 'bj') return;
+      if (T.seats.filter(function (s) { return !s.gone; }).length >= MAX_SEATS) {
+        try { conn.send({ t: 'full' }); } catch (e) {} setTimeout(function () { try { conn.close(); } catch (e) {} }, 400); return;
+      }
+      var old = seatOf(conn.peer); if (old) T.seats = T.seats.filter(function (s) { return s !== old; });
+      conn._bj = true; NB.conns.push(conn);
+      addSeat(conn.peer, cleanProf(d.p));
+      bjToast(T.seats[T.seats.length - 1].name + ' sitzt mit am Tisch');
+      Snd.ping();
+      if (T.phase === 'bet') { var s = seatOf(conn.peer); if (s.chips < T.min) { s.gift = Math.max(PR.REBUY, T.min) - s.chips; s.chips += s.gift; } s.bet = Math.min(T.min, s.chips); checkDeal(); }
+      push();
+    });
+    function gone() {
+      if (g !== NB.gen || !conn._bj) return;
+      conn._bj = false;
+      NB.conns = NB.conns.filter(function (c) { return c !== conn; });
+      if (T) hostGone(conn.peer);
+    }
+    conn.on('close', gone); conn.on('error', gone);
+  }
+
+  /* --- Mitspieler --- */
+  $('#bjfGo').addEventListener('click', function () {
+    var code = PR.cleanCode($('#bjCodeIn').value);
+    if (code.length !== 5) return;
+    if (!PR.netAvail()) { joinMsg(PR.MSG_NOLIB, true); return; }
+    wipe(false);
+    var g = ++NB.gen, b = $('#bjfGo'); b.disabled = true; b.textContent = 'Verbinde …'; joinMsg('Suche den Tisch …', false);
+    var peer, finished = false;
+    try { peer = new window.Peer(undefined, PR.peerOpts()); } catch (e) { resetJoinBtns(); joinMsg('Verbindung konnte nicht gestartet werden.', true); return; }
+    function fail(m) {
+      if (finished || g !== NB.gen) return; finished = true; clearTimeout(to);
+      try { peer.destroy(); } catch (e) {} resetJoinBtns(); joinMsg(m, true);
+    }
+    var to = setTimeout(function () { fail('Keine Verbindung zum Tisch. Prüfe den Code und dein Internet.'); }, 15000);
+    peer.on('error', function (err) {
+      if (finished || g !== NB.gen) return;
+      fail(err && err.type === 'peer-unavailable' ? 'Diesen Tisch gibt es nicht (mehr). Prüfe den Code.' : 'Verbindung fehlgeschlagen. Prüfe dein Internet und versuche es nochmal.');
+    });
+    peer.on('open', function () {
+      if (finished || g !== NB.gen) return;
+      var conn = peer.connect(PEER_PREFIX + code.toLowerCase(), { serialization: 'json', reliable: true });
+      conn.on('open', function () {
+        var P = PR.prof();
+        try { conn.send({ t: 'hello', g: 'bj', v: 1, p: { name: PR.profName(), color: P.color, chips: P.bank } }); } catch (e) {}
+      });
+      conn.on('data', function (d) {
+        if (g !== NB.gen || !d || typeof d !== 'object') return;
+        if (d.t === 'full') { fail('Der Tisch ist voll (5 Spieler).'); return; }
+        if (d.t === 'closed') {
+          if (!finished) fail('Der Tisch wurde geschlossen.');
+          else endCard('Tisch geschlossen', 'Der Ersteller hat den Tisch verlassen. Deine Chips bleiben in deinem Guthaben.');
+          return;
+        }
+        if (d.t === 'snap' && d.s && Array.isArray(d.s.seats)) {
+          if (!finished) {
+            finished = true; clearTimeout(to);
+            NB.peer = peer; NB.role = 'guest'; NB.code = code; NB.conn = conn;
+            resetJoinBtns(); resetView(); openTable();
+          }
+          view(d.s, peer.id);
+        }
+      });
+      function lost() {
+        if (g !== NB.gen) return;
+        if (!finished) fail('Verbindung zum Tisch fehlgeschlagen.');
+        else endCard('Verbindung weg', 'Die Verbindung zum Tisch ist abgebrochen. Deine Chips bleiben in deinem Guthaben.');
+      }
+      conn.on('close', lost); conn.on('error', lost);
+    });
+  });
+  window.addEventListener('pagehide', function () { if (NB.peer) { try { NB.peer.destroy(); } catch (e) {} } });
+
+  /* ---------- Hauptmenue: zur Seite wischen wechselt zwischen Poker und Blackjack ---------- */
+  var menu = $('#menu'), track = $('#mTrack'), page = 0, sw = null, swallowUntil = 0;
+  try { page = localStorage.getItem('pr-game') === 'bj' ? 1 : 0; } catch (e) {}
+  function setPage(p, anim) {
+    page = p;
+    track.style.transition = anim ? '' : 'none';
+    track.style.transform = 'translateX(' + (-p * 100) + '%)';
+    menu.classList.remove('drag'); menu.style.setProperty('--mix', p);
+    [].forEach.call(document.querySelectorAll('.mdots button'), function (b) { var on = +b.dataset.p === p; b.classList.toggle('on', on); b.setAttribute('aria-selected', on ? 'true' : 'false'); });
+    $('#mPoker').classList.toggle('off', p !== 0); $('#mBj').classList.toggle('off', p !== 1);
+    try { localStorage.setItem('pr-game', p ? 'bj' : 'poker'); } catch (e) {}
+  }
+  setPage(page, false);
+  /* einmalig zeigen, dass man wischen kann */
+  try {
+    if (!localStorage.getItem('pr-swipehint') && page === 0) {
+      localStorage.setItem('pr-swipehint', '1');
+      setTimeout(function () { if (!sw && page === 0) { track.classList.add('hint'); setTimeout(function () { track.classList.remove('hint'); }, 2200); } }, 1800);
+    }
+  } catch (e) {}
+  [].forEach.call(document.querySelectorAll('.mdots button'), function (b) { b.addEventListener('click', function () { setPage(+b.dataset.p, true); }); });
+  menu.addEventListener('pointerdown', function (e) {
+    if (e.target.closest('.profchip, .bank') || (e.pointerType === 'mouse' && e.button !== 0)) return;
+    sw = { x: e.clientX, y: e.clientY, id: e.pointerId, on: false, dx: 0, w: $('#mSwipe').offsetWidth || 300 };
+  });
+  menu.addEventListener('pointermove', function (e) {
+    if (!sw || e.pointerId !== sw.id) return;
+    var dx = e.clientX - sw.x, dy = e.clientY - sw.y;
+    if (!sw.on) {
+      if (Math.abs(dy) > 14 && Math.abs(dy) > Math.abs(dx)) { sw = null; return; }
+      if (Math.abs(dx) < 10) return;
+      sw.on = true; track.classList.remove('hint'); menu.classList.add('drag');
+      try { menu.setPointerCapture(e.pointerId); } catch (er) {}
+    }
+    sw.dx = dx;
+    var off = -page * sw.w + dx;
+    if (off > 0) off *= 0.3; else if (off < -sw.w) off = -sw.w + (off + sw.w) * 0.3;   // am Rand federt es nur
+    track.style.transition = 'none';
+    track.style.transform = 'translateX(' + off + 'px)';
+    menu.style.setProperty('--mix', Math.max(0, Math.min(1, -off / sw.w)));
+  });
+  function swEnd(e) {
+    if (!sw || e.pointerId !== sw.id) return;
+    var s = sw; sw = null;
+    if (!s.on) return;
+    swallowUntil = Date.now() + 400;
+    var p = page;
+    if (s.dx < -s.w * 0.18) p = 1; else if (s.dx > s.w * 0.18) p = 0;
+    setPage(p, true);
+  }
+  menu.addEventListener('pointerup', swEnd);
+  menu.addEventListener('pointercancel', swEnd);
+  /* nach dem Wischen keinen Knopf ausloesen */
+  menu.addEventListener('click', function (e) { if (Date.now() < swallowUntil) { e.stopPropagation(); e.preventDefault(); } }, true);
+  document.addEventListener('keydown', function (e) {
+    if (menu.hidden || !$('#profile').hidden || !$('#friends').hidden || !$('#bjf').hidden) return;
+    if (e.key === 'ArrowRight' && page === 0) setPage(1, true);
+    else if (e.key === 'ArrowLeft' && page === 1) setPage(0, true);
+  });
+
+  /* Einladungslink: ...#bj-K7M2P oeffnet gleich das Beitreten am Blackjack-Tisch */
+  (function () {
+    var m = /^#bj-([A-Za-z0-9]{5})$/.exec(location.hash || '');
+    if (m) { setPage(1, false); openFriends('join', PR.cleanCode(m[1])); }
+  })();
+
+  /* Update-Pruefung: nicht mitten in einer Blackjack-Runde oder an einem offenen Tisch neu laden */
+  var idle = window.prIdle;
+  window.prIdle = function () { return (!idle || idle()) && bj.hidden && !NB.peer; };
 })();
 </script>
 
