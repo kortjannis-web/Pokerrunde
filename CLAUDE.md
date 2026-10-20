@@ -28,5 +28,6 @@ Immer den bisherigen Weg als Rückfall im Code behalten.
 
 Ersteller und Mitspieler müssen dieselbe App-Version haben, sonst rechnen sie verschieden. Wer die Nachrichten
 zwischen den Handys ändert (neue Felder/Nachrichtentypen, andere Bedeutung), erhöht die Versionsnummer:
-Poker `hello`-Feld `v` (Prüfung `d.v >= 3` beim Ersteller), Blackjack `BJ_V`. Alte Versionen werden dann mit
+Poker `hello`-Feld `v` (Mitspieler schicken 4; der Ersteller nimmt ab 3, weil 4 nur das optionale Feld `rid`
+zum Wiederverbinden ergänzt), Blackjack `BJ_V`. Alte Versionen werden dann mit
 einer Meldung „App einmal ganz schließen und neu öffnen“ abgewiesen.
