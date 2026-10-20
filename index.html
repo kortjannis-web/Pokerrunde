@@ -1026,6 +1026,18 @@ input.bprange[type=range]::-moz-range-thumb { width: 20px; height: 20px; border-
 #sl.m2 .slmarq span { color: #bff0ff; text-shadow: 0 2px 0 #06324a, 0 0 12px rgba(150,230,255,.6); }
 #sl.m2 .slwin { gap: 4px; padding: 6px; }
 #sl.m2 .slreel { border-radius: 8px; }
+/* Diamant 5, Extra Spins: zwei Walzen wachsen zusammen, Riesensymbole ueber 2 x 2 Felder */
+.slreel.wide { grid-column: span 2; box-shadow: 0 0 0 2px rgba(255,224,138,.9), 0 0 18px 4px rgba(255,224,138,.45); }
+.slreel.wide.merge { animation: slmerge .9s cubic-bezier(.2,.9,.3,1.2); }
+@keyframes slmerge { 0% { transform: scaleX(.55); filter: brightness(1.8); } 60% { transform: scaleX(1.04); } 100% { transform: none; filter: none; } }
+.slcell.w2 { display: flex; align-items: center; justify-content: space-around; }
+.slcell.g2t { position: relative; z-index: 1; }
+.g2 { position: absolute; left: 4%; right: 4%; top: 5%; height: 190%; display: grid; place-items: center; border-radius: 16px;
+  background: radial-gradient(circle at 50% 40%, rgba(255,240,190,.95), rgba(244,214,127,.55) 55%, rgba(224,170,74,.35));
+  box-shadow: inset 0 0 0 2.5px #e0aa4a, inset 0 0 18px rgba(176,125,34,.45), 0 0 14px rgba(255,224,138,.55); }
+.g2 .sy.e { font-size: calc(var(--ch) * 1.3); filter: drop-shadow(0 3px 2px rgba(0,0,0,.35)); }
+.slcell.hit .g2 .sy { animation: slhit .55s ease-in-out 3; }
+.slpay .ps .g2m { display: inline-grid; place-items: center; width: 22px; height: 22px; border-radius: 6px; font-size: 15px; background: radial-gradient(circle, rgba(255,240,190,.9), rgba(224,170,74,.45)); box-shadow: inset 0 0 0 1.5px #e0aa4a; }
 /* Gewinnlinien bei Diamant 5 */
 .sllines { position: absolute; inset: 0; width: 100%; height: 100%; pointer-events: none; overflow: visible; }
 .sllines polyline { fill: none; stroke: #f4d67f; stroke-width: 4; stroke-linecap: round; stroke-linejoin: round; filter: drop-shadow(0 0 4px rgba(244,214,127,.95)); stroke-dasharray: 1000; stroke-dashoffset: 1000; animation: sldraw .5s ease-out forwards; }
@@ -6309,8 +6321,10 @@ input.bprange[type=range]::-moz-range-thumb { width: 20px; height: 20px; border-
    (landet eine auf der Linie, bleibt ihre Walze stehen und die anderen drehen gratis nach; stehen danach drei
    Kirschen in der Reihe, dreht sich ein kleines Gluecksrad und nimmt diesen Gewinn x2 bis x25).
    Diamant 5 (frei ab 5.000 Chips): fuenf Walzen, drei Reihen, fuenf Gewinnlinien, Joker auf den Walzen 2 bis 4.
-   Bei beiden: dreimal Extra-Spin irgendwo im Fenster = 10 Gratis-Drehs, jeder Gewinn darin erhoeht den Multiplikator
-   (x1 bis x5); nach einem Gewinn die Risikoleiter (Rot/Schwarz, 50:50); ein fester Jackpot (200x Einsatz).
+   Bei beiden: dreimal Extra-Spin irgendwo im Fenster = Gratis-Drehs, jeder Gewinn darin erhoeht den Multiplikator
+   (Lucky Seven: 10 Drehs, x1 bis x5; Diamant 5: 8 Drehs, x1 bis x2, dafuer wachsen zwei zufaellige Nachbarwalzen zu einer
+   Riesenwalze zusammen: beide zeigen dasselbe, dazu Riesensymbole ueber 2 x 2 Felder, und jede Linie durch einen Riesen
+   zahlt doppelt); nach einem Gewinn die Risikoleiter (Rot/Schwarz, 50:50); ein fester Jackpot (200x Einsatz).
    Durchgerechnet (Millionen Probedrehs samt Nachdrehs und Extra-Spins): auf Dauer kommen bei beiden Automaten
    rund 95 % der Einsaetze zurueck, das Casino bleibt also im Plus. */
 (function () {
@@ -6360,7 +6374,7 @@ input.bprange[type=range]::-moz-range-thumb { width: 20px; height: 20px; border-
 
   /* ---------- Automat 1: Lucky Seven ---------- */
   var M1 = {
-    id: 'lucky', title: 'LUCKY ★ SEVEN', short: 'Lucky 7', reels: 3, need: 3, gap: 420, tease: 2600,
+    id: 'lucky', title: 'LUCKY ★ SEVEN', short: 'Lucky 7', reels: 3, need: 3, gap: 420, tease: 2600, free: 10, mm: 5,
     counts: [{ C: 7, c: 1, L: 7, O: 5, G: 5, B: 4, R: 3, S: 2, F: 2 }, { C: 6, c: 1, L: 7, O: 5, G: 5, B: 4, R: 3, S: 2, W: 1, F: 2 }, { C: 7, c: 1, L: 7, O: 5, G: 5, B: 4, R: 3, S: 2, F: 2 }],
     seeds: [7, 4242, 90001],
     pays: { SWS: 100, RRR: 30, BBB: 15, GGG: 10, OOO: 7, LLL: 5, CCC: 4, mix: 4, CC: 3, C: 2 }
@@ -6386,15 +6400,19 @@ input.bprange[type=range]::-moz-range-thumb { width: 20px; height: 20px; border-
   var LINES5 = [[1, 1, 1, 1, 1], [0, 0, 0, 0, 0], [2, 2, 2, 2, 2], [0, 1, 2, 1, 0], [2, 1, 0, 1, 2]];
   var D_OUT = { C: 6, L: 6, M: 5, G: 4, B: 3, T: 3, D: 4, F: 1 }, D_IN = { C: 6, L: 5, M: 5, G: 4, B: 3, T: 3, D: 4, W: 1, F: 1 };
   var M2 = {
-    id: 'diamond', title: 'DIAMANT 💎 5', short: 'Diamant 5', reels: 5, need: 3, gap: 260, tease: 1800,
+    id: 'diamond', title: 'DIAMANT 💎 5', short: 'Diamant 5', reels: 5, need: 3, gap: 260, tease: 1800, free: 8, mm: 2, gb: 2,
     counts: [D_OUT, D_IN, D_IN, D_IN, D_OUT], seeds: [11, 2024, 777, 555, 31337],
-    /* je Linie, in Linien-Einsaetzen (Einsatz / 5): 3, 4, 5 gleiche von links; 2 Kirschen von links = 2 */
-    pays: { C: [10, 30, 100], L: [10, 30, 100], M: [15, 45, 130], G: [18, 55, 170], B: [20, 70, 220], T: [25, 90, 280], D: [35, 120, 500] }, c2: 2,
+    /* je Linie, in Linien-Einsaetzen (Einsatz / 5): 3, 4, 5 gleiche von links; 2 Kirschen von links = 2
+       (mit der Riesenwalze in den Extra Spins durchgerechnet: rund 95 % kommen zurueck) */
+    pays: { C: [9, 26, 88], L: [9, 26, 88], M: [13, 40, 114], G: [16, 48, 150], B: [18, 62, 194], T: [22, 79, 246], D: [31, 106, 440] }, c2: 2,
+    /* Riesenwalze: normale Symbole und Riesen (je zwei Felder hoch, ueber beide Walzen); kein Joker und kein Extra-Spin */
+    gcounts: { C: 8, L: 7, M: 5, G: 4, B: 2, T: 2, D: 2 }, ggiants: { C: 2, L: 2, M: 1 },
     order: ['D', 'T', 'B', 'G', 'M', 'L', 'C']
   };
-  /* fuenf echte Diamanten auf einer Linie = Jackpot; der Joker ersetzt jedes Symbol ausser Extra-Spin */
-  M2.eval = function (g) {
-    var tot = 0, wins = [], jp = false, wild = false, five = false;
+  /* fuenf echte Diamanten auf einer Linie = Jackpot; der Joker ersetzt jedes Symbol ausser Extra-Spin.
+     gm: wo ein Riesensymbol liegt (nur in den Extra Spins) – eine Linie durch einen Riesen zahlt doppelt */
+  M2.eval = function (g, gm) {
+    var tot = 0, wins = [], jp = false, wild = false, five = false, gw = 0;
     LINES5.forEach(function (L, li) {
       var sy = L.map(function (row, i) { return g[i][row]; });
       var cells = L.map(function (row, i) { return [i, row]; });
@@ -6404,13 +6422,15 @@ input.bprange[type=range]::-moz-range-thumb { width: 20px; height: 20px; border-
       var n = 1; while (n < 5 && (sy[n] === s || sy[n] === 'W')) n++;
       var m = n >= 3 ? M2.pays[s][n - 3] : s === 'C' && n === 2 ? M2.c2 : 0;
       if (!m) return;
+      var big = !!gm && L.slice(0, n).some(function (row, i) { return gm[i][row]; });
+      if (big) { m *= M2.gb; gw++; }
       tot += m;
       if (sy.slice(0, n).indexOf('W') >= 0) wild = true;
       if (n === 5) five = true;
-      wins.push({ line: li, cells: cells.slice(0, n), n: n, k: s });
+      wins.push({ line: li, cells: cells.slice(0, n), n: n, k: s, g: big });
     });
     if (!tot && !jp) return null;
-    return { m: tot / 5, jp: jp, k: jp ? 'JP' : '', wins: wins, wild: wild, five: five };
+    return { m: tot / 5, jp: jp, k: jp ? 'JP' : '', wins: wins, wild: wild, five: five, gw: gw };
   };
 
   var MACH = [M1, M2];
@@ -6419,22 +6439,36 @@ input.bprange[type=range]::-moz-range-thumb { width: 20px; height: 20px; border-
     mc.N = mc.S[0].length;
     mc.pos = mc.S.map(function () { return randInt(mc.N); });
   });
-  function grid(mc, res) {
-    return res.map(function (r, i) { return [-1, 0, 1].map(function (d) { return mc.S[i][(r + d + mc.N) % mc.N]; }); });
+  /* Band der Riesenwalze: Felder [Symbol, 0 = normal | 1 = obere | 2 = untere Haelfte eines Riesen], Riesen gleichmaessig verteilt */
+  function gstrip(counts, giants, seed) {
+    var a = strip(counts, seed).map(function (c) { return [c, 0]; }), g = strip(giants, seed + 7), out = [], gi = 0, step = a.length / Math.max(1, g.length);
+    a.forEach(function (x, i) { out.push(x); if (gi < g.length && i + 1 >= (gi + 1) * step - 0.001) { out.push([g[gi], 1], [g[gi], 2]); gi++; } });
+    return out;
   }
-  /* Extra-Spin zaehlt ueberall im Fenster: Zeile (-1, 0, 1) je Walze oder null */
-  function fRow(mc, i, r) { for (var d = -1; d <= 1; d++) if (mc.S[i][(r + d + mc.N) % mc.N] === 'F') return d; return null; }
-  function scatter(mc, res) {
-    var rows = res.map(function (r, i) { return fRow(mc, i, r); });
+  M2.GS = gstrip(M2.gcounts, M2.ggiants, 4711); M2.GN = M2.GS.length; M2.gpos = randInt(M2.GN);
+  /* gp: linke der beiden zusammengewachsenen Walzen (nur Diamant 5 in den Extra Spins), sonst -1 */
+  function isG(gp, i) { return gp >= 0 && (i === gp || i === gp + 1); }
+  function gcell(r, d) { return M2.GS[(r + d + M2.GN) % M2.GN]; }
+  function grid(mc, res, gp) {
+    return res.map(function (r, i) { return [-1, 0, 1].map(function (d) { return isG(gp, i) ? gcell(r, d)[0] : mc.S[i][(r + d + mc.N) % mc.N]; }); });
+  }
+  function gmask(res, gp) {
+    if (!(gp >= 0)) return null;
+    return res.map(function (r, i) { return [-1, 0, 1].map(function (d) { return isG(gp, i) && gcell(r, d)[1] > 0; }); });
+  }
+  /* Extra-Spin zaehlt ueberall im Fenster: Zeile (-1, 0, 1) je Walze oder null (auf der Riesenwalze gibt es keinen) */
+  function fRow(mc, i, r, gp) { if (isG(gp, i)) return null; for (var d = -1; d <= 1; d++) if (mc.S[i][(r + d + mc.N) % mc.N] === 'F') return d; return null; }
+  function scatter(mc, res, gp) {
+    var rows = res.map(function (r, i) { return fRow(mc, i, r, gp); });
     return rows.filter(function (x) { return x !== null; }).length >= mc.need ? rows : null;
   }
 
   /* ---------- gespeicherter Stand ---------- */
   var bet = 10, cur = M1, FS = {};
-  function blankFs() { return { free: 0, fbet: 10, fwon: 0, mult: 1 }; }
+  function blankFs() { return { free: 0, fbet: 10, fwon: 0, mult: 1, gp: -1 }; }
   function cleanFs(o) {
     var f = blankFs();
-    if (o && o.free > 0 && BETS.indexOf(o.fbet) >= 0) { f.free = Math.min(o.free | 0, 200); f.fbet = o.fbet; f.fwon = Math.max(0, o.fwon | 0); f.mult = Math.max(1, Math.min(MULT_MAX, o.mult | 0 || 1)); }
+    if (o && o.free > 0 && BETS.indexOf(o.fbet) >= 0) { f.free = Math.min(o.free | 0, 200); f.fbet = o.fbet; f.fwon = Math.max(0, o.fwon | 0); f.mult = Math.max(1, Math.min(MULT_MAX, o.mult | 0 || 1)); f.gp = o.gp >= 0 && o.gp <= 3 ? o.gp | 0 : -1; }
     return f;
   }
   (function () {
@@ -6442,7 +6476,8 @@ input.bprange[type=range]::-moz-range-thumb { width: 20px; height: 20px; border-
     if (BETS.indexOf(sv.bet) >= 0) bet = sv.bet;
     var fs = sv.fs || {};
     if (!sv.fs && sv.free > 0) fs = { lucky: { free: sv.free, fbet: sv.fbet, fwon: sv.fwon, mult: 1 } };   // alter Stand
-    MACH.forEach(function (mc) { FS[mc.id] = cleanFs(fs[mc.id]); });
+    MACH.forEach(function (mc) { FS[mc.id] = cleanFs(fs[mc.id]); FS[mc.id].mult = Math.min(FS[mc.id].mult, mc.mm); });
+    var fd = FS[M2.id]; if (fd.free > 0 && fd.gp < 0) fd.gp = randInt(4);   // Extra Spins aus der Zeit vor der Riesenwalze
     if (sv.mach === 'diamond' && unlocked()) cur = M2;
   })();
   function saveState() {
@@ -6480,12 +6515,26 @@ input.bprange[type=range]::-moz-range-thumb { width: 20px; height: 20px; border-
      Extra-Spin-Schild dazu, der hoehere Multiplikator erst mit dem Gewinn (verbucht ist beides schon beim Druecken) */
   var vis = null;
 
-  function build() {
+  /* gpB: so ist das Fenster gerade gebaut (zusammengewachsene Walzen oder -1); beide Walzen teilen sich ein Band */
+  var gpB = -1;
+  function wantGp() { var f = fsOf(cur); return cur === M2 && f.free > 0 ? f.gp : -1; }
+  function build(merge) {
     var mc = cur, h = '';
+    gpB = wantGp();
     sl.classList.toggle('m2', mc === M2);
     $('#slTitle').textContent = mc.title;
     winEl.style.setProperty('--nr', mc.reels);
     for (var i = 0; i < mc.reels; i++) {
+      if (i === gpB + 1 && gpB >= 0) continue;
+      if (i === gpB) {
+        h += '<div class="slreel wide' + (merge ? ' merge' : '') + '"><div class="slstrip">';
+        for (var c2 = 0; c2 < COPIES; c2++) M2.GS.forEach(function (x) {
+          h += x[1] === 0 ? '<div class="slcell w2">' + symHTML(x[0]) + symHTML(x[0]) + '</div>'
+             : x[1] === 1 ? '<div class="slcell g2t"><span class="g2">' + symHTML(x[0]) + '</span></div>' : '<div class="slcell g2b"></div>';
+        });
+        h += '</div></div>';
+        continue;
+      }
       h += '<div class="slreel"><div class="slstrip">';
       for (var c = 0; c < COPIES; c++) mc.S[i].forEach(function (s) { h += '<div class="slcell">' + symHTML(s) + '</div>'; });
       h += '</div></div>';
@@ -6493,15 +6542,19 @@ input.bprange[type=range]::-moz-range-thumb { width: 20px; height: 20px; border-
     h += mc === M1 ? '<div class="slline" aria-hidden="true"><i></i></div>' : '<svg class="sllines" aria-hidden="true"></svg>';
     winEl.innerHTML = h;
     reels = [].slice.call(winEl.querySelectorAll('.slstrip'));
-    mc.pos.forEach(function (p, i) { place(i, p + mc.N, 0); });
+    if (gpB >= 0) reels.splice(gpB + 1, 0, reels[gpB]);
+    for (var j = 0; j < mc.reels; j++) if (j !== gpB + 1 || gpB < 0) place(j, posOf(j) + len(j), 0);
   }
+  function len(i) { return isG(gpB, i) ? M2.GN : cur.N; }
+  function posOf(i) { return isG(gpB, i) ? M2.gpos : cur.pos[i]; }
+  function setPos(i, r) { if (isG(gpB, i)) M2.gpos = r; else cur.pos[i] = r; }
   /* Walze so stellen, dass Feld idx (im langen Band) in der Mitte liegt */
   function place(i, idx, ms, ease) {
     var el = reels[i];
     el.style.transition = ms ? 'transform ' + ms + 'ms ' + (ease || 'cubic-bezier(.18,.7,.28,1.035)') : 'none';
-    el.style.transform = 'translateY(' + (-(idx - 1) / (COPIES * cur.N) * 100) + '%)';
+    el.style.transform = 'translateY(' + (-(idx - 1) / (COPIES * len(i)) * 100) + '%)';
   }
-  function cellEl(i, r, row) { return reels[i].children[r + cur.N + row - 1]; }
+  function cellEl(i, r, row) { return reels[i].children[r + len(i) + row - 1]; }
 
   function curBet() { if (busy && vis) return vis.b; var f = fsOf(cur); return f.free > 0 ? f.fbet : bet; }
   function lineAmt(m, b) { return fmt(Math.round(m * b)); }
@@ -6530,7 +6583,8 @@ input.bprange[type=range]::-moz-range-thumb { width: 20px; height: 20px; border-
       });
       row('C2', symHTML('C') + symHTML('C') + '<i>von links</i>', lineAmt(M2.c2 / 5, b));
     }
-    row('FFF', symHTML('F') + symHTML('F') + symHTML('F'), FREE_N + ' Spins');
+    if (mc === M2) row('GNT', '<span class="g2m">🍒</span><i>Riese (Extra Spins)</i>', 'Linie ×' + M2.gb);
+    row('FFF', symHTML('F') + symHTML('F') + symHTML('F'), mc.free + ' Spins');
   }
   function rulesText() {
     if (cur === M1) return 'Dein Guthaben ist gespeichert. Gewonnen wird in der Reihe mit dem roten Strich. ' +
@@ -6540,7 +6594,8 @@ input.bprange[type=range]::-moz-range-thumb { width: 20px; height: 20px; border-
       'Stehen danach drei Kirschen in der Reihe, dreht sich das <b>Glücksrad</b> und nimmt diesen Gewinn ×2 bis ×25. Beträge für deinen Einsatz:';
     return 'Dein Guthaben ist gespeichert. 5 Gewinnlinien (Mitte, oben, unten, V und umgedrehtes V), gewonnen wird mit gleichen Symbolen von links. ' +
       'Der <b>Joker</b> (Walze 2 bis 4) ersetzt jedes Symbol, fünf echte Diamanten auf einer Linie knacken den <b>Jackpot</b> (* mit Joker). ' +
-      'Dreimal <b>Extra-Spin</b> irgendwo = 10 Gratis-Drehs mit steigendem Multiplikator. Beträge je Linie für deinen Einsatz:';
+      'Dreimal <b>Extra-Spin</b> irgendwo = 8 Gratis-Drehs: zwei zufällige Walzen wachsen zu einer <b>Riesenwalze</b> zusammen und zeigen dasselbe, ' +
+      'dazu kommen <b>Riesensymbole</b> über 2 × 2 Felder – jede Linie durch einen Riesen zahlt doppelt. Jeder Gewinn erhöht den Multiplikator bis ×2. Beträge je Linie für deinen Einsatz:';
   }
   function bank() { return PR.prof().bank | 0; }
   function renderJp(anim) {
@@ -6644,8 +6699,8 @@ input.bprange[type=range]::-moz-range-thumb { width: 20px; height: 20px; border-
     svg.setAttribute('viewBox', '0 0 ' + wr.width + ' ' + wr.height);
     wins.forEach(function (w) {
       var pts = LINES5[w.line].map(function (row, i) {
-        var r = reels[i].parentNode.getBoundingClientRect();
-        return [(r.left - wr.left + r.width / 2).toFixed(1), (r.top - wr.top + (row + 0.5) * r.height / 3).toFixed(1)];
+        var r = reels[i].parentNode.getBoundingClientRect(), fx = isG(gpB, i) ? (i === gpB ? 0.25 : 0.75) : 0.5;
+        return [(r.left - wr.left + r.width * fx).toFixed(1), (r.top - wr.top + (row + 0.5) * r.height / 3).toFixed(1)];
       });
       h += '<polyline class="' + (strong ? 'big' : '') + '" points="' + pts.map(function (p) { return p.join(','); }).join(' ') + '"/>';
       h += '<circle cx="5" cy="' + pts[0][1] + '" r="7"/><text x="5" y="' + pts[0][1] + '" dy="3.8" text-anchor="middle">' + (w.line + 1) + '</text>';
@@ -6661,6 +6716,7 @@ input.bprange[type=range]::-moz-range-thumb { width: 20px; height: 20px; border-
     if (busy || sl.hidden || !$('#slGamble').hidden) return;
     Snd.unlock(); settle();
     var mc = cur, f = fsOf(mc), P = PR.prof(), fr = f.free > 0, b, cost;
+    if (wantGp() !== gpB) build();   // vor dem Abzaehlen: der letzte Extra Spin laeuft noch mit der Riesenwalze
     if (fr) { b = f.fbet; cost = 0; f.free--; }
     else {
       if (P.bank < BETS[0]) { P.bank = GIFT; PR.saveProf(); PR.renderBank(); showBank(P.bank); toast('Pleite – du bekommst ' + GIFT + ' Chips zum Weiterspielen'); }
@@ -6668,18 +6724,19 @@ input.bprange[type=range]::-moz-range-thumb { width: 20px; height: 20px; border-
       b = bet; cost = b;
     }
     riskAmt = 0;
-    var steps = [], held = mc.S.map(function () { return false; }), res = mc.pos.map(function () { return randInt(mc.N); }), total = 0, jpAny = false;
+    var gp = mc === M2 && fr ? f.gp : -1, gr = randInt(M2.GN);
+    var steps = [], held = mc.S.map(function () { return false; }), res = mc.pos.map(function (p, i) { return isG(gp, i) ? gr : randInt(mc.N); }), total = 0, jpAny = false;
     for (var k = 0; k < mc.reels; k++) {
-      var g = grid(mc, res), ev = mc.eval(g), sc = k === 0 ? scatter(mc, res) : null, mult = fr ? f.mult : 1;
+      var g = grid(mc, res, gp), ev = mc.eval(g, gmask(res, gp)), sc = k === 0 ? scatter(mc, res, gp) : null, mult = fr ? f.mult : 1;
       var jpWin = ev && ev.jp ? Math.round(JP0 * b) : 0, win = (ev ? Math.round(ev.m * b * mult) : 0) + jpWin;
       var wheel = null;
       if (k > 0 && ev && !ev.jp && ev.k.length === 3 && ev.k[0] === ev.k[2]) {   // drei in einer Reihe nach dem Nachdreh
         var rr = randInt(100), wi = 0; while (rr >= WHEEL[wi].p) { rr -= WHEEL[wi].p; wi++; }
         wheel = wi; win *= WHEEL[wi].m;
       }
-      var multUp = fr && win > 0 && f.mult < MULT_MAX;
-      if (fr && win > 0) f.mult = Math.min(MULT_MAX, f.mult + 1);
-      steps.push({ res: res, ev: ev, sc: sc, win: win, jpWin: jpWin, mult: mult, multUp: multUp, held: held.slice(), before: total, wheel: wheel });
+      var multUp = fr && win > 0 && f.mult < mc.mm;
+      if (fr && win > 0) f.mult = Math.min(mc.mm, f.mult + 1);
+      steps.push({ res: res, ev: ev, sc: sc, win: win, jpWin: jpWin, mult: mult, multUp: multUp, held: held.slice(), before: total, wheel: wheel, gp: gp });
       total += win; if (jpWin) jpAny = true;
       var nw = g.map(function (c, i) { return !held[i] && !!STONE[c[1]]; });
       if (!nw.some(Boolean)) break;
@@ -6688,10 +6745,10 @@ input.bprange[type=range]::-moz-range-thumb { width: 20px; height: 20px; border-
       res = res.map(function (r, i) { return held[i] ? r : randInt(mc.N); });
     }
     var sc0 = steps[0].sc;
-    if (sc0) { if (!fr) { f.fbet = b; f.mult = 1; f.fwon = 0; } f.free += FREE_N; }
+    if (sc0) { if (!fr) { f.fbet = b; f.mult = 1; f.fwon = 0; f.gp = mc === M2 ? randInt(4) : -1; } f.free += mc.free; }
     if (fr || sc0) f.fwon += total;
     /* gleich verbuchen: geht die Seite mitten im Drehen zu, ist nichts verloren */
-    vis = { free: f.free - (sc0 ? FREE_N : 0), fr: fr, mult: steps[0].mult, b: b };
+    vis = { free: f.free - (sc0 ? mc.free : 0), fr: fr, mult: steps[0].mult, b: b };
     var before = P.bank;
     P.bank = before - cost + total; PR.saveProf(); PR.renderBank(); saveState();
     var st = slStat(total - cost, total, jpAny);
@@ -6706,44 +6763,45 @@ input.bprange[type=range]::-moz-range-thumb { width: 20px; height: 20px; border-
   /* Walzen eines Schritts laufen lassen. Spannung: fehlt nur noch ein Extra-Spin (oder ist 7-7 / Bar-Bar / der Jackpot
      noch drin), dreht die naechste Walze deutlich laenger und laeuft ganz langsam aus */
   function animate(c, k) {
-    var mc = c.mc, s = c.steps[k], gg = gen, res = s.res, g = grid(mc, res), line = g.map(function (x) { return base(x[1]); });
+    var mc = c.mc, s = c.steps[k], gg = gen, res = s.res, gp = s.gp, g = grid(mc, res, gp), line = g.map(function (x) { return base(x[1]); });
+    function skip(i) { return s.held[i] || (gp >= 0 && i === gp + 1); }   // rechte Haelfte der Riesenwalze laeuft mit der linken
     if (k > 0) { clearHits(); markHeld(s); }
     var stops = [], teased = [], extra = 0, fseen = 0;
     for (var i = 0; i < mc.reels; i++) {
       var tz = false;
-      if (!s.held[i] && i > 0) {
+      if (!skip(i) && i > 0) {
         if (k === 0 && fseen === mc.need - 1) tz = true;
         if (mc === M1 && i === 2 && RS(line[0]) && (line[1] === line[0] || line[1] === 'W')) tz = true;
         if (mc === M2 && i === 4 && LINES5.some(function (L) { return L.slice(0, 4).every(function (row, q) { return g[q][row] === 'D'; }); })) tz = true;
       }
       if (tz) extra += mc.tease;
-      stops.push(s.held[i] ? 0 : 1150 + i * mc.gap + extra);
+      stops.push(skip(i) ? 0 : 1150 + i * mc.gap + extra);
       teased.push(tz);
-      if (k === 0 && fRow(mc, i, res[i]) !== null) fseen++;
+      if (k === 0 && fRow(mc, i, res[i], gp) !== null) fseen++;
     }
     var last = Math.max.apply(null, stops), firstTease = teased.indexOf(true);
     var ratchet = firstTease > 0 ? Math.max.apply(null, stops.slice(0, firstTease)) : last;
     var fcount = 0;
     res.forEach(function (r, i) {
-      if (s.held[i]) return;
+      if (skip(i)) return;
       var ms = stops[i], el = reels[i], long = teased[i];
-      place(i, mc.pos[i] + mc.N, 0); void el.offsetWidth;
+      place(i, posOf(i) + len(i), 0); void el.offsetWidth;
       el.classList.add('spin');
-      place(i, r + mc.N * Math.min(COPIES - 1, 2 + i + (long ? 2 : 0)), ms, long ? 'cubic-bezier(.1,.6,.1,1)' : '');
+      place(i, r + len(i) * Math.min(COPIES - 1, 2 + i + (long ? 2 : 0)), ms, long ? 'cubic-bezier(.1,.6,.1,1)' : '');
       setTimeout(function () { if (gg === gen) el.classList.remove('spin'); }, ms - (long ? 1400 : 260));
       setTimeout(function () {
         if (gg !== gen) return;
-        mc.pos[i] = r; place(i, r + mc.N, 0); Snd.reel();
+        setPos(i, r); place(i, r + len(i), 0); Snd.reel();
         el.parentNode.classList.remove('tease');
         /* Extra-Spin gelandet und noch moeglich: Klang und Leuchten, jeder weitere einen Ton hoeher */
-        var d = k === 0 ? fRow(mc, i, r) : null;
+        var d = k === 0 ? fRow(mc, i, r, gp) : null;
         if (d !== null) {
           fcount++;
           if (fcount + (mc.reels - 1 - i) >= mc.need) { cellEl(i, r, d + 1).classList.add('fland'); Snd.scat(Math.min(2, fcount - 1)); }
         }
         /* Stein-Kirsche auf der Linie: dumpfer Schlag */
-        if (STONE[mc.S[i][r]]) { cellEl(i, r, 1).classList.add('stone'); Snd.knock(); }
-        var nx = i + 1; while (nx < mc.reels && s.held[nx]) nx++;
+        if (mc === M1 && STONE[mc.S[i][r]]) { cellEl(i, r, 1).classList.add('stone'); Snd.knock(); }
+        var nx = i + 1; while (nx < mc.reels && skip(nx)) nx++;
         if (nx < mc.reels && teased[nx]) { reels[nx].parentNode.classList.add('tease'); Snd.tease((stops[nx] - ms) / 1000 + 0.1); }
       }, ms);
     });
@@ -6777,9 +6835,10 @@ input.bprange[type=range]::-moz-range-thumb { width: 20px; height: 20px; border-
       if (strong) { winEl.classList.add('line'); hold = s.jpWin ? 4200 : x >= 40 ? 3000 : x >= 12 ? 2400 : 1800; }
       if (mc === M2) drawLines(s.ev.wins, strong);
       if (s.multUp) { vis.mult = s.mult + 1; $('#slBetLT').textContent = 'Gratis ×' + (s.mult + 1); var bl = $('#slBetL'); bl.classList.remove('pop'); void bl.offsetWidth; bl.classList.add('pop'); }
-      if (s.jpWin || x >= 10 || s.wheel !== null) {
+      var giant = !!(s.ev.gw && s.gp >= 0);
+      if (s.jpWin || x >= 10 || s.wheel !== null || (giant && x >= 2)) {
         mach.classList.add('won');
-        big(s.jpWin ? 'Jackpot' : s.wheel !== null ? 'Glücksrad ×' + WHEEL[s.wheel].m : x >= 40 ? 'Riesengewinn' : x >= 20 ? 'Großer Gewinn' : s.mult > 1 ? 'Gewinn ×' + s.mult : 'Gewinn', '+' + fmt(s.win));
+        big(s.jpWin ? 'Jackpot' : s.wheel !== null ? 'Glücksrad ×' + WHEEL[s.wheel].m : x >= 40 ? 'Riesengewinn' : x >= 20 ? 'Großer Gewinn' : giant ? 'Riese ×' + M2.gb : s.mult > 1 ? 'Gewinn ×' + s.mult : 'Gewinn', '+' + fmt(s.win));
         Snd.win(); if (x >= 20) setTimeout(function () { Snd.pot(); }, 450); if (s.jpWin) setTimeout(function () { Snd.win(); }, 900);
         coins(s.jpWin ? 60 : x >= 20 ? 30 : 14);
       } else Snd.chip(Math.min(4, Math.max(1, Math.round(x))), 0, true);
@@ -6792,8 +6851,8 @@ input.bprange[type=range]::-moz-range-thumb { width: 20px; height: 20px; border-
       bigT = setTimeout(function () {
         if (gg !== gen) return;
         mach.classList.add('won');
-        big(c.fr ? 'Noch mal' : 'Extra Spins', '+' + FREE_N + ' Gratis');
-        vis.free += FREE_N; vis.fr = true; renderAll();
+        big(c.fr ? 'Noch mal' : 'Extra Spins', '+' + mc.free + ' Gratis');
+        vis.free += mc.free; vis.fr = true; renderAll();
         var nb = $('#slSpin b'); if (nb) { nb.classList.remove('pop'); void nb.offsetWidth; nb.classList.add('pop'); }
         Snd.win(); setTimeout(function () { Snd.ping(); }, 500); coins(24);
       }, at);
@@ -6890,6 +6949,8 @@ input.bprange[type=range]::-moz-range-thumb { width: 20px; height: 20px; border-
     all('#sl .slreel.held').forEach(function (r) { r.classList.remove('held'); });
     if (!c.fr && !c.steps[0].sc && c.total > 0 && !c.jp) riskAmt = c.total;
     if (c.endFs && c.f.fwon > 0) riskAmt = c.f.fwon;
+    /* Diamant 5: Extra Spins fangen an (zwei Walzen wachsen zusammen) oder sind vorbei (wieder fuenf Walzen) */
+    if (wantGp() !== gpB) { var mg = wantGp() >= 0; build(mg); if (mg) { toast('Riesenwalze! Zwei Walzen wachsen zusammen'); Snd.win(); } }
     /* Gewinn ohne Risikoleiter (Jackpot) gleich melden, sonst erst, wenn klar ist, ob riskiert wird */
     if (riskAmt) { pendRep = riskAmt; pendBet = c.b; }
     else if (!c.fr && !c.steps[0].sc && c.total > 0) report(c.total, c.b);
@@ -7012,7 +7073,7 @@ input.bprange[type=range]::-moz-range-thumb { width: 20px; height: 20px; border-
     gen++; busy = false; auto = false; clearTimeout(autoT); settle(); clearHits(); endOffers();
     $('#slGamble').hidden = true; gAmt = 0; gBusy = false;
     all('#sl .slcoin').forEach(function (c) { c.remove(); });
-    reels.forEach(function (el, i) { el.classList.remove('spin'); place(i, cur.pos[i] + cur.N, 0); });
+    reels.forEach(function (el, i) { el.classList.remove('spin'); if (!(gpB >= 0 && i === gpB + 1)) place(i, posOf(i) + len(i), 0); });
     Snd.stopAll();
     sl.hidden = true; $('#slPause').hidden = true; $('#menu').hidden = false;
     PR.renderBank();
@@ -7354,7 +7415,7 @@ input.bprange[type=range]::-moz-range-thumb { width: 20px; height: 20px; border-
     if (on && st.ask && !st.code) {
       var wait = asked[f.code] > Date.now();
       var ak = document.createElement('button'); ak.type = 'button'; ak.className = 'btn' + (wait ? '' : ' primary');
-      ak.textContent = wait ? 'Angefragt …' : 'An den Tisch fragen'; ak.disabled = wait;
+      ak.textContent = wait ? 'Angefragt …' : st.g === 'bj' ? 'Anfrage für den Blackjack-Tisch' : 'Anfrage für den Pokertisch'; ak.disabled = wait;
       ak.addEventListener('click', function () { askJoin(f, st); });
       x.appendChild(ak);
     }
