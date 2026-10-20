@@ -655,6 +655,22 @@ input.bprange[type=range]::-moz-range-thumb { width: 20px; height: 20px; border-
 #fToast { position: absolute; left: 50%; bottom: max(24px, env(safe-area-inset-bottom)); z-index: 97; transform: translate(-50%, 12px); padding: 9px 16px; border-radius: 999px; background: var(--brass); color: var(--brass-ink); font: 800 13px var(--ui); opacity: 0; pointer-events: none; transition: opacity .3s, transform .3s; white-space: nowrap; max-width: calc(100% - 20px); overflow: hidden; text-overflow: ellipsis; box-shadow: 0 6px 18px rgba(0,0,0,.5); }
 #fToast.on { opacity: 1; transform: translate(-50%, 0); }
 
+/* ---------- Taegliche Belohnung ---------- */
+#daily { z-index: 92; }
+#daily .endcard { display: flex; flex-direction: column; gap: 12px; }
+#daily .endcard h2, #daily .endcard p { margin: 0; }
+.dlchip { display: grid; place-items: center; }
+.dlchip .bchip { position: relative; width: 64px; height: 64px; border-radius: 50%; background: radial-gradient(circle at 35% 30%, #f4d67f, #d0a040 58%, #a2742a); box-shadow: 0 6px 18px rgba(224,170,74,.45); animation: dlspin 1.4s cubic-bezier(.2,.9,.3,1) both; }
+.dlchip .bchip::after { content: ""; position: absolute; inset: 12px; border-radius: 50%; border: 3px solid rgba(90,55,5,.4); }
+@keyframes dlspin { from { transform: rotateY(540deg) scale(.4); opacity: 0; } to { transform: none; opacity: 1; } }
+#dlText b { color: var(--brass); font: 800 22px var(--display); display: block; margin-top: 4px; }
+.dldays { display: grid; grid-template-columns: repeat(7, 1fr); gap: 6px; }
+.dldays i { font: 700 10px var(--ui); font-style: normal; color: var(--muted); padding: 7px 0 6px; border-radius: 9px; background: var(--bg); border: 1px solid var(--line); display: flex; flex-direction: column; gap: 2px; align-items: center; font-variant-numeric: tabular-nums; }
+.dldays i b { font: 800 11px var(--ui); color: var(--ink); }
+.dldays i.done { background: rgba(224,170,74,.16); border-color: rgba(224,170,74,.5); }
+.dldays i.now { background: var(--brass); border-color: transparent; color: var(--brass-ink); }
+.dldays i.now b { color: var(--brass-ink); }
+
 /* ---------- Blackjack: Farben (Weinrot statt Gruen) ---------- */
 :root { --bj1: #8b3442; --bj2: #5a1b26; --bj3: #2e0d13; }
 #bj { position: absolute; inset: 0; z-index: 58; display: flex; flex-direction: column; background: radial-gradient(120% 70% at 50% 30%, #2b2224, var(--bg) 70%); background-color: var(--bg); }
@@ -1356,9 +1372,19 @@ input.bprange[type=range]::-moz-range-thumb { width: 20px; height: 20px; border-
         </div>
       </div>
       <div>
+        <div class="psec" style="margin-bottom:8px">Blackjack</div>
+        <div class="pstats">
+          <div class="pstat"><b id="bjsR">0</b><span>Runden</span></div>
+          <div class="pstat"><b id="bjsQ">–</b><span>Quote</span></div>
+          <div class="pstat"><b id="bjsB">0</b><span>Blackjacks</span></div>
+        </div>
+        <div class="frhint" id="bjsN" style="text-align:center"></div>
+      </div>
+      <div>
         <div class="psec" style="margin-bottom:8px">Einstellungen</div>
         <div style="display:flex;flex-direction:column;gap:8px">
           <div class="prow vrow"><span>Lautstärke</span><input type="range" id="volProf" min="0" max="100" step="1" aria-label="Lautstärke"><output id="volProfN">100%</output></div>
+          <div class="prow"><span>Vibration bei Gewinn</span><button class="sw" id="vibSw" type="button" role="switch" aria-checked="true" aria-label="Vibration bei Gewinn"></button></div>
           <details class="prow guide" id="guide">
             <summary>Anleitung: Pre-Move (vormerken)</summary>
             <ol>
@@ -1370,6 +1396,16 @@ input.bprange[type=range]::-moz-range-thumb { width: 20px; height: 20px; border-
           </details>
         </div>
       </div>
+    </div>
+  </div>
+
+  <div id="daily" class="overlay" hidden>
+    <div class="endcard">
+      <div class="dlchip" aria-hidden="true"><i class="bchip"></i></div>
+      <h2>Tägliche Belohnung</h2>
+      <p id="dlText"></p>
+      <div class="dldays" id="dlDays" aria-hidden="true"></div>
+      <button class="btn primary wide" id="dlGo" type="button">Abholen</button>
     </div>
   </div>
 
@@ -2459,6 +2495,15 @@ input.bprange[type=range]::-moz-range-thumb { width: 20px; height: 20px; border-
         }
       }),
       card0: function (t, vol) { try { noise(t, 0.07, 'bandpass', 2600, 0.9, vol, 0.004); noise(t + 0.012, 0.05, 'highpass', 5200, 0.5, vol * 0.3, 0.003); } catch (e) {} }
+    };
+  })();
+  /* Vibration nur beim Gewinnen (abschaltbar im Profil). Snd.win wird von allen Spielen benutzt. */
+  (function () {
+    var w = Snd.win;
+    Snd.vibOn = function () { try { return localStorage.getItem('pr-vib') !== '0'; } catch (e) { return true; } };
+    Snd.win = function () {
+      try { if (Snd.vibOn() && navigator.vibrate) navigator.vibrate([70, 50, 140]); } catch (e) {}
+      w.apply(null, arguments);
     };
   })();
   document.addEventListener('pointerdown', Snd.unlock, true);
@@ -4951,11 +4996,22 @@ input.bprange[type=range]::-moz-range-thumb { width: 20px; height: 20px; border-
     if (t.phase === 'done' && V.doneKey !== String(t.round) && my && my.inR) {
       V.doneKey = String(t.round);
       var net = my.hands.reduce(function (a, h) { return a + h.pay - h.bet; }, 0);
-      if (!V.quiet) { if (net > 0) Snd.win(); else if (net === 0) Snd.knock(); }
+      if (!V.quiet) {
+        if (net > 0) Snd.win(); else if (net === 0) Snd.knock();
+        bjStat(net, my.hands.filter(function (h) { return h.res === 'bj'; }).length);
+      }
     }
     Object.keys(CEL).forEach(function (id) { if (!CEL[id].isConnected) delete CEL[id]; });
     V.phase = t.phase; V.round = t.round; V.quiet = false;
     renderCtl();
+  }
+  /* Statistik fuers Profil: Runden, gewonnen, verloren, Blackjacks, Saldo */
+  function bjStat(net, bjs) {
+    var st = { r: 0, w: 0, l: 0, bj: 0, net: 0 };
+    try { var o = JSON.parse(localStorage.getItem('pr-bjstats') || 'null'); if (o && typeof o === 'object') Object.keys(st).forEach(function (k) { if (typeof o[k] === 'number' && isFinite(o[k])) st[k] = o[k]; }); } catch (e) {}
+    st.r++; if (net > 0) st.w++; else if (net < 0) st.l++;
+    st.bj += bjs; st.net += net;
+    try { localStorage.setItem('pr-bjstats', JSON.stringify(st)); } catch (e) {}
   }
   function secs() { return DL ? Math.max(0, Math.ceil((DL - Date.now()) / 1000)) : 0; }
   function renderCtl() {
@@ -6095,6 +6151,77 @@ input.bprange[type=range]::-moz-range-thumb { width: 20px; height: 20px; border-
 
   render(true);
   start();
+})();
+</script>
+
+<script>
+/* Extras: taegliche Belohnung, Blackjack-Statistik im Profil, Vibration an/aus */
+(function () {
+  'use strict';
+  var PR = window.PR;
+  if (!PR) return;
+  var Snd = PR.Snd, fmt = PR.fmt;
+  function $(s) { return document.querySelector(s); }
+
+  /* ---------- Taegliche Belohnung: jeden Tag einmal Chips, mehr bei mehreren Tagen in Folge ---------- */
+  var DAILY = [100, 150, 200, 250, 300, 400, 500];
+  function dayKey(d) { return d.getFullYear() + '-' + (d.getMonth() + 1) + '-' + d.getDate(); }
+  function today() { return dayKey(new Date()); }
+  function yesterday() { var d = new Date(); d.setDate(d.getDate() - 1); return dayKey(d); }
+  function loadDaily() {
+    try { var o = JSON.parse(localStorage.getItem('pr-daily') || 'null'); if (o && typeof o.day === 'string') return { day: o.day, streak: Math.max(0, Math.min(99, o.streak | 0)) }; } catch (e) {}
+    return { day: '', streak: 0 };
+  }
+  function nextStreak(d) { return d.day === yesterday() ? d.streak + 1 : 1; }
+  function amountOf(streak) { return DAILY[Math.min(streak, DAILY.length) - 1]; }
+  function menuFree() {
+    if ($('#menu').hidden || !$('#splash').hidden || !$('#daily').hidden) return false;
+    if (window.prIdle && !window.prIdle()) return false;
+    return ['#friends', '#bjf', '#profile', '#pview', '#chipdlg', '#invBan'].every(function (s) { var e = $(s); return !e || e.hidden; });
+  }
+  function showDaily() {
+    var d = loadDaily(); if (d.day === today()) return;
+    var st = nextStreak(d), amt = amountOf(st);
+    $('#dlText').innerHTML = (st > 1 ? st + ' Tage in Folge dabei!' : 'Schön, dass du da bist!') + '<b>+' + fmt(amt) + ' Chips</b>';
+    var days = $('#dlDays'); days.innerHTML = '';
+    var pos = Math.min(st, DAILY.length);
+    DAILY.forEach(function (v, i) {
+      var e = document.createElement('i');
+      e.className = i + 1 < pos ? 'done' : i + 1 === pos ? 'now' : '';
+      e.innerHTML = 'Tag ' + (i + 1) + '<b>' + fmt(v) + '</b>';
+      days.appendChild(e);
+    });
+    $('#daily').hidden = false;
+  }
+  $('#dlGo').addEventListener('click', function () {
+    var d = loadDaily();
+    $('#daily').hidden = true;
+    if (d.day === today()) return;
+    var st = nextStreak(d), amt = amountOf(st), P = PR.prof();
+    P.bank = Math.round((P.bank || 0) + amt); PR.saveProf(); PR.renderBank();
+    try { localStorage.setItem('pr-daily', JSON.stringify({ day: today(), streak: st })); } catch (e) {}
+    Snd.unlock(); Snd.chip(4, 0, 1.4); setTimeout(function () { Snd.pot(); }, 250);
+  });
+  setInterval(function () { if (menuFree()) showDaily(); }, 1500);
+
+  /* ---------- Profil: Blackjack-Statistik und Vibration ---------- */
+  function renderBjStats() {
+    var st = { r: 0, w: 0, l: 0, bj: 0, net: 0 };
+    try { var o = JSON.parse(localStorage.getItem('pr-bjstats') || 'null'); if (o) Object.keys(st).forEach(function (k) { if (typeof o[k] === 'number') st[k] = o[k]; }); } catch (e) {}
+    $('#bjsR').textContent = fmt(st.r);
+    $('#bjsQ').textContent = st.r ? Math.round(st.w / st.r * 100) + '%' : '–';
+    $('#bjsB').textContent = fmt(st.bj);
+    $('#bjsN').textContent = st.r ? 'Gewonnen ' + fmt(st.w) + ' · verloren ' + fmt(st.l) + ' · Saldo ' + (st.net > 0 ? '+' : st.net < 0 ? '−' : '') + fmt(Math.abs(st.net)) : 'Noch keine Runde Blackjack gespielt.';
+  }
+  function renderVib() { var on = Snd.vibOn(); $('#vibSw').setAttribute('aria-checked', on ? 'true' : 'false'); }
+  $('#vibSw').addEventListener('click', function () {
+    var on = !Snd.vibOn();
+    try { localStorage.setItem('pr-vib', on ? '1' : '0'); } catch (e) {}
+    renderVib();
+    if (on) { try { navigator.vibrate && navigator.vibrate(60); } catch (e) {} }
+  });
+  $('#profBtn').addEventListener('click', function () { renderBjStats(); renderVib(); });
+  renderBjStats(); renderVib();
 })();
 </script>
 
