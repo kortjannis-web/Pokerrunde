@@ -340,6 +340,7 @@ button { font: inherit; color: inherit; cursor: pointer; }
 .btn.primary { background: var(--brass); color: var(--brass-ink); border-color: transparent; }
 .btn.raise { background: linear-gradient(180deg, var(--oak1), var(--oak2)); color: #1d1307; border-color: transparent; }
 .btn:disabled { opacity: .32; cursor: default; }
+.btn:not(:disabled) { transition: transform .12s; }   /* freigeben sofort, nur das Sperren blendet weich aus */
 .btn:active:not(:disabled) { transform: scale(.97); }
 .btn.wide { width: 100%; height: 58px; }
 #rpanel { display: flex; flex-direction: column; gap: 8px; }
@@ -1479,7 +1480,9 @@ input.bprange[type=range]::-moz-range-thumb { width: 20px; height: 20px; border-
       applyAction(p, a);
       S.glow = peekNext(p);   // Leuchten wandert sofort zum Naechsten, ohne Luecke
       H.render();
-      await H.sleep(p.kind === 'human' ? 250 : 450);
+      // Ist als Naechstes ein Mensch dran, darf er sofort handeln – keine Pause, in der die Knoepfe noch gesperrt sind
+      var nx = S.glow >= 0 ? S.players[S.glow] : null;
+      await H.sleep(nx && nx.kind === 'human' ? 0 : (p.kind === 'human' ? 250 : 450));
     }
 
     async function bettingRound(start) {
