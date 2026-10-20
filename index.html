@@ -671,6 +671,9 @@ input.bprange[type=range]::-moz-range-thumb { width: 20px; height: 20px; border-
 #bjActUI .btn.tipped { animation: tipped .65s ease-in-out 4; }
 @keyframes tipped { 0%, 100% { box-shadow: 0 0 0 0 rgba(224,170,74,0); } 50% { box-shadow: 0 0 0 3px var(--ink), 0 0 22px 6px rgba(224,170,74,.8); } }
 #bjReact { position: absolute; left: 8px; bottom: 6px; z-index: 6; width: 40px; height: 40px; border-radius: 50%; border: 1px solid var(--line); background: rgba(16,18,19,.85); font-size: 20px; line-height: 1; padding: 0; }
+#bjReact { color: var(--ink); display: grid; place-items: center; }
+#bjReact[hidden] { display: none; }
+#bjReact svg { width: 24px; height: 24px; }
 .bjrpanel { position: absolute; left: 8px; bottom: 52px; z-index: 12; display: flex; gap: 2px; padding: 5px 6px; border-radius: 999px; background: var(--bg2); border: 1px solid var(--line); box-shadow: 0 10px 28px rgba(0,0,0,.55); }
 .bjrpanel[hidden] { display: none; }
 .bjrpanel button { width: 40px; height: 40px; border-radius: 50%; border: 0; background: transparent; font-size: 24px; line-height: 1; padding: 0; }
@@ -1216,7 +1219,7 @@ input.bprange[type=range]::-moz-range-thumb { width: 20px; height: 20px; border-
       <div id="bjFly"></div>
       <div class="bjtoast" id="bjToast"></div>
       <div class="bjre" id="bjRe" hidden><i class="dots">Verbindung weg · verbinde neu</i></div>
-      <button class="bjreact" id="bjReact" type="button" hidden aria-label="Reaktion senden">😊</button>
+      <button class="bjreact" id="bjReact" type="button" hidden aria-label="Reaktion senden"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path d="M8.2 14.2c1 1.5 2.3 2.2 3.8 2.2s2.8-.7 3.8-2.2"/><circle cx="9" cy="9.7" r=".6" fill="currentColor"/><circle cx="15" cy="9.7" r=".6" fill="currentColor"/></svg></button>
       <div class="bjrpanel" id="bjRPanel" hidden>
         <button type="button" data-e="😂">😂</button><button type="button" data-e="😱">😱</button><button type="button" data-e="😭">😭</button><button type="button" data-e="🤑">🤑</button><button type="button" data-e="👍">👍</button><button type="button" data-e="🔥">🔥</button>
       </div>
