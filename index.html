@@ -866,12 +866,29 @@ input.bprange[type=range]::-moz-range-thumb { width: 20px; height: 20px; border-
 .slline::before, .slline::after { content: ''; position: absolute; top: -5px; border: 6px solid transparent; }
 .slline::before { left: -4px; border-left-color: #d8322f; }
 .slline::after { right: -4px; border-right-color: #d8322f; }
+/* bei groesserem Gewinn: Linie leuchtet golden und ein Lichtstreifen laeuft durch */
+.slline i { position: absolute; inset: -3px 0; overflow: hidden; opacity: 0; }
+.slline i::after { content: ''; position: absolute; top: 0; bottom: 0; width: 34%; left: -34%; background: linear-gradient(90deg, transparent, #fff8d8, transparent); }
+.slwin.line .slline { height: 6px; margin-top: -3px; border-radius: 3px; background: #f4d67f; box-shadow: 0 0 10px 2px rgba(244,214,127,.9), 0 0 26px 6px rgba(224,170,74,.55); animation: slglow .5s ease-in-out infinite alternate; }
+.slwin.line .slline::before { border-left-color: #f4d67f; } .slwin.line .slline::after { border-right-color: #f4d67f; }
+.slwin.line .slline i { opacity: 1; }
+.slwin.line .slline i::after { animation: slsweep .9s linear infinite; }
+.slwin.line .slcell.hit { background: radial-gradient(closest-side, rgba(255,232,150,.85), rgba(224,170,74,.25) 70%, transparent); }
+@keyframes slglow { from { opacity: .75; } to { opacity: 1; } }
+@keyframes slsweep { to { left: 100%; } }
+/* Extra-Spin-Symbol */
+.sy.fs { width: calc(var(--ch) * .74); height: calc(var(--ch) * .74); border-radius: 50%; display: grid; place-content: center; text-align: center; font: 900 calc(var(--ch) * .13) / 1.05 var(--ui); letter-spacing: .02em; color: #fff; background: radial-gradient(circle at 35% 30%, #b98cff, #6a35c9 60%, #3d1a80); box-shadow: inset 0 0 0 2px #e0aa4a, 0 2px 5px rgba(0,0,0,.4); text-shadow: 0 1px 1px rgba(0,0,0,.5); }
+.sy.fs b { display: block; font-size: 1.5em; color: #ffe08a; }
+.slpay .ps .sy.fs { width: 18px; height: 18px; font-size: 4px; box-shadow: inset 0 0 0 1px #e0aa4a; }
+.slcell.fhit .sy { animation: slhit .55s ease-in-out 4; box-shadow: inset 0 0 0 2px #ffe08a, 0 0 16px 4px rgba(185,140,255,.9); }
 /* Anzeige Einsatz / Gewinn */
 .sllcd { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin-top: 10px; }
 .sllcd div { display: flex; align-items: baseline; justify-content: space-between; gap: 6px; padding: 7px 12px; border-radius: 10px; background: #0d0f10; box-shadow: inset 0 2px 6px rgba(0,0,0,.8), 0 0 0 1px rgba(224,170,74,.25); }
 .sllcd small { font: 700 10px var(--ui); letter-spacing: .14em; text-transform: uppercase; color: var(--muted); }
 .sllcd b { font: 800 19px var(--display); color: var(--brass); font-variant-numeric: tabular-nums; }
 .sllcd b.on { color: #ffe08a; text-shadow: 0 0 10px rgba(255,224,138,.7); }
+.sllcd.free div:first-child { box-shadow: inset 0 2px 6px rgba(0,0,0,.8), 0 0 0 1.5px #b98cff; }
+.sllcd.free div:first-child b { color: #d6bcff; }
 /* grosser Gewinn */
 .slbig { position: absolute; left: 50%; top: 48%; z-index: 5; transform: translate(-50%, -50%); text-align: center; pointer-events: none; padding: 12px 22px 14px; border-radius: 18px; background: rgba(16,10,26,.92); box-shadow: 0 0 0 2px var(--brass), 0 0 40px rgba(224,170,74,.7); white-space: nowrap; animation: slbig .5s cubic-bezier(.2,.9,.3,1.3) both; }
 .slbig[hidden] { display: none; }
@@ -892,7 +909,12 @@ input.bprange[type=range]::-moz-range-thumb { width: 20px; height: 20px; border-
 #slPause .slpay { margin: 4px 0 16px; padding: 0; }
 #slPause .endcard { max-height: 100%; overflow-y: auto; }
 /* Bedienung: Einsatz links, gruener Knopf rechts */
-#slCtl { flex: 0 0 auto; height: 112px; padding: 4px 4px 16px; display: flex; align-items: center; justify-content: space-between; gap: 12px; }
+#slCtl { flex: 0 0 auto; height: 124px; padding: 4px 4px 16px; display: flex; align-items: center; justify-content: space-between; gap: 12px; }
+.slleft { display: flex; flex-direction: column; align-items: center; gap: 6px; }
+.slown { display: inline-flex; align-items: center; gap: 7px; height: 28px; padding: 0 12px 0 8px; border-radius: 999px; background: rgba(16,18,19,.7); border: 1px solid var(--line); font: 800 15px var(--ui); color: var(--ink); font-variant-numeric: tabular-nums; }
+.slown small { font: 700 10px var(--ui); letter-spacing: .14em; text-transform: uppercase; color: var(--muted); margin-right: 2px; }
+.slown .bchip { position: relative; width: 16px; height: 16px; border-radius: 50%; flex: none; background: radial-gradient(circle at 35% 30%, #f4d67f, #d0a040 58%, #a2742a); box-shadow: 0 1px 2px rgba(0,0,0,.45); }
+.slown .bchip::after { content: ""; position: absolute; inset: 3px; border-radius: 50%; border: 1.5px solid rgba(90,55,5,.4); }
 .slbet { display: flex; align-items: center; gap: 10px; }
 .slbet .iconbtn { width: 46px; height: 46px; font: 700 24px/1 var(--ui); }
 .slbet .iconbtn:disabled { opacity: .3; }
@@ -903,6 +925,9 @@ input.bprange[type=range]::-moz-range-thumb { width: 20px; height: 20px; border-
   background: radial-gradient(circle at 50% 35%, #63d47c, #2f9a4a 55%, #1c6d32); box-shadow: 0 6px 0 #124d22, 0 12px 22px rgba(0,0,0,.5), inset 0 2px 0 rgba(255,255,255,.35); transition: transform .1s, box-shadow .1s, filter .2s; text-shadow: 0 1px 2px rgba(0,0,0,.5); }
 #slSpin:active:not(:disabled), #slSpin.down { transform: translateY(5px); box-shadow: 0 1px 0 #124d22, 0 5px 12px rgba(0,0,0,.5), inset 0 2px 0 rgba(255,255,255,.25); }
 #slSpin:disabled { filter: saturate(.5) brightness(.8); cursor: default; }
+#slSpin.free { line-height: 1.1; background: radial-gradient(circle at 50% 35%, #b98cff, #6a35c9 55%, #3d1a80); box-shadow: 0 6px 0 #2a1060, 0 12px 22px rgba(0,0,0,.5), inset 0 2px 0 rgba(255,255,255,.35); }
+#slSpin.free:active:not(:disabled), #slSpin.free.down { box-shadow: 0 1px 0 #2a1060, 0 5px 12px rgba(0,0,0,.5), inset 0 2px 0 rgba(255,255,255,.25); }
+#slSpin.free b { display: block; font-size: 22px; }
 
 </style>
 
@@ -1163,10 +1188,10 @@ input.bprange[type=range]::-moz-range-thumb { width: 20px; height: 20px; border-
           <div class="slreel"><div class="slstrip"></div></div>
           <div class="slreel"><div class="slstrip"></div></div>
           <div class="slreel"><div class="slstrip"></div></div>
-          <div class="slline" aria-hidden="true"></div>
+          <div class="slline" aria-hidden="true"><i></i></div>
         </div>
         <div class="sllcd" aria-live="polite">
-          <div><small>Einsatz</small><b id="slBetL">0</b></div>
+          <div><small id="slBetLT">Einsatz</small><b id="slBetL">0</b></div>
           <div><small>Gewinn</small><b id="slWinL">0</b></div>
         </div>
         <div class="slbig" id="slBig" hidden><small></small><b></b></div>
@@ -1175,17 +1200,20 @@ input.bprange[type=range]::-moz-range-thumb { width: 20px; height: 20px; border-
       <div class="bjtoast" id="slToast"></div>
     </main>
     <footer id="slCtl">
-      <div class="slbet">
-        <button class="iconbtn" id="slMinus" type="button" aria-label="Einsatz verringern">−</button>
-        <div class="slbetv"><small>Einsatz</small><b id="slBet">10</b></div>
-        <button class="iconbtn" id="slPlus" type="button" aria-label="Einsatz erhöhen">+</button>
+      <div class="slleft">
+        <div class="slown" role="status" aria-label="Dein Guthaben"><small>Guthaben</small><i class="bchip" aria-hidden="true"></i><span id="slBank2">0</span></div>
+        <div class="slbet">
+          <button class="iconbtn" id="slMinus" type="button" aria-label="Einsatz verringern">−</button>
+          <div class="slbetv"><small>Einsatz</small><b id="slBet">10</b></div>
+          <button class="iconbtn" id="slPlus" type="button" aria-label="Einsatz erhöhen">+</button>
+        </div>
       </div>
       <button id="slSpin" type="button">Drehen</button>
     </footer>
     <div id="slPause" class="overlay" hidden>
       <div class="endcard">
         <h2>Pause</h2>
-        <p>Dein Guthaben ist gespeichert. Gewinne in der Reihe mit dem roten Strich, Beträge für deinen Einsatz:</p>
+        <p>Dein Guthaben ist gespeichert. Gewinne in der Reihe mit dem roten Strich, Beträge für deinen Einsatz. Dreimal Extra-Spin irgendwo im Fenster (auf jeder Walze einer) bringt 10 Gratis-Drehungen.</p>
         <div class="slpay" id="slPay2"></div>
         <button class="btn primary wide" id="slResume" type="button">Weiterspielen</button>
         <button class="btn wide" id="slMenu" type="button" style="margin-top:10px">Zum Hauptmenü</button>
@@ -5822,9 +5850,9 @@ input.bprange[type=range]::-moz-range-thumb { width: 20px; height: 20px; border-
 
 <script>
 /* Slots: ein klassischer einarmiger Bandit mit drei Walzen und einer Gewinnlinie (der rote Strich in der Mitte).
-   Gespielt wird direkt mit dem Guthaben (Spielgeld). Jede Walze hat 32 Felder; wie oft ein Symbol darauf steht,
+   Gespielt wird direkt mit dem Guthaben (Spielgeld). Jede Walze hat 35 Felder; wie oft ein Symbol darauf steht,
    bestimmt, wie leicht es faellt. Mit dieser Verteilung und Gewinntabelle gewinnt etwa jeder vierte Dreh,
-   auf Dauer kommen rund 95 % der Einsaetze zurueck (wie bei einem echten Automaten). */
+   etwa jeder 200. bringt 10 Extra-Spins, auf Dauer kommen rund 97 % der Einsaetze zurueck (wie bei einem echten Automaten). */
 (function () {
   'use strict';
   var PR = window.PR;
@@ -5832,9 +5860,9 @@ input.bprange[type=range]::-moz-range-thumb { width: 20px; height: 20px; border-
   var Snd = PR.Snd, fmt = PR.fmt;
   function $(s) { return document.querySelector(s); }
 
-  /* C Kirsche, L Zitrone, O Orange, G Trauben, B Glocke, R Bar, S Sieben */
+  /* C Kirsche, L Zitrone, O Orange, G Trauben, B Glocke, R Bar, S Sieben, F Extra-Spin */
   var SYM = { C: '🍒', L: '🍋', O: '🍊', G: '🍇', B: '🔔' };
-  var COUNT = { C: 7, L: 6, O: 5, G: 5, B: 4, R: 3, S: 2 };
+  var COUNT = { C: 8, L: 6, O: 5, G: 5, B: 4, R: 3, S: 2, F: 2 };
   var PAYS = [
     { k: 'SSS', m: 200 }, { k: 'RRR', m: 50 }, { k: 'BBB', m: 25 }, { k: 'GGG', m: 15 },
     { k: 'OOO', m: 12 }, { k: 'LLL', m: 10 }, { k: 'CCC', m: 10 },
@@ -5842,11 +5870,13 @@ input.bprange[type=range]::-moz-range-thumb { width: 20px; height: 20px; border-
     { k: 'CC', m: 5 },     // Kirsche auf Walze 1 und 2
     { k: 'C', m: 2 }       // Kirsche auf Walze 1
   ];
-  var BETS = [10, 20, 50, 100, 200, 500, 1000], GIFT = 50, N = 32, COPIES = 9;
+  var BETS = [10, 20, 50, 100, 200, 500, 1000], GIFT = 50, COPIES = 9, FREE_N = 10;
+  var N = Object.keys(COUNT).reduce(function (s, c) { return s + COUNT[c]; }, 0);
 
   function symHTML(c) {
     if (c === 'S') return '<span class="sy sev">7</span>';
     if (c === 'R') return '<span class="sy bar">BAR</span>';
+    if (c === 'F') return '<span class="sy fs">EXTRA<b>SPIN</b></span>';
     return '<span class="sy e">' + SYM[c] + '</span>';
   }
   /* feste Walzenbaender (immer gleich gemischt, damit die Nachbarn wie bei echten Walzen stimmen) */
@@ -5865,19 +5895,34 @@ input.bprange[type=range]::-moz-range-thumb { width: 20px; height: 20px; border-
   }
   /* Gewinnlinie auswerten: welche Regel, welche Walzen leuchten */
   function evalLine(a) {
-    if (a[0] === a[1] && a[1] === a[2]) return { k: a[0] + a[1] + a[2], hit: [1, 1, 1] };
+    if (a[0] === a[1] && a[1] === a[2] && multOf(a.join(''))) return { k: a.join(''), hit: [1, 1, 1] };
     if (a.every(function (c) { return c === 'R' || c === 'S'; })) return { k: 'mix', hit: [1, 1, 1] };
     if (a[0] === 'C' && a[1] === 'C') return { k: 'CC', hit: [1, 1, 0] };
     if (a[0] === 'C') return { k: 'C', hit: [1, 0, 0] };
     return null;
   }
   function multOf(k) { for (var i = 0; i < PAYS.length; i++) if (PAYS[i].k === k) return PAYS[i].m; return 0; }
+  /* Extra-Spin zaehlt ueberall im Fenster (oben, Mitte, unten): auf jeder Walze einer = Extra-Spins.
+     Liefert je Walze die Zeile (-1, 0, 1) oder null, wenn eine Walze keinen hat. */
+  function scatter(res) {
+    var rows = res.map(function (r, i) {
+      for (var d = -1; d <= 1; d++) if (STRIPS[i][(r + d + N) % N] === 'F') return d;
+      return null;
+    });
+    return rows.indexOf(null) < 0 ? rows : null;
+  }
 
   /* ---------- Anzeige ---------- */
-  var sl = $('#sl'), reels = [].slice.call(document.querySelectorAll('#sl .slstrip')), mach = $('#slMachine');
-  var pos = [randInt(N), randInt(N), randInt(N)], busy = false, gen = 0, bet = 10, shown = 0, toastT = 0, bigT = 0;
-  try { var sv = JSON.parse(localStorage.getItem('pr-slots') || 'null'); if (sv && BETS.indexOf(sv.bet) >= 0) bet = sv.bet; } catch (e) {}
-  function saveBet() { try { localStorage.setItem('pr-slots', JSON.stringify({ bet: bet })); } catch (e) {} }
+  var sl = $('#sl'), reels = [].slice.call(document.querySelectorAll('#sl .slstrip')), mach = $('#slMachine'), win3 = $('#sl .slwin');
+  var pos = [randInt(N), randInt(N), randInt(N)], busy = false, gen = 0, bet = 10, shown = 0, toastT = 0, bigT = 0, holdT = 0;
+  /* Extra-Spins: wie viele uebrig, mit welchem Einsatz, was sie bisher gebracht haben (bleibt gespeichert) */
+  var free = 0, fbet = 10, fwon = 0;
+  try {
+    var sv = JSON.parse(localStorage.getItem('pr-slots') || 'null');
+    if (sv && BETS.indexOf(sv.bet) >= 0) bet = sv.bet;
+    if (sv && sv.free > 0 && BETS.indexOf(sv.fbet) >= 0) { free = Math.min(sv.free | 0, 100); fbet = sv.fbet; fwon = Math.max(0, sv.fwon | 0); }
+  } catch (e) {}
+  function saveBet() { try { localStorage.setItem('pr-slots', JSON.stringify({ bet: bet, free: free, fbet: fbet, fwon: fwon })); } catch (e) {} }
   reels.forEach(function (el, i) {
     var h = '';
     for (var c = 0; c < COPIES; c++) STRIPS[i].forEach(function (s) { h += '<div class="slcell">' + symHTML(s) + '</div>'; });
@@ -5892,6 +5937,7 @@ input.bprange[type=range]::-moz-range-thumb { width: 20px; height: 20px; border-
   pos.forEach(function (p, i) { place(i, p + N, 0); });
 
   function paytable(el) {
+    var b = free > 0 ? fbet : bet;
     el.innerHTML = '';
     PAYS.forEach(function (p) {
       var d = document.createElement('div'), sy = '';
@@ -5900,56 +5946,79 @@ input.bprange[type=range]::-moz-range-thumb { width: 20px; height: 20px; border-
       else if (p.k === 'C') sy = symHTML('C') + '<i>+ beliebig</i>';
       else sy = symHTML(p.k[0]) + symHTML(p.k[0]) + symHTML(p.k[0]);
       d.dataset.k = p.k;
-      d.innerHTML = '<span class="ps">' + sy + '</span><b>' + fmt(p.m * bet) + '</b>';
+      d.innerHTML = '<span class="ps">' + sy + '</span><b>' + fmt(p.m * b) + '</b>';
       el.appendChild(d);
     });
+    var f = document.createElement('div');
+    f.dataset.k = 'FFF';
+    f.innerHTML = '<span class="ps">' + symHTML('F') + symHTML('F') + symHTML('F') + '<i>überall</i></span><b>' + FREE_N + ' Spins</b>';
+    el.appendChild(f);
   }
   function bank() { return PR.prof().bank | 0; }
   function renderBet() {
-    $('#slBet').textContent = fmt(bet); $('#slBetL').textContent = fmt(bet);
+    var fr = free > 0, b = fr ? fbet : bet;
+    $('#slBet').textContent = fmt(b); $('#slBetL').textContent = fmt(b);
+    $('#slBetLT').textContent = fr ? 'Gratis' : 'Einsatz';
+    $('#sl .sllcd').classList.toggle('free', fr);
     var i = BETS.indexOf(bet);
-    $('#slMinus').disabled = busy || i <= 0;
-    $('#slPlus').disabled = busy || i >= BETS.length - 1 || BETS[i + 1] > Math.max(bank(), BETS[0]);
-    $('#slSpin').disabled = busy;
+    $('#slMinus').disabled = busy || fr || i <= 0;
+    $('#slPlus').disabled = busy || fr || i >= BETS.length - 1 || BETS[i + 1] > Math.max(bank(), BETS[0]);
+    var sp = $('#slSpin');
+    sp.disabled = busy;
+    sp.classList.toggle('free', fr);
+    sp.innerHTML = fr ? 'Gratis<b>' + free + '</b>' : 'Drehen';
     paytable($('#slPay')); paytable($('#slPay2'));
   }
-  function showBank(v) { shown = v; $('#slBank').textContent = fmt(v); }
+  function bankEls() { return [$('#slBank'), $('#slBank2')]; }
+  function showBank(v) { shown = v; bankEls().forEach(function (el) { el.textContent = fmt(v); }); }
   function toast(t) {
     var el = $('#slToast'); el.textContent = t; el.classList.add('on'); clearTimeout(toastT);
     toastT = setTimeout(function () { el.classList.remove('on'); }, 2600);
   }
   /* Zahl hochzaehlen (Gewinn und Guthaben); hoert auf, sobald neu gedreht wird */
-  function countUp(el, from, to, ms, done) {
+  function countUp(els, from, to, ms, done) {
     var t0 = performance.now(), g = gen;
+    if (!Array.isArray(els)) els = [els];
     (function step(t) {
       if (g !== gen) return;
       var k = Math.min(1, (t - t0) / ms), v = Math.round(from + (to - from) * (1 - Math.pow(1 - k, 3)));
-      el.textContent = fmt(v);
+      els.forEach(function (el) { el.textContent = fmt(v); });
       if (k < 1) requestAnimationFrame(step); else if (done) done();
     })(t0);
   }
   function clearHits() {
-    [].forEach.call(document.querySelectorAll('#sl .slcell.hit'), function (c) { c.classList.remove('hit'); });
+    [].forEach.call(document.querySelectorAll('#sl .slcell.hit, #sl .slcell.fhit'), function (c) { c.classList.remove('hit', 'fhit'); });
     [].forEach.call(document.querySelectorAll('#sl .slpay div.on'), function (c) { c.classList.remove('on'); });
-    mach.classList.remove('won'); $('#slBig').hidden = true; $('#slWinL').classList.remove('on');
+    mach.classList.remove('won'); win3.classList.remove('line'); $('#slBig').hidden = true; $('#slWinL').classList.remove('on');
+    clearTimeout(bigT); clearTimeout(holdT);
+  }
+  function big(small, text) {
+    var bg = $('#slBig');
+    bg.hidden = true; void bg.offsetWidth;   // Einblend-Animation neu starten
+    bg.querySelector('small').textContent = small; bg.querySelector('b').textContent = text; bg.hidden = false;
   }
 
   /* ---------- Drehen ---------- */
   function spin() {
     if (busy || sl.hidden) return;
     Snd.unlock();
-    var P = PR.prof();
-    if (P.bank < BETS[0]) { P.bank = GIFT; PR.saveProf(); PR.renderBank(); showBank(P.bank); toast('Pleite – du bekommst ' + GIFT + ' Chips zum Weiterspielen'); }
-    while (bet > P.bank && BETS.indexOf(bet) > 0) bet = BETS[BETS.indexOf(bet) - 1];
-    saveBet();
+    var P = PR.prof(), fr = free > 0, b, cost;
+    if (fr) { b = fbet; cost = 0; free--; }
+    else {
+      if (P.bank < BETS[0]) { P.bank = GIFT; PR.saveProf(); PR.renderBank(); showBank(P.bank); toast('Pleite – du bekommst ' + GIFT + ' Chips zum Weiterspielen'); }
+      while (bet > P.bank && BETS.indexOf(bet) > 0) bet = BETS[BETS.indexOf(bet) - 1];
+      b = bet; cost = bet; fwon = 0;
+    }
     var res = [randInt(N), randInt(N), randInt(N)];
-    var line = res.map(function (r, i) { return STRIPS[i][r]; }), ev = evalLine(line), win = ev ? multOf(ev.k) * bet : 0;
+    var line = res.map(function (r, i) { return STRIPS[i][r]; }), ev = evalLine(line), win = ev ? multOf(ev.k) * b : 0, sc = scatter(res);
+    if (sc) { if (!fr) fbet = b; free += FREE_N; }
+    if (fr || sc) fwon += win;
     /* gleich verbuchen: geht die Seite mitten im Drehen zu, ist nichts verloren */
     var before = P.bank;
-    P.bank = before - bet + win; PR.saveProf(); PR.renderBank();
+    P.bank = before - cost + win; PR.saveProf(); PR.renderBank(); saveBet();
     busy = true; var g = ++gen;
     clearHits(); renderBet();
-    showBank(before - bet); $('#slWinL').textContent = '0';
+    showBank(before - cost); $('#slWinL').textContent = '0';
     $('#slSpin').classList.add('down'); setTimeout(function () { $('#slSpin').classList.remove('down'); }, 140);
     var last = 0;
     res.forEach(function (r, i) {
@@ -5965,30 +6034,58 @@ input.bprange[type=range]::-moz-range-thumb { width: 20px; height: 20px; border-
       last = ms;
     });
     Snd.spin(last / 1000 - 0.1);
-    setTimeout(function () { if (g === gen) done(res, ev, win, before - bet); }, last + 120);
+    setTimeout(function () { if (g === gen) done(res, ev, win, before - cost, sc, fr); }, last + 120);
   }
-  function done(res, ev, win, base) {
-    busy = false; renderBet();
-    if (!ev) { showBank(base); return; }
-    ev.hit.forEach(function (h, i) { if (h) reels[i].children[res[i] + N].classList.add('hit'); });
-    [].forEach.call(document.querySelectorAll('#sl .slpay div[data-k="' + ev.k + '"]'), function (d) { d.classList.add('on'); });
-    var m = multOf(ev.k), wl = $('#slWinL');
-    wl.classList.add('on');
-    countUp(wl, 0, win, m >= 10 ? 1400 : 600);
-    countUp($('#slBank'), base, base + win, m >= 10 ? 1400 : 600, function () { shown = base + win; });
-    if (m >= 10) {
-      mach.classList.add('won');
-      var bg = $('#slBig'); bg.querySelector('small').textContent = ev.k === 'SSS' ? 'Jackpot' : m >= 25 ? 'Großer Gewinn' : 'Gewinn';
-      bg.querySelector('b').textContent = '+' + fmt(win); bg.hidden = false;
-      clearTimeout(bigT); bigT = setTimeout(function () { bg.hidden = true; mach.classList.remove('won'); }, ev.k === 'SSS' ? 4200 : 2400);
-      Snd.win(); if (m >= 25) setTimeout(function () { Snd.pot(); }, 450); if (ev.k === 'SSS') setTimeout(function () { Snd.win(); }, 900);
-    } else Snd.chip(Math.min(4, m), 0, true);
+  function done(res, ev, win, base, sc, fr) {
+    var g = gen, m = ev ? multOf(ev.k) : 0, hold = 0;
+    if (ev) {
+      ev.hit.forEach(function (h, i) { if (h) reels[i].children[res[i] + N].classList.add('hit'); });
+      [].forEach.call(document.querySelectorAll('#sl .slpay div[data-k="' + ev.k + '"]'), function (d) { d.classList.add('on'); });
+      var wl = $('#slWinL');
+      wl.classList.add('on');
+      countUp(wl, 0, win, m >= 10 ? 1400 : 600);
+      countUp(bankEls(), base, base + win, m >= 10 ? 1400 : 600, function () { shown = base + win; });
+      /* alles ueber Kirschen: die Linie leuchtet und der Knopf bleibt kurz gesperrt, damit man den Gewinn sieht */
+      if (ev.k !== 'C' && ev.k !== 'CC') {
+        win3.classList.add('line');
+        hold = ev.k === 'SSS' ? 4200 : m >= 25 ? 3000 : m >= 12 ? 2400 : 1800;
+      }
+      if (m >= 10) {
+        mach.classList.add('won');
+        big(ev.k === 'SSS' ? 'Jackpot' : m >= 25 ? 'Großer Gewinn' : 'Gewinn', '+' + fmt(win));
+        Snd.win(); if (m >= 25) setTimeout(function () { Snd.pot(); }, 450); if (ev.k === 'SSS') setTimeout(function () { Snd.win(); }, 900);
+      } else Snd.chip(Math.min(4, m), 0, true);
+    } else showBank(base);
+    if (sc) {
+      /* Extra-Spins: die drei Symbole leuchten, danach (oder gleich) das Schild */
+      var at = m >= 10 ? Math.min(hold, 2000) : 0;
+      sc.forEach(function (d, i) { reels[i].children[res[i] + N + d].classList.add('fhit'); });
+      [].forEach.call(document.querySelectorAll('#sl .slpay div[data-k="FFF"]'), function (d) { d.classList.add('on'); });
+      bigT = setTimeout(function () {
+        if (g !== gen) return;
+        mach.classList.add('won');
+        big(fr ? 'Noch mal' : 'Extra Spins', '+' + FREE_N + ' Gratis');
+        Snd.win(); setTimeout(function () { Snd.ping(); }, 500);
+      }, at);
+      hold = at + 2600;
+    }
+    if (!sc && fr && free === 0) {
+      var tot = fwon;
+      setTimeout(function () { if (g === gen) toast('Extra Spins vorbei – ' + (tot ? '+' + fmt(tot) + ' gewonnen' : 'leider nichts gewonnen')); }, hold);
+    }
+    function release() {
+      if (g !== gen) return;
+      busy = false; renderBet();
+      $('#slBig').hidden = true; mach.classList.remove('won');
+    }
+    if (hold) { holdT = setTimeout(release, hold); renderBet(); }
+    else { busy = false; renderBet(); }
   }
 
   /* ---------- Bedienung ---------- */
   $('#slSpin').addEventListener('click', spin);
-  $('#slMinus').addEventListener('click', function () { var i = BETS.indexOf(bet); if (!busy && i > 0) { bet = BETS[i - 1]; saveBet(); Snd.chip(1, 0); renderBet(); } });
-  $('#slPlus').addEventListener('click', function () { var i = BETS.indexOf(bet); if (!busy && i < BETS.length - 1 && BETS[i + 1] <= bank()) { bet = BETS[i + 1]; saveBet(); Snd.chip(1, 0); renderBet(); } });
+  $('#slMinus').addEventListener('click', function () { var i = BETS.indexOf(bet); if (!busy && !free && i > 0) { bet = BETS[i - 1]; saveBet(); Snd.chip(1, 0); renderBet(); } });
+  $('#slPlus').addEventListener('click', function () { var i = BETS.indexOf(bet); if (!busy && !free && i < BETS.length - 1 && BETS[i + 1] <= bank()) { bet = BETS[i + 1]; saveBet(); Snd.chip(1, 0); renderBet(); } });
   document.addEventListener('keydown', function (e) {
     if (sl.hidden || !$('#slPause').hidden) return;
     if (e.key === ' ' || e.key === 'Enter') { e.preventDefault(); spin(); }
@@ -5998,9 +6095,10 @@ input.bprange[type=range]::-moz-range-thumb { width: 20px; height: 20px; border-
     $('#menu').hidden = true; sl.hidden = false; $('#slPause').hidden = true;
     clearHits(); $('#slWinL').textContent = '0';
     showBank(bank()); renderBet();
+    if (free > 0) toast('Du hast noch ' + free + ' Extra Spins');
   }
   function leave() {
-    gen++; busy = false;
+    gen++; busy = false; clearHits();
     reels.forEach(function (el, i) { el.classList.remove('spin'); place(i, pos[i] + N, 0); });
     Snd.stopAll();
     sl.hidden = true; $('#slPause').hidden = true; $('#menu').hidden = false;
