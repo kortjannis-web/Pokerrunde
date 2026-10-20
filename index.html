@@ -905,6 +905,9 @@ input.bprange[type=range]::-moz-range-thumb { width: 20px; height: 20px; border-
 .slbig[hidden] { display: none; }
 .slbig small { display: block; font: 800 12px var(--ui); letter-spacing: .2em; text-transform: uppercase; color: var(--brass); }
 .slbig b { display: block; font: 800 34px var(--display); color: #ffe08a; text-shadow: 0 0 14px rgba(255,224,138,.6); }
+.slbig.tot { padding: 16px 28px 18px; box-shadow: 0 0 0 3px #b98cff, 0 0 50px rgba(185,140,255,.75); }
+.slbig.tot small { color: #d6bcff; font-size: 13px; }
+.slbig.tot b { font-size: 46px; }
 @keyframes slbig { from { transform: translate(-50%, -50%) scale(.3); opacity: 0; } to { transform: translate(-50%, -50%); opacity: 1; } }
 /* Gewinntabelle */
 .slpay { width: min(100%, 380px); display: grid; grid-template-columns: 1fr 1fr; gap: 3px 14px; padding: 0 6px; }
@@ -938,8 +941,9 @@ input.bprange[type=range]::-moz-range-thumb { width: 20px; height: 20px; border-
 #slSpin:disabled { filter: saturate(.5) brightness(.8); cursor: default; }
 #slSpin.free { line-height: 1.1; background: radial-gradient(circle at 50% 35%, #b98cff, #6a35c9 55%, #3d1a80); box-shadow: 0 6px 0 #2a1060, 0 12px 22px rgba(0,0,0,.5), inset 0 2px 0 rgba(255,255,255,.35); }
 #slSpin.free:active:not(:disabled), #slSpin.free.down { box-shadow: 0 1px 0 #2a1060, 0 5px 12px rgba(0,0,0,.5), inset 0 2px 0 rgba(255,255,255,.25); }
+#slSpin.free span { display: block; line-height: 1.05; }
 #slSpin.free b { display: block; font-size: 22px; }
-/* ---------- Slots: zweiter Automat, Jackpot, Joker, Halten, Risikoleiter, Gluecksrad, Erfolge ---------- */
+/* ---------- Slots: zweiter Automat, Jackpot, Joker, Stein-Kirschen, Risikoleiter, Gluecksrad, Erfolge ---------- */
 /* Automat waehlen */
 .slpick { display: flex; gap: 6px; padding: 3px; border-radius: 999px; background: rgba(0,0,0,.35); border: 1px solid var(--line); }
 .slpick button { height: 30px; padding: 0 14px; border-radius: 999px; border: 0; background: transparent; color: var(--muted); font: 800 12px var(--ui); letter-spacing: .04em; white-space: nowrap; }
@@ -954,7 +958,6 @@ input.bprange[type=range]::-moz-range-thumb { width: 20px; height: 20px; border-
 .slmarq em b { font: 800 19px var(--display); color: #fff3c4; font-variant-numeric: tabular-nums; text-shadow: 0 0 10px rgba(255,224,138,.8); }
 .slmarq em b.up { animation: sljp .5s ease-out; }
 @keyframes sljp { 30% { color: #fff; transform: scale(1.12); } }
-.slm.hold .slmarq span { animation: bulbs .4s steps(2) infinite; }
 /* Fenster fuer beliebig viele Walzen */
 .slwin { grid-template-columns: repeat(var(--nr, 3), 1fr); }
 #sl.m2 #slStage { --ch: min(16cqw, 64px, 9.6vh); }
@@ -975,16 +978,23 @@ input.bprange[type=range]::-moz-range-thumb { width: 20px; height: 20px; border-
   background: conic-gradient(from 200deg, #e0475b, #f4b23e, #f4e23e, #4fc46a, #3ea6f4, #9b5cf4, #e0475b); box-shadow: inset 0 0 0 2px #fff3c4, inset 0 0 0 5px rgba(0,0,0,.25), 0 2px 5px rgba(0,0,0,.4); text-shadow: 0 1px 2px rgba(0,0,0,.6); }
 .sy.wd b { display: block; font-size: .36em; letter-spacing: .06em; margin-top: 1px; }
 .slpay .ps .sy.wd { flex: none; width: 48px; height: 48px; margin: -14px; font-size: 22px; transform: scale(.42); }
-/* Halten (Lucky Seven) */
-.slhold { position: absolute; left: 50%; bottom: 6px; z-index: 3; transform: translateX(-50%); height: 26px; padding: 0 10px; border-radius: 999px; border: 0; font: 900 11px var(--ui); letter-spacing: .08em; text-transform: uppercase; color: #1a1004; background: #f4d67f; box-shadow: 0 2px 6px rgba(0,0,0,.45); animation: slholdp .7s ease-in-out infinite alternate; }
-.slhold[hidden] { display: none; }
-.slhold.on { background: #4fc46a; color: #06210d; animation: none; }
-@keyframes slholdp { to { transform: translateX(-50%) scale(1.08); } }
-.slreel.held { box-shadow: 0 0 0 3px #4fc46a, 0 0 16px 3px rgba(79,196,106,.6); }
+/* Stein-Kirsche: Kirsche in einem grauen Steinblock; auf der Linie bleibt die Walze stehen (Nachdreh) */
+.sy.st { position: relative; width: calc(var(--ch) * .84); height: calc(var(--ch) * .84); border-radius: 16%; display: grid; place-items: center;
+  background: radial-gradient(circle at 28% 22%, rgba(255,255,255,.4), transparent 38%), radial-gradient(circle at 72% 78%, rgba(0,0,0,.25), transparent 45%),
+    repeating-linear-gradient(32deg, transparent 0 7px, rgba(60,64,68,.18) 7px 8px), linear-gradient(135deg, #b4b9bd, #858a8f 55%, #64696e);
+  box-shadow: inset 0 0 0 2px rgba(40,44,48,.6), inset 3px 3px 0 rgba(255,255,255,.28), inset -3px -3px 0 rgba(0,0,0,.3), 0 3px 6px rgba(0,0,0,.45); }
+.sy.st::after { content: ''; position: absolute; inset: 0; border-radius: inherit; pointer-events: none;
+  background: linear-gradient(118deg, transparent 0 18%, rgba(40,44,48,.45) 18.5% 19.5%, transparent 20%), linear-gradient(62deg, transparent 0 74%, rgba(40,44,48,.4) 74.5% 75.5%, transparent 76%); }
+.sy.st .sy.e { font-size: calc(var(--ch) * .46); filter: drop-shadow(0 2px 1px rgba(0,0,0,.45)); }
+.slpay .ps .sy.st { flex: none; width: 48px; height: 48px; margin: -14px; transform: scale(.42); }
+.slpay .ps .sy.st .sy.e { font-size: 28px; }
+.slcell.stone .sy.st { animation: slpop .45s cubic-bezier(.2,.9,.3,1.4); box-shadow: inset 0 0 0 2px rgba(40,44,48,.6), 0 0 0 3px #dfe3e6, 0 0 18px 6px rgba(220,225,230,.75); }
+.slreel.held { box-shadow: 0 0 0 3px #c9ced2, 0 0 18px 4px rgba(201,206,210,.6); }
+.slreel.held::before { content: 'FEST'; position: absolute; left: 50%; bottom: 5px; z-index: 3; transform: translateX(-50%); padding: 3px 9px; border-radius: 999px; background: #5b6065; color: #fff; font: 900 10px var(--ui); letter-spacing: .14em; box-shadow: 0 2px 5px rgba(0,0,0,.4); }
 /* Multiplikator in den Extra-Spins */
 .sllcd b.pop { animation: slpop .5s cubic-bezier(.2,.9,.3,1.4); }
 /* Riskieren */
-#slRisk { flex: none; width: 78px; height: 58px; border-radius: 16px; border: 0; padding: 0; color: #1a1004; font: 900 12px/1.1 var(--ui); letter-spacing: .04em; text-transform: uppercase;
+#slRisk { flex: none; width: 78px; height: 52px; border-radius: 16px; border: 0; padding: 0; color: #1a1004; font: 900 14px/1.1 var(--ui); letter-spacing: .04em; text-transform: uppercase;
   background: linear-gradient(180deg, #ffe08a, #e0aa4a); box-shadow: 0 4px 0 #8a5d17, 0 8px 16px rgba(0,0,0,.45); animation: slholdp2 .8s ease-in-out infinite alternate; }
 #slRisk small { display: block; font-size: 17px; font-family: var(--display); }
 #slRisk[hidden] { display: none; }
@@ -1318,7 +1328,7 @@ input.bprange[type=range]::-moz-range-thumb { width: 20px; height: 20px; border-
           <button class="iconbtn" id="slPlus" type="button" aria-label="Einsatz erhöhen">+</button>
         </div>
       </div>
-      <button id="slRisk" type="button" hidden>Riskieren<small>×2</small></button>
+      <button id="slRisk" type="button" hidden>Risiko</button>
       <button id="slSpin" type="button">Drehen</button>
     </footer>
     <div id="slPause" class="overlay" hidden>
@@ -1332,8 +1342,7 @@ input.bprange[type=range]::-moz-range-thumb { width: 20px; height: 20px; border-
     </div>
     <div id="slGamble" class="overlay" hidden>
       <div class="endcard slgam">
-        <h2>Risikoleiter</h2>
-        <p style="margin:0">Rot oder Schwarz? Richtig verdoppelt, falsch ist der Gewinn weg.</p>
+        <h2>Risiko</h2>
         <div class="slgl" id="slgLadder"></div>
         <div class="slgrow">
           <div class="slgcard" id="slgCard"><i class="b"></i><i class="f"></i></div>
@@ -6032,15 +6041,14 @@ input.bprange[type=range]::-moz-range-thumb { width: 20px; height: 20px; border-
 
 <script>
 /* Slots: zwei Automaten, gespielt direkt mit dem Guthaben (Spielgeld).
-   Lucky Seven: drei Walzen, eine Gewinnlinie (der rote Strich), Joker nur auf der mittleren Walze, ab und zu "Halten".
+   Lucky Seven: drei Walzen, eine Gewinnlinie (der rote Strich), Joker nur auf der mittleren Walze, Stein-Kirschen
+   (landet eine auf der Linie, bleibt ihre Walze stehen und die anderen drehen gratis nach).
    Diamant 5 (frei ab 5.000 Chips): fuenf Walzen, drei Reihen, fuenf Gewinnlinien, Joker auf den Walzen 2 bis 4.
    Bei beiden: dreimal Extra-Spin irgendwo im Fenster = 10 Gratis-Drehs, jeder Gewinn darin erhoeht den Multiplikator
-   (x1 bis x5); nach einem Gewinn die Risikoleiter (Rot/Schwarz, 50:50); ein gemeinsamer Jackpot-Topf; einmal am Tag
-   das Gluecksrad; Erfolge im Profil.
-   Durchgerechnet (alle Walzenstellungen bzw. Millionen Probedrehs): auf Dauer kommen bei beiden Automaten rund 95 %
-   der Einsaetze zurueck, bei bestem Halten etwas mehr. Der Jackpot ist ein Vielfaches des Einsatzes: er startet bei 200x,
-   waechst mit jedem bezahlten Dreh um 0,01x und hoert bei 400x auf zu wachsen. Auch mit vollem Topf bleibt der Automat
-   so unter 100 % (rund 97 bis 98 %), das Casino bleibt also immer im Plus. */
+   (x1 bis x5); nach einem Gewinn die Risikoleiter (Rot/Schwarz, 50:50); ein fester Jackpot (200x Einsatz);
+   einmal am Tag das Gluecksrad; Erfolge im Profil.
+   Durchgerechnet (Millionen Probedrehs samt Nachdrehs und Extra-Spins): auf Dauer kommen bei beiden Automaten
+   rund 95 % der Einsaetze zurueck, das Casino bleibt also im Plus. */
 (function () {
   'use strict';
   var PR = window.PR;
@@ -6052,7 +6060,7 @@ input.bprange[type=range]::-moz-range-thumb { width: 20px; height: 20px; border-
   function writeJ(k, v) { try { localStorage.setItem(k, JSON.stringify(v)); } catch (e) {} }
 
   var BETS = [10, 20, 50, 100, 200, 500, 1000], GIFT = 50, COPIES = 9, FREE_N = 10, MULT_MAX = 5;
-  var JP0 = 200, JPMAX = 400, JPGROW = 0.01, HOLD_P = 15, UNLOCK = 5000, LADDER = 5;
+  var JP0 = 200, UNLOCK = 5000, LADDER = 5;
 
   /* feste Walzenbaender (immer gleich gemischt, damit die Nachbarn wie bei echten Walzen stimmen) */
   function strip(count, seed) {
@@ -6068,27 +6076,31 @@ input.bprange[type=range]::-moz-range-thumb { width: 20px; height: 20px; border-
     catch (e) { return Math.floor(Math.random() * n); }
   }
 
-  /* C Kirsche, L Zitrone, O Orange, G Trauben, B Glocke, M Melone, T Stern, D Diamant, R Bar, S Sieben, W Joker, F Extra-Spin */
+  /* C Kirsche, L Zitrone, O Orange, G Trauben, B Glocke, M Melone, T Stern, D Diamant, R Bar, S Sieben, W Joker, F Extra-Spin,
+     c Stein-Kirsche (zaehlt wie eine Kirsche) */
+  var STONE = { c: 'C' };
+  function base(c) { return STONE[c] || c; }
   var EMO = { C: '🍒', L: '🍋', O: '🍊', G: '🍇', B: '🔔', M: '🍉', T: '⭐', D: '💎' };
   function symHTML(c) {
     if (c === 'S') return '<span class="sy sev">7</span>';
     if (c === 'R') return '<span class="sy bar">BAR</span>';
     if (c === 'F') return '<span class="sy fs">EXTRA<b>SPIN</b></span>';
     if (c === 'W') return '<span class="sy wd">★<b>JOKER</b></span>';
+    if (STONE[c]) return '<span class="sy st">' + symHTML(STONE[c]) + '</span>';
     return '<span class="sy e">' + EMO[c] + '</span>';
   }
   function RS(c) { return c === 'R' || c === 'S'; }
 
   /* ---------- Automat 1: Lucky Seven ---------- */
   var M1 = {
-    id: 'lucky', title: 'LUCKY ★ SEVEN', short: 'Lucky 7', reels: 3, need: 3, hold: true, gap: 420, tease: 2600,
-    counts: [{ C: 8, L: 7, O: 5, G: 5, B: 4, R: 3, S: 2, F: 2 }, { C: 7, L: 7, O: 5, G: 5, B: 4, R: 3, S: 2, W: 1, F: 2 }, { C: 8, L: 7, O: 5, G: 5, B: 4, R: 3, S: 2, F: 2 }],
+    id: 'lucky', title: 'LUCKY ★ SEVEN', short: 'Lucky 7', reels: 3, need: 3, gap: 420, tease: 2600,
+    counts: [{ C: 7, c: 1, L: 7, O: 5, G: 5, B: 4, R: 3, S: 2, F: 2 }, { C: 6, c: 1, L: 7, O: 5, G: 5, B: 4, R: 3, S: 2, W: 1, F: 2 }, { C: 7, c: 1, L: 7, O: 5, G: 5, B: 4, R: 3, S: 2, F: 2 }],
     seeds: [7, 4242, 90001],
-    pays: { SWS: 100, RRR: 40, BBB: 20, GGG: 12, OOO: 10, LLL: 8, CCC: 8, mix: 4, CC: 4, C: 2 }
+    pays: { SWS: 100, RRR: 30, BBB: 16, GGG: 10, OOO: 8, LLL: 6, CCC: 6, mix: 4, CC: 3, C: 2 }
   };
   /* Gewinnlinie: drei echte Siebenen = Jackpot; der Joker (nur Mitte) ersetzt jedes Symbol ausser Extra-Spin */
   M1.eval = function (g) {
-    var a = [g[0][1], g[1][1], g[2][1]], LN = [[0, 1], [1, 1], [2, 1]];
+    var a = [base(g[0][1]), base(g[1][1]), base(g[2][1])], LN = [[0, 1], [1, 1], [2, 1]];
     if (a[0] === 'S' && a[1] === 'S' && a[2] === 'S') return { m: 0, jp: true, k: 'SSS', wins: [{ cells: LN }] };
     var best = null;
     (a[1] === 'W' ? ['C', 'L', 'O', 'G', 'B', 'R', 'S'] : [a[1]]).forEach(function (mid) {
@@ -6107,7 +6119,7 @@ input.bprange[type=range]::-moz-range-thumb { width: 20px; height: 20px; border-
   var LINES5 = [[1, 1, 1, 1, 1], [0, 0, 0, 0, 0], [2, 2, 2, 2, 2], [0, 1, 2, 1, 0], [2, 1, 0, 1, 2]];
   var D_OUT = { C: 6, L: 6, M: 5, G: 4, B: 3, T: 3, D: 4, F: 1 }, D_IN = { C: 6, L: 5, M: 5, G: 4, B: 3, T: 3, D: 4, W: 1, F: 1 };
   var M2 = {
-    id: 'diamond', title: 'DIAMANT 💎 5', short: 'Diamant 5', reels: 5, need: 3, hold: false, gap: 260, tease: 1800,
+    id: 'diamond', title: 'DIAMANT 💎 5', short: 'Diamant 5', reels: 5, need: 3, gap: 260, tease: 1800,
     counts: [D_OUT, D_IN, D_IN, D_IN, D_OUT], seeds: [11, 2024, 777, 555, 31337],
     /* je Linie, in Linien-Einsaetzen (Einsatz / 5): 3, 4, 5 gleiche von links; 2 Kirschen von links = 2 */
     pays: { C: [10, 30, 100], L: [10, 30, 100], M: [15, 45, 130], G: [18, 55, 170], B: [20, 70, 220], T: [25, 90, 280], D: [35, 120, 500] }, c2: 2,
@@ -6172,10 +6184,7 @@ input.bprange[type=range]::-moz-range-thumb { width: 20px; height: 20px; border-
   }
   function fsOf(mc) { return FS[mc.id]; }
   function unlocked() { try { return localStorage.getItem('pr-slunlock') === '1'; } catch (e) { return false; } }
-  /* Jackpot-Topf (gemeinsam fuer beide Automaten) als Vielfaches des Einsatzes */
-  var pot = JP0;
-  (function () { var o = readJ('pr-slpot'); if (o && isFinite(+o.m)) pot = Math.max(JP0, Math.min(JPMAX, +o.m)); })();
-  function savePot() { writeJ('pr-slpot', { m: Math.round(pot * 100) / 100 }); }
+  try { localStorage.removeItem('pr-slpot'); } catch (e) {}   // frueher wachsender Topf, jetzt fester Jackpot
 
   /* Statistik fuers Profil: Drehs, Gewinne, Saldo, bester Gewinn, Jackpots und der Saldo-Verlauf */
   function stats() { var o = readJ('pr-slstats') || {}; return { n: +o.n || 0, w: +o.w || 0, net: +o.net || 0, best: +o.best || 0, jp: +o.jp || 0 }; }
@@ -6205,7 +6214,7 @@ input.bprange[type=range]::-moz-range-thumb { width: 20px; height: 20px; border-
     ['x5', '🚀', 'Volle Fahrt', 'Multiplikator ×5 erreichen'],
     ['risk3', '🎲', 'Risikofreudig', '3 Stufen auf der Risikoleiter'],
     ['risk5', '🔥', 'Alles oder nichts', 'Risikoleiter ganz nach oben'],
-    ['hold', '✋', 'Gutes Händchen', 'Gewinn nach dem Halten'],
+    ['hold', '🪨', 'Steinhart', 'Gewinn im Nachdreh'],
     ['n100', '🎰', 'Stammgast', '100 Drehs'],
     ['n1000', '🏅', 'Dauerdreher', '1.000 Drehs'],
     ['k1', '🐟', 'Großer Fisch', 'Einzelgewinn ab 1.000'],
@@ -6247,7 +6256,7 @@ input.bprange[type=range]::-moz-range-thumb { width: 20px; height: 20px; border-
   /* ---------- Anzeige ---------- */
   var sl = $('#sl'), mach = $('#slMachine'), winEl = $('#slWin'), reels = [];
   var busy = false, gen = 0, shown = 0, toastT = 0, bigT = 0, holdT = 0;
-  var holdOffer = false, holdSel = -1, holdBet = 0, riskAmt = 0, payKey = '';
+  var riskAmt = 0, payKey = '';
 
   function build() {
     var mc = cur, h = '';
@@ -6257,13 +6266,12 @@ input.bprange[type=range]::-moz-range-thumb { width: 20px; height: 20px; border-
     for (var i = 0; i < mc.reels; i++) {
       h += '<div class="slreel"><div class="slstrip">';
       for (var c = 0; c < COPIES; c++) mc.S[i].forEach(function (s) { h += '<div class="slcell">' + symHTML(s) + '</div>'; });
-      h += '</div>' + (mc.hold ? '<button class="slhold" type="button" data-r="' + i + '" hidden>Halten</button>' : '') + '</div>';
+      h += '</div></div>';
     }
     h += mc === M1 ? '<div class="slline" aria-hidden="true"><i></i></div>' : '<svg class="sllines" aria-hidden="true"></svg>';
     winEl.innerHTML = h;
     reels = [].slice.call(winEl.querySelectorAll('.slstrip'));
     mc.pos.forEach(function (p, i) { place(i, p + mc.N, 0); });
-    all('#slWin .slhold').forEach(function (b) { b.addEventListener('click', function () { pickHold(+b.dataset.r); }); });
   }
   /* Walze so stellen, dass Feld idx (im langen Band) in der Mitte liegt */
   function place(i, idx, ms, ease) {
@@ -6273,7 +6281,7 @@ input.bprange[type=range]::-moz-range-thumb { width: 20px; height: 20px; border-
   }
   function cellEl(i, r, row) { return reels[i].children[r + cur.N + row - 1]; }
 
-  function curBet() { var f = fsOf(cur); return f.free > 0 ? f.fbet : holdOffer ? holdBet : bet; }
+  function curBet() { var f = fsOf(cur); return f.free > 0 ? f.fbet : bet; }
   function lineAmt(m, b) { return fmt(Math.round(m * b)); }
   function paytable(el) {
     var b = curBet(), mc = cur;
@@ -6290,6 +6298,7 @@ input.bprange[type=range]::-moz-range-thumb { width: 20px; height: 20px; border-
       row('mix', symHTML('R') + symHTML('S') + '<i>gemischt</i>', fmt(M1.pays.mix * b));
       row('CC', symHTML('C') + symHTML('C') + '<i>+ beliebig</i>', fmt(M1.pays.CC * b));
       row('C', symHTML('C') + '<i>+ beliebig</i>', fmt(M1.pays.C * b));
+      row('STN', symHTML('c') + '<i>auf der Linie</i>', 'Nachdreh');
     } else {
       row('JP', symHTML('D') + '<i>× 5</i>', 'Jackpot');
       M2.order.forEach(function (s) {
@@ -6304,14 +6313,14 @@ input.bprange[type=range]::-moz-range-thumb { width: 20px; height: 20px; border-
     if (cur === M1) return 'Dein Guthaben ist gespeichert. Gewonnen wird in der Reihe mit dem roten Strich. ' +
       'Der <b>Joker</b> (nur mittlere Walze) ersetzt jedes Symbol, drei echte Siebenen knacken den <b>Jackpot</b>. ' +
       'Dreimal <b>Extra-Spin</b> irgendwo im Fenster = 10 Gratis-Drehs, jeder Gewinn darin erhöht den Multiplikator bis ×5. ' +
-      'Manchmal darfst du nach einem Dreh eine Walze <b>halten</b> (dann gibt es beim nächsten Dreh keine Extra-Spins). Beträge für deinen Einsatz:';
+      'Landet eine <b>Stein-Kirsche</b> auf der Linie, bleibt ihre Walze stehen und die anderen drehen gratis nach. Beträge für deinen Einsatz:';
     return 'Dein Guthaben ist gespeichert. 5 Gewinnlinien (Mitte, oben, unten, V und umgedrehtes V), gewonnen wird mit gleichen Symbolen von links. ' +
       'Der <b>Joker</b> (Walze 2 bis 4) ersetzt jedes Symbol, fünf echte Diamanten auf einer Linie knacken den <b>Jackpot</b> (* mit Joker). ' +
       'Dreimal <b>Extra-Spin</b> irgendwo = 10 Gratis-Drehs mit steigendem Multiplikator. Beträge je Linie für deinen Einsatz:';
   }
   function bank() { return PR.prof().bank | 0; }
   function renderJp(anim) {
-    var el = $('#slJp'), v = Math.round(pot * curBet());
+    var el = $('#slJp'), v = Math.round(JP0 * curBet());
     el.textContent = fmt(v);
     if (anim) { el.classList.remove('up'); void el.offsetWidth; el.classList.add('up'); }
   }
@@ -6342,17 +6351,14 @@ input.bprange[type=range]::-moz-range-thumb { width: 20px; height: 20px; border-
     $('#slBet').textContent = fmt(b); $('#slBetL').textContent = fmt(b);
     $('#slBetLT').textContent = fr ? 'Gratis ×' + f.mult : 'Einsatz';
     $('#sl .sllcd').classList.toggle('free', fr);
-    var i = BETS.indexOf(bet), lockBet = busy || fr || holdOffer;
+    var i = BETS.indexOf(bet), lockBet = busy || fr;
     $('#slMinus').disabled = lockBet || i <= 0;
     $('#slPlus').disabled = lockBet || i >= BETS.length - 1 || BETS[i + 1] > Math.max(bank(), BETS[0]);
     var sp = $('#slSpin');
     sp.disabled = busy;
     sp.classList.toggle('free', fr);
-    sp.innerHTML = fr ? 'Gratis<b>' + f.free + '</b>' : 'Drehen';
+    sp.innerHTML = fr ? '<span>Gratis<b>' + f.free + '</b></span>' : 'Drehen';
     $('#slRisk').hidden = busy || !riskAmt;
-    all('#slWin .slhold').forEach(function (h, k) { h.hidden = busy || !holdOffer; h.classList.toggle('on', holdSel === k); h.textContent = holdSel === k ? 'Gehalten' : 'Halten'; });
-    reels.forEach(function (el, k) { el.parentNode.classList.toggle('held', holdOffer && holdSel === k); });
-    mach.classList.toggle('hold', holdOffer && !busy);
     var pk = cur.id + ':' + b;
     if (pk !== payKey) { payKey = pk; paytable($('#slPay')); paytable($('#slPay2')); $('#slRules').innerHTML = rulesText(); }
     renderJp(false); renderPick();
@@ -6376,17 +6382,18 @@ input.bprange[type=range]::-moz-range-thumb { width: 20px; height: 20px; border-
     })(t0);
   }
   function clearHits() {
-    all('#sl .slcell.hit, #sl .slcell.fhit, #sl .slcell.fland').forEach(function (c) { c.classList.remove('hit', 'fhit', 'fland'); });
+    all('#sl .slcell.hit, #sl .slcell.fhit, #sl .slcell.fland, #sl .slcell.stone').forEach(function (c) { c.classList.remove('hit', 'fhit', 'fland', 'stone'); });
+    all('#sl .slreel.held').forEach(function (c) { c.classList.remove('held'); });
     all('#sl .slreel.tease').forEach(function (c) { c.classList.remove('tease'); });
     all('#sl .slpay div.on').forEach(function (c) { c.classList.remove('on'); });
     var svg = winEl.querySelector('.sllines'); if (svg) svg.innerHTML = '';
     mach.classList.remove('won'); winEl.classList.remove('line'); $('#slBig').hidden = true; $('#slWinL').classList.remove('on');
     clearTimeout(bigT); clearTimeout(holdT);
   }
-  function endOffers() { holdOffer = false; holdSel = -1; riskAmt = 0; }
-  function big(small, text) {
+  function endOffers() { riskAmt = 0; }
+  function big(small, text, cls) {
     var bg = $('#slBig');
-    bg.hidden = true; void bg.offsetWidth;   // Einblend-Animation neu starten
+    bg.hidden = true; bg.className = 'slbig' + (cls ? ' ' + cls : ''); void bg.offsetWidth;   // Einblend-Animation neu starten
     bg.querySelector('small').textContent = small; bg.querySelector('b').textContent = text; bg.hidden = false;
   }
   /* Muenzregen ueber den ganzen Automaten (n Muenzen) */
@@ -6421,70 +6428,73 @@ input.bprange[type=range]::-moz-range-thumb { width: 20px; height: 20px; border-
     svg.innerHTML = h;
   }
 
-  /* ---------- Halten (nur Lucky Seven) ---------- */
-  function pickHold(i) {
-    if (!holdOffer || busy) return;
-    holdSel = holdSel === i ? -1 : i; Snd.chip(1, 0); renderAll();
-  }
-
   /* ---------- Drehen ---------- */
+  /* Ein Dreh kann aus mehreren Schritten bestehen: landet eine Stein-Kirsche auf der Linie, bleibt ihre Walze stehen
+     und die anderen drehen gratis nach (so lange, bis keine neue Stein-Kirsche kommt). Jeder Schritt zahlt fuer sich.
+     Alles wird sofort berechnet und verbucht, danach nur noch nacheinander gezeigt. */
   function spin() {
     if (busy || sl.hidden || !$('#slGamble').hidden || !$('#slWheel').hidden) return;
     Snd.unlock();
-    var mc = cur, f = fsOf(mc), P = PR.prof(), fr = f.free > 0, held = holdOffer ? holdSel : -1, b, cost;
-    if (fr) { b = f.fbet; cost = 0; f.free--; held = -1; }
+    var mc = cur, f = fsOf(mc), P = PR.prof(), fr = f.free > 0, b, cost;
+    if (fr) { b = f.fbet; cost = 0; f.free--; }
     else {
-      if (held >= 0 && holdBet <= P.bank) b = holdBet;
-      else {
-        held = -1;
-        if (P.bank < BETS[0]) { P.bank = GIFT; PR.saveProf(); PR.renderBank(); showBank(P.bank); toast('Pleite – du bekommst ' + GIFT + ' Chips zum Weiterspielen'); }
-        while (bet > P.bank && BETS.indexOf(bet) > 0) bet = BETS[BETS.indexOf(bet) - 1];
-        b = bet;
-      }
-      cost = b;
-      pot = Math.min(JPMAX, pot + JPGROW); savePot();
+      if (P.bank < BETS[0]) { P.bank = GIFT; PR.saveProf(); PR.renderBank(); showBank(P.bank); toast('Pleite – du bekommst ' + GIFT + ' Chips zum Weiterspielen'); }
+      while (bet > P.bank && BETS.indexOf(bet) > 0) bet = BETS[BETS.indexOf(bet) - 1];
+      b = bet; cost = b;
     }
-    endOffers();
-    var res = mc.pos.map(function (p, i) { return i === held ? p : randInt(mc.N); });
-    var g = grid(mc, res), ev = mc.eval(g), sc = held >= 0 ? null : scatter(mc, res);
-    var mult = fr ? f.mult : 1;
-    var lineWin = ev ? Math.round(ev.m * b * mult) : 0, jpWin = ev && ev.jp ? Math.round(pot * b) : 0, win = lineWin + jpWin;
-    if (jpWin) { pot = JP0; savePot(); }
-    var multUp = fr && win > 0 && f.mult < MULT_MAX;
-    if (fr && win > 0) f.mult = Math.min(MULT_MAX, f.mult + 1);
-    if (sc) { if (!fr) { f.fbet = b; f.mult = 1; f.fwon = 0; } f.free += FREE_N; }
-    if (fr || sc) f.fwon += win;
-    var endFs = fr && !sc && f.free === 0;
-    var offerHold = mc.hold && !fr && !sc && !win && held < 0 && randInt(100) < HOLD_P;
+    riskAmt = 0;
+    var steps = [], held = mc.S.map(function () { return false; }), res = mc.pos.map(function () { return randInt(mc.N); }), total = 0, jpAny = false;
+    for (var k = 0; k < mc.reels; k++) {
+      var g = grid(mc, res), ev = mc.eval(g), sc = k === 0 ? scatter(mc, res) : null, mult = fr ? f.mult : 1;
+      var jpWin = ev && ev.jp ? Math.round(JP0 * b) : 0, win = (ev ? Math.round(ev.m * b * mult) : 0) + jpWin;
+      var multUp = fr && win > 0 && f.mult < MULT_MAX;
+      if (fr && win > 0) f.mult = Math.min(MULT_MAX, f.mult + 1);
+      steps.push({ res: res, ev: ev, sc: sc, win: win, jpWin: jpWin, mult: mult, multUp: multUp, held: held.slice(), before: total });
+      total += win; if (jpWin) jpAny = true;
+      var nw = g.map(function (c, i) { return !held[i] && !!STONE[c[1]]; });
+      if (!nw.some(Boolean)) break;
+      nw.forEach(function (x, i) { if (x) held[i] = true; });
+      if (held.every(Boolean)) break;
+      res = res.map(function (r, i) { return held[i] ? r : randInt(mc.N); });
+    }
+    var sc0 = steps[0].sc;
+    if (sc0) { if (!fr) { f.fbet = b; f.mult = 1; f.fwon = 0; } f.free += FREE_N; }
+    if (fr || sc0) f.fwon += total;
     /* gleich verbuchen: geht die Seite mitten im Drehen zu, ist nichts verloren */
     var before = P.bank;
-    P.bank = before - cost + win; PR.saveProf(); PR.renderBank(); saveState();
-    var st = slStat(win - cost, win, !!jpWin);
-    busy = true; var gg = ++gen;
+    P.bank = before - cost + total; PR.saveProf(); PR.renderBank(); saveState();
+    var st = slStat(total - cost, total, jpAny);
+    busy = true; ++gen;
     clearHits(); renderAll();
     showBank(before - cost); $('#slWinL').textContent = '0';
     $('#slSpin').classList.add('down'); setTimeout(function () { $('#slSpin').classList.remove('down'); }, 140);
+    animate({ mc: mc, f: f, fr: fr, b: b, base: before - cost, total: total, jp: jpAny, steps: steps, st: st,
+              retrig: !!(sc0 && fr), endFs: fr && !sc0 && f.free === 0 }, 0);
+  }
 
-    /* Stoppzeiten. Spannung: fehlt nur noch ein Extra-Spin (oder ist der Jackpot / 7-7 / Bar-Bar noch drin),
-       dreht die naechste Walze deutlich laenger und laeuft ganz langsam aus */
-    var stops = [], teased = [], extra = 0, fseen = 0, line = g.map(function (c) { return c[1]; });
+  /* Walzen eines Schritts laufen lassen. Spannung: fehlt nur noch ein Extra-Spin (oder ist 7-7 / Bar-Bar / der Jackpot
+     noch drin), dreht die naechste Walze deutlich laenger und laeuft ganz langsam aus */
+  function animate(c, k) {
+    var mc = c.mc, s = c.steps[k], gg = gen, res = s.res, g = grid(mc, res), line = g.map(function (x) { return base(x[1]); });
+    if (k > 0) { clearHits(); markHeld(s); }
+    var stops = [], teased = [], extra = 0, fseen = 0;
     for (var i = 0; i < mc.reels; i++) {
       var tz = false;
-      if (i !== held && i > 0) {
-        if (held < 0 && fseen === mc.need - 1) tz = true;
+      if (!s.held[i] && i > 0) {
+        if (k === 0 && fseen === mc.need - 1) tz = true;
         if (mc === M1 && i === 2 && RS(line[0]) && (line[1] === line[0] || line[1] === 'W')) tz = true;
-        if (mc === M2 && i === 4 && LINES5.some(function (L) { return L.slice(0, 4).every(function (row, k) { return g[k][row] === 'D'; }); })) tz = true;
+        if (mc === M2 && i === 4 && LINES5.some(function (L) { return L.slice(0, 4).every(function (row, q) { return g[q][row] === 'D'; }); })) tz = true;
       }
       if (tz) extra += mc.tease;
-      stops.push(i === held ? 0 : 1150 + i * mc.gap + extra);
+      stops.push(s.held[i] ? 0 : 1150 + i * mc.gap + extra);
       teased.push(tz);
-      if (held < 0 && fRow(mc, i, res[i]) !== null) fseen++;
+      if (k === 0 && fRow(mc, i, res[i]) !== null) fseen++;
     }
     var last = Math.max.apply(null, stops), firstTease = teased.indexOf(true);
     var ratchet = firstTease > 0 ? Math.max.apply(null, stops.slice(0, firstTease)) : last;
     var fcount = 0;
     res.forEach(function (r, i) {
-      if (i === held) return;
+      if (s.held[i]) return;
       var ms = stops[i], el = reels[i], long = teased[i];
       place(i, mc.pos[i] + mc.N, 0); void el.offsetWidth;
       el.classList.add('spin');
@@ -6495,98 +6505,133 @@ input.bprange[type=range]::-moz-range-thumb { width: 20px; height: 20px; border-
         mc.pos[i] = r; place(i, r + mc.N, 0); Snd.reel();
         el.parentNode.classList.remove('tease');
         /* Extra-Spin gelandet und noch moeglich: Klang und Leuchten, jeder weitere einen Ton hoeher */
-        var d = held < 0 ? fRow(mc, i, r) : null;
+        var d = k === 0 ? fRow(mc, i, r) : null;
         if (d !== null) {
           fcount++;
           if (fcount + (mc.reels - 1 - i) >= mc.need) { cellEl(i, r, d + 1).classList.add('fland'); Snd.scat(Math.min(2, fcount - 1)); }
         }
-        var nx = i + 1; while (nx < mc.reels && nx === held) nx++;
+        /* Stein-Kirsche auf der Linie: dumpfer Schlag */
+        if (STONE[mc.S[i][r]]) { cellEl(i, r, 1).classList.add('stone'); Snd.knock(); }
+        var nx = i + 1; while (nx < mc.reels && s.held[nx]) nx++;
         if (nx < mc.reels && teased[nx]) { reels[nx].parentNode.classList.add('tease'); Snd.tease((stops[nx] - ms) / 1000 + 0.1); }
       }, ms);
     });
     Snd.spin(ratchet / 1000 - 0.1);
-    var o = { mc: mc, f: f, res: res, ev: ev, sc: sc, fr: fr, b: b, win: win, jpWin: jpWin, base: before - cost, mult: mult, multUp: multUp,
-              retrig: !!(sc && fr), endFs: endFs, offerHold: offerHold, held: held, st: st };
-    setTimeout(function () { if (gg === gen) done(o); }, last + 120);
+    setTimeout(function () { if (gg === gen) done(c, k); }, last + 120);
+  }
+  /* festgehaltene Walzen: grauer Rahmen, die Stein-Kirsche leuchtet */
+  function markHeld(s) {
+    s.held.forEach(function (h, i) {
+      reels[i].parentNode.classList.toggle('held', h);
+      if (h) cellEl(i, s.res[i], 1).classList.add('stone');
+    });
   }
 
-  function done(o) {
-    var gg = gen, mc = o.mc, x = o.win / o.b, hold = 0, strong = false;
-    if (o.win > 0) {
-      o.ev.wins.forEach(function (w) { w.cells.forEach(function (c) { cellEl(c[0], o.res[c[0]], c[1]).classList.add('hit'); }); });
+  function done(c, k) {
+    var gg = gen, mc = c.mc, s = c.steps[k], x = s.win / c.b, hold = 0, strong = false, base0 = c.base + s.before, last = k === c.steps.length - 1;
+    if (s.win > 0) {
+      s.ev.wins.forEach(function (w) { w.cells.forEach(function (q) { cellEl(q[0], s.res[q[0]], q[1]).classList.add('hit'); }); });
       all('#sl .slpay div').forEach(function (d) {
-        var k = d.dataset.k;
-        if (mc === M1 ? k === o.ev.k : o.ev.wins.some(function (w) { return (w.k === k && (k !== 'C' || w.n >= 3)) || (k === 'C2' && w.k === 'C' && w.n === 2); })) d.classList.add('on');
+        var key = d.dataset.k;
+        if (mc === M1 ? key === s.ev.k : s.ev.wins.some(function (w) { return (w.k === key && (key !== 'C' || w.n >= 3)) || (key === 'C2' && w.k === 'C' && w.n === 2); })) d.classList.add('on');
       });
       var wl = $('#slWinL'), slow = x >= 10;
       wl.classList.add('on');
-      countUp(wl, 0, o.win, slow ? 1400 : 600);
-      countUp(bankEls(), o.base, o.base + o.win, slow ? 1400 : 600, function () { shown = o.base + o.win; });
+      countUp(wl, s.before, s.before + s.win, slow ? 1400 : 600);
+      countUp(bankEls(), base0, base0 + s.win, slow ? 1400 : 600, function () { shown = base0 + s.win; });
       /* alles ueber Kirschen: die Linie leuchtet und der Knopf bleibt kurz gesperrt, damit man den Gewinn sieht */
-      strong = o.jpWin > 0 || (mc === M1 ? o.ev.k !== 'C' && o.ev.k !== 'CC' : x >= 4);
-      if (strong) { winEl.classList.add('line'); hold = o.jpWin ? 4200 : x >= 40 ? 3000 : x >= 12 ? 2400 : 1800; }
-      if (mc === M2) drawLines(o.ev.wins, strong);
-      if (o.multUp) { var lt = $('#slBetLT'); lt.textContent = 'Gratis ×' + o.f.mult; var bl = $('#slBetL'); bl.classList.remove('pop'); void bl.offsetWidth; bl.classList.add('pop'); }
-      if (o.jpWin || x >= 10) {
+      strong = s.jpWin > 0 || (mc === M1 ? s.ev.k !== 'C' && s.ev.k !== 'CC' : x >= 4);
+      if (strong) { winEl.classList.add('line'); hold = s.jpWin ? 4200 : x >= 40 ? 3000 : x >= 12 ? 2400 : 1800; }
+      if (mc === M2) drawLines(s.ev.wins, strong);
+      if (s.multUp) { $('#slBetLT').textContent = 'Gratis ×' + (s.mult + 1); var bl = $('#slBetL'); bl.classList.remove('pop'); void bl.offsetWidth; bl.classList.add('pop'); }
+      if (s.jpWin || x >= 10) {
         mach.classList.add('won');
-        big(o.jpWin ? 'Jackpot' : x >= 40 ? 'Riesengewinn' : x >= 20 ? 'Großer Gewinn' : o.mult > 1 ? 'Gewinn ×' + o.mult : 'Gewinn', '+' + fmt(o.win));
-        Snd.win(); if (x >= 20) setTimeout(function () { Snd.pot(); }, 450); if (o.jpWin) setTimeout(function () { Snd.win(); }, 900);
-        coins(o.jpWin ? 60 : x >= 20 ? 30 : 14);
+        big(s.jpWin ? 'Jackpot' : x >= 40 ? 'Riesengewinn' : x >= 20 ? 'Großer Gewinn' : s.mult > 1 ? 'Gewinn ×' + s.mult : 'Gewinn', '+' + fmt(s.win));
+        Snd.win(); if (x >= 20) setTimeout(function () { Snd.pot(); }, 450); if (s.jpWin) setTimeout(function () { Snd.win(); }, 900);
+        coins(s.jpWin ? 60 : x >= 20 ? 30 : 14);
       } else Snd.chip(Math.min(4, Math.max(1, Math.round(x))), 0, true);
-    } else showBank(o.base);
-    if (o.sc) {
+    } else if (k === 0) showBank(c.base);
+    if (s.sc) {
       /* Extra-Spins: die Symbole leuchten, danach (oder gleich) das Schild */
-      var at = x >= 10 || o.jpWin ? Math.min(hold, 2000) : 0;
-      o.sc.forEach(function (d, i) { if (d !== null) cellEl(i, o.res[i], d + 1).classList.add('fhit'); });
+      var at = x >= 10 || s.jpWin ? Math.min(hold, 2000) : 0;
+      s.sc.forEach(function (d, i) { if (d !== null) cellEl(i, s.res[i], d + 1).classList.add('fhit'); });
       all('#sl .slpay div[data-k="FFF"]').forEach(function (d) { d.classList.add('on'); });
       bigT = setTimeout(function () {
         if (gg !== gen) return;
         mach.classList.add('won');
-        big(o.fr ? 'Noch mal' : 'Extra Spins', '+' + FREE_N + ' Gratis');
+        big(c.fr ? 'Noch mal' : 'Extra Spins', '+' + FREE_N + ' Gratis');
         Snd.win(); setTimeout(function () { Snd.ping(); }, 500); coins(24);
       }, at);
       hold = at + 2600;
     }
-    if (o.endFs) {
-      var tot = o.f.fwon;
-      setTimeout(function () { if (gg === gen) toast('Extra Spins vorbei – ' + (tot ? '+' + fmt(tot) + ' gewonnen' : 'leider nichts gewonnen')); }, hold);
-    }
     /* Erfolge */
-    if (o.win > 0) ach('first');
-    if (o.ev) {
-      if (o.ev.k === 'CCC') ach('cherry');
-      if (o.ev.k === 'BBB') ach('bell');
-      if (o.ev.k === 'RRR') ach('bar');
-      if (o.ev.k === 'SWS') ach('sws');
-      if (o.ev.wild) ach('joker');
-      if (o.ev.five) ach('five');
-      if (mc === M2 && o.ev.wins.some(function (w) { return w.k === 'B' && w.n >= 3; })) ach('bell');
+    if (s.win > 0) ach('first');
+    if (s.ev) {
+      if (s.ev.k === 'CCC') ach('cherry');
+      if (s.ev.k === 'BBB') ach('bell');
+      if (s.ev.k === 'RRR') ach('bar');
+      if (s.ev.k === 'SWS') ach('sws');
+      if (s.ev.wild) ach('joker');
+      if (s.ev.five) ach('five');
+      if (mc === M2 && s.ev.wins.some(function (w) { return w.k === 'B' && w.n >= 3; })) ach('bell');
     }
-    if (o.jpWin) ach('jp');
-    if (o.sc) ach(o.retrig ? 'fsre' : 'fs');
-    if (o.f.mult >= MULT_MAX && o.fr) ach('x5');
-    if (o.held >= 0 && o.win > 0) ach('hold');
-    if (o.st.n >= 100) ach('n100');
-    if (o.st.n >= 1000) ach('n1000');
-    if (o.win >= 1000) ach('k1');
-    if (o.win >= 10000) ach('k10');
-    /* Freunden Bescheid geben */
-    if (window.PRF) {
-      if (o.jpWin) window.PRF.brag('jp', o.win, mc.short);
-      else if (x >= 40 && o.win >= 1000) window.PRF.brag('big', o.win, mc.short);
+    if (s.jpWin) ach('jp');
+    if (s.sc) ach(c.retrig ? 'fsre' : 'fs');
+    if (c.fr && s.multUp && s.mult + 1 >= MULT_MAX) ach('x5');
+    if (k > 0 && s.win > 0) ach('hold');
+    if (last) {
+      if (c.st.n >= 100) ach('n100');
+      if (c.st.n >= 1000) ach('n1000');
+      if (c.total >= 1000) ach('k1');
+      if (c.total >= 10000) ach('k10');
+      /* Freunden Bescheid geben */
+      if (window.PRF) {
+        if (c.jp) window.PRF.brag('jp', c.total, mc.short);
+        else if (c.total >= 40 * c.b && c.total >= 1000) window.PRF.brag('big', c.total, mc.short);
+      }
+      checkUnlock();
     }
-    checkUnlock();
     function release() {
       if (gg !== gen) return;
-      busy = false;
       $('#slBig').hidden = true; mach.classList.remove('won');
-      if (o.offerHold) { holdOffer = true; holdSel = -1; holdBet = o.b; toast('Halten möglich: tipp auf eine Walze'); }
-      if (!o.fr && !o.sc && o.win > 0 && !o.jpWin) riskAmt = o.win;
-      if (o.endFs && o.f.fwon > 0) riskAmt = o.f.fwon;
-      renderAll();
+      if (!last) { stoneNext(c, k + 1); return; }
+      if (c.endFs) { fsTotal(c); return; }
+      finish(c);
     }
-    if (hold) { holdT = setTimeout(release, hold); renderAll(); }
+    if (!last && !hold) hold = 700;   // kurz zeigen, was gefallen ist, bevor nachgedreht wird
+    if (hold) holdT = setTimeout(release, hold);
     else release();
+  }
+  /* Steinblock: die Walze bleibt stehen, die anderen drehen gratis nach */
+  function stoneNext(c, k) {
+    var gg = gen, s = c.steps[k];
+    markHeld(s);
+    mach.classList.add('won');
+    big('Steinblock', 'Nachdreh'); Snd.knock(); setTimeout(function () { Snd.knock(); }, 140);
+    setTimeout(function () {
+      if (gg !== gen) return;
+      $('#slBig').hidden = true; mach.classList.remove('won');
+      animate(c, k);
+    }, 1100);
+  }
+  /* Extra-Spins vorbei: gross in der Mitte, wie viel sie insgesamt gebracht haben (Knopf solange gesperrt) */
+  function fsTotal(c) {
+    var gg = gen, tot = c.f.fwon;
+    mach.classList.add('won');
+    big('Extra Spins gesamt', tot ? '+' + fmt(tot) : 'leider nichts', 'tot');
+    if (tot) { Snd.win(); setTimeout(function () { Snd.pot(); }, 400); coins(tot >= 20 * c.b ? 30 : 14); } else Snd.knock();
+    holdT = setTimeout(function () {
+      if (gg !== gen) return;
+      $('#slBig').hidden = true; mach.classList.remove('won');
+      finish(c);
+    }, tot ? 3200 : 1800);
+  }
+  function finish(c) {
+    busy = false;
+    all('#sl .slreel.held').forEach(function (r) { r.classList.remove('held'); });
+    if (!c.fr && !c.steps[0].sc && c.total > 0 && !c.jp) riskAmt = c.total;
+    if (c.endFs && c.f.fwon > 0) riskAmt = c.f.fwon;
+    renderAll();
   }
   function checkUnlock() {
     if (unlocked() || bank() < UNLOCK) return;
@@ -6717,8 +6762,8 @@ input.bprange[type=range]::-moz-range-thumb { width: 20px; height: 20px; border-
 
   /* ---------- Bedienung ---------- */
   $('#slSpin').addEventListener('click', spin);
-  $('#slMinus').addEventListener('click', function () { var i = BETS.indexOf(bet); if (!busy && !holdOffer && !fsOf(cur).free && i > 0) { bet = BETS[i - 1]; saveState(); Snd.chip(1, 0); renderAll(); } });
-  $('#slPlus').addEventListener('click', function () { var i = BETS.indexOf(bet); if (!busy && !holdOffer && !fsOf(cur).free && i < BETS.length - 1 && BETS[i + 1] <= bank()) { bet = BETS[i + 1]; saveState(); Snd.chip(1, 0); renderAll(); } });
+  $('#slMinus').addEventListener('click', function () { var i = BETS.indexOf(bet); if (!busy && !fsOf(cur).free && i > 0) { bet = BETS[i - 1]; saveState(); Snd.chip(1, 0); renderAll(); } });
+  $('#slPlus').addEventListener('click', function () { var i = BETS.indexOf(bet); if (!busy && !fsOf(cur).free && i < BETS.length - 1 && BETS[i + 1] <= bank()) { bet = BETS[i + 1]; saveState(); Snd.chip(1, 0); renderAll(); } });
   document.addEventListener('keydown', function (e) {
     if (sl.hidden || !$('#slPause').hidden || !$('#slGamble').hidden || !$('#slWheel').hidden) return;
     if (e.key === ' ' || e.key === 'Enter') { e.preventDefault(); spin(); }
