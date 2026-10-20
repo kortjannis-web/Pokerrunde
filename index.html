@@ -4525,6 +4525,7 @@ input.bprange[type=range]::-moz-range-thumb { width: 20px; height: 20px; border-
   var GIFT = 50;   // so viele Chips gibt es, wenn man pleite ist und auch im Guthaben nichts mehr hat
   var MIN_OPTS = [10, 25, 50], SEAT_OPTS = [2, 3, 4, 5];
   var PEER_PREFIX = 'pokerrunde-bj-';
+  var BJ_V = 2;   // Version des Tisch-Protokolls: Ersteller und Mitspieler muessen gleich sein
 
   /* ---------- Karten und Werte ---------- */
   function randInt(n) {
@@ -4565,7 +4566,7 @@ input.bprange[type=range]::-moz-range-thumb { width: 20px; height: 20px; border-
   }
   function push() {
     T.left = H.dl ? Math.max(0, H.dl - Date.now()) : 0;
-    var msg = { t: 'snap', s: T };
+    var msg = { t: 'snap', s: T, v: BJ_V };
     NB.conns.forEach(function (c) { if (c._bj) { try { c.send(msg); } catch (e) {} } });
     view(T, ME);
   }
@@ -5313,6 +5314,12 @@ input.bprange[type=range]::-moz-range-thumb { width: 20px; height: 20px; border-
         return;
       }
       if (d.t !== 'hello' || d.g !== 'bj') return;
+      /* andere App-Version: nicht an den Tisch lassen, sonst rechnen beide verschieden */
+      if ((d.v | 0) !== BJ_V) {
+        try { conn.send({ t: 'old', v: BJ_V }); } catch (e) {} setTimeout(function () { try { conn.close(); } catch (e) {} }, 400);
+        bjToast('Jemand mit einer anderen App-Version wollte beitreten');
+        return;
+      }
       if (T.seats.filter(function (s) { return !s.gone; }).length >= (T.cap || MAX_SEATS)) {
         try { conn.send({ t: 'full', n: T.cap || MAX_SEATS }); } catch (e) {} setTimeout(function () { try { conn.close(); } catch (e) {} }, 400); return;
       }
@@ -5356,7 +5363,7 @@ input.bprange[type=range]::-moz-range-thumb { width: 20px; height: 20px; border-
       var conn = peer.connect(PEER_PREFIX + code.toLowerCase(), { serialization: 'json', reliable: true });
       conn.on('open', function () {
         var P = PR.prof(), buy = takeBuy(kJoin.get());
-        try { conn.send({ t: 'hello', g: 'bj', v: 2, p: { name: PR.profName(), color: P.color, chips: buy, res: BW } }); } catch (e) {}
+        try { conn.send({ t: 'hello', g: 'bj', v: BJ_V, p: { name: PR.profName(), color: P.color, chips: buy, res: BW } }); } catch (e) {}
       });
       conn.on('data', function (d) {
         if (g !== NB.gen || !d || typeof d !== 'object') return;
@@ -5364,6 +5371,15 @@ input.bprange[type=range]::-moz-range-thumb { width: 20px; height: 20px; border-
         if (d.t === 'closed') {
           if (!finished) fail('Der Tisch wurde geschlossen.');
           else endCard('Tisch geschlossen', 'Der Ersteller hat den Tisch verlassen. Deine Chips bleiben in deinem Guthaben.');
+          return;
+        }
+        if (d.t === 'old') {
+          fail((d.v | 0) > BJ_V ? 'Deine App ist nicht aktuell. Schließ sie einmal ganz und öffne sie neu, dann klappt es.'
+                                : 'Der Ersteller hat noch eine ältere App-Version. Er sollte die App einmal ganz schließen und neu öffnen.');
+          return;
+        }
+        if (d.t === 'snap' && (d.v | 0) !== BJ_V) {
+          fail('Der Ersteller hat eine andere App-Version. Schließt beide die App einmal ganz und öffnet sie neu.');
           return;
         }
         if (d.t === 'snap' && d.s && Array.isArray(d.s.seats)) {

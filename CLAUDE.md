@@ -23,3 +23,10 @@ Nicht erst lange andere Ursachen suchen. Das gilt für:
 Reihenfolge: zuerst **Supabase Stufe 1**; macht Supabase Probleme (Ausfall, Auslastung, Limits) oder will der Nutzer
 es nicht, **Cloudflare** vorschlagen; macht Cloudflare Probleme, zurück zu Supabase bzw. PeerJS als Rückfall.
 Immer den bisherigen Weg als Rückfall im Code behalten.
+
+## Online-Versionen
+
+Ersteller und Mitspieler müssen dieselbe App-Version haben, sonst rechnen sie verschieden. Wer die Nachrichten
+zwischen den Handys ändert (neue Felder/Nachrichtentypen, andere Bedeutung), erhöht die Versionsnummer:
+Poker `hello`-Feld `v` (Prüfung `d.v >= 3` beim Ersteller), Blackjack `BJ_V`. Alte Versionen werden dann mit
+einer Meldung „App einmal ganz schließen und neu öffnen“ abgewiesen.
