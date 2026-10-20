@@ -855,7 +855,7 @@ input.bprange[type=range]::-moz-range-thumb { width: 20px; height: 20px; border-
 .slreel { position: relative; height: calc(var(--ch) * 3); overflow: hidden; border-radius: 10px; background: linear-gradient(90deg, #ddd5c2, #f8f4ea 22%, #f8f4ea 78%, #ddd5c2); }
 .slreel::after { content: ''; position: absolute; inset: 0; pointer-events: none; background: linear-gradient(180deg, rgba(0,0,0,.55), rgba(0,0,0,.08) 26%, transparent 40%, transparent 60%, rgba(0,0,0,.08) 74%, rgba(0,0,0,.55)); }
 .slstrip { position: absolute; left: 0; right: 0; top: 0; will-change: transform; }
-.slstrip.spin { filter: blur(1.6px); }
+.slstrip.spin { filter: blur(.5px); }
 .slcell { height: var(--ch); display: grid; place-items: center; }
 .sy { line-height: 1; transition: transform .2s; }
 .sy.e { font-size: calc(var(--ch) * .56); }
@@ -881,7 +881,8 @@ input.bprange[type=range]::-moz-range-thumb { width: 20px; height: 20px; border-
 /* Extra-Spin-Symbol */
 .sy.fs { width: calc(var(--ch) * .74); height: calc(var(--ch) * .74); border-radius: 50%; display: grid; place-content: center; text-align: center; font: 900 calc(var(--ch) * .13) / 1.05 var(--ui); letter-spacing: .02em; color: #fff; background: radial-gradient(circle at 35% 30%, #b98cff, #6a35c9 60%, #3d1a80); box-shadow: inset 0 0 0 2px #e0aa4a, 0 2px 5px rgba(0,0,0,.4); text-shadow: 0 1px 1px rgba(0,0,0,.5); }
 .sy.fs b { display: block; font-size: 1.5em; color: #ffe08a; }
-.slpay .ps .sy.fs { width: 18px; height: 18px; font-size: 4px; box-shadow: inset 0 0 0 1px #e0aa4a; }
+/* in der Gewinntabelle in gross gebaut und verkleinert, damit die Schrift im Kreis bleibt (Handys haben sonst eine Mindestschriftgroesse) */
+.slpay .ps .sy.fs { flex: none; width: 48px; height: 48px; margin: -14px; font-size: 8.5px; transform: scale(.42); box-shadow: inset 0 0 0 2.5px #e0aa4a; }
 .slcell.fhit .sy { animation: slhit .55s ease-in-out 4; box-shadow: inset 0 0 0 2px #ffe08a, 0 0 16px 4px rgba(185,140,255,.9); }
 /* Anzeige Einsatz / Gewinn */
 .sllcd { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin-top: 10px; }
@@ -5991,7 +5992,7 @@ input.bprange[type=range]::-moz-range-thumb { width: 20px; height: 20px; border-
     });
     var f = document.createElement('div');
     f.dataset.k = 'FFF';
-    f.innerHTML = '<span class="ps">' + symHTML('F') + symHTML('F') + symHTML('F') + '<i>überall</i></span><b>' + FREE_N + ' Spins</b>';
+    f.innerHTML = '<span class="ps">' + symHTML('F') + symHTML('F') + symHTML('F') + '</span><b>' + FREE_N + ' Spins</b>';
     el.appendChild(f);
   }
   function bank() { return PR.prof().bank | 0; }
