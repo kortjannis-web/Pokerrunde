@@ -6182,8 +6182,9 @@ input.bprange[type=range]::-moz-range-thumb { width: 20px; height: 20px; border-
 
   var BETS = [10, 20, 50, 100, 200, 500, 1000], GIFT = 50, COPIES = 9, FREE_N = 10, MULT_MAX = 5;
   var JP0 = 200, UNLOCK = 5000, LADDER = 5;
-  /* Gluecksrad nach dem Nachdreh: jedes Feld ist so gross wie seine Chance (zusammen 100) */
-  var WHEEL = [{ m: 2, p: 19 }, { m: 5, p: 12 }, { m: 3, p: 13 }, { m: 10, p: 6 }, { m: 2, p: 18 }, { m: 25, p: 2 }, { m: 3, p: 12 }, { m: 2, p: 18 }];
+  /* Gluecksrad nach dem Nachdreh: alle Felder gleich gross, die Chance p (zusammen 100) aber nicht – kleine Faktoren
+     kommen oefter. Nebeneinander steht nie zweimal derselbe Faktor (auch nicht ueber den Anfang hinweg) */
+  var WHEEL = [{ m: 2, p: 19 }, { m: 3, p: 13 }, { m: 2, p: 18 }, { m: 5, p: 12 }, { m: 2, p: 18 }, { m: 10, p: 6 }, { m: 3, p: 12 }, { m: 25, p: 2 }];
 
   /* feste Walzenbaender (immer gleich gemischt, damit die Nachbarn wie bei echten Walzen stimmen) */
   function strip(count, seed) {
@@ -6675,7 +6676,7 @@ input.bprange[type=range]::-moz-range-thumb { width: 20px; height: 20px; border-
   (function drawWheel() {
     var h = '', tx = '', a = -90, R = 92, COL = { 2: '#5a3a8c', 3: '#1f6c86', 5: '#b0752a', 10: '#8c1f2a', 25: '#2f7d45' };
     WHEEL.forEach(function (w) {
-      var span = w.p * 3.6, a0 = a * Math.PI / 180, a1 = (a + span) * Math.PI / 180, am = a + span / 2;
+      var span = 360 / WHEEL.length, a0 = a * Math.PI / 180, a1 = (a + span) * Math.PI / 180, am = a + span / 2;
       h += '<path d="M0 0 L' + (R * Math.cos(a0)).toFixed(2) + ' ' + (R * Math.sin(a0)).toFixed(2) + ' A' + R + ' ' + R + ' 0 0 1 ' + (R * Math.cos(a1)).toFixed(2) + ' ' + (R * Math.sin(a1)).toFixed(2) + ' Z" fill="' + COL[w.m] + '" stroke="#f4d67f" stroke-width="1.5"/>';
       if (span >= 12) tx += '<text transform="rotate(' + (am + 90).toFixed(1) + ') translate(0 -62)" text-anchor="middle" dy="5">×' + w.m + '</text>';
       else tx += '<text class="sm" transform="rotate(' + (am + 90).toFixed(1) + ') translate(0 -66)" text-anchor="middle" dy="4">×' + w.m + '</text>';
@@ -6687,7 +6688,7 @@ input.bprange[type=range]::-moz-range-thumb { width: 20px; height: 20px; border-
   })();
   var wheelRot = 0;
   function spinWheel(c, k) {
-    var gg = gen, s = c.steps[k], w = WHEEL[s.wheel], half = w.p * 1.8;
+    var gg = gen, s = c.steps[k], w = WHEEL[s.wheel], half = 180 / WHEEL.length;
     s.ev.wins.forEach(function (q) { q.cells.forEach(function (x) { cellEl(x[0], s.res[x[0]], x[1]).classList.add('hit'); }); });
     winEl.classList.add('line'); mach.classList.add('won');
     var box = $('#slWheel'), svg = $('#slwSvg'), res = $('#slwRes');
