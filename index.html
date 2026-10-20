@@ -934,7 +934,7 @@ input.bprange[type=range]::-moz-range-thumb { width: 20px; height: 20px; border-
 #slHelp p { margin: 0 0 10px; font-size: 14px; line-height: 1.45; }
 #slPause .endcard { max-height: 100%; overflow-y: auto; }
 /* Bedienung: Einsatz links, gruener Knopf rechts */
-#slCtl { position: relative; flex: 0 0 auto; height: 124px; padding: 4px 4px 16px; display: flex; align-items: center; justify-content: space-between; gap: 12px; }
+#slCtl { position: relative; flex: 0 0 auto; height: 134px; padding: 4px 4px 16px; display: flex; align-items: center; justify-content: space-between; gap: 12px; }
 .slleft { display: flex; flex-direction: column; align-items: center; gap: 6px; }
 .slown { display: inline-flex; align-items: center; gap: 7px; height: 28px; padding: 0 12px 0 8px; border-radius: 999px; background: rgba(16,18,19,.7); border: 1px solid var(--line); font: 800 15px var(--ui); color: var(--ink); font-variant-numeric: tabular-nums; }
 .slown small { font: 700 10px var(--ui); letter-spacing: .14em; text-transform: uppercase; color: var(--muted); margin-right: 2px; }
@@ -946,6 +946,11 @@ input.bprange[type=range]::-moz-range-thumb { width: 20px; height: 20px; border-
 .slbetv { min-width: 70px; text-align: center; display: flex; flex-direction: column; }
 .slbetv small { font: 700 10px var(--ui); letter-spacing: .14em; text-transform: uppercase; color: var(--muted); }
 .slbetv b { font: 800 24px var(--display); color: var(--brass); font-variant-numeric: tabular-nums; }
+/* rechts: Autospin ueber dem Drehen-Knopf */
+.slright { display: flex; flex-direction: column; align-items: center; gap: 4px; }
+#slAuto { width: 86px; height: 24px; border-radius: 999px; border: 1px solid var(--line); padding: 0; background: rgba(16,18,19,.7); color: var(--muted); font: 800 11px var(--ui); letter-spacing: .1em; text-transform: uppercase; transition: background .2s, color .2s, box-shadow .2s; }
+#slAuto.on { background: #ffe08a; color: #1a1004; border-color: transparent; box-shadow: 0 0 0 2px #e0aa4a, 0 0 16px 4px rgba(255,224,138,.75); animation: slauto 1s ease-in-out infinite alternate; }
+@keyframes slauto { to { box-shadow: 0 0 0 2px #ffe9a8, 0 0 24px 7px rgba(255,224,138,.95); } }
 #slSpin { width: 86px; height: 86px; flex: none; border-radius: 50%; border: 0; padding: 0; display: grid; place-items: center; color: #fff; font: 800 15px var(--ui); letter-spacing: .06em; text-transform: uppercase;
   background: radial-gradient(circle at 50% 35%, #63d47c, #2f9a4a 55%, #1c6d32); box-shadow: 0 6px 0 #124d22, 0 12px 22px rgba(0,0,0,.5), inset 0 2px 0 rgba(255,255,255,.35); transition: transform .1s, box-shadow .1s, filter .2s; text-shadow: 0 1px 2px rgba(0,0,0,.5); }
 #slSpin:active:not(:disabled), #slSpin.down { transform: translateY(5px); box-shadow: 0 1px 0 #124d22, 0 5px 12px rgba(0,0,0,.5), inset 0 2px 0 rgba(255,255,255,.25); }
@@ -1007,7 +1012,7 @@ input.bprange[type=range]::-moz-range-thumb { width: 20px; height: 20px; border-
 .sllcd b.pop { animation: slpop .5s cubic-bezier(.2,.9,.3,1.4); }
 /* Riskieren */
 /* Risiko taucht nur neben dem Drehen-Knopf auf, ohne dass sich etwas verschiebt */
-#slRisk { position: absolute; top: 30px; right: 98px; width: 66px; height: 52px; border-radius: 16px; border: 0; padding: 0; color: #1a1004; font: 900 14px/1.1 var(--ui); letter-spacing: .04em; text-transform: uppercase;
+#slRisk { position: absolute; top: 49px; right: 98px; width: 66px; height: 52px; border-radius: 16px; border: 0; padding: 0; color: #1a1004; font: 900 14px/1.1 var(--ui); letter-spacing: .04em; text-transform: uppercase;
   background: linear-gradient(180deg, #ffe08a, #e0aa4a); box-shadow: 0 4px 0 #8a5d17, 0 8px 16px rgba(0,0,0,.45); animation: slholdp2 .8s ease-in-out infinite alternate; }
 #slRisk small { display: block; font-size: 17px; font-family: var(--display); }
 #slRisk[hidden] { display: none; }
@@ -1328,7 +1333,10 @@ input.bprange[type=range]::-moz-range-thumb { width: 20px; height: 20px; border-
         </div>
       </div>
       <button id="slRisk" type="button" hidden>Risiko</button>
-      <button id="slSpin" type="button">Drehen</button>
+      <div class="slright">
+        <button id="slAuto" type="button" aria-pressed="false">Autospin</button>
+        <button id="slSpin" type="button">Drehen</button>
+      </div>
     </footer>
     <div id="slPause" class="overlay" hidden>
       <div class="endcard">
@@ -6287,7 +6295,7 @@ input.bprange[type=range]::-moz-range-thumb { width: 20px; height: 20px; border-
   /* ---------- Anzeige ---------- */
   var sl = $('#sl'), mach = $('#slMachine'), winEl = $('#slWin'), reels = [];
   var busy = false, gen = 0, shown = 0, toastT = 0, bigT = 0, holdT = 0;
-  var riskAmt = 0, payKey = '';
+  var riskAmt = 0, payKey = '', auto = false, autoT = 0;
   /* waehrend des Drehs zeigen Knopf und Anzeige erst, was schon zu sehen war: neue Gratis-Drehs kommen erst mit dem
      Extra-Spin-Schild dazu, der hoehere Multiplikator erst mit dem Gewinn (verbucht ist beides schon beim Druecken) */
   var vis = null;
@@ -6394,7 +6402,8 @@ input.bprange[type=range]::-moz-range-thumb { width: 20px; height: 20px; border-
     sp.disabled = busy;
     sp.classList.toggle('free', fr);
     sp.innerHTML = fr ? '<span>Gratis<b>' + v.free + '</b></span>' : 'Drehen';
-    $('#slRisk').hidden = busy || !riskAmt;
+    $('#slRisk').hidden = busy || !riskAmt || auto;
+    $('#slAuto').classList.toggle('on', auto); $('#slAuto').setAttribute('aria-pressed', auto ? 'true' : 'false');
     var pk = cur.id + ':' + b;
     if (pk !== payKey) { payKey = pk; paytable($('#slPay')); paytable($('#slPay2')); $('#slRules').innerHTML = rulesText(); }
     renderJp(false); renderPick();
@@ -6702,6 +6711,24 @@ input.bprange[type=range]::-moz-range-thumb { width: 20px; height: 20px; border-
     if (!c.fr && !c.steps[0].sc && c.total > 0 && !c.jp) riskAmt = c.total;
     if (c.endFs && c.f.fwon > 0) riskAmt = c.f.fwon;
     renderAll();
+    autoNext(700);
+  }
+  /* Autospin: Knopf ueber dem Drehen-Knopf leuchtet, solange er an ist; dann wird nach jedem Dreh von allein weitergedreht.
+     Hoert auf bei erneutem Druck, beim Verlassen, wenn die Seite im Hintergrund ist oder das Guthaben nicht mehr reicht */
+  function setAuto(on) {
+    auto = on; clearTimeout(autoT);
+    if (on) riskAmt = 0;
+    renderAll();
+  }
+  function autoNext(ms) {
+    clearTimeout(autoT);
+    if (!auto) return;
+    autoT = setTimeout(function () {
+      if (!auto || sl.hidden) return;
+      if (busy || !$('#slPause').hidden || !$('#slGamble').hidden) { autoNext(400); return; }
+      if (!fsOf(cur).free && bank() < BETS[0]) { setAuto(false); toast('Autospin aus – das Guthaben reicht nicht mehr'); return; }
+      spin();
+    }, ms);
   }
   function checkUnlock() {
     if (unlocked() || bank() < UNLOCK) return;
@@ -6776,6 +6803,13 @@ input.bprange[type=range]::-moz-range-thumb { width: 20px; height: 20px; border-
 
   /* ---------- Bedienung ---------- */
   $('#slSpin').addEventListener('click', spin);
+  $('#slAuto').addEventListener('click', function () {
+    Snd.unlock(); Snd.chip(1, 0);
+    if (auto) { setAuto(false); return; }
+    setAuto(true); toast('Autospin an – zum Stoppen nochmal drücken');
+    autoNext(busy ? 0 : 150);
+  });
+  document.addEventListener('visibilitychange', function () { if (document.hidden && auto) setAuto(false); });
   $('#slMinus').addEventListener('click', function () { var i = BETS.indexOf(bet); if (!busy && !fsOf(cur).free && i > 0) { bet = BETS[i - 1]; saveState(); Snd.chip(1, 0); renderAll(); } });
   $('#slPlus').addEventListener('click', function () { var i = BETS.indexOf(bet); if (!busy && !fsOf(cur).free && i < BETS.length - 1 && BETS[i + 1] <= bank()) { bet = BETS[i + 1]; saveState(); Snd.chip(1, 0); renderAll(); } });
   document.addEventListener('keydown', function (e) {
@@ -6791,7 +6825,7 @@ input.bprange[type=range]::-moz-range-thumb { width: 20px; height: 20px; border-
     if (fsOf(cur).free > 0) toast('Du hast noch ' + fsOf(cur).free + ' Extra Spins');
   }
   function leave() {
-    gen++; busy = false; clearHits(); endOffers();
+    gen++; busy = false; auto = false; clearTimeout(autoT); clearHits(); endOffers();
     $('#slGamble').hidden = true; gAmt = 0; gBusy = false;
     all('#sl .slcoin').forEach(function (c) { c.remove(); });
     reels.forEach(function (el, i) { el.classList.remove('spin'); place(i, cur.pos[i] + cur.N, 0); });
