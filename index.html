@@ -2679,11 +2679,18 @@ input.bprange[type=range]::-moz-range-thumb { width: 20px; height: 20px; border-
     if (type === 'raise') { preRaise = true; return openRaise(); }
     if (!(pre && pre.type === type)) setPre(type);
   }
+  /* Waehrend des Hochziehens drangekommen: so behandeln, als waere der Zug noch rechtzeitig vorgemerkt worden
+     (mit der Lage beim Beginn des Ziehens – hat inzwischen jemand gesetzt, wird Check/Mitgehen wie sonst aufgehoben) */
+  function lateGesture(type, g) {
+    if (type === 'raise') { preRaise = false; return openRaise(); }
+    pre = { type: type, bet: g.bet, hand: g.hand, street: g.street };
+    runPre();
+  }
   [['#bFold', 'fold'], ['#bCall', 'call'], ['#bRaise', 'raise']].forEach(function (x) {
     var el = $(x[0]), type = x[1], d = null;
     el.addEventListener('pointerdown', function (e) {
       if (humanResolve || el.disabled || !$('#btns').classList.contains('pre')) return;
-      d = { id: e.pointerId, y0: e.clientY, dy: 0, on: el.classList.contains('on') };
+      d = { id: e.pointerId, y0: e.clientY, dy: 0, on: el.classList.contains('on'), bet: S.currentBet, hand: S.handNo, street: S.phase === 'collect' ? -1 : S.board.length };
       try { el.setPointerCapture(e.pointerId); } catch (err) {}
       el.classList.add('drag');
     });
@@ -2698,17 +2705,20 @@ input.bprange[type=range]::-moz-range-thumb { width: 20px; height: 20px; border-
       var g = d; d = null;
       el.classList.remove('drag'); el.style.transform = '';
       if (Math.abs(g.dy) > 8) preDragAt = Date.now();
-      if (e.type !== 'pointerup' || humanResolve) return;
+      if (e.type !== 'pointerup') return;
+      if (humanResolve) { if (g.dy <= -28 && !g.on) lateGesture(type, g); return; }
       if (g.dy <= -28) preGesture(type);
       else if (g.on && g.dy >= 20 && pre && pre.type === type) { pre = null; renderControls(); }
     }
     el.addEventListener('pointerup', end);
     el.addEventListener('pointercancel', end);
   });
-  $('#bFold').addEventListener('click', function () { if (!humanResolve) return preTap('fold'); act({ type: 'fold' }); });
-  $('#bCall').addEventListener('click', function () { if (!humanResolve) return preTap('call'); act({ type: toCallNow() > 0 ? 'call' : 'check' }); });
+  function dragClick() { return Date.now() - preDragAt < 400; }   // Klick gehoert noch zur Ziehbewegung (die wird oben behandelt)
+  $('#bFold').addEventListener('click', function () { if (!humanResolve) return preTap('fold'); if (dragClick()) return; act({ type: 'fold' }); });
+  $('#bCall').addEventListener('click', function () { if (!humanResolve) return preTap('call'); if (dragClick()) return; act({ type: toCallNow() > 0 ? 'call' : 'check' }); });
   $('#bRaise').addEventListener('click', function () {
     if (!humanResolve) return preTap('raise');
+    if (dragClick()) return;
     preRaise = false;
     openRaise();
   });
