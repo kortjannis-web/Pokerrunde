@@ -1096,7 +1096,9 @@ input.bprange[type=range]::-moz-range-thumb { width: 20px; height: 20px; border-
 .slgbtns .slgblk { background: #1b1b1b; color: #fff; border-color: rgba(255,255,255,.25); }
 .slgmsg { min-height: 20px; margin: 8px 0 0; font: 700 14px var(--ui); color: var(--brass); }
 /* Freunde, die gerade auch Slots spielen: oben links neben dem Schriftzug, Gewinne steigen kurz ueber ihnen auf */
-.slleftbar { display: flex; align-items: center; gap: 10px; min-width: 0; }
+/* Profile stehen unter dem Schriftzug, die Leiste wird dafuer etwas hoeher */
+#sl .bjbar { height: auto; min-height: 50px; }
+.slleftbar { display: flex; flex-direction: column; align-items: flex-start; gap: 5px; min-width: 0; padding: 8px 0 6px; }
 .slfr { display: flex; align-items: center; gap: 6px; }
 .slfr[hidden] { display: none; }
 .slfa { position: relative; width: 32px; height: 32px; flex: none; }
@@ -3068,10 +3070,9 @@ input.bprange[type=range]::-moz-range-thumb { width: 20px; height: 20px; border-
     var pot = $('#pot'); pot.style.left = cx + 'px'; pot.style.top = (cy - ry * 0.26) + 'px';
     var board = $('#board'); board.style.left = cx + 'px'; board.style.top = (cy + ry * 0.2) + 'px';
     var winC = $('#win'); winC.style.left = cx + 'px'; winC.style.top = (cy + ry * 0.62) + 'px';
-    var topSeat = (POSMAP[NSEATS] || POSMAP[5]).indexOf(5) >= 0;
-    /* Kartenstapel auf dem Filz, nicht am Rand: mit Platz oben in der Mitte schraeg links ueber dem Pot, sonst mittig darueber */
-    if (topSeat) { deckEl.style.left = (cx - rx * 0.48) + 'px'; deckEl.style.top = (cy - ry * 0.5) + 'px'; }
-    else { deckEl.style.left = cx + 'px'; deckEl.style.top = (cy - ry * 0.56) + 'px'; }
+    /* Kartenstapel links auf dem freien Filz: neben dem Pot, unter den Einsaetzen oben links, ueber den Gemeinschaftskarten
+       (oben in der Mitte laege er auf den Einsaetzen bzw. den Pot-Chips) */
+    deckEl.style.left = (cx - rx * 0.66) + 'px'; deckEl.style.top = (cy - ry * 0.1) + 'px';
 
     var pm = POSMAP[NSEATS] || POSMAP[5];
     for (var i = 0; i < 5; i++) {
