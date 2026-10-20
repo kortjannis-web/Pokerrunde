@@ -918,9 +918,11 @@ input.bprange[type=range]::-moz-range-thumb { width: 20px; height: 20px; border-
 .slpay .ps .sy.sev { font-size: 17px; text-shadow: 0 1px 0 #7a1414, 1px 1px 0 #e0aa4a, -1px -1px 0 #e0aa4a, 1px -1px 0 #e0aa4a, -1px 1px 0 #e0aa4a; }
 .slpay .ps .sy.bar { font-size: 7px; box-shadow: inset 0 0 0 1px #e0aa4a; }
 .slpay .ps i { font: 600 11px var(--ui); font-style: normal; color: var(--muted); white-space: nowrap; }
-.slpay b { font: 800 13px var(--ui); color: var(--ink); font-variant-numeric: tabular-nums; }
+.slpay b { font: 800 13px var(--ui); color: var(--ink); font-variant-numeric: tabular-nums; white-space: nowrap; }
 @media (max-height: 780px) { #slStage > .slpay { display: none; } }
-#slPause .slpay { margin: 4px 0 16px; padding: 0; }
+#slPause .slpay { margin: 4px 0 6px; padding: 0; }
+#slHelp { margin-top: 12px; text-align: left; }
+#slHelp p { margin: 0 0 10px; font-size: 14px; line-height: 1.45; }
 #slPause .endcard { max-height: 100%; overflow-y: auto; }
 /* Bedienung: Einsatz links, gruener Knopf rechts */
 #slCtl { flex: 0 0 auto; height: 124px; padding: 4px 4px 16px; display: flex; align-items: center; justify-content: space-between; gap: 12px; }
@@ -943,7 +945,7 @@ input.bprange[type=range]::-moz-range-thumb { width: 20px; height: 20px; border-
 #slSpin.free:active:not(:disabled), #slSpin.free.down { box-shadow: 0 1px 0 #2a1060, 0 5px 12px rgba(0,0,0,.5), inset 0 2px 0 rgba(255,255,255,.25); }
 #slSpin.free span { display: block; line-height: 1.05; }
 #slSpin.free b { display: block; font-size: 22px; }
-/* ---------- Slots: zweiter Automat, Jackpot, Joker, Stein-Kirschen, Risikoleiter, Gluecksrad, Erfolge ---------- */
+/* ---------- Slots: zweiter Automat, Jackpot, Joker, Stein-Kirschen, Risikoleiter, Gluecksrad ---------- */
 /* Automat waehlen */
 .slpick { display: flex; gap: 6px; padding: 3px; border-radius: 999px; background: rgba(0,0,0,.35); border: 1px solid var(--line); }
 .slpick button { height: 30px; padding: 0 14px; border-radius: 999px; border: 0; background: transparent; color: var(--muted); font: 800 12px var(--ui); letter-spacing: .04em; white-space: nowrap; }
@@ -1033,21 +1035,6 @@ input.bprange[type=range]::-moz-range-thumb { width: 20px; height: 20px; border-
 #slWheelBtn { position: relative; }
 #slWheelBtn::after { content: ''; position: absolute; top: 5px; right: 5px; width: 9px; height: 9px; border-radius: 50%; background: #e0475b; box-shadow: 0 0 0 2px var(--bg); }
 #slWheelBtn[hidden] { display: none; }
-/* Erfolg freigeschaltet */
-.slach { position: absolute; left: 50%; bottom: 8px; z-index: 9; transform: translate(-50%, 10px); padding: 8px 16px 8px 12px; border-radius: 14px; background: rgba(16,10,26,.95); box-shadow: 0 0 0 1.5px var(--brass), 0 8px 22px rgba(0,0,0,.55); display: flex; align-items: center; gap: 10px; opacity: 0; pointer-events: none; transition: opacity .35s, transform .35s; white-space: nowrap; }
-.slach.on { opacity: 1; transform: translate(-50%, 0); }
-.slach > i { font-style: normal; font-size: 24px; }
-.slach small { display: block; font: 800 10px var(--ui); letter-spacing: .16em; text-transform: uppercase; color: var(--brass); }
-.slach b { display: block; font: 800 15px var(--ui); color: var(--ink); }
-/* Erfolge im Profil */
-.achs { display: grid; grid-template-columns: 1fr 1fr; gap: 6px; margin-top: 8px; }
-.ach { display: flex; align-items: center; gap: 8px; padding: 8px 10px; border-radius: 12px; background: var(--bg); border: 1px solid var(--line); min-width: 0; }
-.ach > i { font-style: normal; font-size: 20px; filter: grayscale(1); opacity: .35; }
-.ach b { display: block; font: 800 12px var(--ui); color: var(--muted); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
-.ach small { display: block; font: 600 10px var(--ui); color: var(--muted); opacity: .8; line-height: 1.25; }
-.ach.on { border-color: rgba(224,170,74,.5); background: rgba(224,170,74,.1); }
-.ach.on > i { filter: none; opacity: 1; }
-.ach.on b { color: var(--ink); }
 /* Slots-Bestenliste bei den Freunden */
 .frr .frc small { display: block; font: 600 10px var(--ui); color: var(--muted); text-align: right; }
 
@@ -1317,7 +1304,6 @@ input.bprange[type=range]::-moz-range-thumb { width: 20px; height: 20px; border-
       </div>
       <div class="slpay" id="slPay" aria-label="Gewinntabelle"></div>
       <div class="bjtoast" id="slToast"></div>
-      <div class="slach" id="slAch" aria-live="polite"><i></i><div><small>Erfolg</small><b></b></div></div>
     </main>
     <footer id="slCtl">
       <div class="slleft">
@@ -1334,9 +1320,12 @@ input.bprange[type=range]::-moz-range-thumb { width: 20px; height: 20px; border-
     <div id="slPause" class="overlay" hidden>
       <div class="endcard">
         <h2>Pause</h2>
-        <p id="slRules"></p>
-        <div class="slpay" id="slPay2"></div>
         <button class="btn primary wide" id="slResume" type="button">Weiterspielen</button>
+        <button class="btn wide" id="slHelpBtn" type="button" style="margin-top:10px" aria-expanded="false">Spielerklärung</button>
+        <div id="slHelp" hidden>
+          <p id="slRules"></p>
+          <div class="slpay" id="slPay2"></div>
+        </div>
         <button class="btn wide" id="slMenu" type="button" style="margin-top:10px">Zum Hauptmenü</button>
       </div>
     </div>
@@ -1575,10 +1564,6 @@ input.bprange[type=range]::-moz-range-thumb { width: 20px; height: 20px; border-
           <div class="stip" id="stTip" hidden></div>
           <p class="sempty" id="stEmpty" hidden></p>
         </div>
-      </div>
-      <div>
-        <div class="psec">Slots-Erfolge <span id="achN"></span></div>
-        <div class="achs" id="achBox"></div>
       </div>
       <div>
         <div class="psec" style="margin-bottom:8px">Einstellungen</div>
@@ -6046,7 +6031,7 @@ input.bprange[type=range]::-moz-range-thumb { width: 20px; height: 20px; border-
    Diamant 5 (frei ab 5.000 Chips): fuenf Walzen, drei Reihen, fuenf Gewinnlinien, Joker auf den Walzen 2 bis 4.
    Bei beiden: dreimal Extra-Spin irgendwo im Fenster = 10 Gratis-Drehs, jeder Gewinn darin erhoeht den Multiplikator
    (x1 bis x5); nach einem Gewinn die Risikoleiter (Rot/Schwarz, 50:50); ein fester Jackpot (200x Einsatz);
-   einmal am Tag das Gluecksrad; Erfolge im Profil.
+   einmal am Tag das Gluecksrad.
    Durchgerechnet (Millionen Probedrehs samt Nachdrehs und Extra-Spins): auf Dauer kommen bei beiden Automaten
    rund 95 % der Einsaetze zurueck, das Casino bleibt also im Plus. */
 (function () {
@@ -6200,58 +6185,6 @@ input.bprange[type=range]::-moz-range-thumb { width: 20px; height: 20px; border-
     return st;
   }
 
-  /* ---------- Erfolge ---------- */
-  var ACH = [
-    ['first', '🎉', 'Erster Gewinn', 'Gewinne zum ersten Mal'],
-    ['cherry', '🍒', 'Kirschkern', 'Drei Kirschen auf der Linie'],
-    ['bell', '🔔', 'Glockenspiel', 'Drei Glocken auf der Linie'],
-    ['bar', '🍸', 'Bar-Hopper', 'Drei Bars auf der Linie'],
-    ['joker', '🃏', 'Joker!', 'Gewinn mit einem Joker'],
-    ['sws', '😎', 'Sieben, Joker, Sieben', '7 · Joker · 7 bei Lucky Seven'],
-    ['jp', '💰', 'Jackpot!', 'Knacke den Jackpot'],
-    ['fs', '🎁', 'Extra Spins', 'Löse Extra-Spins aus'],
-    ['fsre', '🔁', 'Nachschlag', 'Extra-Spins in den Extra-Spins'],
-    ['x5', '🚀', 'Volle Fahrt', 'Multiplikator ×5 erreichen'],
-    ['risk3', '🎲', 'Risikofreudig', '3 Stufen auf der Risikoleiter'],
-    ['risk5', '🔥', 'Alles oder nichts', 'Risikoleiter ganz nach oben'],
-    ['hold', '🪨', 'Steinhart', 'Gewinn im Nachdreh'],
-    ['n100', '🎰', 'Stammgast', '100 Drehs'],
-    ['n1000', '🏅', 'Dauerdreher', '1.000 Drehs'],
-    ['k1', '🐟', 'Großer Fisch', 'Einzelgewinn ab 1.000'],
-    ['k10', '🐋', 'Wal', 'Einzelgewinn ab 10.000'],
-    ['dia', '💎', 'Diamantfieber', 'Diamant 5 freischalten'],
-    ['five', '🖐️', 'Fünf auf einen Streich', '5 gleiche auf einer Linie (Diamant 5)'],
-    ['wheel', '🎡', 'Glücksrad', 'Dreh am Glücksrad']
-  ];
-  var achGot = readJ('pr-slach') || {}, achQ = [], achT = 0;
-  if (typeof achGot !== 'object' || Array.isArray(achGot)) achGot = {};
-  function ach(id) {
-    if (achGot[id]) return;
-    var a = ACH.filter(function (x) { return x[0] === id; })[0]; if (!a) return;
-    achGot[id] = Date.now(); writeJ('pr-slach', achGot);
-    achQ.push(a); if (achQ.length === 1) achNext();
-  }
-  function achNext() {
-    var a = achQ[0], el = $('#slAch'); if (!a) return;
-    el.querySelector('i').textContent = a[1]; el.querySelector('b').textContent = a[2];
-    el.classList.add('on'); Snd.ping();
-    clearTimeout(achT);
-    achT = setTimeout(function () { el.classList.remove('on'); setTimeout(function () { achQ.shift(); achNext(); }, 400); }, 2600);
-  }
-  function renderAch() {
-    var box = $('#achBox'); if (!box) return;
-    var n = 0; box.innerHTML = '';
-    ACH.forEach(function (a) {
-      var on = !!achGot[a[0]]; if (on) n++;
-      var d = document.createElement('div'); d.className = 'ach' + (on ? ' on' : '');
-      d.innerHTML = '<i>' + a[1] + '</i><div><b></b><small></small></div>';
-      d.querySelector('b').textContent = a[2]; d.querySelector('small').textContent = a[3];
-      box.appendChild(d);
-    });
-    $('#achN').textContent = n + ' / ' + ACH.length;
-  }
-  $('#profBtn').addEventListener('click', renderAch);
-  renderAch();
 
   /* ---------- Anzeige ---------- */
   var sl = $('#sl'), mach = $('#slMachine'), winEl = $('#slWin'), reels = [];
@@ -6564,26 +6497,7 @@ input.bprange[type=range]::-moz-range-thumb { width: 20px; height: 20px; border-
       }, at);
       hold = at + 2600;
     }
-    /* Erfolge */
-    if (s.win > 0) ach('first');
-    if (s.ev) {
-      if (s.ev.k === 'CCC') ach('cherry');
-      if (s.ev.k === 'BBB') ach('bell');
-      if (s.ev.k === 'RRR') ach('bar');
-      if (s.ev.k === 'SWS') ach('sws');
-      if (s.ev.wild) ach('joker');
-      if (s.ev.five) ach('five');
-      if (mc === M2 && s.ev.wins.some(function (w) { return w.k === 'B' && w.n >= 3; })) ach('bell');
-    }
-    if (s.jpWin) ach('jp');
-    if (s.sc) ach(c.retrig ? 'fsre' : 'fs');
-    if (c.fr && s.multUp && s.mult + 1 >= MULT_MAX) ach('x5');
-    if (k > 0 && s.win > 0) ach('hold');
     if (last) {
-      if (c.st.n >= 100) ach('n100');
-      if (c.st.n >= 1000) ach('n1000');
-      if (c.total >= 1000) ach('k1');
-      if (c.total >= 10000) ach('k10');
       /* Freunden Bescheid geben */
       if (window.PRF) {
         if (c.jp) window.PRF.brag('jp', c.total, mc.short);
@@ -6636,7 +6550,6 @@ input.bprange[type=range]::-moz-range-thumb { width: 20px; height: 20px; border-
   function checkUnlock() {
     if (unlocked() || bank() < UNLOCK) return;
     try { localStorage.setItem('pr-slunlock', '1'); } catch (e) {}
-    ach('dia');
     setTimeout(function () { toast('Neu freigeschaltet: Diamant 5 – oben umschalten'); renderPick(); }, 1200);
   }
 
@@ -6678,8 +6591,7 @@ input.bprange[type=range]::-moz-range-thumb { width: 20px; height: 20px; border-
         P.bank += gAmt; slStat(gAmt, gAmt * 2, false, true); gAmt *= 2; gStep++;
         $('#slgMsg').textContent = gStep >= LADDER ? 'Ganz oben!' : 'Richtig!';
         Snd.chip(3, 0, true); if (gStep >= 3) Snd.pot();
-        if (gStep === 3) ach('risk3');
-        if (gStep >= LADDER) { ach('risk5'); Snd.win(); coins(30); }
+        if (gStep >= LADDER) { Snd.win(); coins(30); }
       } else {
         P.bank -= gAmt; slStat(-gAmt, 0, false, true);
         $('#slgMsg').textContent = 'Daneben – der Gewinn ist weg';
@@ -6698,8 +6610,6 @@ input.bprange[type=range]::-moz-range-thumb { width: 20px; height: 20px; border-
     if ($('#slGamble').hidden) return;
     $('#slGamble').hidden = true; gBusy = false;
     if (gAmt > 0 && gStep > 0) toast('+' + fmt(gAmt) + ' eingesammelt');
-    if (gAmt >= 1000) ach('k1');
-    if (gAmt >= 10000) ach('k10');
     if (window.PRF && gStep >= LADDER && gAmt >= 1000) window.PRF.brag('risk', gAmt, cur.short);
     gAmt = 0; checkUnlock(); renderAll();
   }
@@ -6741,7 +6651,6 @@ input.bprange[type=range]::-moz-range-thumb { width: 20px; height: 20px; border-
     var P = PR.prof();
     if (w.c) { P.bank = Math.round((P.bank || 0) + w.c); PR.saveProf(); PR.renderBank(); }
     else { var f = fsOf(M1); if (!f.free) { f.fbet = 10; f.mult = 1; f.fwon = 0; } f.free += w.s; saveState(); }
-    ach('wheel');
     var target = wheelRot - (wheelRot % 360) + 360 * 6 + (360 - (k * seg + seg / 2)) + (randInt(21) - 10) * seg / 50;
     wheelRot = target;
     var svg = $('#slwSvg');
@@ -6788,7 +6697,10 @@ input.bprange[type=range]::-moz-range-thumb { width: 20px; height: 20px; border-
     PR.renderBank();
   }
   $('#slPlay').addEventListener('click', open);
-  $('#slPauseBtn').addEventListener('click', function () { renderAll(); $('#slPause').hidden = false; });
+  /* Pause: die Spielerklaerung ist immer erst zu und klappt nur auf Knopfdruck auf */
+  function help(on) { $('#slHelp').hidden = !on; $('#slHelpBtn').setAttribute('aria-expanded', on ? 'true' : 'false'); $('#slHelpBtn').textContent = on ? 'Erklärung schließen' : 'Spielerklärung'; }
+  $('#slPauseBtn').addEventListener('click', function () { renderAll(); help(false); $('#slPause').hidden = false; });
+  $('#slHelpBtn').addEventListener('click', function () { help($('#slHelp').hidden); });
   $('#slResume').addEventListener('click', function () { $('#slPause').hidden = true; });
   $('#slMenu').addEventListener('click', leave);
   build(); renderAll();
