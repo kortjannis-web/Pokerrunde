@@ -675,7 +675,7 @@ input.bprange[type=range]::-moz-range-thumb { width: 20px; height: 20px; border-
 .fsec { display: flex; flex-direction: column; gap: 8px; margin-top: 6px; }
 .fsec .psec { display: flex; justify-content: space-between; align-items: baseline; }
 .fsec .psec span { color: #4fc46a; letter-spacing: .06em; }
-.flist, .finv .flist { display: flex; flex-direction: column; gap: 8px; }
+.flist, .finv .flist, .frql { display: flex; flex-direction: column; gap: 8px; }
 .fl { display: flex; flex-direction: column; border-radius: 14px; background: var(--bg2); border: 1px solid var(--line); }
 .flr { display: flex; align-items: center; gap: 12px; padding: 9px 10px 9px 10px; min-height: 58px; }
 .fl .pav { position: relative; }
@@ -8051,8 +8051,8 @@ input.bprange[type=range]::-moz-range-thumb { width: 20px; height: 20px; border-
 
 <script>
 /* Roulette (europaeisch, eine Null), gespielt direkt mit dem Guthaben (Spielgeld). Man spielt allein, Freunde koennen
-   aber jederzeit dazukommen: ueber die Freundesliste (drei Punkte -> Mitspielen) oder eine Einladung, ohne dass man
-   etwas bestaetigen muss. Dann wird der Tisch zum Online-Tisch: der Ersteller dreht das Rad und schickt die Zahl,
+   aber jederzeit dazukommen: ueber eine Einladung oder in der Freundesliste ueber die drei Punkte, dort muessen sie erst
+   fragen (der Ersteller muss die Anfrage annehmen). Dann wird der Tisch zum Online-Tisch: der Ersteller dreht das Rad und schickt die Zahl,
    jeder setzt und rechnet mit seinem eigenen Guthaben. Gedreht wird, sobald alle fertig sind, spaetestens 15 Sekunden
    nach dem Ersten. Bricht die Verbindung ab, spielt man einfach allein weiter. */
 (function () {
@@ -8672,7 +8672,7 @@ input.bprange[type=range]::-moz-range-thumb { width: 20px; height: 20px; border-
       : 'Deine Chips sind in deinem Guthaben gespeichert.' + (sum(myB) ? ' Was noch auf dem Feld liegt, geht beim Verlassen zurück.' : '');
     $('#rlInv').hidden = guest;
     $('#rlInvTxt').textContent = host ? 'Dein Tisch ist offen. Lade Freunde ein, die gerade online sind – sie setzen mit ihrem eigenen Guthaben.'
-      : 'Freunde können jederzeit dazukommen, ohne dass du etwas bestätigen musst: in ihrer Freundesliste bei dir auf die drei Punkte und „Beim Roulette mitspielen“. Oder du lädst sie selbst ein.';
+      : 'Freunde können jederzeit fragen, ob sie mitspielen dürfen: in ihrer Freundesliste bei dir über die drei Punkte. Du bekommst dann eine Anfrage zum Annehmen. Oder du lädst sie selbst ein.';
     $('#rlOpen').hidden = host; $('#rlOpen').disabled = false; $('#rlOpen').textContent = 'Freunde einladen';
     $('#rlMenu').textContent = host && others ? 'Tisch verlassen' : 'Zum Hauptmenü';
     help(false);
@@ -8824,7 +8824,7 @@ input.bprange[type=range]::-moz-range-thumb { width: 20px; height: 20px; border-
   /* Update-Pruefung: nicht neu laden, solange man am Roulette-Tisch ist */
   var idle = window.prIdle;
   window.prIdle = function () { return (!idle || idle()) && rl.hidden && !NB.peer; };
-  /* fuer die Freundesliste: wo bin ich, darf man dazukommen (ohne Nachfrage) */
+  /* fuer die Freundesliste: wo bin ich, darf man dazukommen (nach einer angenommenen Anfrage) */
   window.RL = {
     on: function () { return !rl.hidden; },
     state: function () { return { on: !rl.hidden, role: NB.role, code: NB.code, free: !rl.hidden && NB.role !== 'guest' && free() }; },
@@ -8836,7 +8836,7 @@ input.bprange[type=range]::-moz-range-thumb { width: 20px; height: 20px; border-
 
 <script>
 /* Freunde: jeder hat einen festen Spielercode (steht im Profil). Wer den Code eines anderen eintraegt,
-   ist mit ihm befreundet (gilt fuer beide). Solange die Seite offen ist, meldet sich jeder unter
+   schickt ihm eine Freundschaftsanfrage; erst wenn der andere sie annimmt, sind beide befreundet. Solange die Seite offen ist, meldet sich jeder unter
    "pokerrunde-u-<code>" beim Vermittlungsserver an. Zu Freunden, die gerade da sind, bleibt eine direkte
    Verbindung offen: darueber laufen Name, Farbe, wo man gerade ist (Menue, Pokertisch, Blackjack-Tisch)
    und Einladungen an den eigenen Tisch. Ist jemand nicht erreichbar, gilt er als offline. */
@@ -8883,6 +8883,7 @@ input.bprange[type=range]::-moz-range-thumb { width: 20px; height: 20px; border-
              pt: f.pt != null && isFinite(+f.pt) && +f.pt >= 0 ? Math.min(Math.round(+f.pt), 1e9) : null };
   }
   function friend(code) { for (var i = 0; i < FR.length; i++) if (FR[i].code === code) return FR[i]; return null; }
+  var REQ = {}, NOPE = {};   // Freundschaftsanfragen an mich (Code -> { code, name, color, st, p }) und in dieser Sitzung abgelehnte
   function saveFR() { try { localStorage.setItem('pr-friends', JSON.stringify(FR.slice(0, MAX_FRIENDS))); } catch (e) {} }
   var LIVE = {};   // code -> { conn, try: Verbindungsversuch, on, st, last, next, inv }
   function live(code) { return LIVE[code] || (LIVE[code] = { conn: null, try: null, on: false, st: null, last: 0, next: 0, inv: 0 }); }
@@ -8894,7 +8895,6 @@ input.bprange[type=range]::-moz-range-thumb { width: 20px; height: 20px; border-
     var b = window.BJ ? window.BJ.state() : {}, n = PR.poker();
     /* ask: man spielt allein bzw. gegen Bots und es ist ein Platz frei, Freunde koennen fragen, ob sie dazukommen duerfen */
     if (b.on) return { g: 'bj', code: b.code || '', ask: b.free ? 1 : 0 };
-    /* Roulette: Freunde duerfen ohne Nachfrage dazukommen */
     var r = window.RL ? window.RL.state() : {};
     if (r.on) return { g: 'rl', code: r.code || '', ask: r.free ? 1 : 0 };
     if (window.SL && window.SL.on()) return { g: 'slots', code: '' };
@@ -8912,7 +8912,7 @@ input.bprange[type=range]::-moz-range-thumb { width: 20px; height: 20px; border-
     var fr = st.ask && !st.code ? ' · Platz frei' : '';
     if (st.g === 'bj') return (st.code ? 'Am Blackjack-Tisch' : 'Spielt Blackjack') + fr;
     if (st.g === 'slots') return 'Spielt Slots';
-    if (st.g === 'rl') return st.code ? 'Am Roulette-Tisch' : 'Spielt Roulette' + (st.ask ? ' · du kannst mitspielen' : '');
+    if (st.g === 'rl') return (st.code ? 'Am Roulette-Tisch' : 'Spielt Roulette') + fr;
     if (st.g === 'poker') return (st.code ? 'Am Pokertisch' : 'Spielt Poker gegen Bots') + fr;
     return 'Online';
   }
@@ -9002,7 +9002,7 @@ input.bprange[type=range]::-moz-range-thumb { width: 20px; height: 20px; border-
     } else L.conn = c;
     L.last = Date.now();
     var f = friend(code);
-    send(c, { t: 'hi', p: myPub(), s: lastSt || myStatus(), add: !!(f && f.pending) });
+    send(c, { t: 'hi', p: myPub(), s: lastSt || myStatus(), add: !!(f && f.pending), fr: f ? 1 : 0 });
   }
   function wire(code, c) {
     c.on('data', function (d) { if (d && typeof d === 'object') msg(code, c, d); });
@@ -9021,21 +9021,23 @@ input.bprange[type=range]::-moz-range-thumb { width: 20px; height: 20px; border-
     var f = friend(code);
     if (d.t === 'hi') {
       if (!f) {
-        /* jemand hat meinen Code eingetragen: dann sind wir jetzt befreundet. Sonst (von mir entfernt): abmelden. */
-        if (d.add && FR.length < MAX_FRIENDS) { f = cleanFriend({ code: code, name: d.p && d.p.name, color: d.p && d.p.color }); FR.push(f); toast((f.name || code) + ' ist jetzt dein Freund'); Snd.ping(); }
-        else { send(c, { t: 'rm' }); setTimeout(function () { try { c.close(); } catch (e) {} }, 300); return; }
+        /* jemand hat meinen Code eingetragen: das ist eine Freundschaftsanfrage, die ich erst annehmen muss.
+           Sonst (von mir entfernt oder abgelehnt): abmelden. */
+        if (d.add && FR.length < MAX_FRIENDS && !NOPE[code]) { gotReq(code, d); return; }
+        send(c, { t: 'rm', no: NOPE[code] ? 1 : 0 }); setTimeout(function () { try { c.close(); } catch (e) {} }, 300); return;
       }
       var g = cleanFriend({ code: code, name: d.p && d.p.name, color: d.p && d.p.color });
       if (g.name) f.name = g.name;
       takeBank(f, d.p);
       f.color = g.color;
-      if (f.pending) { f.pending = false; toast((f.name || code) + ' ist jetzt dein Freund'); }
+      /* fr: steht man beim anderen schon in der Liste? Aeltere Versionen schicken das nicht und tragen einen sofort ein */
+      if (f.pending && (d.fr == null || d.fr)) { f.pending = false; toast((f.name || code) + ' hat deine Freundschaftsanfrage angenommen'); Snd.ping(); }
       saveFR();
-      L.on = true; L.st = cleanSt(d.s);
+      L.on = !f.pending; L.st = cleanSt(d.s);
       changed();
     } else if (d.t === 'bye') {
       L.conn = null; L.on = false; L.next = Date.now() + 5000; try { c.close(); } catch (e) {} changed();
-    } else if (!f) return;
+    } else if (!f) { if (d.t === 'st' && REQ[code]) REQ[code].st = cleanSt(d.s); return; }
     else if (d.t === 'st') {
       L.st = cleanSt(d.s);
       if (d.p) { var h = cleanFriend({ code: code, name: d.p.name, color: d.p.color }); if (h.name) f.name = h.name; f.color = h.color; takeBank(f, d.p); saveFR(); }
@@ -9047,15 +9049,16 @@ input.bprange[type=range]::-moz-range-thumb { width: 20px; height: 20px; border-
       gotAsk(f, d.g === 'bj' ? 'bj' : d.g === 'rl' ? 'rl' : 'poker');
     } else if (d.t === 'askok') {
       var ok = cleanSt({ g: d.g, code: d.code });
-      delete asked[code]; changed();
+      delete asked[code]; render(true);
       if (!ok.code || (ok.g !== 'poker' && ok.g !== 'bj' && ok.g !== 'rl')) return;
       if (!window.prIdle()) { toast((f.name || code) + ' hat angenommen – verlass erst dein laufendes Spiel'); return; }
-      toast(ok.g === 'rl' ? 'Du setzt dich zu ' + (f.name || code) + ' an den Roulette-Tisch' : (f.name || code) + ' hat angenommen, du kommst an den Tisch'); Snd.ping();
+      toast((f.name || code) + ' hat angenommen, du kommst an den Tisch'); Snd.ping();
       joinTable(ok, true);
     } else if (d.t === 'askno') {
-      delete asked[code]; changed();
+      delete asked[code]; render(true);
       toast(d.r === 'full' ? 'Bei ' + (f.name || code) + ' ist gerade kein Platz frei' : (f.name || code) + ' hat deine Anfrage abgelehnt');
     } else if (d.t === 'rm') {
+      if (f.pending && d.no) toast((f.name || code) + ' hat deine Freundschaftsanfrage abgelehnt');
       removeFriend(code, false);
     } else if (d.t === 'big') {
       showBrag(f, d);
@@ -9109,12 +9112,43 @@ input.bprange[type=range]::-moz-range-thumb { width: 20px; height: 20px; border-
     if (code === MY) return 'Das ist dein eigener Spielercode.';
     if (friend(code)) return 'Ihr seid schon befreundet.';
     if (FR.length >= MAX_FRIENDS) return 'Du hast schon ' + MAX_FRIENDS + ' Freunde.';
+    if (REQ[code]) { acceptReq(code); return ''; }   // hat mir selbst schon eine Anfrage geschickt
+    delete NOPE[code];
     FR.push({ code: code, name: '', color: PR.AV[0], pending: true }); saveFR();
     var L = live(code); L.next = 0;
-    if (L.conn && L.conn.open) send(L.conn, { t: 'hi', p: myPub(), s: lastSt || myStatus(), add: true });
+    if (L.conn && L.conn.open) send(L.conn, { t: 'hi', p: myPub(), s: lastSt || myStatus(), add: true, fr: 1 });
     else if (peer && alive && !L.try) dial(code);
     changed();
     return '';
+  }
+  /* ---------- Freundschaftsanfragen an mich: Banner oben und eigener Abschnitt in der Freundesliste ---------- */
+  function gotReq(code, d) {
+    var p = cleanFriend({ code: code, name: d.p && d.p.name, color: d.p && d.p.color }), isNew = !REQ[code];
+    REQ[code] = { code: code, name: p.name, color: p.color, st: cleanSt(d.s), p: d.p };
+    if (isNew) {
+      Snd.ping();
+      if (!ask) showAsk(REQ[code], 'fr', 'möchte mit dir befreundet sein');
+      else toast((p.name || code) + ' möchte mit dir befreundet sein');
+    }
+    changed();
+  }
+  function acceptReq(code) {
+    var r = REQ[code]; if (!r) return;
+    delete REQ[code];
+    if (friend(code) || FR.length >= MAX_FRIENDS) { changed(); return; }
+    var f = cleanFriend({ code: code, name: r.name, color: r.color });
+    takeBank(f, r.p); FR.push(f); saveFR();
+    var L = live(code);
+    if (L.conn && L.conn.open) { send(L.conn, { t: 'hi', p: myPub(), s: lastSt || myStatus(), add: false, fr: 1 }); L.on = true; L.st = r.st; }
+    toast((f.name || code) + ' ist jetzt dein Freund');
+    changed();
+  }
+  function declineReq(code) {
+    if (!REQ[code]) return;
+    delete REQ[code]; NOPE[code] = 1;
+    var L = LIVE[code];
+    if (L && L.conn) { var c = L.conn; send(c, { t: 'rm', no: 1 }); setTimeout(function () { try { c.close(); } catch (e) {} }, 300); }
+    changed();
   }
   function removeFriend(code, tell) {
     FR = FR.filter(function (f) { return f.code !== code; }); saveFR();
@@ -9138,7 +9172,7 @@ input.bprange[type=range]::-moz-range-thumb { width: 20px; height: 20px; border-
       return (isOn(b.code) - isOn(a.code)) || (a.name || 'zzz').localeCompare(b.name || 'zzz', 'de');
     });
   }
-  /* Zeile in der Freundesliste: Beitreten, wenn der Freund an einem Online-Tisch sitzt */
+  /* Zeile in der Freundesliste; unter den drei Punkten: Chips schicken, Anfrage zum Mitspielen, Entfernen */
   function friendRow(f, me) {
     var on = isOn(f.code), st = on ? LIVE[f.code].st : null;
     var el = document.createElement('div'); el.className = 'fl' + (on ? ' on' : '') + (openRow === f.code ? ' open' : '');
@@ -9147,13 +9181,8 @@ input.bprange[type=range]::-moz-range-thumb { width: 20px; height: 20px; border-
     var n = document.createElement('div'); n.className = 'fln';
     var b = document.createElement('b'); b.textContent = f.name || 'Code ' + f.code;
     var sm = document.createElement('small');
-    sm.textContent = f.pending ? 'Wartet, bis ' + (f.name || 'dein Freund') + ' online ist' : on ? stText(st) : 'Offline';
+    sm.textContent = f.pending ? 'Anfrage gesendet · wartet auf Bestätigung' : on ? stText(st) : 'Offline';
     n.appendChild(b); n.appendChild(sm); r.appendChild(n);
-    if (on && st.code && st.code !== me.code) {
-      var go = document.createElement('button'); go.type = 'button'; go.className = 'btn primary'; go.textContent = 'Beitreten';
-      go.addEventListener('click', function () { joinTable(st); });
-      r.appendChild(go);
-    }
     var more = document.createElement('button'); more.type = 'button'; more.className = 'flm'; more.setAttribute('aria-label', 'Mehr zu ' + (f.name || f.code));
     more.innerHTML = '<svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><circle cx="5" cy="12" r="1.8"/><circle cx="12" cy="12" r="1.8"/><circle cx="19" cy="12" r="1.8"/></svg>';
     more.addEventListener('click', function () { openRow = openRow === f.code ? '' : f.code; render(true); });
@@ -9169,14 +9198,32 @@ input.bprange[type=range]::-moz-range-thumb { width: 20px; height: 20px; border-
       gb.addEventListener('click', function () { openGift(f); });
       x.appendChild(gb);
     }
-    if (on && st.ask && !st.code) {
+    /* mitspielen geht immer nur ueber eine Anfrage, die der Freund annehmen muss (auch an einem Online-Tisch) */
+    if (on && !f.pending && st && (st.g === 'poker' || st.g === 'bj' || st.g === 'rl') && (st.ask || st.code) && (!st.code || st.code !== me.code)) {
       var wait = asked[f.code] > Date.now();
       var ak = document.createElement('button'); ak.type = 'button'; ak.className = 'btn' + (wait ? '' : ' primary');
-      ak.textContent = wait ? (st.g === 'rl' ? 'Verbinde …' : 'Angefragt …') : st.g === 'rl' ? 'Beim Roulette mitspielen' : st.g === 'bj' ? 'Anfrage für den Blackjack-Tisch' : 'Anfrage für den Pokertisch'; ak.disabled = wait;
+      ak.textContent = wait ? 'Angefragt …' : st.g === 'rl' ? 'Anfrage für den Roulette-Tisch' : st.g === 'bj' ? 'Anfrage für den Blackjack-Tisch' : 'Anfrage für den Pokertisch'; ak.disabled = wait;
       ak.addEventListener('click', function () { askJoin(f, st); });
       x.appendChild(ak);
     }
     x.appendChild(rm); el.appendChild(x);
+    return el;
+  }
+  /* Freundschaftsanfrage an mich */
+  function reqRow(q) {
+    var el = document.createElement('div'); el.className = 'fl on';
+    var r = document.createElement('div'); r.className = 'flr';
+    r.appendChild(avatar(q));
+    var n = document.createElement('div'); n.className = 'fln';
+    var b = document.createElement('b'); b.textContent = q.name || 'Code ' + q.code;
+    var sm = document.createElement('small'); sm.textContent = 'möchte mit dir befreundet sein';
+    n.appendChild(b); n.appendChild(sm); r.appendChild(n);
+    var no = document.createElement('button'); no.type = 'button'; no.className = 'btn'; no.textContent = 'Ablehnen';
+    no.addEventListener('click', function () { if (ask && ask.code === q.code && ask.g === 'fr') askHide(); declineReq(q.code); });
+    var yes = document.createElement('button'); yes.type = 'button'; yes.className = 'btn primary'; yes.textContent = 'Annehmen';
+    yes.addEventListener('click', function () { if (ask && ask.code === q.code && ask.g === 'fr') askHide(); acceptReq(q.code); });
+    r.appendChild(no); r.appendChild(yes);
+    el.appendChild(r);
     return el;
   }
   /* Zeile in "Freunde einladen" (am eigenen Tisch) */
@@ -9209,6 +9256,7 @@ input.bprange[type=range]::-moz-range-thumb { width: 20px; height: 20px; border-
     host.innerHTML = '<div class="frank" hidden><div class="psec">Rangliste</div><div class="frl"></div></div>' +
       '<div class="frank slr" hidden><div class="psec">Slots-Bestenliste</div><div class="frl"></div></div>' +
       '<div class="frank ptr" hidden><div class="psec">Spielzeit-Rangliste</div><div class="frl"></div></div>' +
+      '<div class="freq" hidden><div class="psec">Freundschaftsanfragen</div><div class="frql"></div></div>' +
       '<div class="psec">Deine Freunde <span></span></div><div class="flist"></div>' +
       '<div class="fadd"><input type="text" maxlength="6" autocomplete="off" autocapitalize="characters" spellcheck="false" placeholder="Spielercode eines Freundes" aria-label="Spielercode eines Freundes"><button class="btn primary" type="button" disabled>Hinzufügen</button></div>' +
       '<p class="fnote"></p>';
@@ -9221,7 +9269,7 @@ input.bprange[type=range]::-moz-range-thumb { width: 20px; height: 20px; border-
       var err = addFriend(inp.value);
       if (err) { note.textContent = err; note.classList.add('warn'); return; }
       inp.value = ''; btn.disabled = true; inp.blur();
-      note.textContent = 'Hinzugefügt. Sobald ihr beide online seid, seht ihr euch gegenseitig in der Liste.'; note.classList.remove('warn');
+      note.textContent = 'Anfrage geschickt. Sobald dein Freund sie annimmt, seid ihr befreundet.'; note.classList.remove('warn');
       setTimeout(base, 6000);
     });
     host._f = { inp: inp };
@@ -9229,14 +9277,17 @@ input.bprange[type=range]::-moz-range-thumb { width: 20px; height: 20px; border-
   var renderKey = '';
   function render(force) {
     var me = lastSt || myStatus();
-    var k = JSON.stringify([FR, me, openRow, PR.prof().bank, PR.profName(), myPt(), Object.keys(LIVE).map(function (c) { return [c, isOn(c), LIVE[c].st]; })]);
+    var k = JSON.stringify([FR, REQ, me, openRow, PR.prof().bank, PR.profName(), myPt(), Object.keys(LIVE).map(function (c) { return [c, isOn(c), LIVE[c].st]; })]);
     if (!force && k === renderKey) return;
     renderKey = k;
     var n = onlineCount();
-    all('.odot').forEach(function (d) { d.hidden = n === 0; });
+    var nq = Object.keys(REQ).length;
+    all('.odot').forEach(function (d) { d.hidden = n === 0 && !nq; });
     all('[data-fl]').forEach(function (host) {
       if (!host._f) setupList(host);
       host.querySelector('.psec span').textContent = n ? n + ' online' : '';
+      var rq = host.querySelector('.frql'); rq.innerHTML = ''; host.querySelector('.freq').hidden = !nq;
+      Object.keys(REQ).forEach(function (code) { rq.appendChild(reqRow(REQ[code])); });
       var list = host.querySelector('.flist'); list.innerHTML = '';
       if (!FR.length) {
         var e = document.createElement('div'); e.className = 'fempty';
@@ -9474,46 +9525,51 @@ input.bprange[type=range]::-moz-range-thumb { width: 20px; height: 20px; border-
     if (!window.prIdle()) { toast('Verlass erst dein laufendes Spiel'); return; }
     send(L.conn, { t: 'ask', g: st.g });
     asked[f.code] = Date.now() + 40000;
-    toast(st.g === 'rl' ? 'Verbinde mit ' + (f.name || f.code) + ' …' : 'Anfrage an ' + (f.name || f.code) + ' geschickt');
+    toast('Anfrage an ' + (f.name || f.code) + ' geschickt');
     render(true);
     setTimeout(function () { if (asked[f.code] && asked[f.code] <= Date.now()) { delete asked[f.code]; toast((f.name || f.code) + ' hat nicht geantwortet'); render(true); } }, 40100);
   }
-  var ask = null, askT = 0;
+  var ask = null, askT = 0;   // was gerade im Banner oben steht: { code, g } (g 'fr' = Freundschaftsanfrage)
   function askHide() { $('#askBan').hidden = true; ask = null; clearTimeout(askT); }
   function askReply(code, m) { var L = LIVE[code]; if (L && L.on) send(L.conn, m); }
-  function gotAsk(f, g) {
-    var me = myStatus();
-    if (me.g !== g || !me.ask) { askReply(f.code, { t: 'askno', r: 'full' }); return; }
-    /* Roulette: ohne Nachfrage, der Tisch wird einfach fuer Freunde geoeffnet */
-    if (g === 'rl') {
-      window.RL.host(function (code) {
-        if (!code) { askReply(f.code, { t: 'askno', r: 'full' }); return; }
-        askReply(f.code, { t: 'askok', g: 'rl', code: code });
-      });
-      return;
-    }
-    if (ask && ask.code !== f.code) askReply(ask.code, { t: 'askno' });
+  function showAsk(f, g, text) {
     ask = { code: f.code, g: g };
     var av = $('#abAv'); av.style.setProperty('--av', f.color); av.textContent = (f.name || '?').charAt(0).toUpperCase();
     $('#abName').textContent = f.name || f.code;
-    $('#abText').textContent = g === 'bj' ? 'möchte an deinen Blackjack-Tisch' : 'möchte an deinen Pokertisch (auf den Platz eines Bots ohne Chips)';
+    $('#abText').textContent = text;
     $('#abYes').disabled = false; $('#abNo').disabled = false; $('#abYes').textContent = 'Annehmen';
     $('#askBan').hidden = false;
-    Snd.ping();
-    clearTimeout(askT); askT = setTimeout(function () { if (ask && ask.code === f.code) askHide(); }, 35000);
+    clearTimeout(askT); askT = setTimeout(function () { if (ask && ask.code === f.code && ask.g === g) askHide(); }, 35000);
   }
-  $('#abNo').addEventListener('click', function () { if (ask) askReply(ask.code, { t: 'askno' }); askHide(); });
+  /* der Tisch, an dem ich gerade sitze (role: '' allein bzw. gegen Bots, 'host' Ersteller, 'guest' Mitspieler) */
+  function tableOf(g) { return (g === 'bj' ? window.BJ && window.BJ.state() : g === 'rl' ? window.RL && window.RL.state() : PR.poker()) || {}; }
+  function gotAsk(f, g) {
+    var me = myStatus(), t = tableOf(g);
+    if (me.g !== g || !(me.ask || (t.role === 'guest' && t.code))) { askReply(f.code, { t: 'askno', r: 'full' }); return; }
+    if (ask && ask.code !== f.code && ask.g !== 'fr') askReply(ask.code, { t: 'askno' });
+    showAsk(f, g, g === 'bj' ? 'möchte an deinen Blackjack-Tisch' : g === 'rl' ? 'möchte an deinen Roulette-Tisch'
+      : t.code ? 'möchte an deinen Pokertisch' : 'möchte an deinen Pokertisch (auf den Platz eines Bots ohne Chips)');
+    Snd.ping();
+  }
+  $('#abNo').addEventListener('click', function () {
+    if (ask) { if (ask.g === 'fr') declineReq(ask.code); else askReply(ask.code, { t: 'askno' }); }
+    askHide();
+  });
   $('#abYes').addEventListener('click', function () {
     if (!ask) return;
     var a = ask; clearTimeout(askT);
+    if (a.g === 'fr') { askHide(); acceptReq(a.code); return; }
     $('#abYes').disabled = true; $('#abNo').disabled = true; $('#abYes').textContent = 'Öffne Tisch …';
-    (a.g === 'bj' ? window.BJ.host : PR.pokerHost)(function (code) {
+    var t = tableOf(a.g);
+    /* sitze ich selbst nur als Mitspieler an einem Online-Tisch, bekommt der Freund dessen Code */
+    var open = t.role === 'guest' ? function (cb) { cb(t.code || ''); } : a.g === 'bj' ? window.BJ.host : a.g === 'rl' ? window.RL.host : PR.pokerHost;
+    open(function (code) {
       if (ask !== a) return;
       askHide();
       if (!code) { askReply(a.code, { t: 'askno', r: 'full' }); toast('Das hat nicht geklappt – gerade ist kein Platz frei oder keine Verbindung'); return; }
       askReply(a.code, { t: 'askok', g: a.g, code: code });
       var fr = friend(a.code);
-      toast((fr && fr.name || 'Dein Freund') + (a.g === 'bj' ? ' setzt sich in der nächsten Runde dazu' : ' kommt ab der nächsten Hand dazu'));
+      toast((fr && fr.name || 'Dein Freund') + (a.g === 'poker' ? ' kommt ab der nächsten Hand dazu' : ' setzt sich in der nächsten Runde dazu'));
     });
   });
   var invSt = null;
