@@ -1337,7 +1337,11 @@ input.bprange[type=range]::-moz-range-thumb { width: 20px; height: 20px; border-
 .rlchip::before { content: ''; position: absolute; inset: 3.5px; border-radius: 50%; background: var(--cc); border: 1px solid rgba(239,232,216,.75); }
 .rlchip b { position: relative; font: 800 9px/1 var(--ui); color: #fff; letter-spacing: -.02em; font-variant-numeric: tabular-nums; }
 .rlchip.pop { animation: rlpop .28s cubic-bezier(.2,.9,.3,1.4); }
-.rlchip.lost { opacity: .35; }
+.rlchip.gone { animation: rlgone .45s ease-in both; }
+@keyframes rlgone { to { opacity: 0; transform: translateY(8px) scale(.4); } }
+.rlchip.paid { z-index: 1; animation: rlpaid 1.2s ease-in-out both; }
+.rlchip.paid b { font-size: 8px; }
+@keyframes rlpaid { 0% { opacity: 0; transform: scale(0); } 18% { opacity: 1; transform: scale(1.2); } 28%, 58% { opacity: 1; transform: none; } 100% { opacity: 0; transform: translate(var(--dx), var(--dy)) scale(.6); } }
 .rlchip.won { box-shadow: 0 0 0 2px #ffe08a, 0 0 14px 3px rgba(255,224,138,.8); }
 @keyframes rlpop { from { transform: translateY(-14px) scale(1.35); opacity: .3; } }
 .rlot { position: absolute; width: 11px; height: 11px; margin: -5.5px 0 0 -5.5px; border-radius: 50%; background: var(--av, #7f776a); box-shadow: 0 0 0 1.5px #f3eee2, 0 1px 3px rgba(0,0,0,.6); }
@@ -8256,7 +8260,8 @@ input.bprange[type=range]::-moz-range-thumb { width: 20px; height: 20px; border-
   var R = null, H = null, ME = 'me';
   var NB = { peer: null, role: '', code: '', conns: [], conn: null, gen: 0 };
   var myB = {}, undo = [], lastB = {}, chipV = 10;
-  var V = { spun: -1, betRd: -1, anim: false, hold: false, lock: null, hit: -1, rdy: false, dlAt: 0, landAt: 0, pop: '', closeT: 0, shown: null };
+  var V = { spun: -1, betRd: -1, anim: false, hold: false, lock: null, hit: -1, rdy: false, dlAt: 0, landAt: 0, pop: '', closeT: 0, shown: null, set: null, stT: [], kept: false };
+  try { localStorage.removeItem('pr-rlhist'); } catch (e) {}   // frueher gespeichert; die letzten Zahlen gelten jetzt nur fuer den Tisch, an dem man sitzt
   (function () { var c = +(readJ('pr-rlchip') || 0); if (CHIPS.indexOf(c) >= 0) chipV = c; })();
   function multi() { return NB.role !== ''; }
   function others() { return !!R && R.pl.length > 1; }
@@ -8264,11 +8269,11 @@ input.bprange[type=range]::-moz-range-thumb { width: 20px; height: 20px; border-
   function bank() { return Math.max(0, PR.prof().bank | 0); }
   function avail() { return Math.max(0, bank() - sum(myB)); }
   function myRdy() { var p = plOf(ME); return V.rdy || !!(p && p.rdy); }
-  function canBet() { return !!R && R.ph === 'bet' && !V.anim && !V.hold && !myRdy(); }
+  function canBet() { return !!R && R.ph === 'bet' && !V.anim && !V.hold && !V.set && !myRdy(); }
 
   function hostStart() {
     if (H) { clearTimeout(H.bt); clearTimeout(H.st); }
-    var hist = R && Array.isArray(R.hist) ? R.hist.slice() : (readJ('pr-rlhist') || []).filter(function (n) { return n === (n | 0) && n >= 0 && n <= 36; }).slice(0, 14);
+    var hist = R && Array.isArray(R.hist) ? R.hist.slice() : [];
     H = { bt: 0, st: 0, dl: 0, t0: 0 };
     R = { ph: 'bet', rd: Math.max(V.spun, V.betRd) + 1, res: -1, el: 0, dl: 0, hist: hist, pl: [] };
     ME = 'me';
@@ -8322,7 +8327,6 @@ input.bprange[type=range]::-moz-range-thumb { width: 20px; height: 20px; border-
   /* neuer Stand (vom Ersteller oder selbst gerechnet) */
   function got() {
     V.dlAt = R && R.dl ? Date.now() + R.dl : 0;
-    try { if (R) localStorage.setItem('pr-rlhist', JSON.stringify(R.hist)); } catch (e) {}
     view();
   }
   function view() {
@@ -8335,6 +8339,7 @@ input.bprange[type=range]::-moz-range-thumb { width: 20px; height: 20px; border-
 
   /* ---------- Drehen: eigene Einsaetze sofort abrechnen (auch wenn man vor dem Ende geht), dann das Rad zeigen ---------- */
   function startSpin() {
+    clearSettle(); V.kept = false;
     V.spun = R.rd; V.rdy = false;
     var stake = sum(myB), res = R.res, win = stake ? payout(myB, res) : 0;
     V.lock = { b: myB, res: res, stake: stake, win: win };
@@ -8357,7 +8362,30 @@ input.bprange[type=range]::-moz-range-thumb { width: 20px; height: 20px; border-
   function closeWheel() {
     clearTimeout(V.closeT);
     $('#rlSpin').classList.remove('on');
-    if (V.hold) { V.hold = false; renderBets(); renderCtl(); }
+    if (V.hold) { V.hold = false; settle(); renderBets(); renderCtl(); }
+  }
+  /* danach wie am echten Tisch: erst liegt noch alles, dann werden die verlorenen Chips abgeraeumt, der Gewinn kommt
+     neben die Gewinner-Chips und wandert ins Guthaben. Die Gewinner-Chips bleiben als Einsatz liegen, bis man sie wegnimmt. */
+  var ST_LOST = 900, ST_PAY = 1500, ST_END = 2700;
+  function clearSettle() { V.stT.forEach(clearTimeout); V.stT = []; V.set = null; }
+  function settle() {
+    var L = V.lock;
+    clearSettle();
+    if (!L || !L.stake) { V.shown = null; return; }
+    var keep = {}, pay = {};
+    Object.keys(L.b).forEach(function (k) {
+      var ns = numsOf(k);
+      if (ns && ns.indexOf(L.res) >= 0) { keep[k] = L.b[k]; pay[k] = L.b[k] * 36 / ns.length - L.b[k]; }
+    });
+    var won = sum(keep) > 0, end = won ? ST_END : ST_LOST + 450;
+    V.set = { b: L.b, hit: L.res, keep: keep, pay: pay, t0: Date.now() };
+    myB = keep; undo = []; sendBets();
+    if (Object.keys(keep).length < Object.keys(L.b).length) V.stT.push(setTimeout(function () { Snd.chip(2, 0); }, ST_LOST));
+    if (won) V.stT.push(setTimeout(function () {
+      Snd.chip(3, 0);
+      countBank(V.shown == null ? avail() : V.shown, avail()); V.shown = null;
+    }, ST_PAY + 700));
+    V.stT.push(setTimeout(function () { V.set = null; V.stT = []; V.kept = won; V.shown = null; view(); }, end));
   }
   function resName(n) { return n === 0 ? 'Null' : (isRed(n) ? 'Rot' : 'Schwarz') + ' · ' + (n % 2 ? 'Ungerade' : 'Gerade'); }
   function landed() {
@@ -8375,8 +8403,6 @@ input.bprange[type=range]::-moz-range-thumb { width: 20px; height: 20px; border-
       m.className = 'rlwmsg on lose';
       if (L.stake) Snd.knock();
     }
-    countBank(V.shown == null ? bank() : V.shown, bank());
-    V.shown = null;
     broke();
     view();
   }
@@ -8422,25 +8448,40 @@ input.bprange[type=range]::-moz-range-thumb { width: 20px; height: 20px; border-
   function renderBets() {
     var lay = $('#rlBets'); if (!lay) return;
     lay.innerHTML = '';
-    var showLock = (V.anim || V.hold) && V.lock, mine = showLock ? V.lock.b : myB, hit = V.hit;
+    var S = V.set, showLock = !S && (V.anim || V.hold) && V.lock, mine = S ? S.b : showLock ? V.lock.b : myB, hit = S ? S.hit : V.hit;
+    var el = S ? Date.now() - S.t0 : 0;
     all('#rlBoard .rlc.win').forEach(function (c) { c.classList.remove('win'); });
     if (hit >= 0 && !(V.anim)) {
       CELL[hit].classList.add('win');
       Object.keys(KCELL).forEach(function (k) { if (OUT[k].indexOf(hit) >= 0) KCELL[k].classList.add('win'); });
     }
     var dots = {};
-    if (R && !showLock) R.pl.forEach(function (p) {
+    if (R && !showLock && !S) R.pl.forEach(function (p) {
       if (p.id === ME) return;
       Object.keys(p.b).forEach(function (k) { (dots[k] = dots[k] || []).push(p.color); });
     });
     Object.keys(mine).forEach(function (k) {
       var p = posOf(k); if (!p) return;
       var c = document.createElement('div'); c.className = 'rlchip ' + chipCls(mine[k]) + (k === V.pop ? ' pop' : '');
-      if (showLock && hit >= 0) c.classList.add(numsOf(k).indexOf(hit) >= 0 ? 'won' : 'lost');
+      if (S) { if (S.keep[k]) c.classList.add('won'); else { c.classList.add('gone'); c.style.animationDelay = (ST_LOST - el) + 'ms'; } }
+      else if (showLock && hit >= 0 && numsOf(k).indexOf(hit) >= 0) c.classList.add('won');
       c.style.left = p.x + 'px'; c.style.top = p.y + 'px';
       var b = document.createElement('b'); b.textContent = short(mine[k]); c.appendChild(b);
       lay.appendChild(c);
     });
+    if (S) {   // Gewinn neben den Gewinner-Chip legen, dann fliegt er ins Guthaben
+      var bk = $('#rlBank').getBoundingClientRect(), br = board.getBoundingClientRect();
+      Object.keys(S.pay).forEach(function (k) {
+        var p = posOf(k); if (!p) return;
+        var x = p.x + 14, y = p.y - 10, c = document.createElement('div');
+        c.className = 'rlchip paid ' + chipCls(S.pay[k]);
+        c.style.left = x + 'px'; c.style.top = y + 'px'; c.style.animationDelay = (ST_PAY - el) + 'ms';
+        c.style.setProperty('--dx', (bk.left + bk.width / 2 - br.left - x).toFixed(0) + 'px');
+        c.style.setProperty('--dy', (bk.top + bk.height / 2 - br.top - y).toFixed(0) + 'px');
+        var b = document.createElement('b'); b.textContent = '+' + short(S.pay[k]); c.appendChild(b);
+        lay.appendChild(c);
+      });
+    }
     V.pop = '';
     Object.keys(dots).forEach(function (k) {
       var p = posOf(k); if (!p) return;
@@ -8476,22 +8517,25 @@ input.bprange[type=range]::-moz-range-thumb { width: 20px; height: 20px; border-
     });
     $('#rlUndo').disabled = !cb || !undo.length;
     $('#rlClear').disabled = !cb || !st;
-    var re = $('#rlRe'), ls = sum(lastB);
-    if (st) { re.querySelector('span').textContent = 'Verdoppeln'; re.querySelector('small').textContent = '+' + fmt(st); re.disabled = !cb || st > av; }
-    else { re.querySelector('span').textContent = 'Nochmal'; re.querySelector('small').textContent = ls ? fmt(ls) : 'wie zuletzt'; re.disabled = !cb || !ls || ls > av; }
+    var re = $('#rlRe'), ls = sum(lastB), rl0 = reList(), need = rl0.l.reduce(function (a, e) { return a + e[1]; }, 0);
+    if (rl0.dbl) { re.querySelector('span').textContent = 'Verdoppeln'; re.querySelector('small').textContent = '+' + fmt(st); }
+    else { re.querySelector('span').textContent = 'Nochmal'; re.querySelector('small').textContent = ls ? fmt(ls) : 'wie zuletzt'; }
+    re.disabled = !cb || !need || need > av;
     var go = $('#rlGo');
     go.disabled = !cb || !st;
     go.querySelector('span').textContent = others() ? (rdy ? 'Bereit' : 'Fertig') : 'Drehen';
     go.querySelector('small').textContent = V.anim || V.hold ? 'Rad dreht' : rdy && others() ? 'warte auf die anderen' : st ? 'Einsatz ' + fmt(st) : 'erst setzen';
-    if (V.anim && V.shown != null) $('#rlBank').textContent = fmt(V.shown);
+    if (V.shown != null && !cbRaf) $('#rlBank').textContent = fmt(V.shown);
     else if (!cbRaf) $('#rlBank').textContent = fmt(av);
     var s = '', sec = secs();
     if (!R) s = 'Verbinde mit dem Tisch …';
     else if (V.anim) s = 'Nichts geht mehr';
     else if (V.hold && V.lock) s = '<b>' + V.lock.res + '</b> · ' + resName(V.lock.res);
+    else if (V.set) s = sum(V.set.pay) ? 'Gewinn <b>+' + fmt(sum(V.set.pay)) + '</b> · deine Gewinner-Chips bleiben liegen' : '<b>' + V.set.hit + '</b> · ' + resName(V.set.hit) + ' · Chips werden abgeräumt';
     else if (R.ph === 'spin') s = 'Das Rad dreht – gleich kannst du setzen';
     else if (rdy) s = 'Du bist fertig' + (sec ? ' · gedreht wird in <b>' + sec + ' s</b>' : ' · warte auf die anderen');
     else if (sec) s = 'Setz deine Chips · gedreht wird in <b>' + sec + ' s</b>';
+    else if (st && V.kept) s = 'Gewinner-Chips bleiben liegen · der Papierkorb nimmt sie weg';
     else if (st) s = 'Einsatz <b>' + fmt(st) + '</b>' + (others() ? ' · tipp auf Fertig, wenn du so weit bist' : ' · noch mehr setzen oder drehen');
     else s = 'Chip wählen und aufs Feld tippen – auch auf Linien und Ecken';
     $('#rlStatus').innerHTML = s;
@@ -8511,7 +8555,7 @@ input.bprange[type=range]::-moz-range-thumb { width: 20px; height: 20px; border-
       V.sbT = setTimeout(function () { if (NB.conn) { try { NB.conn.send({ t: 'bets', b: myB }); } catch (e) {} } }, 160);
     } else if (H && R) hBets(ME, myB);
   }
-  function changed(pop) { V.pop = pop || ''; V.hit = -1; sendBets(); view(); }
+  function changed(pop) { V.pop = pop || ''; V.hit = -1; V.kept = false; sendBets(); view(); }
   function add(list) {
     var need = list.reduce(function (a, e) { return a + e[1]; }, 0);
     if (!canBet()) return false;
@@ -8546,10 +8590,19 @@ input.bprange[type=range]::-moz-range-thumb { width: 20px; height: 20px; border-
     if (!canBet() || !sum(myB)) return;
     myB = {}; undo = []; Snd.chip(2, 0); changed();
   });
+  /* Nochmal: wie zuletzt setzen; liegen noch Gewinner-Chips, wird nur der Rest dazugelegt. Sonst verdoppelt es das Gesetzte. */
+  function reList() {
+    if (V.kept) {
+      var d = Object.keys(lastB).filter(function (k) { return lastB[k] > (myB[k] || 0); }).map(function (k) { return [k, lastB[k] - (myB[k] || 0)]; });
+      if (d.length) return { l: d, dbl: false };
+    }
+    var st = sum(myB), src = st ? myB : lastB;
+    return { l: Object.keys(src).map(function (k) { return [k, src[k]]; }), dbl: !!st };
+  }
   $('#rlRe').addEventListener('click', function () {
     if (!canBet()) return;
-    var src = sum(myB) ? myB : lastB;
-    if (add(Object.keys(src).map(function (k) { return [k, src[k]]; }))) { Snd.chip(3, 0); changed(); }
+    var l = reList().l;
+    if (l.length && add(l)) { Snd.chip(3, 0); changed(); }
   });
   function go() {
     if (!canBet() || !sum(myB)) return;
@@ -8577,6 +8630,7 @@ input.bprange[type=range]::-moz-range-thumb { width: 20px; height: 20px; border-
     Snd.unlock();
     ['#menu', '#profile', '#pview', '#friends', '#bjf'].forEach(function (s) { var el = $(s); if (el) el.hidden = true; });
     rl.hidden = false; $('#rlPause').hidden = true; $('#rlToast').classList.remove('on');
+    V.hold = false; clearSettle(); V.kept = false;
     stopAnim(); closeWheel();
     myB = {}; undo = []; V.hit = -1; V.rdy = false; V.anim = false; V.hold = false; V.lock = null; V.shown = null; V.spun = -1; V.betRd = -1;
     histKey = null; plKey = '';
@@ -8598,7 +8652,8 @@ input.bprange[type=range]::-moz-range-thumb { width: 20px; height: 20px; border-
     wipe(true);
     if (H) { clearTimeout(H.bt); clearTimeout(H.st); }
     H = null; R = null; myB = {}; undo = [];
-    stopAnim(); closeWheel(); V.anim = false; V.hold = false;
+    V.hold = false; clearSettle(); V.kept = false;
+    stopAnim(); closeWheel(); V.anim = false;
     Snd.stopAll();
     rl.hidden = true; $('#rlPause').hidden = true; $('#menu').hidden = false;
     PR.renderBank();
