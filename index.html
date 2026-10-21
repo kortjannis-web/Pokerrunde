@@ -1256,6 +1256,24 @@ input.bprange[type=range]::-moz-range-thumb { width: 20px; height: 20px; border-
 .lkpay b { margin-top: 3px; font: 800 22px var(--display); color: #ff6a55; font-variant-numeric: tabular-nums; text-shadow: 0 0 8px rgba(255,90,74,.75); }
 .lkpay div.jp b { color: #ffe08a; text-shadow: 0 0 8px rgba(255,224,138,.7); }
 .lkpay b.up { animation: lkup .3s ease-out; }
+/* nach der Runde: gruene Zahl links neben der Anzeige, bleibt ein paar Sekunden stehen (auch wenn schon neu gestartet ist) */
+.lkpayrow { position: relative; flex: none; display: flex; justify-content: center; }
+.lklast { position: absolute; right: 100%; top: 50%; margin-right: 10px; display: flex; flex-direction: column; align-items: flex-end; line-height: 1; pointer-events: none; opacity: 0; transform: translateY(-50%) scale(.6); transition: opacity .5s, transform .5s; }
+.lklast.on { opacity: 1; transform: translateY(-50%) scale(1); transition: opacity .2s, transform .35s cubic-bezier(.2,1.6,.4,1); }
+.lklast b { font: 800 26px var(--display); color: #4dff7a; font-variant-numeric: tabular-nums; text-shadow: 0 0 10px rgba(60,255,110,.75), 0 2px 3px rgba(0,0,0,.6); white-space: nowrap; }
+.lklast small { font: 700 9px var(--ui); letter-spacing: .14em; text-transform: uppercase; color: #9fe8b0; margin-top: 2px; white-space: nowrap; }
+/* Jackpot: das ganze Schloss blinkt und leuchtet, die Lampen blinken abwechselnd, der Schein pulsiert */
+#lk.open #lkSvg .neo { animation: lkneo .22s steps(2, jump-none) infinite; }
+@keyframes lkneo { from { stroke: #ffc94a; } to { stroke: #fff6d6; } }
+#lk.open #lkSvg .face { animation: lkjp .55s ease-in-out 6; }
+@keyframes lkjp { 50% { transform: scale(1.04); } }
+#lk.open #lkBulbs circle:nth-child(even) { animation-delay: -.15s !important; }
+#lk.open .lkwrap::before { animation: lkhalo .55s ease-in-out infinite alternate; }
+@keyframes lkhalo { from { opacity: .6; transform: scale(.95); } to { opacity: 1; transform: scale(1.3); } }
+#lk.open .lkpanel::before, #lk.open .lkpanel::after { background: #ffd65a; box-shadow: 0 0 16px 3px rgba(255,214,90,.9); animation: lkbar .22s steps(2, jump-none) infinite; }
+@keyframes lkbar { to { opacity: .35; } }
+#lk.open .lkmarq { animation: lkmq .44s steps(2, jump-none) infinite; }
+@keyframes lkmq { to { box-shadow: inset 0 0 0 2px #ffe08a, 0 0 22px 6px rgba(255,224,138,.7); } }
 @keyframes lkup { 40% { transform: scale(1.25); color: #fff; } }
 #lkStage .slcoin { top: -30px; }
 /* Bedienpult mit dem Knopf unten in der Mitte */
@@ -1296,7 +1314,7 @@ input.bprange[type=range]::-moz-range-thumb { width: 20px; height: 20px; border-
 .rlhist i { flex: none; width: 24px; height: 24px; border-radius: 50%; display: grid; place-items: center; font: 800 11px var(--ui); font-style: normal; color: #fff; background: var(--rlblk); box-shadow: inset 0 0 0 1.5px rgba(236,231,218,.3); font-variant-numeric: tabular-nums; }
 .rlhist i.r { background: var(--rlred); } .rlhist i.g { background: var(--rlgrn); }
 .rlhist i:first-of-type { width: 30px; height: 30px; font-size: 14px; box-shadow: inset 0 0 0 2px var(--brass); }
-.rlfelt { position: relative; flex: 1 1 auto; min-height: 0; margin: 4px 6px 0; padding: 8px; border-radius: 18px;
+.rlfelt { position: relative; flex: 0 1 auto; align-self: center; width: min(calc(100% - 12px), 310px); height: min(100%, 56vh); min-height: 0; margin: auto 0; padding: 7px; border-radius: 16px;
   background: radial-gradient(ellipse at 50% 20%, var(--rl1), var(--rl2) 65%, var(--rl3));
   box-shadow: inset 0 0 30px rgba(0,0,0,.45), 0 0 0 5px var(--oak2), 0 0 0 6px var(--oak1), 0 14px 30px rgba(0,0,0,.5); }
 .rlboard { position: relative; height: 100%; display: grid; grid-template-columns: .8fr .8fr 1fr 1fr 1fr; grid-template-rows: 1.25fr repeat(12, 1fr) 1fr; touch-action: manipulation; cursor: pointer; }
@@ -1307,10 +1325,12 @@ input.bprange[type=range]::-moz-range-thumb { width: 20px; height: 20px; border-
 .rlc.o span { font: 700 clamp(10px, 1.7vh, 13px)/1 var(--ui); letter-spacing: .06em; text-transform: uppercase; color: rgba(236,231,218,.92); white-space: nowrap; writing-mode: vertical-rl; transform: rotate(180deg); }
 .rlc.col span { writing-mode: horizontal-tb; transform: none; font-size: 12px; }
 .rlc .rh { display: block; width: 18px; height: 30px; }
-.rlc.win { z-index: 1; animation: rlwin 1s ease-in-out infinite alternate; }
+/* Gewinnfeld blinkt ueber eine helle Ebene (nur Deckkraft, das muss der Browser nicht neu zeichnen) */
+.rlc.win { z-index: 1; }
+.rlc.win::after { content: ''; position: absolute; inset: 0; border-radius: inherit; background: rgba(255,240,190,.22); pointer-events: none; animation: rlwin 1s ease-in-out infinite alternate; }
 .rlc.n.win { box-shadow: inset 0 0 0 3px #ffe08a, 0 0 18px 4px rgba(255,224,138,.75); }
 .rlc.o.win { box-shadow: inset 0 0 0 2px rgba(255,224,138,.8); background: rgba(255,224,138,.12); }
-@keyframes rlwin { to { filter: brightness(1.25); } }
+@keyframes rlwin { from { opacity: 0; } }
 .rlbets { position: absolute; inset: 0; z-index: 3; pointer-events: none; }
 .rlchip { position: absolute; width: 26px; height: 26px; margin: -13px 0 0 -13px; border-radius: 50%; display: grid; place-items: center;
   background: repeating-conic-gradient(#efe8d8 0 13deg, var(--cc) 13deg 45deg); box-shadow: 0 2px 5px rgba(0,0,0,.65); transition: opacity .3s; }
@@ -1335,8 +1355,10 @@ input.bprange[type=range]::-moz-range-thumb { width: 20px; height: 20px; border-
 /* Rad: beim Drehen gross ueber dem Feld */
 .rlspin { position: absolute; inset: 0; z-index: 8; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 14px; background: rgba(8,10,12,.74); opacity: 0; visibility: hidden; transition: opacity .35s, visibility .35s; }
 .rlspin.on { opacity: 1; visibility: visible; }
-.rlwh { position: relative; width: min(92%, 360px, 50vh); aspect-ratio: 1; filter: drop-shadow(0 18px 30px rgba(0,0,0,.6)); }
+.rlwh { position: relative; width: min(92%, 360px, 50vh); aspect-ratio: 1; border-radius: 50%; box-shadow: 0 18px 30px rgba(0,0,0,.6); }
 .rlwh svg { position: absolute; inset: 0; width: 100%; height: 100%; overflow: visible; }
+/* Kessel und Kugel liegen als eigene Ebenen darueber und werden nur gedreht, nicht neu gezeichnet */
+.rlwh .rlly { will-change: transform; transform-origin: 50% 50%; }
 .rlres { position: absolute; left: 50%; top: 50%; width: 30%; aspect-ratio: 1; border-radius: 50%; display: grid; place-items: center; font: 800 clamp(28px, 9cqw, 46px)/1 var(--display); color: #fff;
   transform: translate(-50%, -50%) scale(.3); opacity: 0; transition: transform .45s cubic-bezier(.2,.9,.3,1.4), opacity .3s; box-shadow: 0 0 0 4px var(--brass), 0 10px 30px rgba(0,0,0,.7); background: var(--rlblk); }
 .rlres.r { background: var(--rlred); } .rlres.g { background: var(--rlgrn); }
@@ -1749,7 +1771,7 @@ input.bprange[type=range]::-moz-range-thumb { width: 20px; height: 20px; border-
           </g>
         </svg>
       </div>
-      <div class="lkpay" id="lkPay" aria-label="Gewinn dieser Runde"><div><small>Gewinn</small><b id="lkRw">0</b></div><div><small>Treffer</small><b id="lkHits">0/50</b></div></div>
+      <div class="lkpayrow"><div class="lklast" id="lkLast" aria-live="polite"><b></b><small></small></div><div class="lkpay" id="lkPay" aria-label="Gewinn dieser Runde"><div><small>Gewinn</small><b id="lkRw">0</b></div><div><small>Treffer</small><b id="lkHits">0/50</b></div></div></div>
       <p class="lkmsg" id="lkMsg" aria-live="polite"></p>
       <div class="lkpanel"><button id="lkGo" type="button">Start</button></div>
     </main>
@@ -1787,7 +1809,7 @@ input.bprange[type=range]::-moz-range-thumb { width: 20px; height: 20px; border-
       <div class="rlhist" id="rlHist" aria-label="Letzte Zahlen"></div>
       <div class="rlfelt"><div class="rlboard" id="rlBoard" aria-label="Roulette-Tisch: aufs Feld tippen, um zu setzen"></div></div>
       <div class="rlspin" id="rlSpin">
-        <div class="rlwh"><svg id="rlWheel" viewBox="-100 -100 200 200" aria-hidden="true"></svg><div class="rlres" id="rlRes"></div></div>
+        <div class="rlwh"><svg id="rlWheel" viewBox="-100 -100 200 200" aria-hidden="true"></svg><svg class="rlly" id="rlRot" viewBox="-100 -100 200 200" aria-hidden="true"></svg><svg class="rlly" id="rlBallG" viewBox="-100 -100 200 200" aria-hidden="true"><circle id="rlBall" cx="0" cy="-57" r="4.3" fill="url(#rlgBall)" stroke="rgba(0,0,0,.35)" stroke-width=".4"/></svg><div class="rlres" id="rlRes"></div></div>
         <div class="rlwmsg" id="rlWMsg" aria-live="polite"></div>
       </div>
       <div class="bjtoast" id="rlToast"></div>
@@ -5544,10 +5566,11 @@ input.bprange[type=range]::-moz-range-thumb { width: 20px; height: 20px; border-
   function $(s) { return document.querySelector(s); }
 
   var DECKS = 6, CUT = 78, MAX_HANDS = 4, MAX_SEATS = 5, TURN_MS = 25000, BET_MS = 15000;
+  var MAX_BET = 1000;   // Hoechsteinsatz pro Runde (Verdoppeln und Teilen duerfen darueber gehen)
   var GIFT = 50;   // so viele Chips gibt es, wenn man pleite ist und auch im Guthaben nichts mehr hat
   var MIN_OPTS = [10, 25, 50], SEAT_OPTS = [2, 3, 4, 5];
   var PEER_PREFIX = 'pokerrunde-bj-';
-  var BJ_V = 3;   // Version des Tisch-Protokolls: Ersteller und Mitspieler muessen gleich sein
+  var BJ_V = 4;   // Version des Tisch-Protokolls: Ersteller und Mitspieler muessen gleich sein
 
   /* ---------- Karten und Werte ---------- */
   function randInt(n) {
@@ -5620,7 +5643,7 @@ input.bprange[type=range]::-moz-range-thumb { width: 20px; height: 20px; border-
       s.hands = []; s.cur = 0; s.inR = false; s.ready = false; s.gift = 0;
       /* pleite und auch im Guthaben nichts mehr: wie beim Poker gibt es wieder Chips zum Weiterspielen */
       if (s.chips < T.min && s.chips + s.res < T.min) { s.gift = Math.max(GIFT, T.min) - s.chips; s.chips += s.gift; }
-      s.bet = Math.min(s.last || T.min, s.chips);
+      s.bet = Math.min(s.last || T.min, s.chips, MAX_BET);
       s.pend = s.bet >= T.min ? s.bet : 0;   // so belegt jeder seinen Einsatz vor, die anderen sehen ihn gleich
     });
     push();
@@ -5629,7 +5652,7 @@ input.bprange[type=range]::-moz-range-thumb { width: 20px; height: 20px; border-
   function hBet(id, a) {
     var s = seatOf(id);
     if (!s || s.gone || T.phase !== 'bet' || s.ready) return;
-    a = Math.max(0, Math.min(s.chips, Math.round(+a || 0)));
+    a = Math.max(0, Math.min(s.chips, MAX_BET, Math.round(+a || 0)));
     if (s.pend === a) return;
     s.pend = a; push();
   }
@@ -5637,7 +5660,7 @@ input.bprange[type=range]::-moz-range-thumb { width: 20px; height: 20px; border-
     var s = seatOf(id);
     if (!s || s.gone || T.phase !== 'bet' || s.ready) return;
     amt = Math.round(+amt || 0);
-    if (!(amt >= T.min) || amt > s.chips) { push(); return; }
+    if (!(amt >= T.min) || amt > s.chips || amt > MAX_BET) { push(); return; }
     s.bet = amt; s.pend = amt; s.ready = true;
     checkDeal(); push();
   }
@@ -5651,7 +5674,7 @@ input.bprange[type=range]::-moz-range-thumb { width: 20px; height: 20px; border-
   }
   function startRound() {
     clearTimeout(H.bt); H.dl = 0;
-    var play = T.seats.filter(function (s) { return !s.gone && s.ready && s.bet >= T.min && s.bet <= s.chips; });
+    var play = T.seats.filter(function (s) { return !s.gone && s.ready && s.bet >= T.min && s.bet <= s.chips && s.bet <= MAX_BET; });
     if (!play.length) return;
     T.round++; T.phase = 'deal'; T.dealer = []; T.turn = -1;
     T.seats.forEach(function (s) { s.hands = []; s.cur = 0; s.inR = false; });
@@ -5895,7 +5918,7 @@ input.bprange[type=range]::-moz-range-thumb { width: 20px; height: 20px; border-
         && V.brokeKey !== String(t.round) && $('#bjPause').hidden && $('#bjEnd').hidden) { V.brokeKey = String(t.round); openDlg('broke'); }
     /* Einsatz vorbelegen, sobald eine neue Setzrunde beginnt */
     var bk = t.round + ':' + (my ? 1 : 0);
-    if (t.phase === 'bet' && V.betKey !== bk) { V.betKey = bk; myBet = my ? Math.min(my.bet, my.chips) : 0; if (myBet < t.min) myBet = 0; }
+    if (t.phase === 'bet' && V.betKey !== bk) { V.betKey = bk; myBet = my ? Math.min(my.bet, my.chips, MAX_BET) : 0; if (myBet < t.min) myBet = 0; }
 
     /* Dealer */
     syncCards($('#bjDealer .bjc'), t.dealer);
@@ -6007,16 +6030,17 @@ input.bprange[type=range]::-moz-range-thumb { width: 20px; height: 20px; border-
     $('#bjBetUI').hidden = !betting; $('#bjActUI').hidden = betting;
     if (betting) {
       var rd = my.ready;
-      [].forEach.call(document.querySelectorAll('.bjchip'), function (b) { b.disabled = rd || myBet + (+b.dataset.v) > my.chips; });
+      [].forEach.call(document.querySelectorAll('.bjchip'), function (b) { b.disabled = rd || myBet + (+b.dataset.v) > Math.min(my.chips, MAX_BET); });
       $('#bjClear').disabled = rd || !myBet;
       var go = $('#bjDeal');
-      go.disabled = rd || myBet < t.min || myBet > my.chips;
+      go.disabled = rd || myBet < t.min || myBet > my.chips || myBet > MAX_BET;
       go.querySelector('span').textContent = rd ? 'Bereit' : multi() ? 'Bereit' : 'Austeilen';
       go.querySelector('small').textContent = rd ? 'warte auf die anderen' : myBet ? 'Einsatz ' + fmt(myBet) : 'mindestens ' + fmt(t.min);
       if (rd) st = 'Du bist bereit' + (sec ? ' · es geht in <b>' + sec + ' s</b> los' : ' · warte auf die anderen');
       else if (sec) st = 'Setz deinen Einsatz · Austeilen in <b>' + sec + ' s</b>';
       else if (my.chips < t.min && BW > 0) st = 'Lade Chips nach (+ oben), um weiterzuspielen';
-      else st = 'Chips antippen oder ins Feld ziehen · mindestens <b>' + fmt(t.min) + '</b>';
+      else if (myBet >= MAX_BET) st = 'Höchsteinsatz <b>' + fmt(MAX_BET) + '</b> erreicht';
+      else st = 'Chips antippen oder ins Feld ziehen · <b>' + fmt(t.min) + '</b> bis <b>' + fmt(MAX_BET) + '</b>';
     } else {
       $('#bjTip').hidden = true;
       var myTurn = !!(my && t.phase === 'play' && t.seats[t.turn] === my && !(H && H.busy));
@@ -6121,6 +6145,7 @@ input.bprange[type=range]::-moz-range-thumb { width: 20px; height: 20px; border-
     var my = seatOf(ME);
     if (!T || T.phase !== 'bet' || !my || my.ready) return false;
     if (myBet + v > my.chips) return false;
+    if (myBet + v > MAX_BET) { bjToast('Höchsteinsatz ist ' + fmt(MAX_BET) + ' Chips'); return false; }
     myBet += v; Snd.chip(1, 0); view(T, ME); betChanged(); return true;
   }
   /* Chips antippen oder ins Einsatzfeld ziehen */
@@ -7836,7 +7861,7 @@ input.bprange[type=range]::-moz-range-thumb { width: 20px; height: 20px; border-
   var lk = $('#lk'), needle = $('#lkNeedle'), tgtG = $('#lkTgtG'), go = $('#lkGo');
   /* st: idle (vor dem Start), run, over (daneben), open (Schloss springt auf) */
   var st = 'idle', ang = 0, dir = 1, lv = 1, k = 0, total = 0, won = 0, rw = 0;
-  var tgt = 0, dist = 0, trav = 0, hw = 14, spd = 90, raf = 0, last = 0, fxT = 0, nextT = 0;
+  var tgt = 0, dist = 0, trav = 0, hw = 14, spd = 90, raf = 0, last = 0, fxT = 0, nextT = 0, lastT = 0;
 
   /* Lauflicht: NB Lampen gleichmaessig im Schlossrahmen (abgerundetes Quadrat, halbe Seite A, Eckradius R),
      jede mit versetztem Start, so laeuft das Licht rundherum. Im Uhrzeigersinn ab oben Mitte. */
@@ -7876,6 +7901,14 @@ input.bprange[type=range]::-moz-range-thumb { width: 20px; height: 20px; border-
     var q = pt(tgt, 82);
     tgtG.setAttribute('transform', 'translate(' + q[0].toFixed(2) + ',' + q[1].toFixed(2) + ') scale(' + (hw / 14).toFixed(3) + ')');
     tgtG.style.opacity = 1;
+  }
+  /* gruene Zahl neben der Gewinnanzeige: so viel hat die Runde gebracht */
+  function showLast(n, lbl) {
+    var e = $('#lkLast'); clearTimeout(lastT);
+    if (!n) { e.classList.remove('on'); return; }
+    e.querySelector('b').textContent = '+' + fmt(n); e.querySelector('small').textContent = lbl;
+    e.classList.remove('on'); void e.offsetWidth; e.classList.add('on');
+    lastT = setTimeout(function () { e.classList.remove('on'); }, 5000);
   }
   function msg(t, cls) { var m = $('#lkMsg'); m.textContent = t; m.className = 'lkmsg' + (cls ? ' ' + cls : ''); }
   function fx(cls) { clearTimeout(fxT); lk.classList.remove('hit', 'miss'); void lk.offsetWidth; lk.classList.add(cls); if (cls === 'hit') fxT = setTimeout(function () { lk.classList.remove('hit'); }, 200); }
@@ -7942,6 +7975,7 @@ input.bprange[type=range]::-moz-range-thumb { width: 20px; height: 20px; border-
     var s = stats(); if (total > s.best) { s.best = total; saveStats(s); t += ' · neuer Rekord: ' + total + ' Treffer'; }
     msg(t, 'bad');
     go.classList.remove('run');
+    showLast(rw, 'gewonnen');
     renderInfo();
   }
   function press() {
@@ -7956,9 +7990,9 @@ input.bprange[type=range]::-moz-range-thumb { width: 20px; height: 20px; border-
       lk.classList.remove('run'); lk.classList.add('open'); go.classList.remove('run'); Snd.win(); setTimeout(function () { Snd.pot(); }, 450);
       try { if (Snd.vibOn() && navigator.vibrate) navigator.vibrate([70, 50, 140]); } catch (e) {}
       var s = stats(); s.jp++; if (total > s.best) s.best = total; saveStats(s);
-      coins(36); msg('JACKPOT! Schloss geknackt: +' + JACKPOT + ' Chips', 'good');
+      coins(36); showLast(rw, 'Jackpot!'); msg('JACKPOT! Schloss geknackt: +' + JACKPOT + ' Chips', 'good');
       renderInfo();
-      nextT = setTimeout(function () { if (st === 'open' && !lk.hidden) { lv++; begin(true); } }, 2600);
+      nextT = setTimeout(function () { if (st === 'open' && !lk.hidden) { lv++; begin(true); } }, 3300);
       return;
     }
     fx('hit'); Snd.chip(Math.min(3, c), 0, true);
@@ -8159,7 +8193,8 @@ input.bprange[type=range]::-moz-range-thumb { width: 20px; height: 20px; border-
       '<linearGradient id="rlgGold" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#f6dc8c"/><stop offset=".5" stop-color="#d0a040"/><stop offset="1" stop-color="#8a6420"/></linearGradient>' +
       '</defs>';
     o += '<circle r="99" fill="url(#rlgWood)"/><circle r="91" fill="#15100b"/><circle r="88.5" fill="none" stroke="rgba(255,240,210,.09)" stroke-width="2.5"/><circle r="79" fill="none" stroke="rgba(0,0,0,.6)" stroke-width="3"/>';
-    o += '<g id="rlRot">';
+    $('#rlWheel').innerHTML = o;
+    o = '';
     WHEEL.forEach(function (n, i) {
       var a0 = (i - 0.5) * STEP, a1 = (i + 0.5) * STEP;
       var c = n === 0 ? '#2f8a4e' : isRed(n) ? '#b8322a' : '#1b1d20', d = n === 0 ? '#1f5c34' : isRed(n) ? '#7d1f19' : '#0e0f11';
@@ -8172,15 +8207,15 @@ input.bprange[type=range]::-moz-range-thumb { width: 20px; height: 20px; border-
       '<circle r="50" fill="url(#rlgCone)" stroke="url(#rlgGold)" stroke-width="1.6"/>' +
       '<circle r="36" fill="none" stroke="rgba(0,0,0,.25)" stroke-width="1"/>';
     for (var k = 0; k < 4; k++) o += '<g transform="rotate(' + (k * 90 + 45) + ')"><path d="M-2.4 -7 L-1.1 -29 L1.1 -29 L2.4 -7Z" fill="url(#rlgGold)"/><circle cy="-31" r="3.3" fill="url(#rlgGold)"/></g>';
-    o += '<circle r="9" fill="url(#rlgGold)"/><circle r="4" fill="#f6dc8c"/></g>';
-    o += '<g id="rlBallG"><circle id="rlBall" cx="0" cy="-57" r="4.3" fill="url(#rlgBall)" stroke="rgba(0,0,0,.35)" stroke-width=".4"/></g>';
-    $('#rlWheel').innerHTML = o;
+    o += '<circle r="9" fill="url(#rlgGold)"/><circle r="4" fill="#f6dc8c"/>';
+    $('#rlRot').innerHTML = o;
   })();
   var W = { w: 0, b: 0, r: 57, raf: 0, gen: 0 };
+  var rotEl = $('#rlRot'), ballG = $('#rlBallG'), ball = $('#rlBall'), lastR = '';
   function drawWheel() {
-    $('#rlRot').setAttribute('transform', 'rotate(' + W.w.toFixed(2) + ')');
-    $('#rlBallG').setAttribute('transform', 'rotate(' + W.b.toFixed(2) + ')');
-    $('#rlBall').setAttribute('cy', (-W.r).toFixed(2));
+    rotEl.style.transform = 'rotate(' + W.w.toFixed(2) + 'deg)';
+    ballG.style.transform = 'rotate(' + W.b.toFixed(2) + 'deg)';
+    var r = (-W.r).toFixed(1); if (r !== lastR) { lastR = r; ball.setAttribute('cy', r); }
   }
   drawWheel();
   function stopAnim() { W.gen++; cancelAnimationFrame(W.raf); W.raf = 0; }
@@ -8484,13 +8519,16 @@ input.bprange[type=range]::-moz-range-thumb { width: 20px; height: 20px; border-
     undo.push(list);
     return true;
   }
-  board.addEventListener('click', function (e) {
+  /* gesetzt wird schon beim Beruehren (fuehlt sich schneller an); click nur noch fuer Tastatur */
+  board.addEventListener('pointerdown', function (e) { if (e.pointerType === 'mouse' && e.button !== 0) return; bet(e); });
+  board.addEventListener('click', function (e) { if (e.detail === 0) bet(e); });
+  function bet(e) {
     if (!R) return;
     var k = keyAt(e.clientX, e.clientY, e.target);
     if (!k || !numsOf(k)) return;
     if (!canBet()) { if (myRdy()) toast('Du bist schon fertig – gleich wird gedreht'); return; }
     if (add([[k, chipV]])) { Snd.chip(1, 0); changed(k); }
-  });
+  }
   all('#rlChips .bjchip').forEach(function (b) {
     b.addEventListener('click', function () {
       chipV = +b.dataset.v; Snd.chip(1, 0);
