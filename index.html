@@ -8089,11 +8089,17 @@ input.bprange[type=range]::-moz-range-thumb { width: 20px; height: 20px; border-
     setTimeout(function () { el.remove(); }, 2550);
   }
   /* Flug im Bogen, die Tomate wird dabei kleiner (fliegt "weg"), dann Platschen */
+  /* Landepunkt mit Abstand zum Bildschirmrand, damit der Klecks ganz zu sehen ist */
+  var EDGE = 56;
+  function inside(p) { return { x: Math.max(EDGE, Math.min(window.innerWidth - EDGE, p.x)), y: Math.max(EDGE, Math.min(window.innerHeight - EDGE, p.y)) }; }
   function fly(from, to) {
     if (!from || !to) return;
     var el = document.createElement('div'); el.className = 'tomfly'; el.textContent = '🍅'; layer.appendChild(el);
+    to = inside(to);
     var dist = Math.hypot(to.x - from.x, to.y - from.y), dur = Math.max(420, Math.min(900, 300 + dist * 0.75));
-    var mx = (from.x + to.x) / 2, my = Math.min(from.y, to.y) - 40 - dist * 0.18;
+    /* Bogen nur so hoch, dass die Tomate nie ueber den Rand hinaus und wieder zurueck fliegt (sieht sonst wie Abprallen aus) */
+    var mx = (from.x + to.x) / 2, my = Math.max(EDGE / 2, Math.min(from.y, to.y) - 30 - dist * 0.12);
+    if (to.y < from.y) my = Math.max(my, to.y - 8);   // nach oben geworfen: kaum ueber das Ziel hinaus
     function tf(x, y, sc, rot) { return 'translate(' + x + 'px,' + y + 'px) translate(-50%,-50%) scale(' + sc + ') rotate(' + rot + 'deg)'; }
     Snd.toss();
     if (!el.animate) { el.remove(); splat(to); return; }
@@ -8121,11 +8127,11 @@ input.bprange[type=range]::-moz-range-thumb { width: 20px; height: 20px; border-
       var now = performance.now(), a = d.pts[0], dt = Math.max(16, now - a.t), vx = (e.clientX - a.x) / dt, vy = (e.clientY - a.y) / dt, v = Math.hypot(vx, vy);
       if (v < 0.7) return null;
       var reach = Math.max(120, Math.min(1100, v * 260)), ux = vx / v, uy = vy / v;
-      var x = e.clientX + ux * reach, y = e.clientY + uy * reach, W = window.innerWidth, Hh = window.innerHeight;
-      /* nicht aus dem Bildschirm heraus: an der Kante entlang der Wurfrichtung abschneiden */
+      var x = e.clientX + ux * reach, y = e.clientY + uy * reach, W = window.innerWidth, Hh = window.innerHeight, m = EDGE;
+      /* nicht bis an die Wand: entlang der Wurfrichtung schon ein Stueck vor dem Rand landen */
       var k = 1;
-      if (x < 12) k = Math.min(k, (12 - e.clientX) / (x - e.clientX)); if (x > W - 12) k = Math.min(k, (W - 12 - e.clientX) / (x - e.clientX));
-      if (y < 12) k = Math.min(k, (12 - e.clientY) / (y - e.clientY)); if (y > Hh - 12) k = Math.min(k, (Hh - 12 - e.clientY) / (y - e.clientY));
+      if (x < m) k = Math.min(k, (m - e.clientX) / (x - e.clientX)); if (x > W - m) k = Math.min(k, (W - m - e.clientX) / (x - e.clientX));
+      if (y < m) k = Math.min(k, (m - e.clientY) / (y - e.clientY)); if (y > Hh - m) k = Math.min(k, (Hh - m - e.clientY) / (y - e.clientY));
       k = Math.max(0, Math.min(1, k));
       return { x: e.clientX + (x - e.clientX) * k, y: e.clientY + (y - e.clientY) * k };
     }
