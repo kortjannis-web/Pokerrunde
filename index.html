@@ -1198,6 +1198,59 @@ input.bprange[type=range]::-moz-range-thumb { width: 20px; height: 20px; border-
 /* Slots-Bestenliste bei den Freunden */
 .frr .frc small { display: block; font: 600 10px var(--ui); color: var(--muted); text-align: right; }
 
+/* ---------- Pop the Lock: vierte Menueseite (links neben Slots), blau ---------- */
+:root { --lk1: #2b5fae; --lk2: #173466; --lk3: #0a1631; }
+.mbg3 { position: absolute; inset: 0; z-index: 1; pointer-events: none; background: radial-gradient(ellipse at 50% 30%, var(--lk2), var(--bg) 70%); opacity: var(--mix3, 0); transition: opacity .4s ease; }
+#menu.drag .mbg3 { transition: none; }
+#menu .menucard { z-index: 1; }
+.lklogo { display: flex; justify-content: center; height: 41px; align-items: flex-end; }
+.lklogo svg { width: 34px; height: 44px; display: block; filter: drop-shadow(0 4px 6px rgba(0,0,0,.45)); }
+#lk { position: absolute; inset: 0; z-index: 58; display: flex; flex-direction: column; background: radial-gradient(120% 70% at 50% 30%, #1b2a48, var(--bg) 70%); background-color: var(--bg); }
+#lkStage { position: relative; flex: 1 1 auto; min-height: 0; overflow: hidden; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 10px; cursor: pointer; touch-action: manipulation; }
+.lkmarq { position: relative; width: min(100%, 340px); height: 50px; border-radius: 14px; display: flex; align-items: center; justify-content: space-between; padding: 0 16px; background: linear-gradient(180deg, #1f4f94, #0c2550); box-shadow: inset 0 0 0 2px rgba(140,200,255,.75), 0 4px 10px rgba(0,0,0,.4); overflow: hidden; flex: none; }
+.lkmarq::before, .lkmarq::after { content: ''; position: absolute; left: 8px; right: 8px; height: 5px; background: radial-gradient(circle, #cfeaff 0 1.8px, transparent 2.6px) 0 0 / 13px 5px repeat-x; opacity: .8; }
+.lkmarq::before { top: 4px; } .lkmarq::after { bottom: 4px; }
+.lkmarq span { position: relative; font: 800 20px var(--display); letter-spacing: .05em; color: #d9efff; text-shadow: 0 2px 0 #06244a, 0 0 12px rgba(150,210,255,.6); white-space: nowrap; }
+.lkmarq em { position: relative; font-style: normal; display: flex; flex-direction: column; align-items: flex-end; line-height: 1; }
+.lkmarq em small { font: 700 9px var(--ui); letter-spacing: .16em; text-transform: uppercase; color: #9fc7ee; }
+.lkmarq em b { font: 800 19px var(--display); color: #ffe08a; text-shadow: 0 0 10px rgba(255,224,138,.6); }
+.lkwrap { position: relative; flex: none; width: min(72vw, 280px, 32vh); aspect-ratio: 220 / 350; }
+#lkSvg { width: 100%; height: 100%; display: block; overflow: visible; }
+#lkSvg .shk { transition: transform .45s cubic-bezier(.2,1.6,.4,1); }
+#lk.open #lkSvg .shk { transform: translateY(-34px); }
+#lkSvg .body { transform-box: view-box; transform-origin: 0 0; }
+#lk.hit #lkSvg .body { animation: lkhit .18s ease-out; }
+#lk.miss #lkSvg .body { animation: lkmiss .42s ease-in-out; }
+@keyframes lkhit { 40% { transform: scale(1.035); } }
+@keyframes lkmiss { 15%, 55% { transform: translateX(-7px); } 35%, 75% { transform: translateX(7px); } }
+#lkSvg .tgt { transition: opacity .15s; }
+#lkSvg .tgt circle:first-child { animation: lkglow .6s ease-in-out infinite alternate; }
+@keyframes lkglow { to { opacity: .35; } }
+#lkSvg text.cnt { font: 800 54px var(--display); fill: #f2f6ff; }
+#lkSvg text.lv { font: 700 11px var(--ui); letter-spacing: .16em; fill: #9fb6d8; text-transform: uppercase; }
+#lk.miss #lkSvg text.cnt { fill: #ff7a6b; }
+#lk.open #lkSvg text.cnt { fill: #ffe08a; }
+.lkmsg { min-height: 22px; margin: 0; font: 800 16px var(--ui); color: var(--ink); text-align: center; flex: none; }
+.lkmsg.good { color: #ffe08a; }
+.lkmsg.bad { color: #ff8a7a; }
+.lkpay { display: flex; gap: 6px; flex: none; }
+.lkpay div { height: 30px; min-width: 56px; padding: 0 10px; border-radius: 999px; display: flex; align-items: center; justify-content: center; gap: 5px; border: 1px solid var(--line); background: rgba(16,18,19,.7); font: 700 12px var(--ui); color: var(--muted); white-space: nowrap; transition: background .2s, color .2s, box-shadow .2s; }
+.lkpay div b { font: 800 14px var(--ui); color: var(--ink); }
+.lkpay div.on { background: #1f4f94; color: #d9efff; border-color: rgba(140,200,255,.8); box-shadow: 0 0 12px 2px rgba(120,190,255,.45); }
+.lkpay div.on b { color: #fff; }
+.lkpay div.jp b { color: #ffe08a; }
+.lkpay div.jp.on { background: #6b4a10; border-color: #ffe08a; box-shadow: 0 0 14px 3px rgba(255,224,138,.6); }
+#lkStage .slcoin { top: -30px; }
+#lkCtl { position: relative; flex: 0 0 auto; height: 124px; padding: 4px 4px 16px; display: flex; align-items: center; justify-content: space-between; gap: 12px; }
+.lkinfo { display: flex; flex-direction: column; gap: 6px; align-items: flex-start; }
+.lkinfo div { font: 600 12px var(--ui); color: var(--muted); }
+.lkinfo div b { font: 800 15px var(--ui); color: var(--ink); font-variant-numeric: tabular-nums; margin-left: 4px; }
+#lkGo { width: 92px; height: 92px; flex: none; border-radius: 50%; border: 0; padding: 0; display: grid; place-items: center; color: #fff; font: 800 15px var(--ui); letter-spacing: .06em; text-transform: uppercase;
+  background: radial-gradient(circle at 50% 35%, #6fb6ff, #2f73d6 55%, #18438c); box-shadow: 0 6px 0 #0e2b5c, 0 12px 22px rgba(0,0,0,.5), inset 0 2px 0 rgba(255,255,255,.35); transition: transform .08s, box-shadow .08s; text-shadow: 0 1px 2px rgba(0,0,0,.5); touch-action: manipulation; }
+#lkGo.down, #lkGo:active { transform: translateY(5px); box-shadow: 0 1px 0 #0e2b5c, 0 5px 12px rgba(0,0,0,.5), inset 0 2px 0 rgba(255,255,255,.25); }
+#lkGo.run { background: radial-gradient(circle at 50% 35%, #ff8a75, #e0352f 55%, #8c1414); box-shadow: 0 6px 0 #5a0c0c, 0 12px 22px rgba(0,0,0,.5), inset 0 2px 0 rgba(255,255,255,.4); }
+#lkGo.run.down, #lkGo.run:active { box-shadow: 0 1px 0 #5a0c0c, 0 5px 12px rgba(0,0,0,.5), inset 0 2px 0 rgba(255,255,255,.25); }
+#lkHelp p { text-align: left; font-size: 14px; margin-bottom: 12px; }
 </style>
 
 <div id="app">
@@ -1318,9 +1371,15 @@ input.bprange[type=range]::-moz-range-thumb { width: 20px; height: 20px; border-
     <div class="bank" role="status" aria-label="Deine Chips"><i class="bchip" aria-hidden="true"></i><span id="bankVal">1.000</span></div>
     <button class="shopbtn" id="shopBtn" type="button" aria-label="Shop öffnen"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 9.5V20h16V9.5"/><path d="M3 9.5l1.6-5h14.8l1.6 5"/><path d="M3 9.5c0 1.4 1.1 2.5 2.5 2.5S8 10.9 8 9.5c0 1.4 1.1 2.5 2.5 2.5S13 10.9 13 9.5c0 1.4 1.1 2.5 2.5 2.5S18 10.9 18 9.5c0 1.4 1.1 2.5 2.5 2.5S21 10.9 21 9.5"/><path d="M10 20v-5h4v5"/></svg></button>
     <div class="tomchip" id="tomChip" role="status" aria-label="Deine Tomaten"><i aria-hidden="true">🍅</i><span id="tomVal">0</span></div>
+    <div class="mbg3" aria-hidden="true"></div>
     <div class="menucard">
       <div class="mswipe" id="mSwipe">
         <div class="mtrack" id="mTrack">
+          <div class="mpage" aria-label="Pop the Lock">
+            <div class="lklogo" aria-hidden="true"><svg viewBox="0 0 34 44" aria-hidden="true"><path d="M8 20V13a9 9 0 0 1 18 0v7" fill="none" stroke="#c9d3e0" stroke-width="4.5"/><rect x="2" y="19" width="30" height="24" rx="7" fill="#2f73d6" stroke="#cfeaff" stroke-width="1.6"/><circle cx="17" cy="31" r="7.5" fill="none" stroke="#0a1631" stroke-width="3"/><circle cx="17" cy="23.5" r="2.4" fill="#ffe08a"/></svg></div>
+            <h1>Pop the Lock</h1>
+            <p class="menusub">Im richtigen Moment drücken · kostenlos</p>
+          </div>
           <div class="mpage" aria-label="Slots">
             <div class="sllogo" aria-hidden="true"><i>7</i><i>7</i><i>7</i></div>
             <h1>Slots</h1>
@@ -1339,9 +1398,10 @@ input.bprange[type=range]::-moz-range-thumb { width: 20px; height: 20px; border-
         </div>
       </div>
       <div class="mdots" role="tablist" aria-label="Spiel wählen">
-        <button type="button" data-p="0" role="tab" aria-label="Slots"></button>
-        <button type="button" data-p="1" role="tab" aria-label="Poker"></button>
-        <button type="button" data-p="2" role="tab" aria-label="Blackjack"></button>
+        <button type="button" data-p="0" role="tab" aria-label="Pop the Lock"></button>
+        <button type="button" data-p="1" role="tab" aria-label="Slots"></button>
+        <button type="button" data-p="2" role="tab" aria-label="Poker"></button>
+        <button type="button" data-p="3" role="tab" aria-label="Blackjack"></button>
       </div>
       <div class="mbtns">
         <div class="mgrp" id="mPoker">
@@ -1354,6 +1414,9 @@ input.bprange[type=range]::-moz-range-thumb { width: 20px; height: 20px; border-
         </div>
         <div class="mgrp off" id="mSl">
           <button class="btn primary wide" id="slPlay" type="button">Spielen</button>
+        </div>
+        <div class="mgrp off" id="mLk">
+          <button class="btn primary wide" id="lkPlay" type="button">Spielen</button>
         </div>
       </div>
     </div>
@@ -1525,6 +1588,63 @@ input.bprange[type=range]::-moz-range-thumb { width: 20px; height: 20px; border-
         </div>
         <button class="btn primary wide" id="slgTake" type="button">Nehmen</button>
         <p class="slgmsg" id="slgMsg"></p>
+      </div>
+    </div>
+  </div>
+
+  <div id="lk" hidden>
+    <header class="bjbar">
+      <span class="brand">Pop the Lock</span>
+      <div class="right">
+        <div class="bank bjbank" role="status" aria-label="Dein Guthaben"><i class="bchip" aria-hidden="true"></i><span id="lkBank">0</span></div>
+        <button class="iconbtn" id="lkPauseBtn" type="button" aria-label="Pause"><svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><rect x="6" y="5" width="4" height="14" rx="1.2"/><rect x="14" y="5" width="4" height="14" rx="1.2"/></svg></button>
+      </div>
+    </header>
+    <main id="lkStage">
+      <div class="lkmarq"><span>POP ★ THE LOCK</span><em><small>Jackpot</small><b id="lkJp">100</b></em></div>
+      <div class="lkwrap">
+        <svg id="lkSvg" viewBox="-110 -240 220 350" aria-hidden="true">
+          <defs>
+            <linearGradient id="lkShk" x1="0" x2="1"><stop offset="0" stop-color="#8f9aab"/><stop offset=".45" stop-color="#eef3fa"/><stop offset="1" stop-color="#7d8798"/></linearGradient>
+            <linearGradient id="lkBody" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#3f7fd9"/><stop offset=".55" stop-color="#1f4f94"/><stop offset="1" stop-color="#0d2a5c"/></linearGradient>
+            <radialGradient id="lkTgt"><stop offset="0" stop-color="#fff6c8"/><stop offset=".6" stop-color="#ffd85a"/><stop offset="1" stop-color="#e0a020"/></radialGradient>
+          </defs>
+          <g class="shk"><path d="M-60 -60 V-125 A60 60 0 0 1 60 -125 V-60" fill="none" stroke="url(#lkShk)" stroke-width="22"/></g>
+          <g class="body">
+            <rect x="-104" y="-100" width="208" height="206" rx="48" fill="url(#lkBody)" stroke="rgba(207,234,255,.75)" stroke-width="3"/>
+            <rect x="-58" y="-93" width="116" height="9" rx="4.5" fill="rgba(255,255,255,.16)"/>
+            <circle r="76" fill="#0a1631" stroke="#06101f" stroke-width="2"/>
+            <circle r="76" fill="none" stroke="#14294d" stroke-width="22"/>
+            <circle r="54" fill="#102347" stroke="rgba(150,200,255,.25)" stroke-width="1.5"/>
+            <g class="tgt" id="lkTgtG"><circle r="15" fill="rgba(255,224,138,.45)"/><circle r="10.5" fill="url(#lkTgt)"/></g>
+            <g id="lkNeedle"><rect x="-4.5" y="-90" width="9" height="28" rx="4.5" fill="#ff5a4a" stroke="#fff" stroke-width="1.5"/></g>
+            <text class="cnt" id="lkCnt" y="18" text-anchor="middle">20</text>
+            <text class="lv" id="lkLv" y="40" text-anchor="middle">Schloss 1</text>
+          </g>
+        </svg>
+      </div>
+      <p class="lkmsg" id="lkMsg" aria-live="polite"></p>
+      <div class="lkpay" id="lkPay" aria-label="Gewinn pro Treffer"></div>
+    </main>
+    <footer id="lkCtl">
+      <div class="lkinfo">
+        <div>Gewonnen<b id="lkWon">0</b></div>
+        <div>Rekord<b id="lkBest">0</b></div>
+        <div>Jackpots<b id="lkJps">0</b></div>
+      </div>
+      <button id="lkGo" type="button">Start</button>
+    </footer>
+    <div id="lkPause" class="overlay" hidden>
+      <div class="endcard">
+        <h2>Pause</h2>
+        <button class="btn primary wide" id="lkResume" type="button">Weiterspielen</button>
+        <button class="btn wide" id="lkHelpBtn" type="button" style="margin-top:10px" aria-expanded="false">Spielerklärung</button>
+        <div id="lkHelp" hidden>
+          <p style="margin-top:14px">Der rote Zeiger läuft im Kreis. Drück genau dann, wenn er über dem gelben Punkt ist – egal wo auf dem Bildschirm oder auf den Knopf. Nach jedem Treffer dreht er die Richtung um und wird etwas schneller.</p>
+          <p>Jeder Treffer bringt Chips: am Anfang 1, später 2 und 3. Schaffst du alle 20 Treffer, springt das Schloss auf und du bekommst den Jackpot von 100 Chips. Danach kommt das nächste, schnellere Schloss.</p>
+          <p>Drückst du daneben oder lässt du den Punkt vorbeiziehen, ist die Runde vorbei. Gewonnene Chips behältst du, und spielen kostet nichts.</p>
+        </div>
+        <button class="btn wide" id="lkMenu" type="button" style="margin-top:10px">Zum Hauptmenü</button>
       </div>
     </div>
   </div>
@@ -6404,14 +6524,15 @@ input.bprange[type=range]::-moz-range-thumb { width: 20px; height: 20px; border-
     })();
   }
 
-  /* ---------- Hauptmenue: Poker in der Mitte, zur einen Seite wischen = Blackjack, zur anderen = Slots ---------- */
-  var GAMES = ['slots', 'poker', 'bj'], NP = GAMES.length, PK = 1, BJP = 2;
+  /* ---------- Hauptmenue: nach rechts wischen = Blackjack, nach links = Slots und dahinter Pop the Lock ---------- */
+  var GAMES = ['lock', 'slots', 'poker', 'bj'], NP = GAMES.length, PK = 2, BJP = 3;
   var menu = $('#menu'), track = $('#mTrack'), page = PK, sw = null, swallowUntil = 0;
   /* nach dem Ladebildschirm immer zuerst der Pokertisch, nicht das zuletzt gewaehlte Spiel */
-  /* Hintergrund: lila (Slots) <- gruen (Poker) -> weinrot (Blackjack), beim Wischen fliessend */
+  /* Hintergrund: blau (Pop the Lock) <- lila (Slots) <- gruen (Poker) -> weinrot (Blackjack), beim Wischen fliessend */
   function mixes(pos) {
     menu.style.setProperty('--mix', Math.max(0, Math.min(1, pos - PK)));
     menu.style.setProperty('--mix2', Math.max(0, Math.min(1, PK - pos)));
+    menu.style.setProperty('--mix3', Math.max(0, Math.min(1, PK - 1 - pos)));
   }
   function setPage(p, anim) {
     page = p;
@@ -6419,7 +6540,7 @@ input.bprange[type=range]::-moz-range-thumb { width: 20px; height: 20px; border-
     track.style.transform = 'translateX(' + (-p * 100) + '%)';
     menu.classList.remove('drag'); mixes(p);
     [].forEach.call(document.querySelectorAll('.mdots button'), function (b) { var on = +b.dataset.p === p; b.classList.toggle('on', on); b.setAttribute('aria-selected', on ? 'true' : 'false'); });
-    $('#mSl').classList.toggle('off', p !== 0); $('#mPoker').classList.toggle('off', p !== PK); $('#mBj').classList.toggle('off', p !== BJP);
+    $('#mLk').classList.toggle('off', p !== 0); $('#mSl').classList.toggle('off', p !== 1); $('#mPoker').classList.toggle('off', p !== PK); $('#mBj').classList.toggle('off', p !== BJP);
     try { localStorage.setItem('pr-game', GAMES[p]); } catch (e) {}
   }
   setPage(page, false);
@@ -7484,6 +7605,179 @@ input.bprange[type=range]::-moz-range-thumb { width: 20px; height: 20px; border-
 </script>
 
 <script>
+/* Pop the Lock: ein roter Zeiger laeuft im Kreis, man muss druecken, wenn er ueber dem gelben Punkt steht.
+   Nach jedem Treffer dreht er die Richtung um, wird schneller und der Punkt kleiner. Spielen ist kostenlos:
+   Treffer 1 bis 7 bringen je 1 Chip, 8 bis 14 je 2, 15 bis 19 je 3, der 20. Treffer oeffnet das Schloss (Jackpot 100).
+   Danach kommt das naechste Schloss, etwas schneller. Daneben gedrueckt oder den Punkt vorbeiziehen lassen = Runde vorbei. */
+(function () {
+  'use strict';
+  var PR = window.PR;
+  if (!PR) return;
+  var Snd = PR.Snd, fmt = PR.fmt;
+  function $(s) { return document.querySelector(s); }
+  var NEED = 20, JACKPOT = 100, TOL = 3;
+  var PAY = [{ to: 7, c: 1 }, { to: 14, c: 2 }, { to: 19, c: 3 }];
+  function payOf(k) { for (var i = 0; i < PAY.length; i++) if (k <= PAY[i].to) return PAY[i].c; return JACKPOT; }
+  function stats() { var o = null; try { o = JSON.parse(localStorage.getItem('pr-lkstats') || 'null'); } catch (e) {} o = o || {}; return { best: +o.best || 0, jp: +o.jp || 0, won: +o.won || 0 }; }
+  function saveStats(st) { try { localStorage.setItem('pr-lkstats', JSON.stringify(st)); } catch (e) {} }
+
+  var lk = $('#lk'), needle = $('#lkNeedle'), tgtG = $('#lkTgtG'), go = $('#lkGo');
+  /* st: idle (vor dem Start), run, over (daneben), open (Schloss springt auf) */
+  var st = 'idle', ang = 0, dir = 1, lv = 1, k = 0, total = 0, won = 0;
+  var tgt = 0, dist = 0, trav = 0, hw = 14, spd = 90, raf = 0, last = 0, fxT = 0, nextT = 0;
+
+  function pt(a, r) { var t = a * Math.PI / 180; return [Math.sin(t) * r, -Math.cos(t) * r]; }
+  function norm(a) { a %= 360; return a < 0 ? a + 360 : a; }
+  function drawNeedle() { needle.setAttribute('transform', 'rotate(' + ang.toFixed(2) + ')'); }
+  function place() {
+    /* der Punkt liegt in Laufrichtung 80 bis 250 Grad voraus; Tempo und Groesse haengen vom Treffer und vom Schloss ab */
+    spd = Math.min(330, 90 + k * 6 + (lv - 1) * 18);
+    hw = Math.max(7, 14 - k * 0.22 - (lv - 1) * 0.6);
+    dist = 80 + Math.random() * 170; trav = 0;
+    tgt = norm(ang + dir * dist);
+    var p = pt(tgt, 76);
+    tgtG.setAttribute('transform', 'translate(' + p[0].toFixed(2) + ',' + p[1].toFixed(2) + ') scale(' + (hw / 14).toFixed(3) + ')');
+    tgtG.style.opacity = 1;
+  }
+  function msg(t, cls) { var m = $('#lkMsg'); m.textContent = t; m.className = 'lkmsg' + (cls ? ' ' + cls : ''); }
+  function fx(cls) { clearTimeout(fxT); lk.classList.remove('hit', 'miss'); void lk.offsetWidth; lk.classList.add(cls); if (cls === 'hit') fxT = setTimeout(function () { lk.classList.remove('hit'); }, 200); }
+  function renderPay() {
+    var cur = st === 'run' || st === 'open' ? Math.min(NEED, k + (st === 'run' ? 1 : 0)) : 1;
+    var h = '';
+    PAY.forEach(function (p, i) {
+      var from = i ? PAY[i - 1].to + 1 : 1, on = cur >= from && cur <= p.to;
+      h += '<div class="' + (on ? 'on' : '') + '"><b>' + p.c + '</b>' + (p.c === 1 ? 'Chip' : 'Chips') + '</div>';
+    });
+    h += '<div class="jp' + (cur >= NEED ? ' on' : '') + '">Jackpot <b>' + JACKPOT + '</b></div>';
+    $('#lkPay').innerHTML = h;
+  }
+  function renderInfo() {
+    var s = stats(), b = PR.prof().bank | 0;
+    $('#lkBank').textContent = fmt(b);
+    $('#lkWon').textContent = fmt(won);
+    $('#lkBest').textContent = fmt(s.best);
+    $('#lkJps').textContent = fmt(s.jp);
+    $('#lkCnt').textContent = String(NEED - k);
+    $('#lkLv').textContent = 'Schloss ' + lv;
+    renderPay();
+  }
+  function pay(n) {
+    var P = PR.prof(); P.bank = (P.bank | 0) + n; PR.saveProf();
+    won += n;
+    var s = stats(); s.won += n; saveStats(s);
+  }
+  function coins(n) {
+    var stg = $('#lkStage'), h = stg.clientHeight + 60, w = stg.clientWidth;
+    for (var i = 0; i < n; i++) {
+      var c = document.createElement('i');
+      c.className = 'slcoin';
+      c.style.left = Math.round(Math.random() * (w - 22)) + 'px';
+      c.style.setProperty('--h', h + 'px');
+      c.style.setProperty('--dx', Math.round((Math.random() - 0.5) * 80) + 'px');
+      c.style.setProperty('--r', (Math.random() < 0.5 ? -1 : 1) * (540 + Math.round(Math.random() * 720)) + 'deg');
+      c.style.setProperty('--t', (1.3 + Math.random() * 0.9).toFixed(2) + 's');
+      c.style.setProperty('--d', (Math.random() * 1.2).toFixed(2) + 's');
+      c.addEventListener('animationend', function () { this.remove(); });
+      stg.appendChild(c);
+    }
+  }
+
+  function loop(now) {
+    raf = 0;
+    if (st !== 'run' || lk.hidden || !$('#lkPause').hidden) { last = 0; return; }
+    var dt = last ? Math.min(0.05, (now - last) / 1000) : 0; last = now;
+    var d = spd * dt; ang = norm(ang + dir * d); trav += d;
+    drawNeedle();
+    if (trav > dist + hw + TOL) { miss('Zu spät – der Punkt ist vorbeigezogen'); return; }
+    raf = requestAnimationFrame(loop);
+  }
+  function startLoop() { if (!raf) { last = 0; raf = requestAnimationFrame(loop); } }
+
+  function begin(keepLv) {
+    clearTimeout(nextT);
+    lk.classList.remove('open', 'miss', 'hit');
+    if (!keepLv) { lv = 1; total = 0; }
+    k = 0; dir = Math.random() < 0.5 ? 1 : -1; ang = 0; drawNeedle();
+    st = 'run'; place();
+    go.textContent = 'Drück!'; go.classList.add('run');
+    msg(keepLv ? 'Schloss ' + lv + ' – noch schneller!' : 'Drück, wenn der Zeiger auf dem Punkt ist', keepLv ? 'good' : '');
+    renderInfo(); startLoop();
+  }
+  function miss(t) {
+    st = 'over'; if (raf) { cancelAnimationFrame(raf); raf = 0; }
+    fx('miss'); Snd.knock();
+    try { if (Snd.vibOn() && navigator.vibrate) navigator.vibrate(120); } catch (e) {}
+    var s = stats(); if (total > s.best) { s.best = total; saveStats(s); t += ' · neuer Rekord: ' + total + ' Treffer'; }
+    msg(t, 'bad');
+    go.textContent = 'Nochmal'; go.classList.remove('run');
+    renderInfo();
+  }
+  function press() {
+    if (st === 'idle' || st === 'over') { Snd.unlock(); begin(false); return; }
+    if (st !== 'run') return;
+    if (Math.abs(trav - dist) > hw + TOL) { miss('Daneben!'); return; }
+    k++; total++;
+    var c = payOf(k); pay(c);
+    if (k >= NEED) {
+      st = 'open'; if (raf) { cancelAnimationFrame(raf); raf = 0; }
+      tgtG.style.opacity = 0;
+      lk.classList.add('open'); go.textContent = 'Jackpot!'; Snd.win(); setTimeout(function () { Snd.pot(); }, 450);
+      try { if (Snd.vibOn() && navigator.vibrate) navigator.vibrate([70, 50, 140]); } catch (e) {}
+      var s = stats(); s.jp++; if (total > s.best) s.best = total; saveStats(s);
+      coins(36); msg('JACKPOT! Schloss geknackt: +' + JACKPOT + ' Chips', 'good');
+      renderInfo();
+      nextT = setTimeout(function () { if (st === 'open' && !lk.hidden) { lv++; begin(true); } }, 2600);
+      return;
+    }
+    fx('hit'); Snd.chip(Math.min(3, c), 0, true);
+    msg('+' + c + (c === 1 ? ' Chip' : ' Chips'), 'good');
+    dir = -dir; place(); renderInfo();
+  }
+  /* gedrueckt wird beim Beruehren (nicht erst beim Loslassen), damit es auf den Punkt genau ist */
+  go.addEventListener('pointerdown', function (e) { e.preventDefault(); e.stopPropagation(); go.classList.add('down'); press(); });
+  ['pointerup', 'pointercancel', 'pointerleave'].forEach(function (t) { go.addEventListener(t, function () { go.classList.remove('down'); }); });
+  go.addEventListener('click', function (e) { if (e.detail === 0) press(); });   // Tastatur
+  $('#lkStage').addEventListener('pointerdown', function (e) { if (e.pointerType === 'mouse' && e.button !== 0) return; e.preventDefault(); press(); });
+  document.addEventListener('keydown', function (e) {
+    if (lk.hidden || !$('#lkPause').hidden) return;
+    if (e.key === ' ' || e.key === 'Enter') { e.preventDefault(); if (!e.repeat) press(); }
+  });
+
+  function open() {
+    Snd.unlock();
+    $('#menu').hidden = true; lk.hidden = false; $('#lkPause').hidden = true;
+    st = 'idle'; won = 0; lv = 1; k = 0; total = 0; ang = 0; drawNeedle(); tgtG.style.opacity = 0;
+    lk.classList.remove('open', 'miss', 'hit');
+    go.textContent = 'Start'; go.classList.remove('run');
+    msg('Tippe auf Start – spielen ist kostenlos');
+    renderInfo();
+  }
+  function leave() {
+    clearTimeout(nextT); if (raf) { cancelAnimationFrame(raf); raf = 0; }
+    st = 'idle';
+    [].forEach.call(document.querySelectorAll('#lk .slcoin'), function (c) { c.remove(); });
+    lk.hidden = true; $('#lkPause').hidden = true; $('#menu').hidden = false;
+    PR.renderBank();
+  }
+  function help(on) { $('#lkHelp').hidden = !on; $('#lkHelpBtn').setAttribute('aria-expanded', on ? 'true' : 'false'); $('#lkHelpBtn').textContent = on ? 'Erklärung schließen' : 'Spielerklärung'; }
+  $('#lkPlay').addEventListener('click', open);
+  $('#lkPauseBtn').addEventListener('click', function () { help(false); $('#lkPause').hidden = false; });
+  $('#lkPauseBtn').addEventListener('pointerdown', function (e) { e.stopPropagation(); });
+  $('#lkResume').addEventListener('click', function () { $('#lkPause').hidden = true; startLoop(); });
+  $('#lkHelpBtn').addEventListener('click', function () { help($('#lkHelp').hidden); });
+  $('#lkMenu').addEventListener('click', leave);
+  /* App im Hintergrund: anhalten, damit der Punkt nicht unbemerkt vorbeizieht */
+  document.addEventListener('visibilitychange', function () { if (document.hidden && st === 'run' && !lk.hidden) { help(false); $('#lkPause').hidden = false; } });
+  renderInfo();
+
+  /* Update-Pruefung: nicht neu laden, solange man am Schloss ist */
+  var idle = window.prIdle;
+  window.prIdle = function () { return (!idle || idle()) && lk.hidden; };
+  window.LK = { on: function () { return !lk.hidden; } };
+})();
+</script>
+
+<script>
 /* Freunde: jeder hat einen festen Spielercode (steht im Profil). Wer den Code eines anderen eintraegt,
    ist mit ihm befreundet (gilt fuer beide). Solange die Seite offen ist, meldet sich jeder unter
    "pokerrunde-u-<code>" beim Vermittlungsserver an. Zu Freunden, die gerade da sind, bleibt eine direkte
@@ -8274,7 +8568,7 @@ input.bprange[type=range]::-moz-range-thumb { width: 20px; height: 20px; border-
   }
   function inGame() {
     var n = PR.poker(), b = window.BJ ? window.BJ.state() : {};
-    return !!(n.playing || b.on || (window.SL && window.SL.on()));
+    return !!(n.playing || b.on || (window.SL && window.SL.on()) || (window.LK && window.LK.on()));
   }
   function fmtT(s) {
     var m = Math.floor(s / 60), h = Math.floor(m / 60);
