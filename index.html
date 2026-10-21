@@ -7064,7 +7064,8 @@ input.bprange[type=range]::-moz-range-thumb { width: 20px; height: 20px; border-
       } else {
         place(i, posOf(i) + len(i), 0); void el.offsetWidth;
         el.classList.add('spin');
-        place(i, r + len(i) * Math.min(COPIES - 1, 2 + i + (long ? 2 : 0)), ms, long ? 'cubic-bezier(.1,.6,.1,1)' : '');
+        /* liegt das Ergebnis vor der alten Stelle, eine Runde mehr (sonst ruckt v. a. die linke Walze nur ein, zwei Felder) */
+        place(i, r + len(i) * Math.min(COPIES - 1, 2 + i + (long ? 2 : 0) + (r < posOf(i) ? 1 : 0)), ms, long ? 'cubic-bezier(.1,.6,.1,1)' : '');
       }
       setTimeout(function () { if (gg === gen) el.classList.remove('spin'); }, ms - (long ? 1400 : 260));
       setTimeout(function () {
