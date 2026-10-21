@@ -7857,7 +7857,7 @@ input.bprange[type=range]::-moz-range-thumb { width: 20px; height: 20px; border-
   if (!PR) return;
   var Snd = PR.Snd, fmt = PR.fmt;
   function $(s) { return document.querySelector(s); }
-  var NEED = 50, JACKPOT = 100, TOL = 3, NB = 36;
+  var NEED = 50, JACKPOT = 100, TOL = 1.5, NB = 36;
   function payOf(k) { return k >= NEED ? JACKPOT : 1; }
   function stats() { var o = null; try { o = JSON.parse(localStorage.getItem('pr-lkstats') || 'null'); } catch (e) {} o = o || {}; return { best: +o.best || 0, jp: +o.jp || 0, won: +o.won || 0 }; }
   function saveStats(st) { try { localStorage.setItem('pr-lkstats', JSON.stringify(st)); } catch (e) {} }
@@ -7892,14 +7892,14 @@ input.bprange[type=range]::-moz-range-thumb { width: 20px; height: 20px; border-
   function norm(a) { a %= 360; return a < 0 ? a + 360 : a; }
   function drawNeedle() { needle.setAttribute('transform', 'rotate(' + ang.toFixed(2) + ')'); }
   function place() {
-    /* Tempo steigt sanft (Stufe 1: von 85 auf gut 200 Grad pro Sekunde), der Punkt wird nur wenig kleiner.
+    /* Tempo steigt zuegig (Stufe 1: von 100 auf rund 250 Grad pro Sekunde), der Punkt wird deutlich kleiner.
        Der Abstand wird mit der Zeit etwas enger, bleibt aber immer gut sichtbar: mindestens 60 Grad und mindestens
        eine knappe halbe Sekunde Laufzeit (je schneller, desto weiter weg). Kurz hintereinander kommt erst ab dem
        10. Treffer und nur ab und zu */
-    spd = Math.min(300, 85 + k * 2.4 + (lv - 1) * 16);
-    hw = Math.max(8, 14 - k * 0.1 - (lv - 1) * 0.5);
+    spd = Math.min(340, 100 + k * 3 + (lv - 1) * 20);
+    hw = Math.max(6, 12 - k * 0.11 - (lv - 1) * 0.6);
     var p = Math.min(1, (k + (lv - 1) * 15) / 45), near = Math.max(60, spd * 0.42, hw * 2 + 34);
-    if (k >= 10 && Math.random() < 0.06 + p * 0.1) dist = near + Math.random() * 25;
+    if (k >= 10 && Math.random() < 0.08 + p * 0.12) dist = near + Math.random() * 25;
     else dist = Math.max(near + 30, 95 - p * 10 + Math.random() * (150 - p * 50));
     trav = 0;
     tgt = norm(ang + dir * dist);
