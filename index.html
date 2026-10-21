@@ -3845,7 +3845,6 @@ input.bprange[type=range]::-moz-range-thumb { width: 20px; height: 20px; border-
   }
   var STG = [{ k: 'poker', name: 'Poker' }, { k: 'bj', name: 'Blackjack' }, { k: 'slots', name: 'Slots' }];
   var stGame = 'poker', stPts = null, stUnit = '';
-  try { var lg = localStorage.getItem('pr-game'); if (lg === 'bj' || lg === 'slots') stGame = lg; } catch (e) {}
   function readJ(k) { try { return JSON.parse(localStorage.getItem(k) || 'null'); } catch (e) { return null; } }
   function signed(v) { v = Math.round(v); return (v > 0 ? '+' : v < 0 ? '−' : '±') + fmt(Math.abs(v)); }
   function pct(a, b) { return b ? Math.round(a / b * 100) + ' %' : '–'; }
@@ -6403,7 +6402,7 @@ input.bprange[type=range]::-moz-range-thumb { width: 20px; height: 20px; border-
   /* ---------- Hauptmenue: Poker in der Mitte, zur einen Seite wischen = Blackjack, zur anderen = Slots ---------- */
   var GAMES = ['slots', 'poker', 'bj'], NP = GAMES.length, PK = 1, BJP = 2;
   var menu = $('#menu'), track = $('#mTrack'), page = PK, sw = null, swallowUntil = 0;
-  try { var gi = GAMES.indexOf(localStorage.getItem('pr-game')); if (gi >= 0) page = gi; } catch (e) {}
+  /* nach dem Ladebildschirm immer zuerst der Pokertisch, nicht das zuletzt gewaehlte Spiel */
   /* Hintergrund: lila (Slots) <- gruen (Poker) -> weinrot (Blackjack), beim Wischen fliessend */
   function mixes(pos) {
     menu.style.setProperty('--mix', Math.max(0, Math.min(1, pos - PK)));
