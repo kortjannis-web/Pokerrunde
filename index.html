@@ -7889,13 +7889,14 @@ input.bprange[type=range]::-moz-range-thumb { width: 20px; height: 20px; border-
   function drawNeedle() { needle.setAttribute('transform', 'rotate(' + ang.toFixed(2) + ')'); }
   function place() {
     /* Tempo steigt sanft (Stufe 1: von 85 auf gut 200 Grad pro Sekunde), der Punkt wird nur wenig kleiner.
-       Der Abstand wird mit der Zeit enger; ab und zu liegt der Punkt ganz kurz voraus, dann muss man schnell
-       nachdruecken (aber nie kuerzer als gut eine Viertelsekunde) */
+       Der Abstand wird mit der Zeit etwas enger, bleibt aber immer gut sichtbar: mindestens 60 Grad und mindestens
+       eine knappe halbe Sekunde Laufzeit (je schneller, desto weiter weg). Kurz hintereinander kommt erst ab dem
+       10. Treffer und nur ab und zu */
     spd = Math.min(300, 85 + k * 2.4 + (lv - 1) * 16);
     hw = Math.max(8, 14 - k * 0.1 - (lv - 1) * 0.5);
-    var p = Math.min(1, (k + (lv - 1) * 15) / 45), near = Math.max(30, spd * 0.27, hw * 2 + 10);
-    if (k >= 3 && Math.random() < 0.12 + p * 0.2) dist = near + Math.random() * 22;
-    else dist = Math.max(near + 20, 70 - p * 15 + Math.random() * (170 - p * 85));
+    var p = Math.min(1, (k + (lv - 1) * 15) / 45), near = Math.max(60, spd * 0.42, hw * 2 + 34);
+    if (k >= 10 && Math.random() < 0.06 + p * 0.1) dist = near + Math.random() * 25;
+    else dist = Math.max(near + 30, 95 - p * 10 + Math.random() * (150 - p * 50));
     trav = 0;
     tgt = norm(ang + dir * dist);
     var q = pt(tgt, 82);
