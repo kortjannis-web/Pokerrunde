@@ -928,7 +928,6 @@ input.bprange[type=range]::-moz-range-thumb { width: 20px; height: 20px; border-
 .slreel { position: relative; height: calc(var(--ch) * 3); overflow: hidden; border-radius: 10px; background: linear-gradient(90deg, #ddd5c2, #f8f4ea 22%, #f8f4ea 78%, #ddd5c2); }
 .slreel::after { content: ''; position: absolute; inset: 0; pointer-events: none; background: linear-gradient(180deg, rgba(0,0,0,.55), rgba(0,0,0,.08) 26%, transparent 40%, transparent 60%, rgba(0,0,0,.08) 74%, rgba(0,0,0,.55)); }
 .slstrip { position: absolute; left: 0; right: 0; top: 0; will-change: transform; }
-.slstrip.spin { filter: blur(.5px); }
 .slcell { height: var(--ch); display: grid; place-items: center; }
 .sy { line-height: 1; transition: transform .2s; }
 .sy.e { font-size: calc(var(--ch) * .56); }
@@ -1030,7 +1029,6 @@ input.bprange[type=range]::-moz-range-thumb { width: 20px; height: 20px; border-
 #slSpin.stop span { display: block; font-size: 19px; letter-spacing: .06em; }
 #slSpin.stop small { display: block; font: 700 10px var(--ui); letter-spacing: .04em; text-transform: none; opacity: .9; }
 @keyframes slstopp { to { filter: brightness(1.18); box-shadow: 0 6px 0 #5a0c0c, 0 12px 22px rgba(0,0,0,.5), 0 0 22px 6px rgba(255,100,80,.6), inset 0 2px 0 rgba(255,255,255,.4); } }
-.slstrip.fast { filter: blur(1.4px) brightness(1.06); }
 /* ---------- Slots: zweiter Automat, Jackpot, Joker, Stein-Kirschen, Risikoleiter ---------- */
 /* Automat waehlen */
 .slpick { display: flex; gap: 6px; padding: 3px; border-radius: 999px; background: rgba(0,0,0,.35); border: 1px solid var(--line); }
@@ -1055,35 +1053,33 @@ input.bprange[type=range]::-moz-range-thumb { width: 20px; height: 20px; border-
 #sl.m2 .slwin { gap: 4px; padding: 6px; }
 #sl.m2 .slreel { border-radius: 8px; }
 /* Diamant 5, Extra Spins: zwei Walzen wachsen zusammen, Riesensymbole ueber 2 x 2 Felder */
-.slreel.wide { grid-column: span 2; background: linear-gradient(90deg, #d9cfe9, #f6f1fb 18%, #f6f1fb 82%, #d9cfe9); box-shadow: 0 0 0 2px rgba(255,224,138,.9), 0 0 18px 4px rgba(255,224,138,.45); animation: slwide 1.4s ease-in-out infinite alternate; }
-.slreel.wide.merge { animation: slmerge .9s cubic-bezier(.2,.9,.3,1.2), slwide 1.4s ease-in-out .9s infinite alternate; }
+.slreel.wide { grid-column: span 2; box-shadow: 0 0 0 2px rgba(255,224,138,.9), 0 0 18px 4px rgba(255,224,138,.45); animation: slwide 2.2s ease-in-out infinite alternate; }
+.slreel.wide.merge { animation: slmerge .9s cubic-bezier(.2,.9,.3,1.2), slwide 2.2s ease-in-out .9s infinite alternate; }
 @keyframes slmerge { 0% { transform: scaleX(.55); filter: brightness(1.8); } 60% { transform: scaleX(1.04); } 100% { transform: none; filter: none; } }
-@keyframes slwide { from { box-shadow: 0 0 0 2px rgba(255,224,138,.9), 0 0 14px 3px rgba(185,140,255,.5); } to { box-shadow: 0 0 0 3px #fff3c4, 0 0 26px 8px rgba(255,224,138,.75); } }
+@keyframes slwide { from { box-shadow: 0 0 0 2px rgba(255,224,138,.85), 0 0 10px 2px rgba(255,224,138,.35); } to { box-shadow: 0 0 0 2px #ffe9a8, 0 0 16px 4px rgba(255,224,138,.55); } }
 .slcell.w2 { display: flex; align-items: center; justify-content: space-around; }
 .slcell.g2t { position: relative; z-index: 1; }
-/* Riesensymbol: dicker Block mit Kanten, Nieten und durchlaufendem Glanz; je Frucht eine eigene Farbe */
-.g2 { --gc: #f2c938; --gl: #fff4b0; --gd: #8a6510; --gw: rgba(255,224,90,.65);
-  position: absolute; left: 5%; right: 5%; top: 6%; height: 188%; display: grid; place-items: center; border-radius: 9px; overflow: hidden;
-  background: repeating-linear-gradient(0deg, rgba(0,0,0,.06) 0 2px, transparent 2px 13px), repeating-linear-gradient(90deg, rgba(0,0,0,.06) 0 2px, transparent 2px 13px),
-    radial-gradient(circle at 50% 44%, var(--gl) 0 26%, var(--gc) 64%, var(--gd));
-  box-shadow: inset 0 0 0 3px var(--gd), inset 8px 8px 0 rgba(255,255,255,.38), inset -8px -8px 0 rgba(0,0,0,.28), 0 0 0 2px #fff3c4, 0 6px 0 var(--gd), 0 0 18px 4px var(--gw); }
-.g2C { --gc: #ef5560; --gl: #ffe0e0; --gd: #7a1420; --gw: rgba(255,90,100,.6); }
-.g2M { --gc: #4cc46a; --gl: #e2ffe8; --gd: #155c26; --gw: rgba(90,230,120,.6); }
-.g2::before { content: ''; position: absolute; inset: 9px; pointer-events: none;
-  background: radial-gradient(circle, #fff8dc 0 2px, var(--gd) 2.5px 3.6px, transparent 4px) left top / 10px 10px no-repeat, radial-gradient(circle, #fff8dc 0 2px, var(--gd) 2.5px 3.6px, transparent 4px) right top / 10px 10px no-repeat,
-    radial-gradient(circle, #fff8dc 0 2px, var(--gd) 2.5px 3.6px, transparent 4px) left bottom / 10px 10px no-repeat, radial-gradient(circle, #fff8dc 0 2px, var(--gd) 2.5px 3.6px, transparent 4px) right bottom / 10px 10px no-repeat; }
-.g2::after { content: ''; position: absolute; top: -20%; bottom: -20%; left: -70%; width: 34%; transform: skewX(-20deg); pointer-events: none; background: linear-gradient(90deg, transparent, rgba(255,255,255,.7), transparent); animation: g2shine 2.6s ease-in-out infinite; }
-@keyframes g2shine { 0%, 55% { left: -70%; } 100% { left: 150%; } }
-.g2 .sy.e { position: relative; z-index: 1; font-size: calc(var(--ch) * 1.3); filter: drop-shadow(0 4px 0 rgba(0,0,0,.22)) drop-shadow(0 0 10px rgba(255,255,255,.75)); }
-/* landet ein Riese: er knallt rein (Brocken und Staub fliegen weg, der Automat wackelt) */
-.g2.slam { animation: g2slam .55s cubic-bezier(.2,.9,.3,1.2); }
-@keyframes g2slam { 0% { transform: translateY(-14%) scale(1.3); filter: brightness(2.2); } 35% { transform: scale(1.08, .9); filter: brightness(1.5); } 65% { transform: scale(.97, 1.04); } 100% { transform: none; filter: none; } }
-.slm.shake { animation: slshake .45s cubic-bezier(.36,.07,.19,.97); }
-@keyframes slshake { 10%, 90% { transform: translate(-1px, 1px); } 20%, 80% { transform: translate(3px, -2px); } 30%, 50%, 70% { transform: translate(-5px, 3px); } 40%, 60% { transform: translate(5px, -1px); } }
-.slbit { position: absolute; z-index: 7; pointer-events: none; border-radius: 2px; background: #f4d67f; box-shadow: inset 2px 2px 0 rgba(255,255,255,.45), inset -2px -2px 0 rgba(0,0,0,.3), 0 2px 3px rgba(0,0,0,.4); }
-.sldust { position: absolute; z-index: 7; pointer-events: none; border-radius: 50%; background: radial-gradient(circle, rgba(255,248,220,.85), rgba(255,240,200,0) 70%); }
+/* Riesensymbol (wie die Mega-Symbole in Casino-Slots): helles Feld im goldenen Rahmen mit Eckzierden, leichter Schimmer
+   in der Farbe der Frucht, ab und zu ein ruhiger Glanz */
+.g2 { --gt: rgba(242,201,56,.42); position: absolute; left: 5%; right: 5%; top: 5%; height: 190%; display: grid; place-items: center; border-radius: 12px; overflow: hidden;
+  background: radial-gradient(circle at 50% 46%, var(--gt), transparent 64%), linear-gradient(180deg, #fffdf6, #f1e6cc);
+  box-shadow: inset 0 0 0 2px #fff6d6, inset 0 0 0 5px #d9a441, inset 0 0 0 6.5px #8a5d17, inset 0 0 16px 6px rgba(176,125,34,.22), 0 0 0 1px #8a5d17, 0 3px 8px rgba(0,0,0,.35); }
+.g2C { --gt: rgba(239,85,96,.3); }
+.g2M { --gt: rgba(76,196,106,.32); }
+.g2::before { content: ''; position: absolute; inset: 10px; pointer-events: none;
+  background: linear-gradient(#e0aa4a, #e0aa4a) left top / 14px 2.5px no-repeat, linear-gradient(#e0aa4a, #e0aa4a) left top / 2.5px 14px no-repeat,
+    linear-gradient(#e0aa4a, #e0aa4a) right top / 14px 2.5px no-repeat, linear-gradient(#e0aa4a, #e0aa4a) right top / 2.5px 14px no-repeat,
+    linear-gradient(#e0aa4a, #e0aa4a) left bottom / 14px 2.5px no-repeat, linear-gradient(#e0aa4a, #e0aa4a) left bottom / 2.5px 14px no-repeat,
+    linear-gradient(#e0aa4a, #e0aa4a) right bottom / 14px 2.5px no-repeat, linear-gradient(#e0aa4a, #e0aa4a) right bottom / 2.5px 14px no-repeat; }
+.g2::after { content: ''; position: absolute; top: -20%; bottom: -20%; left: -70%; width: 30%; transform: skewX(-20deg); pointer-events: none; background: linear-gradient(90deg, transparent, rgba(255,255,255,.55), transparent); animation: g2shine 4.5s ease-in-out infinite; }
+@keyframes g2shine { 0%, 70% { left: -70%; } 100% { left: 150%; } }
+.g2 .sy.e { position: relative; z-index: 1; font-size: calc(var(--ch) * 1.35); filter: drop-shadow(0 3px 3px rgba(0,0,0,.28)); }
+/* landet ein Riese: kurz heller mit goldenem Schein, dazu ein paar Funken */
+.g2.slam { animation: g2slam .6s ease-out; }
+@keyframes g2slam { 0% { transform: scale(1.05); filter: brightness(1.3); box-shadow: inset 0 0 0 2px #fff6d6, inset 0 0 0 5px #ffe08a, inset 0 0 0 6.5px #8a5d17, 0 0 0 1px #8a5d17, 0 0 22px 6px rgba(255,224,138,.8); } 100% { transform: none; filter: none; } }
+.slspark { position: absolute; z-index: 7; pointer-events: none; background: #fff3c4; clip-path: polygon(50% 0, 62% 38%, 100% 50%, 62% 62%, 50% 100%, 38% 62%, 0 50%, 38% 38%); filter: drop-shadow(0 0 3px #ffe08a); }
 .slcell.hit .g2 .sy { animation: slhit .55s ease-in-out 3; }
-.slpay .ps .g2m { display: inline-grid; place-items: center; width: 22px; height: 22px; border-radius: 4px; font-size: 14px; background: radial-gradient(circle, #ffe0e0 0 30%, #ef5560 75%, #7a1420); box-shadow: inset 0 0 0 1.5px #7a1420, inset 2px 2px 0 rgba(255,255,255,.4), 0 0 0 1px #fff3c4; }
+.slpay .ps .g2m { display: inline-grid; place-items: center; width: 22px; height: 22px; border-radius: 5px; font-size: 14px; background: linear-gradient(180deg, #fffdf6, #f1e6cc); box-shadow: inset 0 0 0 1.5px #d9a441, 0 0 0 1px #8a5d17; }
 /* Gewinnlinien bei Diamant 5 */
 .sllines { position: absolute; inset: 0; width: 100%; height: 100%; pointer-events: none; overflow: visible; }
 .sllines polyline { fill: none; stroke: #f4d67f; stroke-width: 4; stroke-linecap: round; stroke-linejoin: round; filter: drop-shadow(0 0 4px rgba(244,214,127,.95)); stroke-dasharray: 1000; stroke-dashoffset: 1000; animation: sldraw .5s ease-out forwards; }
@@ -6518,7 +6514,7 @@ input.bprange[type=range]::-moz-range-thumb { width: 20px; height: 20px; border-
   function readJ(k) { try { return JSON.parse(localStorage.getItem(k) || 'null'); } catch (e) { return null; } }
   function writeJ(k, v) { try { localStorage.setItem(k, JSON.stringify(v)); } catch (e) {} }
 
-  var BETS = [10, 20, 50, 100, 200, 500, 1000], GIFT = 50, COPIES = 9, FREE_N = 10, MULT_MAX = 5;
+  var BETS = [10, 20, 50, 100, 200, 500, 1000], GIFT = 50, FREE_N = 10, MULT_MAX = 5;
   var JP0 = 200, UNLOCK = 5000, LADDER = 5;
   /* Gluecksrad nach dem Nachdreh: alle Felder gleich gross, die Chance p (zusammen 100) aber nicht – kleine Faktoren
      kommen oefter. Nebeneinander steht nie zweimal derselbe Faktor (auch nicht ueber den Anfang hinweg) */
@@ -6707,35 +6703,74 @@ input.bprange[type=range]::-moz-range-thumb { width: 20px; height: 20px; border-
     winEl.style.setProperty('--nr', mc.reels);
     for (var i = 0; i < mc.reels; i++) {
       if (i === gpB + 1 && gpB >= 0) continue;
-      if (i === gpB) {
-        h += '<div class="slreel wide' + (merge ? ' merge' : '') + '"><div class="slstrip">';
-        for (var c2 = 0; c2 < COPIES; c2++) M2.GS.forEach(function (x) {
-          h += x[1] === 0 ? '<div class="slcell w2">' + symHTML(x[0]) + symHTML(x[0]) + '</div>'
-             : x[1] === 1 ? '<div class="slcell g2t"><span class="g2 g2' + x[0] + '">' + symHTML(x[0]) + '</span></div>' : '<div class="slcell g2b"></div>';
-        });
-        h += '</div></div>';
-        continue;
-      }
-      h += '<div class="slreel"><div class="slstrip">';
-      for (var c = 0; c < COPIES; c++) mc.S[i].forEach(function (s) { h += '<div class="slcell">' + symHTML(s) + '</div>'; });
-      h += '</div></div>';
+      h += '<div class="slreel' + (i === gpB ? ' wide' + (merge ? ' merge' : '') : '') + '"><div class="slstrip">' + new Array(6).join('<div class="slcell"></div>') + '</div></div>';
     }
     h += mc === M1 ? '<div class="slline" aria-hidden="true"><i></i></div>' : '<svg class="sllines" aria-hidden="true"></svg>';
     winEl.innerHTML = h;
     reels = [].slice.call(winEl.querySelectorAll('.slstrip'));
     if (gpB >= 0) reels.splice(gpB + 1, 0, reels[gpB]);
-    for (var j = 0; j < mc.reels; j++) if (j !== gpB + 1 || gpB < 0) place(j, posOf(j) + len(j), 0);
+    RX = [];
+    for (var j = 0; j < mc.reels; j++) if (j !== gpB + 1 || gpB < 0) reelSet(j, posOf(j));
   }
   function len(i) { return isG(gpB, i) ? M2.GN : cur.N; }
   function posOf(i) { return isG(gpB, i) ? M2.gpos : cur.pos[i]; }
   function setPos(i, r) { if (isG(gpB, i)) M2.gpos = r; else cur.pos[i] = r; }
-  /* Walze so stellen, dass Feld idx (im langen Band) in der Mitte liegt */
-  function place(i, idx, ms, ease) {
-    var el = reels[i];
-    el.style.transition = ms ? 'transform ' + ms + 'ms ' + (ease || 'cubic-bezier(.18,.7,.28,1.035)') : 'none';
-    el.style.transform = 'translateY(' + (-(idx - 1) / (COPIES * len(i)) * 100) + '%)';
+  /* Walzen: je Walze nur fuenf Felder (eins ueber und eins unter dem Fenster), die beim Drehen neu beschriftet werden –
+     kein langer Bildstreifen, nichts verwischt. x: welches Feld des Bandes gerade in der Mitte steht (zaehlt beim Drehen hoch).
+     Beim Anhalten wird das Band ab einer Stelle, die noch nicht zu sehen ist (seam), so weitergezaehlt, dass genau das
+     Ergebnis ankommt; die Walze bremst dabei gleichmaessig aus ihrem Tempo ab und federt kurz nach */
+  var RX = [], REEL_V = 0.017, BOUNCE = 170, rafOn = false;   // Felder pro Millisekunde
+  function wrap(v, L) { return ((v % L) + L) % L; }
+  function bandAt(i, s, v) { return wrap(v + (s.seam !== null && v >= s.seam ? s.offB : s.off), len(i)); }
+  function cellOf(i, b) {
+    if (!isG(gpB, i)) return ['slcell', symHTML(cur.S[i][b])];
+    var x = M2.GS[b];
+    return x[1] === 0 ? ['slcell w2', symHTML(x[0]) + symHTML(x[0])] : x[1] === 1 ? ['slcell g2t', '<span class="g2 g2' + x[0] + '">' + symHTML(x[0]) + '</span>'] : ['slcell g2b', ''];
   }
-  function cellEl(i, r, row) { return reels[i].children[r + len(i) + row - 1]; }
+  function drawReel(i) {
+    var s = RX[i], el = reels[i], fl = Math.floor(s.x);
+    for (var k = 0; k < 5; k++) {
+      var c = el.children[k], b = bandAt(i, s, fl - 2 + k);
+      if (c._b !== b) { var h = cellOf(i, b); c._b = b; c.className = h[0]; c.innerHTML = h[1]; }
+    }
+    el.style.transform = 'translateY(' + (-(1 + s.x - fl) * 20).toFixed(3) + '%)';
+  }
+  function reelSet(i, r) { RX[i] = { x: r, off: 0, seam: null, offB: 0, mode: 'idle', v: 0 }; drawReel(i); }
+  function reelRun(i) { var s = RX[i]; s.mode = 'run'; s.t0 = s.lt = performance.now(); kick(); }
+  /* anhalten: in etwa T ms auf Ergebnis r abbremsen, danach cb */
+  function reelStop(i, r, T, cb) {
+    var s = RX[i], L = len(i), x0 = s.x, v = Math.max(s.v, REEL_V * 0.4), d = Math.max(6, v * T / 2), end, seam;
+    for (;;) {
+      end = Math.ceil(x0 + d); seam = Math.floor(x0) + 4;
+      /* auf der Riesenwalze darf die Naht keinen Riesen zerschneiden */
+      if (isG(gpB, i)) while (M2.GS[bandAt(i, s, seam - 1)][1] === 1 || M2.GS[wrap(seam + r - end, L)][1] === 2) seam++;
+      if (end - 2 >= seam) break;
+      d += 1;
+    }
+    s.seam = seam; s.offB = r - end; s.mode = 'stop'; s.x0 = x0; s.d = end - x0; s.T = 2 * s.d / v; s.t0 = performance.now(); s.r = r; s.cb = cb;
+    kick();
+  }
+  function kick() { if (!rafOn) { rafOn = true; requestAnimationFrame(reelLoop); } }
+  function reelLoop(t) {
+    var any = false;
+    RX.forEach(function (s, i) {
+      if (!s || s.mode === 'idle') return;
+      any = true;
+      if (s.mode === 'run') {
+        var dt = Math.min(50, Math.max(0, t - s.lt)); s.lt = t;
+        s.v = REEL_V * Math.min(1, Math.max(0, t - s.t0) / 260); s.x += s.v * dt;
+      } else {
+        var e = Math.max(0, t - s.t0);
+        if (e < s.T) { var k = e / s.T; s.x = s.x0 + s.d * (1 - (1 - k) * (1 - k)); }
+        else if (e < s.T + BOUNCE) s.x = s.x0 + s.d + 0.12 * Math.sin(Math.PI * (e - s.T) / BOUNCE);
+        else { var cb = s.cb; reelSet(i, s.r); if (cb) cb(); return; }
+      }
+      drawReel(i);
+    });
+    if (any) requestAnimationFrame(reelLoop); else rafOn = false;
+  }
+  /* Feld der stehenden Walze: row 0 bis 2 im Fenster, -1 direkt darueber */
+  function cellEl(i, r, row) { return reels[i].children[row + 1]; }
 
   function curBet() { if (busy && vis) return vis.b; var f = fsOf(cur); return f.free > 0 ? f.fbet : bet; }
   function lineAmt(m, b) { return fmt(Math.round(m * b)); }
@@ -6946,29 +6981,13 @@ input.bprange[type=range]::-moz-range-thumb { width: 20px; height: 20px; border-
     if (fr) runStart(c); else animate(c, 0);
   }
 
-  /* Extra Spins: die Walzen drehen richtig schnell, bis man Stopp drueckt (das Ergebnis steht schon fest), dann laufen
-     sie nacheinander aus. Mit Autospin wird von allein gestoppt. run: der laufende Dreh, solange er gestoppt werden kann */
-  var run = null, RUN_V = 0.034;   // Felder pro Millisekunde
+  /* Extra Spins: die Walzen drehen, bis man Stopp drueckt (das Ergebnis steht schon fest), dann laufen sie nacheinander
+     aus. Mit Autospin wird von allein gestoppt. run: der laufende Dreh, solange er gestoppt werden kann */
+  var run = null;
   function runStart(c) {
-    var mc = c.mc, gp = c.steps[0].gp, gg = gen, t0 = performance.now();
-    var r = { c: c, gg: gg, t0: t0, last: t0, idx: [], on: [], sndT: 0, autoT: 0 };
-    for (var i = 0; i < mc.reels; i++) {
-      var sk = gp >= 0 && i === gp + 1;   // rechte Haelfte der Riesenwalze laeuft mit der linken
-      r.on.push(!sk); r.idx.push(posOf(i) + len(i));
-      if (!sk) reels[i].classList.add('spin', 'fast');
-    }
+    var gg = gen, r = { c: c, gg: gg, t0: performance.now(), sndT: 0, autoT: 0 };
+    RX.forEach(function (s, i) { if (s) reelRun(i); });   // rechte Haelfte der Riesenwalze laeuft mit der linken
     run = r;
-    (function tick(t) {
-      if (gg !== gen || !r.on.some(Boolean)) return;
-      var dt = Math.min(50, t - r.last), v = RUN_V * Math.min(1, (t - t0) / 320);
-      r.last = t;
-      r.idx.forEach(function (x, i) {
-        if (!r.on[i]) return;
-        x += v * dt; if (x >= len(i) * 4) x -= len(i) * 2;
-        r.idx[i] = x; place(i, x, 0);
-      });
-      requestAnimationFrame(tick);
-    })(t0);
     (function snd() { if (run !== r || gg !== gen) return; if (!document.hidden) Snd.spin(0.5); r.sndT = setTimeout(snd, 470); })();
     if (auto) r.autoT = setTimeout(runStop, 900);
     renderAll();
@@ -6993,47 +7012,31 @@ input.bprange[type=range]::-moz-range-thumb { width: 20px; height: 20px; border-
       spin();
     }, ms);
   }
-  /* Riesensymbol landet: der Block knallt rein, der Automat wackelt, Brocken und Staub fliegen weg */
-  function giantLand(i, r) {
+  /* Riesensymbol landet: der Rahmen leuchtet kurz auf, ein paar goldene Funken */
+  function giantLand(i) {
     var gs = [];
-    for (var row = -1; row <= 2; row++) { var ce = cellEl(i, r, row); if (ce && ce.classList.contains('g2t')) gs.push(ce.firstChild); }
+    for (var row = -1; row <= 2; row++) { var ce = cellEl(i, 0, row); if (ce && ce.classList.contains('g2t')) gs.push(ce.firstChild); }
     if (!gs.length) return;
     var st = $('#slStage'), sr = st.getBoundingClientRect(), wr = reels[i].parentNode.getBoundingClientRect();
     gs.forEach(function (g) {
       var b = g.getBoundingClientRect(), top = Math.max(b.top, wr.top), bot = Math.min(b.bottom, wr.bottom);
       g.classList.remove('slam'); void g.offsetWidth; g.classList.add('slam');
-      if (bot > top) debris(b.left - sr.left, top - sr.top, b.width, bot - top, getComputedStyle(g).getPropertyValue('--gc').trim());
+      if (bot > top && st.animate) sparks(b.left - sr.left, top - sr.top, b.width, bot - top);
     });
-    mach.classList.remove('shake'); void mach.offsetWidth; mach.classList.add('shake');
-    Snd.knock(); Snd.reel();
-    try { if (Snd.vibOn() && navigator.vibrate) navigator.vibrate(45); } catch (e) {}
+    Snd.chip(2, 0, 1.6);
   }
-  function debris(x, y, w, h, col) {
-    var st = $('#slStage'), cx = x + w / 2, k, p;
-    if (!st.animate) return;
-    function drop(el, frames, ms) { st.appendChild(el); el.animate(frames, { duration: ms, easing: 'linear', fill: 'forwards' }).onfinish = function () { el.remove(); }; }
-    /* Brocken: brechen am Rand ab, fliegen nach aussen und fallen runter */
-    for (k = 0; k < 18; k++) {
-      var sz = 7 + Math.random() * 10, side = k % 4;
-      var px = side < 2 ? x + Math.random() * w : side === 2 ? x : x + w, py = side < 2 ? (side === 0 ? y : y + h) : y + Math.random() * h;
-      var vx = (px - cx) / (w / 2) * (70 + Math.random() * 110) + (Math.random() - 0.5) * 40, vy = -(90 + Math.random() * 190), T = 0.9 + Math.random() * 0.5, rot = (Math.random() - 0.5) * 1000, fr = [];
-      for (var q = 0; q <= 12; q++) {
-        var t = q / 12 * T;
-        fr.push({ transform: 'translate(' + (vx * t).toFixed(1) + 'px,' + (vy * t + 450 * t * t).toFixed(1) + 'px) rotate(' + (rot * q / 12).toFixed(0) + 'deg)', opacity: q < 8 ? 1 : 1 - (q - 8) / 4 });
-      }
-      p = document.createElement('i'); p.className = 'slbit';
-      p.style.cssText = 'left:' + (px - sz / 2).toFixed(1) + 'px;top:' + (py - sz / 2).toFixed(1) + 'px;width:' + sz.toFixed(1) + 'px;height:' + sz.toFixed(1) + 'px;' + (k % 3 && col ? 'background:' + col : '');
-      drop(p, fr, T * 1000);
-    }
-    /* Staubwolken an der Unterkante */
-    for (k = 0; k < 7; k++) {
-      var ds = 22 + Math.random() * 22, dx = (Math.random() - 0.5) * 60;
-      p = document.createElement('i'); p.className = 'sldust';
-      p.style.cssText = 'left:' + (x + w * (k + 0.5) / 7 - ds / 2).toFixed(1) + 'px;top:' + (y + h - ds / 2).toFixed(1) + 'px;width:' + ds.toFixed(1) + 'px;height:' + ds.toFixed(1) + 'px';
-      drop(p, [{ transform: 'translate(0,0) scale(.3)', opacity: 0.9 }, { transform: 'translate(' + dx.toFixed(1) + 'px,-' + (10 + Math.random() * 18).toFixed(1) + 'px) scale(1.7)', opacity: 0 }], 650 + Math.random() * 300);
+  function sparks(x, y, w, h) {
+    var st = $('#slStage');
+    for (var k = 0; k < 8; k++) {
+      var a = k / 8 * Math.PI * 2 + Math.random() * 0.5, px = x + w / 2 + Math.cos(a) * w * 0.5, py = y + h / 2 + Math.sin(a) * h * 0.5, sz = 8 + Math.random() * 6, dd = 12 + Math.random() * 14;
+      var p = document.createElement('i'); p.className = 'slspark';
+      p.style.cssText = 'left:' + (px - sz / 2).toFixed(1) + 'px;top:' + (py - sz / 2).toFixed(1) + 'px;width:' + sz.toFixed(1) + 'px;height:' + sz.toFixed(1) + 'px';
+      st.appendChild(p);
+      p.animate([{ transform: 'translate(0,0) scale(.2) rotate(0deg)', opacity: 0 }, { transform: 'translate(' + (Math.cos(a) * dd * 0.5).toFixed(1) + 'px,' + (Math.sin(a) * dd * 0.5).toFixed(1) + 'px) scale(1) rotate(45deg)', opacity: 1, offset: 0.35 },
+        { transform: 'translate(' + (Math.cos(a) * dd).toFixed(1) + 'px,' + (Math.sin(a) * dd).toFixed(1) + 'px) scale(.4) rotate(90deg)', opacity: 0 }], { duration: 600 + Math.random() * 200, easing: 'ease-out', fill: 'forwards' })
+        .onfinish = (function (el) { return function () { el.remove(); }; })(p);
     }
   }
-
   /* Walzen eines Schritts laufen lassen. Spannung: fehlt nur noch ein Extra-Spin (oder ist 7-7 / Bar-Bar / der Jackpot
      noch drin), dreht die naechste Walze deutlich laenger und laeuft ganz langsam aus */
   function animate(c, k, fr) {
@@ -7049,37 +7052,24 @@ input.bprange[type=range]::-moz-range-thumb { width: 20px; height: 20px; border-
         if (mc === M2 && i === 4 && LINES5.some(function (L) { return L.slice(0, 4).every(function (row, q) { return g[q][row] === 'D'; }); })) tz = true;
       }
       if (tz) extra += mc.tease;
-      stops.push(skip(i) ? 0 : (fr ? 240 + i * Math.round(mc.gap * 0.8) : 1150 + i * mc.gap) + extra);
+      stops.push(skip(i) ? 0 : (fr ? 600 + i * Math.round(mc.gap * 0.8) : 1150 + i * mc.gap) + extra);
       teased.push(tz);
       if (k === 0 && fRow(mc, i, res[i], gp) !== null) fseen++;
     }
     var last = Math.max.apply(null, stops), firstTease = teased.indexOf(true);
     var ratchet = firstTease > 0 ? Math.max.apply(null, stops.slice(0, firstTease)) : last;
-    var fcount = 0;
+    var fcount = 0, need = 0, landed = 0;
     res.forEach(function (r, i) {
       if (skip(i)) return;
-      var ms = stops[i], el = reels[i], long = teased[i];
-      if (fr) {
-        /* dreht mit voller Geschwindigkeit weiter und laeuft erst kurz vor ihrem Halt aus (im Schwung unsichtbar umgesetzt) */
-        var dec = long ? mc.tease + 600 : 300;
-        setTimeout(function () {
-          if (gg !== gen) return;
-          fr.on[i] = false; el.classList.remove('fast');
-          var tgt = r + len(i) * 5;
-          place(i, tgt - RUN_V * dec / (long ? 6 : 3.9), 0); void el.offsetWidth;
-          place(i, tgt, dec, long ? 'cubic-bezier(.1,.6,.1,1)' : '');
-        }, ms - dec);
-      } else {
-        place(i, posOf(i) + len(i), 0); void el.offsetWidth;
-        el.classList.add('spin');
-        place(i, r + len(i) * Math.min(COPIES - 1, 2 + i + (long ? 2 : 0)), ms, long ? 'cubic-bezier(.1,.6,.1,1)' : '');
-      }
-      setTimeout(function () { if (gg === gen) el.classList.remove('spin'); }, ms - (long ? 1400 : 260));
-      setTimeout(function () {
+      var ms = stops[i], el = reels[i], long = teased[i], T = long ? mc.tease + 700 : 560;
+      need++;
+      if (!fr) reelRun(i);   // in den Extra Spins laeuft sie schon
+      setTimeout(function () { if (gg === gen) reelStop(i, r, T, land); }, Math.max(0, ms - T));
+      function land() {
         if (gg !== gen) return;
-        setPos(i, r); place(i, r + len(i), 0); Snd.reel();
+        setPos(i, r); Snd.reel();
         el.parentNode.classList.remove('tease');
-        if (gp >= 0 && i === gp) giantLand(i, r);
+        if (gp >= 0 && i === gp) giantLand(i);
         /* Extra-Spin gelandet und noch moeglich: Klang und Leuchten, jeder weitere einen Ton hoeher */
         var d = k === 0 ? fRow(mc, i, r, gp) : null;
         if (d !== null) {
@@ -7090,10 +7080,10 @@ input.bprange[type=range]::-moz-range-thumb { width: 20px; height: 20px; border-
         if (mc === M1 && STONE[mc.S[i][r]]) { cellEl(i, r, 1).classList.add('stone'); Snd.knock(); }
         var nx = i + 1; while (nx < mc.reels && skip(nx)) nx++;
         if (nx < mc.reels && teased[nx]) { reels[nx].parentNode.classList.add('tease'); Snd.tease((stops[nx] - ms) / 1000 + 0.1); }
-      }, ms);
+        if (++landed === need) setTimeout(function () { if (gg === gen) done(c, k); }, 120);
+      }
     });
-    Snd.spin(ratchet / 1000 - 0.1);
-    setTimeout(function () { if (gg === gen) done(c, k); }, last + 120);
+    if (!fr) Snd.spin(ratchet / 1000 - 0.1);
   }
   /* festgehaltene Walzen: grauer Rahmen, die Stein-Kirsche leuchtet */
   function markHeld(s) {
@@ -7385,8 +7375,8 @@ input.bprange[type=range]::-moz-range-thumb { width: 20px; height: 20px; border-
     settle(); clearHits(); endOffers();
     $('#slGamble').hidden = true; gAmt = 0; gBusy = false;
     all('#sl .slcoin').forEach(function (c) { c.remove(); });
-    all('#sl .slbit, #sl .sldust').forEach(function (c) { c.remove(); });
-    reels.forEach(function (el, i) { el.classList.remove('spin', 'fast'); if (!(gpB >= 0 && i === gpB + 1)) place(i, posOf(i) + len(i), 0); });
+    all('#sl .slspark').forEach(function (c) { c.remove(); });
+    RX.forEach(function (x, i) { if (x) reelSet(i, posOf(i)); });
     Snd.stopAll();
     sl.hidden = true; $('#slPause').hidden = true; $('#menu').hidden = false;
     PR.renderBank();
