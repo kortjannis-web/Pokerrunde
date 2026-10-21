@@ -1374,7 +1374,11 @@ input.bprange[type=range]::-moz-range-thumb { width: 20px; height: 20px; border-
 #rlToast { white-space: normal; width: max-content; max-width: 92%; text-align: center; border-radius: 16px; }
 #rlPause .endcard { max-height: 100%; overflow-y: auto; }
 #rlPause .psettings { text-align: left; }
-#rlPause .finv .fl { background: var(--bg); }
+#rlPause .finv .fl, #rlInvDlg .finv .fl { background: var(--bg); }
+#rlInvDlg .endcard { max-height: 100%; overflow-y: auto; }
+#rlInvDlg .psettings { text-align: left; }
+#rlInvBtn[hidden] { display: none; }
+#rlInvDlg .finv > .psec { display: none; }
 .rlpay { display: flex; flex-direction: column; gap: 4px; margin: 10px 0 4px; text-align: left; }
 .rlpay div { display: flex; justify-content: space-between; gap: 10px; padding: 7px 10px; border-radius: 9px; background: var(--bg); font: 600 13px var(--ui); }
 .rlpay b { color: var(--brass); white-space: nowrap; font-variant-numeric: tabular-nums; }
@@ -1806,6 +1810,7 @@ input.bprange[type=range]::-moz-range-thumb { width: 20px; height: 20px; border-
       <div class="slleftbar"><span class="brand">Roulette</span><div class="slfr" id="rlFr" hidden aria-label="Mitspieler am Tisch"></div></div>
       <div class="right">
         <div class="bank bjbank" role="status" aria-label="Dein Guthaben"><i class="bchip" aria-hidden="true"></i><span id="rlBank">0</span></div>
+        <button class="iconbtn" id="rlInvBtn" type="button" aria-label="Freunde einladen"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="9" cy="8" r="3.4"/><path d="M2.8 19.5c.6-3.4 3.1-5.4 6.2-5.4s5.6 2 6.2 5.4"/><path d="M19 8v6M16 11h6"/></svg></button>
         <button class="iconbtn" id="rlPauseBtn" type="button" aria-label="Pause"><svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><rect x="6" y="5" width="4" height="14" rx="1.2"/><rect x="14" y="5" width="4" height="14" rx="1.2"/></svg></button>
       </div>
     </header>
@@ -1835,16 +1840,20 @@ input.bprange[type=range]::-moz-range-thumb { width: 20px; height: 20px; border-
         <button class="btn primary" id="rlGo" type="button"><span>Drehen</span><small></small></button>
       </div>
     </footer>
+    <div id="rlInvDlg" class="overlay" hidden>
+      <div class="endcard">
+        <h2>Freunde einladen</h2>
+        <div class="psettings">
+          <div class="fnote" id="rlInvTxt"></div>
+          <div class="finv" data-fi></div>
+        </div>
+        <button class="btn primary wide" id="rlInvX" type="button" style="margin-top:12px">Schließen</button>
+      </div>
+    </div>
     <div id="rlPause" class="overlay" hidden>
       <div class="endcard">
         <h2>Pause</h2>
         <p id="rlPauseTxt"></p>
-        <div class="psettings" id="rlInv">
-          <div class="psec">Mit Freunden</div>
-          <div class="fnote" id="rlInvTxt"></div>
-          <button class="btn wide" id="rlOpen" type="button" style="margin-top:8px">Freunde einladen</button>
-          <div class="finv" data-fi></div>
-        </div>
         <button class="btn primary wide" id="rlResume" type="button" style="margin-top:12px">Weiterspielen</button>
         <button class="btn wide" id="rlHelpBtn" type="button" style="margin-top:10px" aria-expanded="false">Spielerklärung</button>
         <div id="rlHelp" hidden>
@@ -8539,6 +8548,7 @@ input.bprange[type=range]::-moz-range-thumb { width: 20px; height: 20px; border-
     else if (st) s = 'Einsatz <b>' + fmt(st) + '</b>' + (others() ? ' · tipp auf Fertig, wenn du so weit bist' : ' · noch mehr setzen oder drehen');
     else s = 'Chip wählen und aufs Feld tippen – auch auf Linien und Ecken';
     $('#rlStatus').innerHTML = s;
+    $('#rlInvBtn').hidden = NB.role === 'guest';
   }
   setInterval(function () { if (!rl.hidden && R && V.dlAt) renderCtl(); }, 250);
   window.addEventListener('resize', function () { if (!rl.hidden) { fitLabels(); renderBets(); } });
@@ -8621,7 +8631,7 @@ input.bprange[type=range]::-moz-range-thumb { width: 20px; height: 20px; border-
     else if (R && R.ph === 'bet') closeWheel();
   });
   document.addEventListener('keydown', function (e) {
-    if (rl.hidden || !$('#rlPause').hidden) return;
+    if (rl.hidden || !$('#rlPause').hidden || !$('#rlInvDlg').hidden) return;
     if (e.key === ' ' || e.key === 'Enter') { e.preventDefault(); go(); }
   });
 
@@ -8629,7 +8639,7 @@ input.bprange[type=range]::-moz-range-thumb { width: 20px; height: 20px; border-
   function open(asGuest) {
     Snd.unlock();
     ['#menu', '#profile', '#pview', '#friends', '#bjf'].forEach(function (s) { var el = $(s); if (el) el.hidden = true; });
-    rl.hidden = false; $('#rlPause').hidden = true; $('#rlToast').classList.remove('on');
+    rl.hidden = false; $('#rlPause').hidden = true; $('#rlInvDlg').hidden = true; $('#rlToast').classList.remove('on');
     V.hold = false; clearSettle(); V.kept = false;
     stopAnim(); closeWheel();
     myB = {}; undo = []; V.hit = -1; V.rdy = false; V.anim = false; V.hold = false; V.lock = null; V.shown = null; V.spun = -1; V.betRd = -1;
@@ -8655,7 +8665,7 @@ input.bprange[type=range]::-moz-range-thumb { width: 20px; height: 20px; border-
     V.hold = false; clearSettle(); V.kept = false;
     stopAnim(); closeWheel(); V.anim = false;
     Snd.stopAll();
-    rl.hidden = true; $('#rlPause').hidden = true; $('#menu').hidden = false;
+    rl.hidden = true; $('#rlPause').hidden = true; $('#rlInvDlg').hidden = true; $('#menu').hidden = false;
     PR.renderBank();
   }
   /* Verbindung weg oder Tisch geschlossen: allein weiterspielen, die eigenen Einsaetze bleiben liegen */
@@ -8670,10 +8680,6 @@ input.bprange[type=range]::-moz-range-thumb { width: 20px; height: 20px; border-
     $('#rlPauseTxt').textContent = guest ? 'Am Tisch geht es ohne dich weiter. Deine Chips sind in deinem Guthaben gespeichert.'
       : host && others ? 'Wenn du gehst, spielen deine Freunde allein weiter. Deine Chips sind in deinem Guthaben gespeichert.'
       : 'Deine Chips sind in deinem Guthaben gespeichert.' + (sum(myB) ? ' Was noch auf dem Feld liegt, geht beim Verlassen zurück.' : '');
-    $('#rlInv').hidden = guest;
-    $('#rlInvTxt').textContent = host ? 'Dein Tisch ist offen. Lade Freunde ein, die gerade online sind – sie setzen mit ihrem eigenen Guthaben.'
-      : 'Freunde können jederzeit fragen, ob sie mitspielen dürfen: in ihrer Freundesliste bei dir über die drei Punkte. Du bekommst dann eine Anfrage zum Annehmen. Oder du lädst sie selbst ein.';
-    $('#rlOpen').hidden = host; $('#rlOpen').disabled = false; $('#rlOpen').textContent = 'Freunde einladen';
     $('#rlMenu').textContent = host && others ? 'Tisch verlassen' : 'Zum Hauptmenü';
     help(false);
     $('#rlPause').hidden = false;
@@ -8683,13 +8689,21 @@ input.bprange[type=range]::-moz-range-thumb { width: 20px; height: 20px; border-
   $('#rlPauseBtn').addEventListener('click', openPause);
   $('#rlResume').addEventListener('click', function () { $('#rlPause').hidden = true; });
   $('#rlMenu').addEventListener('click', leave);
-  $('#rlOpen').addEventListener('click', function () {
-    var b = $('#rlOpen'); b.disabled = true; b.textContent = 'Öffne den Tisch …';
+  /* Knopf oben (Menschen mit Plus): Tisch fuer Freunde oeffnen und die Freunde zeigen, die gerade online sind */
+  $('#rlInvBtn').addEventListener('click', function () {
+    if (NB.role === 'guest') return;
+    var t = $('#rlInvTxt'), nf = window.PRF && window.PRF.count ? window.PRF.count() : 1;
+    $('#rlInvDlg').hidden = false;
+    if (!nf) { t.textContent = 'Du hast noch keine Freunde. Trag im Hauptmenü unter „Mit Freunden spielen“ den Spielercode eines Freundes ein.'; return; }
+    function ok() { t.textContent = 'Lade Freunde ein, die gerade online sind – sie setzen mit ihrem eigenen Guthaben.'; }
+    if (NB.role === 'host') { ok(); return; }
+    t.textContent = 'Öffne den Tisch …';
     hostNow(function (code) {
-      if (code) { b.hidden = true; $('#rlInvTxt').textContent = 'Dein Tisch ist offen. Lade Freunde ein, die gerade online sind – sie setzen mit ihrem eigenen Guthaben.'; }
-      else { b.disabled = false; b.textContent = 'Freunde einladen'; toast(PR.netAvail() ? 'Keine Verbindung – versuch es gleich nochmal' : PR.MSG_NOLIB); }
+      if (code) ok();
+      else t.textContent = !free() ? 'Der Tisch ist voll.' : PR.netAvail() ? 'Keine Verbindung – versuch es gleich nochmal.' : PR.MSG_NOLIB;
     });
   });
+  $('#rlInvX').addEventListener('click', function () { $('#rlInvDlg').hidden = true; });
 
   /* ---------- Online: der Tisch wird erst geoeffnet, wenn ein Freund dazukommen will ---------- */
   function cleanProf(p) {
@@ -9431,7 +9445,7 @@ input.bprange[type=range]::-moz-range-thumb { width: 20px; height: 20px; border-
       try { Snd.ping(); } catch (e) {}
     }
   }
-  window.PRF = { brag: brag, slw: slw };
+  window.PRF = { brag: brag, slw: slw, count: function () { return FR.filter(function (f) { return !f.pending; }).length; } };
   function changed() { render(false); renderSlFr(); }
   setInterval(function () { render(false); renderSlFr(); }, 1000);
 
