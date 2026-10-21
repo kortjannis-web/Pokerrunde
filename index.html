@@ -4549,12 +4549,13 @@ input.bprange[type=range]::-moz-range-thumb { width: 20px; height: 20px; border-
       MP.seats.forEach(function (st, i) { if (i !== idx && !st.gone) used[st.name.toLowerCase()] = 1; });
       var nm = j.p.name, c = 1; while (used[nm.toLowerCase()]) { c++; nm = j.p.name + ' ' + c; }
       var chips = Math.max(10, Math.min(1e9, Math.round(j.p.buyin) || P.START_CHIPS));
+      var botOut = MP.seats[idx] && MP.seats[idx].kind === 'bot' ? MP.seats[idx].name : '';   // Bot ohne Chips macht Platz
       if (game.seat({ name: nm, color: j.p.color, chips: chips }, idx) !== idx) return;
       var st = { name: nm, color: j.p.color, peer: j.p.id, conn: j.conn, chips: chips, kind: 'human', gone: false, last: '', v: j.p.v, rid: j.rid || '' };
       MP.seats[idx] = st; MP.brokes[idx] = null; MP.n = S.players.length;
       NET.players.push(j.p);
       try { j.conn.send({ t: 'start', seat: idx, n: MP.n, chips: chips }); } catch (e) {}
-      toastMsg(nm + ' sitzt jetzt mit am Tisch');
+      toastMsg(botOut ? botOut + ' hat keine Chips mehr und verlässt den Tisch – ' + nm + ' setzt sich dazu' : nm + ' sitzt jetzt mit am Tisch');
       setTimeout(function () {
         if (!MP.on || MP.role !== 'host' || MP.seats[idx] !== st || st.gone || st.ready) return;
         toastMsg(nm + ' ist nicht eingestiegen'); mpDrop(idx);
