@@ -486,6 +486,8 @@ input[type=range]::-moz-range-thumb {
 .shopitem .sn small { font: 600 12px var(--ui); color: var(--muted); display: flex; align-items: center; gap: 5px; }
 .shopitem .sn small .bchip { width: 13px; height: 13px; }
 .shopitem .btn { height: 42px; padding: 0 16px; font-size: 14px; flex: none; }
+.shopitem .sb { display: flex; flex-direction: column; gap: 6px; flex: none; }
+.shopitem .sb .btn { height: 36px; }
 .shopown { margin: 0; font: 600 13px var(--ui); color: var(--muted); }
 .profchip #pnameMenu { display: block; line-height: 1; }
 .pav { width: 36px; height: 36px; border-radius: 50%; display: grid; place-items: center; background: var(--av, #7f776a); color: #fff; font: 800 17px/1 var(--display); padding-bottom: .06em; box-sizing: border-box; box-shadow: inset 0 0 0 2px rgba(255,255,255,.14); flex: none; }
@@ -1790,7 +1792,10 @@ input.bprange[type=range]::-moz-range-thumb { width: 20px; height: 20px; border-
       <div class="shopitem">
         <span class="si" aria-hidden="true">🍅</span>
         <span class="sn"><b>Tomate</b><small><i class="bchip" aria-hidden="true"></i><span id="shopPrice">500</span> Chips</small></span>
-        <button class="btn primary" id="shopBuy" type="button">Kaufen</button>
+        <span class="sb">
+          <button class="btn primary" id="shopBuy" type="button">Kaufen</button>
+          <button class="btn" id="shopSell" type="button">Verkaufen</button>
+        </span>
       </div>
       <p class="shopown" id="shopOwn"></p>
       <button class="btn wide" id="shopClose" type="button">Schließen</button>
@@ -8407,7 +8412,8 @@ input.bprange[type=range]::-moz-range-thumb { width: 20px; height: 20px; border-
 </script>
 
 <script>
-/* Shop im Hauptmenue: Tomaten fuer je 500 Chips, die Anzahl steht unter den Chips oben rechts */
+/* Shop im Hauptmenue: Tomaten fuer je 500 Chips kaufen und zum selben Preis wieder verkaufen,
+   die Anzahl steht unter den Chips oben rechts */
 (function () {
   'use strict';
   var PR = window.PR;
@@ -8421,6 +8427,7 @@ input.bprange[type=range]::-moz-range-thumb { width: 20px; height: 20px; border-
     if (pop) { var c = $('#tomChip'); c.classList.remove('pop'); void c.offsetWidth; c.classList.add('pop'); }
     $('#shopPrice').textContent = fmt(PRICE);
     $('#shopBuy').disabled = bank < PRICE;
+    $('#shopSell').disabled = n < 1;
     $('#shopOwn').textContent = 'Du hast ' + fmt(n) + (n === 1 ? ' Tomate' : ' Tomaten') + ' · Guthaben ' + fmt(bank) + ' Chips' + (bank < PRICE ? ' – zu wenig für eine Tomate' : '');
   }
   $('#shopBtn').addEventListener('click', function () { Snd.unlock(); render(false); $('#shop').hidden = false; });
@@ -8431,6 +8438,15 @@ input.bprange[type=range]::-moz-range-thumb { width: 20px; height: 20px; border-
     if ((P.bank | 0) < PRICE) { render(false); return; }
     P.bank -= PRICE; PR.saveProf(); PR.renderBank();
     try { localStorage.setItem('pr-tom', String(tomatoes() + 1)); } catch (e) {}
+    Snd.chip(2, 0, true);
+    render(true);
+  });
+  $('#shopSell').addEventListener('click', function () {
+    var n = tomatoes();
+    if (n < 1) { render(false); return; }
+    try { localStorage.setItem('pr-tom', String(n - 1)); } catch (e) { return; }
+    var P = PR.prof();
+    P.bank = (P.bank | 0) + PRICE; PR.saveProf(); PR.renderBank();
     Snd.chip(2, 0, true);
     render(true);
   });
