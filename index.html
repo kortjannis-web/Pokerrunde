@@ -1234,9 +1234,7 @@ input.bprange[type=range]::-moz-range-thumb { width: 20px; height: 20px; border-
 #lk.open .lkwrap::before { background: radial-gradient(closest-side, rgba(255,210,90,.4), transparent); }
 #lkSvg { position: relative; width: 100%; height: 100%; display: block; overflow: visible; }
 #lkSvg .face { transform-box: view-box; transform-origin: 0 0; }
-#lk.hit #lkSvg .face { animation: lkhit .18s ease-out; }
 #lk.miss #lkSvg .face { animation: lkmiss .42s ease-in-out; }
-@keyframes lkhit { 40% { transform: scale(1.025); } }
 @keyframes lkmiss { 15%, 55% { transform: translateX(-7px); } 35%, 75% { transform: translateX(7px); } }
 #lkSvg .shk { transition: transform .5s cubic-bezier(.2,1.6,.4,1); }
 #lk.open #lkSvg .shk { transform: translateY(-26px); }
