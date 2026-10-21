@@ -1107,6 +1107,13 @@ input.bprange[type=range]::-moz-range-thumb { width: 20px; height: 20px; border-
 .slcell.stone .sy.st { animation: slpop .45s cubic-bezier(.2,.9,.3,1.4); box-shadow: inset 0 0 0 2px rgba(40,44,48,.6), 0 0 0 3px #dfe3e6, 0 0 18px 6px rgba(220,225,230,.75); }
 .slreel.held { box-shadow: 0 0 0 3px #c9ced2, 0 0 18px 4px rgba(201,206,210,.6); }
 .slreel.held::before { content: 'FEST'; position: absolute; left: 50%; bottom: 5px; z-index: 3; transform: translateX(-50%); padding: 3px 9px; border-radius: 999px; background: #5b6065; color: #fff; font: 900 10px var(--ui); letter-spacing: .14em; box-shadow: 0 2px 5px rgba(0,0,0,.4); }
+/* drei Steinbloecke: wackeln, dann broeckelt der Stein ab und die Frucht springt heraus */
+.slcell.crumble .sy.st { animation: stshake .5s ease-in-out; }
+@keyframes stshake { 0%, 100% { transform: none; } 20% { transform: translate(-2px, 1px) rotate(-3deg); } 40% { transform: translate(2px, -1px) rotate(3deg); } 60% { transform: translate(-2px, 0) rotate(-2deg); } 80% { transform: translate(2px, 1px) rotate(2deg); } }
+.slcell.open .sy.st { background: none; box-shadow: none; animation: none; }
+.slcell.open .sy.st::after { display: none; }
+.slcell.open .sy.st .sy.e { font-size: calc(var(--ch) * .58); animation: slpop .5s cubic-bezier(.2,.9,.3,1.4); }
+.slrock { position: absolute; z-index: 7; pointer-events: none; border-radius: 2px; background: linear-gradient(135deg, #b4b9bd, #858a8f 55%, #64696e); box-shadow: inset 1px 1px 0 rgba(255,255,255,.35), 0 1px 2px rgba(0,0,0,.4); }
 /* Multiplikator in den Extra-Spins */
 .sllcd b.pop { animation: slpop .5s cubic-bezier(.2,.9,.3,1.4); }
 /* Riskieren */
@@ -1140,6 +1147,13 @@ input.bprange[type=range]::-moz-range-thumb { width: 20px; height: 20px; border-
 @keyframes slptr { from { transform: rotate(-10deg); } to { transform: rotate(5deg); } }
 #slwRes { position: absolute; left: 50%; top: 50%; transform: translate(-50%, -50%) scale(.3); opacity: 0; padding: 6px 16px; border-radius: 14px; background: rgba(16,10,26,.92); box-shadow: 0 0 0 2px var(--brass), 0 0 30px rgba(224,170,74,.8); font: 800 40px var(--display); color: #ffe08a; transition: transform .35s cubic-bezier(.2,.9,.3,1.4), opacity .2s; }
 #slwRes.on { opacity: 1; transform: translate(-50%, -50%); }
+/* nach einer Stunde am Stueck: Pausen-Hinweis, der Knopf zum Hauptmenue leuchtet, Weiterspielen in Grau */
+.slbreak { text-align: center; }
+.slbreak .brk { font-size: 46px; line-height: 1; margin-bottom: 8px; }
+.slbreak p { margin: 6px 0 18px; font-size: 15px; line-height: 1.45; color: var(--ink); }
+#slBrkMenu { animation: slbrk 1.1s ease-in-out infinite alternate; }
+@keyframes slbrk { from { box-shadow: 0 0 0 0 rgba(255,224,138,0), 0 0 8px 1px rgba(255,224,138,.35); } to { box-shadow: 0 0 0 2px #ffe9a8, 0 0 22px 6px rgba(255,224,138,.75); } }
+#slBrkGo { margin-top: 10px; background: #3b3f43; color: #a7aaad; border-color: transparent; }
 /* Risikoleiter */
 .slgam { text-align: center; }
 .slgam h2 { margin-bottom: 6px; }
@@ -1483,6 +1497,15 @@ input.bprange[type=range]::-moz-range-thumb { width: 20px; height: 20px; border-
           <div class="slpay" id="slPay2"></div>
         </div>
         <button class="btn wide" id="slMenu" type="button" style="margin-top:10px">Zum Hauptmenü</button>
+      </div>
+    </div>
+    <div id="slBreak" class="overlay" hidden>
+      <div class="endcard slbreak">
+        <div class="brk" aria-hidden="true">⏰</div>
+        <h2>Zeit für eine Pause?</h2>
+        <p>Du bist jetzt schon eine Stunde am Stück an den Slots – ganz schön lange. Ich glaube, du solltest mal eine Pause machen.</p>
+        <button class="btn primary wide" id="slBrkMenu" type="button">Zum Hauptmenü</button>
+        <button class="btn wide" id="slBrkGo" type="button">Weiterspielen</button>
       </div>
     </div>
     <div id="slGamble" class="overlay" hidden>
@@ -6523,7 +6546,9 @@ input.bprange[type=range]::-moz-range-thumb { width: 20px; height: 20px; border-
   var JP0 = 200, UNLOCK = 5000, LADDER = 5;
   /* Gluecksrad nach dem Nachdreh: alle Felder gleich gross, die Chance p (zusammen 100) aber nicht – kleine Faktoren
      kommen oefter. Nebeneinander steht nie zweimal derselbe Faktor (auch nicht ueber den Anfang hinweg) */
-  var WHEEL = [{ m: 2, p: 19 }, { m: 3, p: 13 }, { m: 2, p: 18 }, { m: 5, p: 12 }, { m: 2, p: 18 }, { m: 10, p: 6 }, { m: 3, p: 12 }, { m: 25, p: 2 }];
+  var WHEEL = [{ m: 2, p: 21 }, { m: 3, p: 13 }, { m: 2, p: 20 }, { m: 5, p: 11 }, { m: 2, p: 19 }, { m: 10, p: 5 }, { m: 3, p: 10 }, { m: 25, p: 1 }];
+  /* drei Steinbloecke auf der Linie: sie broeckeln auf, dazu gibt es das Fuenffache des Einsatzes */
+  var ST3 = 5;
 
   /* feste Walzenbaender (immer gleich gemischt, damit die Nachbarn wie bei echten Walzen stimmen) */
   function strip(count, seed) {
@@ -6764,6 +6789,7 @@ input.bprange[type=range]::-moz-range-thumb { width: 20px; height: 20px; border-
       row('C', symHTML('C') + '<i>+ beliebig</i>', fmt(M1.pays.C * b));
       row('STN', symHTML('o') + '<i>auf Linie</i>', 'Nachdreh');
       row('WHL', symHTML('l') + symHTML('L') + symHTML('L') + '<i>danach</i>', 'Rad ×2–25');
+      if (el.id === 'slPay2') row('ST3', symHTML('c') + symHTML('l') + symHTML('o') + '<i>Steinbonus</i>', fmt(ST3 * b));   // nur in der Pause, im Spiel ist kein Platz
     } else {
       row('JP', symHTML('D') + '<i>× 5</i>', 'Jackpot');
       M2.order.forEach(function (s) {
@@ -6781,7 +6807,8 @@ input.bprange[type=range]::-moz-range-thumb { width: 20px; height: 20px; border-
       'Dreimal <b>Extra-Spin</b> irgendwo im Fenster = 10 Gratis-Drehs, jeder Gewinn darin erhöht den Multiplikator bis ×5. ' +
       'In den Extra Spins laufen besondere Walzen mit mehr Gewinnen. ' +
       'Landet ein <b>Steinblock</b> (Kirsche, Zitrone, Orange oder Trauben im Stein) auf der Linie, bleibt seine Walze stehen und die anderen drehen gratis nach. ' +
-      'Stehen danach drei gleiche in der Reihe, dreht sich das <b>Glücksrad</b> und nimmt diesen Gewinn ×2 bis ×25. Beträge für deinen Einsatz:';
+      'Stehen danach drei gleiche in der Reihe, dreht sich das <b>Glücksrad</b> und nimmt diesen Gewinn ×2 bis ×25. ' +
+      'Liegen am Ende <b>drei Steinblöcke</b> auf der Linie, bröckeln sie auf und es gibt das Fünffache des Einsatzes extra. Beträge für deinen Einsatz:';
     return 'Dein Guthaben ist gespeichert. 5 Gewinnlinien (Mitte, oben, unten, V und umgedrehtes V), gewonnen wird mit gleichen Symbolen von links. ' +
       'Der <b>Joker</b> (Walze 2 bis 4) ersetzt jedes Symbol, fünf echte Diamanten auf einer Linie knacken den <b>Jackpot</b> (* mit Joker). ' +
       'Dreimal <b>Extra-Spin</b> irgendwo = 8 Gratis-Drehs auf besonderen Walzen mit mehr Gewinnen: zwei zufällige Walzen wachsen zu einer <b>Riesenwalze</b> zusammen und zeigen dasselbe, ' +
@@ -6853,7 +6880,7 @@ input.bprange[type=range]::-moz-range-thumb { width: 20px; height: 20px; border-
     })(t0);
   }
   function clearHits() {
-    all('#sl .slcell.hit, #sl .slcell.fhit, #sl .slcell.fland, #sl .slcell.stone').forEach(function (c) { c.classList.remove('hit', 'fhit', 'fland', 'stone'); });
+    all('#sl .slcell.hit, #sl .slcell.fhit, #sl .slcell.fland, #sl .slcell.stone, #sl .slcell.crumble').forEach(function (c) { c.classList.remove('hit', 'fhit', 'fland', 'stone', 'crumble', 'open'); });
     all('#sl .slreel.held').forEach(function (c) { c.classList.remove('held'); });
     all('#sl .slreel.tease').forEach(function (c) { c.classList.remove('tease'); });
     all('#sl .slpay div.on').forEach(function (c) { c.classList.remove('on'); });
@@ -6906,7 +6933,7 @@ input.bprange[type=range]::-moz-range-thumb { width: 20px; height: 20px; border-
      Alles wird sofort berechnet und verbucht, danach nur noch nacheinander gezeigt. */
   function spin() {
     if (run) { runStop(); return; }
-    if (busy || sl.hidden || !$('#slGamble').hidden) return;
+    if (busy || sl.hidden || !$('#slGamble').hidden || !$('#slBreak').hidden) return;
     Snd.unlock(); settle();
     var mc = cur, f = fsOf(mc), P = PR.prof(), fr = f.free > 0, b, cost;
     if (wantGp() !== gpB || wantFs() !== fsB) build();   // vor dem Abzaehlen: der letzte Extra Spin laeuft noch mit der Riesenwalze
@@ -6934,7 +6961,7 @@ input.bprange[type=range]::-moz-range-thumb { width: 20px; height: 20px; border-
       var nw = g.map(function (c, i) { return !held[i] && !!STONE[c[1]]; });
       if (!nw.some(Boolean)) break;
       nw.forEach(function (x, i) { if (x) held[i] = true; });
-      if (held.every(Boolean)) break;
+      if (held.every(Boolean)) { var sb = Math.round(ST3 * b); steps[steps.length - 1].three = sb; total += sb; break; }
       res = res.map(function (r, i) { return held[i] ? r : randInt(mc.N); });
     }
     var sc0 = steps[0].sc;
@@ -6997,7 +7024,7 @@ input.bprange[type=range]::-moz-range-thumb { width: 20px; height: 20px; border-
     clearTimeout(freeT);
     freeT = setTimeout(function () {
       if (auto || sl.hidden || cur !== mc || !fsOf(cur).free) return;
-      if (busy || !$('#slPause').hidden || !$('#slGamble').hidden) { freeNext(400, mc); return; }
+      if (busy || !$('#slPause').hidden || !$('#slGamble').hidden || !$('#slBreak').hidden) { freeNext(400, mc); return; }
       spin();
     }, ms);
   }
@@ -7149,6 +7176,7 @@ input.bprange[type=range]::-moz-range-thumb { width: 20px; height: 20px; border-
     function release() {
       if (gg !== gen) return;
       $('#slBig').hidden = true; mach.classList.remove('won');
+      if (s.three && !s.threeShown) { s.threeShown = true; stoneBonus(c, k, release); return; }
       if (!last) { stoneNext(c, k + 1); return; }
       if (c.endFs) { fsTotal(c); return; }
       finish(c);
@@ -7221,6 +7249,42 @@ input.bprange[type=range]::-moz-range-thumb { width: 20px; height: 20px; border-
       box.hidden = true; mach.classList.remove('won');
       done(c, k);
     }, 5300);
+  }
+  /* drei Steinbloecke auf der Linie: sie wackeln, broeckeln auf (die Frucht bleibt), dazu der Steinbonus */
+  function stoneBonus(c, k, next) {
+    var gg = gen, s = c.steps[k], amt = s.three, from = s.before + s.win, base0 = c.base + from, st = $('#slStage'), sr = st.getBoundingClientRect();
+    var cells = s.res.map(function (r, i) { return cellEl(i, r, 1); });
+    cells.forEach(function (ce) { ce.classList.add('crumble'); });
+    Snd.knock();
+    setTimeout(function () {
+      if (gg !== gen) return;
+      cells.forEach(function (ce) {
+        var b = ce.querySelector('.sy.st'); if (!b) return;
+        var r = b.getBoundingClientRect();
+        ce.classList.add('open');
+        if (st.animate) rocks(r.left - sr.left, r.top - sr.top, r.width, r.height);
+      });
+      Snd.knock(); setTimeout(function () { Snd.knock(); }, 120);
+      mach.classList.add('won');
+      big('Steinbonus', '+' + fmt(amt));
+      var wl = $('#slWinL'); wl.classList.add('on');
+      countUp(wl, from, from + amt, 900);
+      countUp(bankEls(), base0, base0 + amt, 900, function () { shown = base0 + amt; });
+      setTimeout(function () { if (gg === gen) { Snd.win(); coins(14); } }, 250);
+      holdT = setTimeout(function () { if (gg === gen) { $('#slBig').hidden = true; mach.classList.remove('won'); next(); } }, 2400);
+    }, 520);
+  }
+  /* graue Brocken: brechen vom Stein ab und fallen runter */
+  function rocks(x, y, w, h) {
+    var st = $('#slStage');
+    for (var k = 0; k < 7; k++) {
+      var sz = 5 + Math.random() * 6, px = x + Math.random() * w, py = y + Math.random() * h, vx = (px - x - w / 2) / (w / 2) * (40 + Math.random() * 50), vy = -(40 + Math.random() * 90), T = 0.7 + Math.random() * 0.3, fr = [];
+      for (var q = 0; q <= 10; q++) { var t = q / 10 * T; fr.push({ transform: 'translate(' + (vx * t).toFixed(1) + 'px,' + (vy * t + 500 * t * t).toFixed(1) + 'px) rotate(' + (q * 40) + 'deg)', opacity: q < 7 ? 1 : 1 - (q - 7) / 3 }); }
+      var p = document.createElement('i'); p.className = 'slrock';
+      p.style.cssText = 'left:' + (px - sz / 2).toFixed(1) + 'px;top:' + (py - sz / 2).toFixed(1) + 'px;width:' + sz.toFixed(1) + 'px;height:' + sz.toFixed(1) + 'px';
+      st.appendChild(p);
+      p.animate(fr, { duration: T * 1000, easing: 'linear', fill: 'forwards' }).onfinish = (function (el) { return function () { el.remove(); }; })(p);
+    }
   }
   /* Steinblock: die Walze bleibt stehen, die anderen drehen gratis nach */
   function stoneNext(c, k) {
@@ -7362,7 +7426,7 @@ input.bprange[type=range]::-moz-range-thumb { width: 20px; height: 20px; border-
   $('#slMinus').addEventListener('click', function () { var i = BETS.indexOf(bet); if (!busy && !fsOf(cur).free && i > 0) { bet = BETS[i - 1]; saveState(); Snd.chip(1, 0); renderAll(); } });
   $('#slPlus').addEventListener('click', function () { var i = BETS.indexOf(bet); if (!busy && !fsOf(cur).free && i < BETS.length - 1 && BETS[i + 1] <= bank()) { bet = BETS[i + 1]; saveState(); Snd.chip(1, 0); renderAll(); } });
   document.addEventListener('keydown', function (e) {
-    if (sl.hidden || !$('#slPause').hidden || !$('#slGamble').hidden) return;
+    if (sl.hidden || !$('#slPause').hidden || !$('#slGamble').hidden || !$('#slBreak').hidden) return;
     if (e.key === ' ' || e.key === 'Enter') { e.preventDefault(); spin(); }
   });
   function open() {
@@ -7378,13 +7442,28 @@ input.bprange[type=range]::-moz-range-thumb { width: 20px; height: 20px; border-
     settle(); clearHits(); endOffers();
     $('#slGamble').hidden = true; gAmt = 0; gBusy = false;
     all('#sl .slcoin').forEach(function (c) { c.remove(); });
-    all('#sl .slspark').forEach(function (c) { c.remove(); });
+    all('#sl .slspark, #sl .slrock').forEach(function (c) { c.remove(); });
     reels.forEach(function (el, i) { el.classList.remove('spin', 'fast'); if (!(gpB >= 0 && i === gpB + 1)) place(i, posOf(i) + len(i), 0); });
     Snd.stopAll();
-    sl.hidden = true; $('#slPause').hidden = true; $('#menu').hidden = false;
+    sl.hidden = true; $('#slPause').hidden = true; $('#slBreak').hidden = true; $('#menu').hidden = false;
     PR.renderBank();
   }
   $('#slPlay').addEventListener('click', open);
+  /* Pausen-Hinweis: nach einer Stunde am Stueck an den Slots (gezaehlt wird nur, solange man sie wirklich sieht; beim
+     Verlassen faengt es von vorn an). Kommt erst, wenn gerade nichts dreht; Autospin geht dann aus */
+  var BREAK_MS = 60 * 60 * 1000, brkAcc = 0, brkLast = Date.now();
+  setInterval(function () {
+    var now = Date.now(), dt = Math.min(10000, now - brkLast); brkLast = now;
+    if (sl.hidden) { brkAcc = 0; return; }
+    if (document.hidden || !$('#slBreak').hidden) return;
+    brkAcc += dt;
+    if (brkAcc < BREAK_MS || busy || run || !$('#slPause').hidden || !$('#slGamble').hidden) return;
+    brkAcc = 0;
+    if (auto) setAuto(false);
+    $('#slBreak').hidden = false; Snd.ping();
+  }, 2000);
+  $('#slBrkMenu').addEventListener('click', function () { $('#slBreak').hidden = true; leave(); });
+  $('#slBrkGo').addEventListener('click', function () { $('#slBreak').hidden = true; });
   /* Pause: die Spielerklaerung ist immer erst zu und klappt nur auf Knopfdruck auf */
   function help(on) { $('#slHelp').hidden = !on; $('#slHelpBtn').setAttribute('aria-expanded', on ? 'true' : 'false'); $('#slHelpBtn').textContent = on ? 'Erklärung schließen' : 'Spielerklärung'; }
   $('#slPauseBtn').addEventListener('click', function () { renderAll(); help(false); $('#slPause').hidden = false; });
