@@ -586,6 +586,11 @@ input.bprange[type=range]::-moz-range-thumb { width: 20px; height: 20px; border-
 #pName { height: 48px; border-radius: 12px; background: var(--bg2); border: 1px solid var(--line); color: var(--ink); font: 700 17px var(--ui); padding: 0 14px; outline: none; }
 #pName:focus { border-color: var(--brass); }
 .pstats { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; }
+/* Spielzeit im Profil */
+.ptime { display: flex; align-items: center; gap: 12px; padding: 12px 14px; border-radius: 14px; background: var(--bg2); border: 1px solid var(--line); }
+.ptime i { font-style: normal; font-size: 24px; line-height: 1; }
+.ptime b { display: block; font: 800 22px var(--display); font-variant-numeric: tabular-nums; }
+.ptime small { display: block; font: 500 12px/1.35 var(--ui); color: var(--muted); }
 .pstat { padding: 12px 6px; border-radius: 12px; background: var(--bg2); border: 1px solid var(--line); text-align: center; }
 .pstat b { display: block; font: 800 22px var(--display); font-variant-numeric: tabular-nums; }
 .pstat span { color: var(--muted); font: 600 11px var(--ui); }
@@ -1641,6 +1646,10 @@ input.bprange[type=range]::-moz-range-thumb { width: 20px; height: 20px; border-
           </div>
           <div class="frhint" style="margin-top:0;text-align:center">Gib deinen Freunden diesen Code. Wer ihn unter „Mit Freunden spielen“ einträgt, ist dein Freund und sieht, wann du online bist.</div>
         </div>
+      </div>
+      <div>
+        <div class="psec" style="margin-bottom:8px">Spielzeit</div>
+        <div class="ptime"><i aria-hidden="true">⏱️</i><div><b id="ptVal">0 Min.</b><small id="ptNote">insgesamt in Poker, Blackjack und Slots</small></div></div>
       </div>
       <div>
         <div class="psec">Statistik</div>
@@ -7157,7 +7166,8 @@ input.bprange[type=range]::-moz-range-thumb { width: 20px; height: 20px; border-
     var sb = Math.round(+f.sb), sj = Math.round(+f.sj);
     return { code: f.code, name: nm, color: (typeof f.color === 'string' && /^#[0-9a-f]{6}$/i.test(f.color)) ? f.color : PR.AV[0], pending: !!f.pending,
              bank: isFinite(bk) && bk >= 0 ? Math.min(bk, 1e12) : null,
-             sb: f.sb != null && isFinite(sb) && sb >= 0 ? Math.min(sb, 1e12) : null, sj: isFinite(sj) && sj >= 0 ? Math.min(sj, 1e6) : 0 };
+             sb: f.sb != null && isFinite(sb) && sb >= 0 ? Math.min(sb, 1e12) : null, sj: isFinite(sj) && sj >= 0 ? Math.min(sj, 1e6) : 0,
+             pt: f.pt != null && isFinite(+f.pt) && +f.pt >= 0 ? Math.min(Math.round(+f.pt), 1e9) : null };
   }
   function friend(code) { for (var i = 0; i < FR.length; i++) if (FR[i].code === code) return FR[i]; return null; }
   function saveFR() { try { localStorage.setItem('pr-friends', JSON.stringify(FR.slice(0, MAX_FRIENDS))); } catch (e) {} }
@@ -7191,7 +7201,9 @@ input.bprange[type=range]::-moz-range-thumb { width: 20px; height: 20px; border-
   }
   /* sl: bester Slots-Gewinn und Zahl der Jackpots (fuer die Slots-Bestenliste; aeltere Versionen lassen das Feld weg) */
   function mySl() { var o = null; try { o = JSON.parse(localStorage.getItem('pr-slstats') || 'null'); } catch (e) {} o = o || {}; return [Math.round(+o.best || 0), Math.round(+o.jp || 0)]; }
-  function myPub() { var P = PR.prof(); return { name: PR.profName(), color: P.color, bank: Math.round(P.bank || 0), sl: mySl() }; }
+  /* pt: Spielzeit in Sekunden, auf Minuten gerundet (damit der Stand nicht staendig neu verschickt wird) */
+  function myPt() { var t = 0; try { t = +(JSON.parse(localStorage.getItem('pr-ptime') || 'null') || {}).s || 0; } catch (e) {} return Math.floor(t / 60) * 60; }
+  function myPub() { var P = PR.prof(); return { name: PR.profName(), color: P.color, bank: Math.round(P.bank || 0), sl: mySl(), pt: myPt() }; }
   /* Chipstand des Freundes merken (fuer die Rangliste, auch wenn er offline ist) */
   function takeBank(f, p) {
     var b = Math.round(+(p && p.bank)); if (isFinite(b) && b >= 0) f.bank = Math.min(b, 1e12);
@@ -7200,6 +7212,7 @@ input.bprange[type=range]::-moz-range-thumb { width: 20px; height: 20px; border-
       if (isFinite(sb) && sb >= 0) f.sb = Math.min(sb, 1e12);
       if (isFinite(sj) && sj >= 0) f.sj = Math.min(sj, 1e6);
     }
+    var pt = Math.round(+(p && p.pt)); if (p && p.pt != null && isFinite(pt) && pt >= 0) f.pt = Math.min(pt, 1e9);
   }
 
   /* ---------- Vermittlung ---------- */
@@ -7478,6 +7491,7 @@ input.bprange[type=range]::-moz-range-thumb { width: 20px; height: 20px; border-
   function setupList(host) {
     host.innerHTML = '<div class="frank" hidden><div class="psec">Rangliste</div><div class="frl"></div></div>' +
       '<div class="frank slr" hidden><div class="psec">Slots-Bestenliste</div><div class="frl"></div></div>' +
+      '<div class="frank ptr" hidden><div class="psec">Spielzeit-Rangliste</div><div class="frl"></div></div>' +
       '<div class="psec">Deine Freunde <span></span></div><div class="flist"></div>' +
       '<div class="fadd"><input type="text" maxlength="6" autocomplete="off" autocapitalize="characters" spellcheck="false" placeholder="Spielercode eines Freundes" aria-label="Spielercode eines Freundes"><button class="btn primary" type="button" disabled>Hinzufügen</button></div>' +
       '<p class="fnote"></p>';
@@ -7498,7 +7512,7 @@ input.bprange[type=range]::-moz-range-thumb { width: 20px; height: 20px; border-
   var renderKey = '';
   function render(force) {
     var me = lastSt || myStatus();
-    var k = JSON.stringify([FR, me, openRow, PR.prof().bank, PR.profName(), Object.keys(LIVE).map(function (c) { return [c, isOn(c), LIVE[c].st]; })]);
+    var k = JSON.stringify([FR, me, openRow, PR.prof().bank, PR.profName(), myPt(), Object.keys(LIVE).map(function (c) { return [c, isOn(c), LIVE[c].st]; })]);
     if (!force && k === renderKey) return;
     renderKey = k;
     var n = onlineCount();
@@ -7514,6 +7528,7 @@ input.bprange[type=range]::-moz-range-thumb { width: 20px; height: 20px; border-
       } else sorted().forEach(function (f) { list.appendChild(friendRow(f, me)); });
       renderRank(host.querySelector('.frank'));
       renderSlRank(host.querySelector('.frank.slr'));
+      renderPtRank(host.querySelector('.frank.ptr'));
     });
     all('[data-fi]').forEach(function (host) {
       host.innerHTML = '';
@@ -7565,6 +7580,26 @@ input.bprange[type=range]::-moz-range-thumb { width: 20px; height: 20px; border-
       var c = document.createElement('span'); c.className = 'frc'; c.textContent = r.best ? fmt(r.best) : '–';
       var sm = document.createElement('small'); sm.textContent = r.jp ? r.jp + '× Jackpot' : 'bester Gewinn';
       c.appendChild(sm);
+      el.appendChild(n); el.appendChild(a); el.appendChild(nm); el.appendChild(c);
+      list.appendChild(el);
+    });
+  }
+  /* Spielzeit-Rangliste: wer am laengsten gespielt hat (bei Offline-Freunden der zuletzt bekannte Stand) */
+  function renderPtRank(box) {
+    var P = PR.prof(), rows = FR.filter(function (f) { return f.pt != null && !f.pending; })
+      .map(function (f) { return { name: f.name || f.code, color: f.color, pt: f.pt }; });
+    box.hidden = !rows.length;
+    if (!rows.length) return;
+    rows.push({ name: PR.profName(), color: P.color, pt: window.PRT ? window.PRT.secs() : myPt(), me: true });
+    rows.sort(function (a, b) { return b.pt - a.pt; });
+    var list = box.querySelector('.frl'); list.innerHTML = '';
+    rows.forEach(function (r, i) {
+      if (i >= 10 && !r.me) return;
+      var el = document.createElement('div'); el.className = 'frr' + (r.me ? ' me' : '');
+      var n = document.createElement('span'); n.className = 'frn'; n.textContent = i === 0 ? '⏱️' : (i + 1) + '.';
+      var a = document.createElement('span'); a.className = 'pav'; a.style.setProperty('--av', r.color); a.textContent = (r.name || '?').charAt(0).toUpperCase();
+      var nm = document.createElement('b'); nm.textContent = r.me ? r.name + ' (du)' : r.name;
+      var c = document.createElement('span'); c.className = 'frc'; c.textContent = window.PRT ? window.PRT.fmt(r.pt) : Math.floor(r.pt / 60) + ' Min.';
       el.appendChild(n); el.appendChild(a); el.appendChild(nm); el.appendChild(c);
       list.appendChild(el);
     });
@@ -7856,6 +7891,50 @@ input.bprange[type=range]::-moz-range-thumb { width: 20px; height: 20px; border-
   });
   $('#profBtn').addEventListener('click', function () { renderVib(); });
   renderVib();
+})();
+</script>
+
+<script>
+/* Spielzeit: zaehlt, solange man sichtbar an einem Tisch oder an den Slots sitzt. Beim ersten Mal wird die Zeit von
+   vorher aus der Statistik geschaetzt (Poker-Haende, Blackjack-Runden, Slots-Drehs) */
+(function () {
+  'use strict';
+  var PR = window.PR;
+  if (!PR) return;
+  function $(s) { return document.querySelector(s); }
+  function readJ(k) { try { return JSON.parse(localStorage.getItem(k) || 'null'); } catch (e) { return null; } }
+  var T = readJ('pr-ptime');
+  if (!T || typeof T.s !== 'number' || !isFinite(T.s)) {
+    var bj = readJ('pr-bjstats') || {}, sl = readJ('pr-slstats') || {};
+    var est = Math.round((PR.prof().hands | 0) * 35 + (+bj.r || 0) * 20 + (+sl.n || 0) * 4);
+    T = { s: est, est: est };
+    try { localStorage.setItem('pr-ptime', JSON.stringify(T)); } catch (e) {}
+  }
+  function inGame() {
+    var n = PR.poker(), b = window.BJ ? window.BJ.state() : {};
+    return !!(n.playing || b.on || (window.SL && window.SL.on()));
+  }
+  function fmtT(s) {
+    var m = Math.floor(s / 60), h = Math.floor(m / 60);
+    if (h >= 100) return h + ' Std.';
+    if (h > 0) return h + ' Std. ' + (m % 60) + ' Min.';
+    return m + ' Min.';
+  }
+  function render() {
+    $('#ptVal').textContent = fmtT(T.s);
+    $('#ptNote').textContent = 'insgesamt in Poker, Blackjack und Slots' + (T.est >= 60 ? ' (davon ca. ' + fmtT(T.est) + ' geschätzt von vorher)' : '');
+  }
+  var last = Date.now();
+  setInterval(function () {
+    var now = Date.now(), dt = Math.min(10, (now - last) / 1000); last = now;
+    if (document.hidden || !inGame()) return;
+    T.s += dt;
+    try { localStorage.setItem('pr-ptime', JSON.stringify({ s: Math.round(T.s), est: T.est })); } catch (e) {}
+  }, 5000);
+  $('#profBtn').addEventListener('click', render);
+  setInterval(function () { if (!$('#profile').hidden) render(); }, 5000);
+  render();
+  window.PRT = { secs: function () { return Math.round(T.s); }, fmt: fmtT };
 })();
 </script>
 
