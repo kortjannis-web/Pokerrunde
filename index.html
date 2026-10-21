@@ -1024,14 +1024,14 @@ input.bprange[type=range]::-moz-range-thumb { width: 20px; height: 20px; border-
 #slSpin.free span { display: block; line-height: 1.05; }
 #slSpin.free b { display: block; font-size: 22px; }
 #slSpin.free b.pop { animation: slpop .5s cubic-bezier(.2,.9,.3,1.4); }
-/* Extra Spins: die Walzen drehen, bis man Stopp drueckt */
+/* Diamant 5, Extra Spins: die Walzen drehen, bis man Stopp drueckt */
 #slSpin.stop { line-height: 1.1; background: radial-gradient(circle at 50% 35%, #ff8a75, #e0352f 55%, #8c1414); box-shadow: 0 6px 0 #5a0c0c, 0 12px 22px rgba(0,0,0,.5), inset 0 2px 0 rgba(255,255,255,.4); animation: slstopp .5s ease-in-out infinite alternate; }
 #slSpin.stop:active, #slSpin.stop.down { transform: translateY(5px); box-shadow: 0 1px 0 #5a0c0c, 0 5px 12px rgba(0,0,0,.5), inset 0 2px 0 rgba(255,255,255,.25); }
 #slSpin.stop span { display: block; font-size: 19px; letter-spacing: .06em; }
 #slSpin.stop small { display: block; font: 700 10px var(--ui); letter-spacing: .04em; text-transform: none; opacity: .9; }
 @keyframes slstopp { to { filter: brightness(1.18); box-shadow: 0 6px 0 #5a0c0c, 0 12px 22px rgba(0,0,0,.5), 0 0 22px 6px rgba(255,100,80,.6), inset 0 2px 0 rgba(255,255,255,.4); } }
 .slstrip.fast { filter: blur(1.4px) brightness(1.06); }
-/* ---------- Slots: zweiter Automat, Jackpot, Joker, Stein-Kirschen, Risikoleiter ---------- */
+/* ---------- Slots: zweiter Automat, Jackpot, Joker, Steinbloecke, Risikoleiter ---------- */
 /* Automat waehlen */
 .slpick { display: flex; gap: 6px; padding: 3px; border-radius: 999px; background: rgba(0,0,0,.35); border: 1px solid var(--line); }
 .slpick button { height: 30px; padding: 0 14px; border-radius: 999px; border: 0; background: transparent; color: var(--muted); font: 800 12px var(--ui); letter-spacing: .04em; white-space: nowrap; }
@@ -1094,7 +1094,7 @@ input.bprange[type=range]::-moz-range-thumb { width: 20px; height: 20px; border-
   background: conic-gradient(from 200deg, #e0475b, #f4b23e, #f4e23e, #4fc46a, #3ea6f4, #9b5cf4, #e0475b); box-shadow: inset 0 0 0 2px #fff3c4, inset 0 0 0 5px rgba(0,0,0,.25), 0 2px 5px rgba(0,0,0,.4); text-shadow: 0 1px 2px rgba(0,0,0,.6); }
 .sy.wd b { display: block; font-size: .36em; letter-spacing: .06em; margin-top: 1px; }
 .slpay .ps .sy.wd { flex: none; width: 48px; height: 48px; margin: -14px; font-size: 22px; transform: scale(.42); }
-/* Stein-Kirsche: Kirsche in einem grauen Steinblock; auf der Linie bleibt die Walze stehen (Nachdreh) */
+/* Steinblock: Frucht in einem grauen Steinblock; auf der Linie bleibt die Walze stehen (Nachdreh) */
 .sy.st { position: relative; width: calc(var(--ch) * .84); height: calc(var(--ch) * .84); border-radius: 16%; display: grid; place-items: center;
   background: radial-gradient(circle at 28% 22%, rgba(255,255,255,.4), transparent 38%), radial-gradient(circle at 72% 78%, rgba(0,0,0,.25), transparent 45%),
     repeating-linear-gradient(32deg, transparent 0 7px, rgba(60,64,68,.18) 7px 8px), linear-gradient(135deg, #b4b9bd, #858a8f 55%, #64696e);
@@ -6496,16 +6496,19 @@ input.bprange[type=range]::-moz-range-thumb { width: 20px; height: 20px; border-
 
 <script>
 /* Slots: zwei Automaten, gespielt direkt mit dem Guthaben (Spielgeld).
-   Lucky Seven: drei Walzen, eine Gewinnlinie (der rote Strich), Joker nur auf der mittleren Walze, Stein-Kirschen
-   (landet eine auf der Linie, bleibt ihre Walze stehen und die anderen drehen gratis nach; stehen danach drei
-   Kirschen in der Reihe, dreht sich ein kleines Gluecksrad und nimmt diesen Gewinn x2 bis x25).
+   Lucky Seven: drei Walzen, eine Gewinnlinie (der rote Strich), Joker nur auf der mittleren Walze, Steinbloecke mit
+   Kirsche, Zitrone, Orange oder Trauben (landet einer auf der Linie, bleibt seine Walze stehen und die anderen drehen
+   gratis nach; stehen danach drei gleiche in der Reihe, dreht sich ein kleines Gluecksrad und nimmt diesen Gewinn x2 bis x25).
    Diamant 5 (frei ab 5.000 Chips): fuenf Walzen, drei Reihen, fuenf Gewinnlinien, Joker auf den Walzen 2 bis 4.
    Bei beiden: dreimal Extra-Spin irgendwo im Fenster = Gratis-Drehs, jeder Gewinn darin erhoeht den Multiplikator
    (Lucky Seven: 10 Drehs, x1 bis x5; Diamant 5: 8 Drehs, x1 bis x2, dafuer wachsen zwei zufaellige Nachbarwalzen zu einer
    Riesenwalze zusammen: beide zeigen dasselbe, dazu Riesensymbole ueber 2 x 2 Felder, und jede Linie durch einen Riesen
    zahlt doppelt); nach einem Gewinn die Risikoleiter (Rot/Schwarz, 50:50); ein fester Jackpot (200x Einsatz).
+   In den Extra Spins laufen eigene, reichere Walzenbaender (fcounts), damit sie fast immer einen grossen Gewinn bringen
+   (rund 9 von 10 Mal mindestens das 15-Fache des Einsatzes); dafuer kommen sie seltener (Lucky Seven etwa alle 210 Drehs,
+   Diamant 5 etwa alle 330, dort gibt es auf der mittleren Walze keinen Extra-Spin).
    Durchgerechnet (Millionen Probedrehs samt Nachdrehs und Extra-Spins): auf Dauer kommen bei beiden Automaten
-   rund 95 % der Einsaetze zurueck, das Casino bleibt also im Plus. */
+   rund 96 % der Einsaetze zurueck, das Casino bleibt also im Plus. */
 (function () {
   'use strict';
   var PR = window.PR;
@@ -6537,8 +6540,8 @@ input.bprange[type=range]::-moz-range-thumb { width: 20px; height: 20px; border-
   }
 
   /* C Kirsche, L Zitrone, O Orange, G Trauben, B Glocke, M Melone, T Stern, D Diamant, R Bar, S Sieben, W Joker, F Extra-Spin,
-     c Stein-Kirsche (zaehlt wie eine Kirsche) */
-  var STONE = { c: 'C' };
+     c l o g Steinblock mit Kirsche, Zitrone, Orange, Trauben (zaehlt wie das Symbol darin) */
+  var STONE = { c: 'C', l: 'L', o: 'O', g: 'G' };
   function base(c) { return STONE[c] || c; }
   var EMO = { C: '🍒', L: '🍋', O: '🍊', G: '🍇', B: '🔔', M: '🍉', T: '⭐', D: '💎' };
   function symHTML(c) {
@@ -6554,7 +6557,9 @@ input.bprange[type=range]::-moz-range-thumb { width: 20px; height: 20px; border-
   /* ---------- Automat 1: Lucky Seven ---------- */
   var M1 = {
     id: 'lucky', title: 'LUCKY ★ SEVEN', short: 'Lucky 7', reels: 3, need: 3, gap: 420, tease: 2600, free: 10, mm: 5,
-    counts: [{ C: 7, c: 1, L: 7, O: 5, G: 5, B: 4, R: 3, S: 2, F: 2 }, { C: 6, c: 1, L: 7, O: 5, G: 5, B: 4, R: 3, S: 2, W: 1, F: 2 }, { C: 7, c: 1, L: 7, O: 5, G: 5, B: 4, R: 3, S: 2, F: 2 }],
+    counts: [{ C: 4, c: 1, L: 7, l: 1, O: 6, G: 6, B: 4, R: 3, S: 2, F: 2 }, { C: 6, c: 1, L: 7, O: 4, o: 1, G: 5, B: 4, R: 3, S: 2, W: 1, F: 2 }, { C: 7, c: 1, L: 7, O: 5, G: 4, g: 1, B: 4, R: 3, S: 2, F: 2 }],
+    /* Extra Spins: viele Kirschen links (fast jeder Dreh gewinnt und treibt den Multiplikator hoch), mehr Bar und Sieben */
+    fcounts: [{ C: 15, c: 1, L: 4, O: 3, G: 4, B: 4, R: 2, S: 2, F: 1 }, { C: 7, c: 1, L: 5, O: 4, G: 4, B: 4, R: 4, S: 3, W: 2, F: 2 }, { C: 8, c: 1, L: 5, O: 4, G: 4, B: 4, R: 4, S: 3, F: 3 }],
     seeds: [7, 4242, 90001],
     pays: { SWS: 100, RRR: 30, BBB: 15, GGG: 10, OOO: 7, LLL: 5, CCC: 4, mix: 4, CC: 3, C: 2 }
   };
@@ -6577,10 +6582,12 @@ input.bprange[type=range]::-moz-range-thumb { width: 20px; height: 20px; border-
 
   /* ---------- Automat 2: Diamant 5 ---------- */
   var LINES5 = [[1, 1, 1, 1, 1], [0, 0, 0, 0, 0], [2, 2, 2, 2, 2], [0, 1, 2, 1, 0], [2, 1, 0, 1, 2]];
-  var D_OUT = { C: 6, L: 6, M: 5, G: 4, B: 3, T: 3, D: 4, F: 1 }, D_IN = { C: 6, L: 5, M: 5, G: 4, B: 3, T: 3, D: 4, W: 1, F: 1 };
+  var D_OUT = { C: 6, L: 6, M: 5, G: 4, B: 3, T: 3, D: 4, F: 1 }, D_IN = { C: 6, L: 5, M: 5, G: 4, B: 3, T: 3, D: 4, W: 1, F: 1 }, D_MID = { C: 7, L: 5, M: 5, G: 4, B: 3, T: 3, D: 4, W: 1 };
+  /* Extra Spins: viele Kirschen, Zitronen und Melonen und mehr Joker, damit sich Linien fast immer fuellen */
+  var F_OUT = { C: 10, L: 9, M: 7, G: 2, B: 1, T: 1, D: 1, F: 1 }, F_IN = { C: 9, L: 8, M: 6, G: 2, B: 1, T: 1, D: 1, W: 3, F: 1 };
   var M2 = {
     id: 'diamond', title: 'DIAMANT 💎 5', short: 'Diamant 5', reels: 5, need: 3, gap: 260, tease: 1800, free: 8, mm: 2, gb: 2,
-    counts: [D_OUT, D_IN, D_IN, D_IN, D_OUT], seeds: [11, 2024, 777, 555, 31337],
+    counts: [D_OUT, D_IN, D_MID, D_IN, D_OUT], fcounts: [F_OUT, F_IN, F_IN, F_IN, F_OUT], seeds: [11, 2024, 777, 555, 31337],
     /* je Linie, in Linien-Einsaetzen (Einsatz / 5): 3, 4, 5 gleiche von links; 2 Kirschen von links = 2
        (mit der Riesenwalze in den Extra Spins durchgerechnet: rund 95 % kommen zurueck) */
     pays: { C: [9, 26, 88], L: [9, 26, 88], M: [13, 40, 114], G: [16, 48, 150], B: [18, 62, 194], T: [22, 79, 246], D: [31, 106, 440] }, c2: 2,
@@ -6614,8 +6621,9 @@ input.bprange[type=range]::-moz-range-thumb { width: 20px; height: 20px; border-
 
   var MACH = [M1, M2];
   MACH.forEach(function (mc) {
-    mc.S = mc.counts.map(function (c, i) { return strip(c, mc.seeds[i]); });
-    mc.N = mc.S[0].length;
+    mc.SB = mc.counts.map(function (c, i) { return strip(c, mc.seeds[i]); });
+    mc.SF = mc.fcounts.map(function (c, i) { return strip(c, mc.seeds[i] + 99); });   // gleich lang wie SB
+    mc.S = mc.SB; mc.N = mc.S[0].length;
     mc.pos = mc.S.map(function () { return randInt(mc.N); });
   });
   /* Band der Riesenwalze: Felder [Symbol, 0 = normal | 1 = obere | 2 = untere Haelfte eines Riesen], Riesen gleichmaessig verteilt */
@@ -6695,11 +6703,13 @@ input.bprange[type=range]::-moz-range-thumb { width: 20px; height: 20px; border-
   var vis = null;
 
   /* gpB: so ist das Fenster gerade gebaut (zusammengewachsene Walzen oder -1); beide Walzen teilen sich ein Band */
-  var gpB = -1;
+  var gpB = -1, fsB = false;
   function wantGp() { var f = fsOf(cur); return cur === M2 && f.free > 0 ? f.gp : -1; }
+  /* fsB: das Fenster zeigt gerade die Baender der Extra Spins */
+  function wantFs() { return fsOf(cur).free > 0; }
   function build(merge) {
     var mc = cur, h = '';
-    gpB = wantGp();
+    gpB = wantGp(); fsB = wantFs(); mc.S = fsB ? mc.SF : mc.SB;
     sl.classList.toggle('m2', mc === M2);
     $('#slTitle').textContent = mc.title;
     winEl.style.setProperty('--nr', mc.reels);
@@ -6752,8 +6762,8 @@ input.bprange[type=range]::-moz-range-thumb { width: 20px; height: 20px; border-
       row('mix', symHTML('R') + symHTML('S') + '<i>gemischt</i>', fmt(M1.pays.mix * b));
       row('CC', symHTML('C') + symHTML('C') + '<i>+ beliebig</i>', fmt(M1.pays.CC * b));
       row('C', symHTML('C') + '<i>+ beliebig</i>', fmt(M1.pays.C * b));
-      row('STN', symHTML('c') + '<i>auf der Linie</i>', 'Nachdreh');
-      row('WHL', symHTML('c') + symHTML('C') + symHTML('C') + '<i>im Nachdreh</i>', 'Rad ×2–×25');
+      row('STN', symHTML('o') + '<i>auf Linie</i>', 'Nachdreh');
+      row('WHL', symHTML('l') + symHTML('L') + symHTML('L') + '<i>danach</i>', 'Rad ×2–25');
     } else {
       row('JP', symHTML('D') + '<i>× 5</i>', 'Jackpot');
       M2.order.forEach(function (s) {
@@ -6769,12 +6779,12 @@ input.bprange[type=range]::-moz-range-thumb { width: 20px; height: 20px; border-
     if (cur === M1) return 'Dein Guthaben ist gespeichert. Gewonnen wird in der Reihe mit dem roten Strich. ' +
       'Der <b>Joker</b> (nur mittlere Walze) ersetzt jedes Symbol, drei echte Siebenen knacken den <b>Jackpot</b>. ' +
       'Dreimal <b>Extra-Spin</b> irgendwo im Fenster = 10 Gratis-Drehs, jeder Gewinn darin erhöht den Multiplikator bis ×5. ' +
-      'In den Extra Spins drehen die Walzen, bis du <b>Stopp</b> drückst, danach geht der nächste von allein los. ' +
-      'Landet eine <b>Stein-Kirsche</b> auf der Linie, bleibt ihre Walze stehen und die anderen drehen gratis nach. ' +
-      'Stehen danach drei Kirschen in der Reihe, dreht sich das <b>Glücksrad</b> und nimmt diesen Gewinn ×2 bis ×25. Beträge für deinen Einsatz:';
+      'In den Extra Spins laufen besondere Walzen mit mehr Gewinnen. ' +
+      'Landet ein <b>Steinblock</b> (Kirsche, Zitrone, Orange oder Trauben im Stein) auf der Linie, bleibt seine Walze stehen und die anderen drehen gratis nach. ' +
+      'Stehen danach drei gleiche in der Reihe, dreht sich das <b>Glücksrad</b> und nimmt diesen Gewinn ×2 bis ×25. Beträge für deinen Einsatz:';
     return 'Dein Guthaben ist gespeichert. 5 Gewinnlinien (Mitte, oben, unten, V und umgedrehtes V), gewonnen wird mit gleichen Symbolen von links. ' +
       'Der <b>Joker</b> (Walze 2 bis 4) ersetzt jedes Symbol, fünf echte Diamanten auf einer Linie knacken den <b>Jackpot</b> (* mit Joker). ' +
-      'Dreimal <b>Extra-Spin</b> irgendwo = 8 Gratis-Drehs: zwei zufällige Walzen wachsen zu einer <b>Riesenwalze</b> zusammen und zeigen dasselbe, ' +
+      'Dreimal <b>Extra-Spin</b> irgendwo = 8 Gratis-Drehs auf besonderen Walzen mit mehr Gewinnen: zwei zufällige Walzen wachsen zu einer <b>Riesenwalze</b> zusammen und zeigen dasselbe, ' +
       'dazu kommen <b>Riesensymbole</b> über 2 × 2 Felder – jede Linie durch einen Riesen zahlt doppelt. Jeder Gewinn erhöht den Multiplikator bis ×2. ' +
       'Die Walzen drehen, bis du <b>Stopp</b> drückst, danach geht der nächste Gratis-Dreh von allein los. Beträge je Linie für deinen Einsatz:';
   }
@@ -6891,15 +6901,15 @@ input.bprange[type=range]::-moz-range-thumb { width: 20px; height: 20px; border-
   }
 
   /* ---------- Drehen ---------- */
-  /* Ein Dreh kann aus mehreren Schritten bestehen: landet eine Stein-Kirsche auf der Linie, bleibt ihre Walze stehen
-     und die anderen drehen gratis nach (so lange, bis keine neue Stein-Kirsche kommt). Jeder Schritt zahlt fuer sich.
+  /* Ein Dreh kann aus mehreren Schritten bestehen: landet ein Steinblock auf der Linie, bleibt seine Walze stehen
+     und die anderen drehen gratis nach (so lange, bis kein neuer Steinblock kommt). Jeder Schritt zahlt fuer sich.
      Alles wird sofort berechnet und verbucht, danach nur noch nacheinander gezeigt. */
   function spin() {
     if (run) { runStop(); return; }
     if (busy || sl.hidden || !$('#slGamble').hidden) return;
     Snd.unlock(); settle();
     var mc = cur, f = fsOf(mc), P = PR.prof(), fr = f.free > 0, b, cost;
-    if (wantGp() !== gpB) build();   // vor dem Abzaehlen: der letzte Extra Spin laeuft noch mit der Riesenwalze
+    if (wantGp() !== gpB || wantFs() !== fsB) build();   // vor dem Abzaehlen: der letzte Extra Spin laeuft noch mit der Riesenwalze
     if (fr) { b = f.fbet; cost = 0; f.free--; }
     else {
       if (P.bank < BETS[0]) { P.bank = GIFT; PR.saveProf(); PR.renderBank(); showBank(P.bank); toast('Pleite – du bekommst ' + GIFT + ' Chips zum Weiterspielen'); }
@@ -6941,10 +6951,10 @@ input.bprange[type=range]::-moz-range-thumb { width: 20px; height: 20px; border-
     $('#slSpin').classList.add('down'); setTimeout(function () { $('#slSpin').classList.remove('down'); }, 140);
     var c = { mc: mc, f: f, fr: fr, b: b, base: before - cost, total: total, jp: jpAny, steps: steps, st: st,
               retrig: !!(sc0 && fr), endFs: fr && !sc0 && f.free === 0 };
-    if (fr) runStart(c); else animate(c, 0);
+    if (fr && mc === M2) runStart(c); else animate(c, 0);   // Lucky Seven: Extra Spins dreht man selbst, ohne Stopp
   }
 
-  /* Extra Spins: die Walzen drehen richtig schnell, bis man Stopp drueckt (das Ergebnis steht schon fest), dann laufen
+  /* Diamant 5, Extra Spins: die Walzen drehen richtig schnell, bis man Stopp drueckt (das Ergebnis steht schon fest), dann laufen
      sie nacheinander aus. Mit Autospin wird von allein gestoppt. run: der laufende Dreh, solange er gestoppt werden kann */
   var run = null, RUN_V = 0.034;   // Felder pro Millisekunde
   function runStart(c) {
@@ -7068,7 +7078,7 @@ input.bprange[type=range]::-moz-range-thumb { width: 20px; height: 20px; border-
           fcount++;
           if (fcount + (mc.reels - 1 - i) >= mc.need) { cellEl(i, r, d + 1).classList.add('fland'); Snd.scat(Math.min(2, fcount - 1)); }
         }
-        /* Stein-Kirsche auf der Linie: dumpfer Schlag */
+        /* Steinblock auf der Linie: dumpfer Schlag */
         if (mc === M1 && STONE[mc.S[i][r]]) { cellEl(i, r, 1).classList.add('stone'); Snd.knock(); }
         var nx = i + 1; while (nx < mc.reels && skip(nx)) nx++;
         if (nx < mc.reels && teased[nx]) { reels[nx].parentNode.classList.add('tease'); Snd.tease((stops[nx] - ms) / 1000 + 0.1); }
@@ -7077,7 +7087,7 @@ input.bprange[type=range]::-moz-range-thumb { width: 20px; height: 20px; border-
     Snd.spin(ratchet / 1000 - 0.1);
     setTimeout(function () { if (gg === gen) done(c, k); }, last + 120);
   }
-  /* festgehaltene Walzen: grauer Rahmen, die Stein-Kirsche leuchtet */
+  /* festgehaltene Walzen: grauer Rahmen, der Steinblock leuchtet */
   function markHeld(s) {
     s.held.forEach(function (h, i) {
       reels[i].parentNode.classList.toggle('held', h);
@@ -7241,13 +7251,13 @@ input.bprange[type=range]::-moz-range-thumb { width: 20px; height: 20px; border-
     if (!c.fr && !c.steps[0].sc && c.total > 0 && !c.jp) riskAmt = c.total;
     if (c.endFs && c.f.fwon > 0) riskAmt = c.f.fwon;
     /* Diamant 5: Extra Spins fangen an (zwei Walzen wachsen zusammen) oder sind vorbei (wieder fuenf Walzen) */
-    if (wantGp() !== gpB) { var mg = wantGp() >= 0; build(mg); if (mg) { toast('Riesenwalze! Zwei Walzen wachsen zusammen'); Snd.win(); } }
+    if (wantGp() !== gpB || wantFs() !== fsB) { var mg = wantGp() >= 0 && wantGp() !== gpB; build(mg); if (mg) { toast('Riesenwalze! Zwei Walzen wachsen zusammen'); Snd.win(); } }
     /* Gewinn ohne Risikoleiter (Jackpot) gleich melden, sonst erst, wenn klar ist, ob riskiert wird */
     if (riskAmt) { pendRep = riskAmt; pendBet = c.b; }
     else if (!c.fr && !c.steps[0].sc && c.total > 0) report(c.total, c.b);
     renderAll();
     autoNext(700);
-    if (c.fr && fsOf(cur).free > 0) freeNext(650, c.mc);
+    if (c.fr && c.mc === M2 && fsOf(cur).free > 0) freeNext(650, c.mc);
   }
   /* Autospin: Knopf ueber dem Drehen-Knopf leuchtet, solange er an ist; dann wird nach jedem Dreh von allein weitergedreht.
      Hoert auf bei erneutem Druck, beim Verlassen, wenn die Seite im Hintergrund ist oder das Guthaben nicht mehr reicht */
