@@ -1257,7 +1257,7 @@ input.bprange[type=range]::-moz-range-thumb { width: 20px; height: 20px; border-
 #lk.open #lkBulbs circle { animation: lkblink .3s steps(2, jump-none) infinite; animation-delay: 0s !important; }
 @keyframes lkblink { from { fill: #ffe08a; } to { fill: #4a3a12; } }
 #lk.miss #lkBulbs circle { animation: none; fill: #ff5a4a; }
-.lkmsg { min-height: 22px; margin: 0; font: 800 16px var(--ui); color: var(--ink); text-align: center; flex: none; }
+.lkmsg { min-height: 40px; margin: 0; font: 800 16px/20px var(--ui); color: var(--ink); text-align: center; flex: none; }
 .lkmsg.good { color: #ffe08a; }
 .lkmsg.bad { color: #ff8a7a; }
 /* Gewinnanzeige wie die Ziffernanzeige am Automaten: zaehlt mit jedem Treffer eins hoch */
@@ -1815,7 +1815,7 @@ input.bprange[type=range]::-moz-range-thumb { width: 20px; height: 20px; border-
         <button class="btn wide" id="lkHelpBtn" type="button" style="margin-top:10px" aria-expanded="false">Spielerklärung</button>
         <div id="lkHelp" hidden>
           <p style="margin-top:14px">Der rote Balken läuft im Kreis. Drück den grünen Knopf unten genau dann, wenn er über dem gelben Punkt ist. Es zählt nur der grüne Knopf. Nach jedem Treffer dreht er die Richtung um und wird etwas schneller. Mit der Zeit liegen die Punkte enger, manchmal direkt hintereinander – dann schnell nachdrücken.</p>
-          <p>Jeder Treffer bringt 1 Chip, die Gewinnanzeige zählt also mit jedem Treffer eins hoch. Schaffst du alle 50 Treffer, ist das Schloss geknackt und du bekommst den Jackpot von 100 Chips. Danach kommt die nächste, schnellere Stufe.</p>
+          <p>Jeder Treffer bringt 1 Chip, die Gewinnanzeige zählt also mit jedem Treffer eins hoch. Schaffst du alle 50 Treffer, ist das Schloss geknackt und du bekommst den Jackpot von 100 Chips. Danach kommt die nächste, schnellere Stufe, und dort gibt es mehr: auf Stufe 2 bringt jeder Treffer 2 Chips und der Jackpot 200, auf Stufe 3 sind es 3 und 300 und so weiter.</p>
           <p>Drückst du daneben oder lässt du den Punkt vorbeiziehen, ist die Runde vorbei. Gewonnene Chips behältst du, und spielen kostet nichts.</p>
         </div>
         <button class="btn wide" id="lkMenu" type="button" style="margin-top:10px">Zum Hauptmenü</button>
@@ -7904,7 +7904,7 @@ input.bprange[type=range]::-moz-range-thumb { width: 20px; height: 20px; border-
    LED-Schloss, gedrueckt wird der gruene Knopf unten in der Mitte, wenn er ueber dem gelben Punkt steht. Nach jedem
    Treffer dreht er die Richtung um und wird langsam schneller; die Abstaende werden enger, und ab und zu liegt der
    naechste Punkt ganz kurz dahinter (schnell nachdruecken). Spielen ist kostenlos: jeder Treffer bringt 1 Chip
-   (die Gewinnanzeige zaehlt eins hoch), der 50. Treffer knackt das Schloss (Jackpot 100). Danach kommt die naechste, etwas schnellere Stufe. Daneben gedrueckt oder den Punkt
+   (die Gewinnanzeige zaehlt eins hoch), der 50. Treffer knackt das Schloss (Jackpot 100). Danach kommt die naechste, etwas schnellere Stufe; dort zahlt alles das Stufen-Fache (Stufe 2: 2 pro Treffer, Jackpot 200). Daneben gedrueckt oder den Punkt
    vorbeiziehen lassen = Runde vorbei. */
 (function () {
   'use strict';
@@ -7913,7 +7913,8 @@ input.bprange[type=range]::-moz-range-thumb { width: 20px; height: 20px; border-
   var Snd = PR.Snd, fmt = PR.fmt;
   function $(s) { return document.querySelector(s); }
   var NEED = 50, JACKPOT = 100, TOL = 1.5, NB = 36;
-  function payOf(k) { return k >= NEED ? JACKPOT : 1; }
+  /* je hoeher die Stufe, desto mehr: Stufe 2 zahlt das Doppelte, Stufe 3 das Dreifache usw. */
+  function payOf(k) { return (k >= NEED ? JACKPOT : 1) * lv; }
   function stats() { var o = null; try { o = JSON.parse(localStorage.getItem('pr-lkstats') || 'null'); } catch (e) {} o = o || {}; return { best: +o.best || 0, jp: +o.jp || 0, won: +o.won || 0 }; }
   function saveStats(st) { try { localStorage.setItem('pr-lkstats', JSON.stringify(st)); } catch (e) {} }
 
@@ -7978,6 +7979,7 @@ input.bprange[type=range]::-moz-range-thumb { width: 20px; height: 20px; border-
     $('#lkWon').textContent = fmt(won);
     $('#lkBest').textContent = fmt(s.best);
     $('#lkJps').textContent = fmt(s.jp);
+    $('#lkJp').textContent = fmt(JACKPOT * lv);
     $('#lkCnt').textContent = String(NEED - k);
     $('#lkLv').textContent = st === 'idle' ? 'Start drücken' : st === 'open' ? 'Geknackt!' : 'Stufe ' + lv;
     $('#lkRw').textContent = fmt(rw);
@@ -8024,7 +8026,7 @@ input.bprange[type=range]::-moz-range-thumb { width: 20px; height: 20px; border-
     k = 0; dir = Math.random() < 0.5 ? 1 : -1; ang = 0; drawNeedle();
     st = 'run'; place();
     go.classList.add('run');
-    msg(keepLv ? 'Stufe ' + lv + ' – noch schneller!' : 'Drück, wenn der rote Balken auf dem gelben Punkt ist', keepLv ? 'good' : '');
+    msg(keepLv ? 'Stufe ' + lv + ': schneller, dafür ' + lv + ' Chips pro Treffer!' : 'Drück, wenn der rote Balken auf dem gelben Punkt ist', keepLv ? 'good' : '');
     renderInfo(); startLoop();
   }
   function miss(t) {
@@ -8050,7 +8052,7 @@ input.bprange[type=range]::-moz-range-thumb { width: 20px; height: 20px; border-
       lk.classList.remove('run'); lk.classList.add('open'); go.classList.remove('run'); Snd.win(); setTimeout(function () { Snd.pot(); }, 450);
       try { if (Snd.vibOn() && navigator.vibrate) navigator.vibrate([70, 50, 140]); } catch (e) {}
       var s = stats(); s.jp++; if (total > s.best) s.best = total; saveStats(s);
-      coins(36); showLast(rw, 'Jackpot!'); msg('JACKPOT! Schloss geknackt: +' + JACKPOT + ' Chips', 'good');
+      coins(36); showLast(rw, 'Jackpot!'); msg('JACKPOT! Schloss geknackt: +' + fmt(c) + ' Chips', 'good');
       renderInfo();
       nextT = setTimeout(function () { if (st === 'open' && !lk.hidden) { lv++; begin(true); } }, 3300);
       return;
