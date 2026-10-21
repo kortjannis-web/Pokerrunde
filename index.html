@@ -5280,7 +5280,7 @@ input.bprange[type=range]::-moz-range-thumb { width: 20px; height: 20px; border-
   function afterDeal() {
     T.seats.forEach(function (s) { if (s.inR && isBJ(s.hands[0])) s.hands[0].done = true; });
     if (cval(T.dealer[0]) >= 10 && total([T.dealer[0], H.hole]).t === 21) {
-      reveal(); T.phase = 'dealer'; say('Dealer hat Blackjack'); push();
+      reveal(); T.phase = 'dealer'; say('Dealer hat Blackjack – nur ein Blackjack ist unentschieden'); push();
       later(settle, 1300);
       return;
     }
