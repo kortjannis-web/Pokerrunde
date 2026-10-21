@@ -311,9 +311,6 @@ button { font: inherit; color: inherit; cursor: pointer; }
 .seat.empty .avatar::after { content: '+'; font: 400 30px/1 var(--ui); margin-top: -3px; }
 .seat.empty .tag { background: transparent; border-color: transparent; color: var(--muted); }
 .seat.empty .dbtn, .seat.empty .bbtn { display: none; }
-.bjadd { pointer-events: auto; cursor: pointer; display: flex; align-items: center; gap: 8px; padding: 4px; border: 0; background: none; color: var(--muted); font: 600 12px var(--ui); }
-.bjside.r .bjadd { flex-direction: row-reverse; }
-.bjadd i { flex: none; width: 34px; height: 34px; border-radius: 50%; border: 2px dashed rgba(236,231,218,.55); display: grid; place-items: center; font: 400 24px/1 var(--ui); font-style: normal; color: rgba(236,231,218,.8); }
 .seat.me { left: 50%; top: auto; bottom: 6px; transform: translateX(-50%); width: auto; flex-direction: row; gap: 10px; }
 .seat.me .minis { display: none; }
 .seat.me .avatar { width: 36px; height: 36px; font-size: 16px; }
@@ -713,8 +710,12 @@ input.bprange[type=range]::-moz-range-thumb { width: 20px; height: 20px; border-
 .finv { text-align: left; }
 .finv:empty { display: none; }
 .finv .psec { margin: 4px 0 8px; }
-#pause .finv .fl, #bjPause .finv .fl { background: var(--bg); }
-#pause .finv .fl .pav i, #bjPause .finv .fl .pav i { box-shadow: 0 0 0 2.5px var(--bg); }
+#pause .finv .fl, #bjInvDlg .finv .fl { background: var(--bg); }
+#pause .finv .fl .pav i, #bjInvDlg .finv .fl .pav i { box-shadow: 0 0 0 2.5px var(--bg); }
+#bjInvDlg .endcard { max-height: 100%; overflow-y: auto; }
+#bjInvDlg .psettings { text-align: left; }
+#bjInvDlg .finv > .psec { margin-top: 12px; }
+#bjInvBtn[hidden] { display: none; }
 #invBan, #askBan { position: absolute; left: 0; right: 0; top: max(10px, env(safe-area-inset-top)); z-index: 96; display: flex; align-items: center; gap: 10px; padding: 10px 8px 10px 10px; border-radius: 16px; background: var(--bg2); border: 1px solid rgba(224,170,74,.55); box-shadow: 0 14px 34px rgba(0,0,0,.6); animation: ibin .35s cubic-bezier(.2,.9,.3,1); }
 @keyframes ibin { from { transform: translateY(-20px); opacity: 0; } to { transform: none; opacity: 1; } }
 .ibtxt { flex: 1; min-width: 0; display: flex; flex-direction: column; gap: 2px; font: 500 13px/1.3 var(--ui); color: var(--muted); }
@@ -940,7 +941,9 @@ input.bprange[type=range]::-moz-range-thumb { width: 20px; height: 20px; border-
 .slreel { position: relative; height: calc(var(--ch) * 3); overflow: hidden; border-radius: 10px; background: linear-gradient(90deg, #ddd5c2, #f8f4ea 22%, #f8f4ea 78%, #ddd5c2); }
 .slreel::after { content: ''; position: absolute; inset: 0; pointer-events: none; background: linear-gradient(180deg, rgba(0,0,0,.55), rgba(0,0,0,.08) 26%, transparent 40%, transparent 60%, rgba(0,0,0,.08) 74%, rgba(0,0,0,.55)); }
 .slstrip { position: absolute; left: 0; right: 0; top: 0; will-change: transform; }
-.slstrip.spin { filter: blur(.5px); }
+/* Unschaerfe beim Drehen ueber dem kleinen Walzenfenster statt auf dem sehr hohen Band: ein Filter auf dem ganzen Band
+   zeichnet auf manchen Handys weit unten im Band nichts mehr (gerade beim langen Spannungs-Dreh fehlte dann ein Symbol) */
+.slreel:has(> .slstrip.spin)::after { -webkit-backdrop-filter: blur(.5px); backdrop-filter: blur(.5px); }
 .slcell { height: var(--ch); display: grid; place-items: center; }
 .sy { line-height: 1; transition: transform .2s; }
 .sy.e { font-size: calc(var(--ch) * .56); }
@@ -1042,7 +1045,7 @@ input.bprange[type=range]::-moz-range-thumb { width: 20px; height: 20px; border-
 #slSpin.stop span { display: block; font-size: 19px; letter-spacing: .06em; }
 #slSpin.stop small { display: block; font: 700 10px var(--ui); letter-spacing: .04em; text-transform: none; opacity: .9; }
 @keyframes slstopp { to { filter: brightness(1.18); box-shadow: 0 6px 0 #5a0c0c, 0 12px 22px rgba(0,0,0,.5), 0 0 22px 6px rgba(255,100,80,.6), inset 0 2px 0 rgba(255,255,255,.4); } }
-.slstrip.fast { filter: blur(1.4px) brightness(1.06); }
+.slreel:has(> .slstrip.fast)::after { -webkit-backdrop-filter: blur(1.4px) brightness(1.06); backdrop-filter: blur(1.4px) brightness(1.06); }
 /* ---------- Slots: zweiter Automat, Jackpot, Joker, Steinbloecke, Risikoleiter ---------- */
 /* Automat waehlen */
 .slpick { display: flex; gap: 6px; padding: 3px; border-radius: 999px; background: rgba(0,0,0,.35); border: 1px solid var(--line); }
@@ -1584,6 +1587,7 @@ input.bprange[type=range]::-moz-range-thumb { width: 20px; height: 20px; border-
         <button class="bjcode" id="bjCodeBtn" type="button" hidden>Code<b id="bjCodeTxt">-----</b></button>
         <div class="bank bjbank" role="status" aria-label="Deine Chips am Tisch"><i class="bchip" aria-hidden="true"></i><span id="bjChips">0</span></div>
         <button class="iconbtn" id="bjTopBtn" type="button" aria-label="Chips aufladen"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path d="M12 8v8M8 12h8"/></svg></button>
+        <button class="iconbtn" id="bjInvBtn" type="button" aria-label="Freunde einladen"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="9" cy="8" r="3.4"/><path d="M2.8 19.5c.6-3.4 3.1-5.4 6.2-5.4s5.6 2 6.2 5.4"/><path d="M19 8v6M16 11h6"/></svg></button>
         <button class="iconbtn" id="bjPauseBtn" type="button" aria-label="Pause"><svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><rect x="6" y="5" width="4" height="14" rx="1.2"/><rect x="14" y="5" width="4" height="14" rx="1.2"/></svg></button>
       </div>
     </header>
@@ -1629,12 +1633,11 @@ input.bprange[type=range]::-moz-range-thumb { width: 20px; height: 20px; border-
         <button class="btn side" id="bjSplit" type="button"><span>Teilen</span><small></small></button>
       </div>
     </footer>
-    <div id="bjPause" class="overlay" hidden>
+    <div id="bjInvDlg" class="overlay" hidden>
       <div class="endcard">
-        <h2>Pause</h2>
-        <p id="bjPauseTxt"></p>
+        <h2>Freunde einladen</h2>
+        <p id="bjInvTxt"></p>
         <div class="psettings" id="bjInv" hidden>
-          <div class="psec">Mitspieler einladen</div>
           <div class="codebox">
             <div class="code" id="bjPCode">-----</div>
             <div class="codebtns">
@@ -1644,6 +1647,13 @@ input.bprange[type=range]::-moz-range-thumb { width: 20px; height: 20px; border-
           </div>
           <div class="finv" data-fi></div>
         </div>
+        <button class="btn primary wide" id="bjInvX" type="button" style="margin-top:12px">Schließen</button>
+      </div>
+    </div>
+    <div id="bjPause" class="overlay" hidden>
+      <div class="endcard">
+        <h2>Pause</h2>
+        <p id="bjPauseTxt"></p>
         <div class="psettings" id="bjGuide"></div>
         <button class="btn primary wide" id="bjResume" type="button">Weiterspielen</button>
         <button class="btn wide" id="bjMenu" type="button" style="margin-top:10px">Zum Hauptmenü</button>
@@ -1806,7 +1816,7 @@ input.bprange[type=range]::-moz-range-thumb { width: 20px; height: 20px; border-
         <button class="btn primary wide" id="lkResume" type="button">Weiterspielen</button>
         <button class="btn wide" id="lkHelpBtn" type="button" style="margin-top:10px" aria-expanded="false">Spielerklärung</button>
         <div id="lkHelp" hidden>
-          <p style="margin-top:14px">Der rote Balken läuft im Kreis. Drück den grünen Knopf unten genau dann, wenn er über dem gelben Punkt ist (Tippen irgendwo auf den Bildschirm geht auch). Nach jedem Treffer dreht er die Richtung um und wird etwas schneller. Mit der Zeit liegen die Punkte enger, manchmal direkt hintereinander – dann schnell nachdrücken.</p>
+          <p style="margin-top:14px">Der rote Balken läuft im Kreis. Drück den grünen Knopf unten genau dann, wenn er über dem gelben Punkt ist. Es zählt nur der grüne Knopf. Nach jedem Treffer dreht er die Richtung um und wird etwas schneller. Mit der Zeit liegen die Punkte enger, manchmal direkt hintereinander – dann schnell nachdrücken.</p>
           <p>Jeder Treffer bringt 1 Chip, die Gewinnanzeige zählt also mit jedem Treffer eins hoch. Schaffst du alle 50 Treffer, ist das Schloss geknackt und du bekommst den Jackpot von 100 Chips. Danach kommt die nächste, schnellere Stufe.</p>
           <p>Drückst du daneben oder lässt du den Punkt vorbeiziehen, ist die Runde vorbei. Gewonnene Chips behältst du, und spielen kostet nichts.</p>
         </div>
@@ -5949,7 +5959,7 @@ input.bprange[type=range]::-moz-range-thumb { width: 20px; height: 20px; border-
     $('#bjChips').textContent = fmt(my ? my.chips : PR.prof().bank);
     /* keine Chips mehr am Tisch, aber noch im Guthaben: wie beim Poker gleich zum Nachladen fragen */
     if (my && t.phase === 'bet' && !my.ready && my.chips < t.min && BW > 0 && ADD <= (my.add | 0) && !dlg
-        && V.brokeKey !== String(t.round) && $('#bjPause').hidden && $('#bjEnd').hidden) { V.brokeKey = String(t.round); openDlg('broke'); }
+        && V.brokeKey !== String(t.round) && $('#bjPause').hidden && $('#bjInvDlg').hidden && $('#bjEnd').hidden) { V.brokeKey = String(t.round); openDlg('broke'); }
     /* Einsatz vorbelegen, sobald eine neue Setzrunde beginnt */
     var bk = t.round + ':' + (my ? 1 : 0);
     if (t.phase === 'bet' && V.betKey !== bk) { V.betKey = bk; myBet = my ? Math.min(my.bet, my.chips, MAX_BET) : 0; if (myBet < t.min) myBet = 0; }
@@ -5964,8 +5974,7 @@ input.bprange[type=range]::-moz-range-thumb { width: 20px; height: 20px; border-
     stage.classList.toggle('solo', !others.length);
     $('#bjReact').hidden = !multi(); if (!multi()) $('#bjRPanel').hidden = true;
     /* die ersten beiden links am Rand, weitere rechts */
-    var cols = [$('#bjOthers .l'), $('#bjOthers .r')], addEl = $('#bjOthers .bjadd');
-    if (addEl) addEl.remove();
+    var cols = [$('#bjOthers .l'), $('#bjOthers .r')];
     cols.forEach(function (col, c) { var n = c ? Math.max(0, others.length - 2) : Math.min(2, others.length); while (col.children.length > n) col.removeChild(col.lastChild); });
     others.forEach(function (s, i) {
       var col = cols[i < 2 ? 0 : 1], el = col.children[i < 2 ? i : i - 2];
@@ -6008,13 +6017,7 @@ input.bprange[type=range]::-moz-range-thumb { width: 20px; height: 20px; border-
       sub.textContent = st; sub.classList.toggle('ok', t.phase === 'bet' && s.ready); sub.classList.toggle('turn', turn);
       sub.classList.toggle('pos', net > 0); sub.classList.toggle('neg', net !== null && net < 0);
     });
-    /* noch ein Platz frei: gestrichelter Kreis mit Plus zum Einladen von Freunden */
-    if ((!NB.role || NB.role === 'host') && free() && PR.netAvail()) {
-      addEl = document.createElement('button'); addEl.type = 'button'; addEl.className = 'bjadd';
-      addEl.innerHTML = '<i aria-hidden="true">+</i><span>Freund einladen</span>';
-      addEl.addEventListener('click', inviteSeat);
-      cols[others.length < 2 ? 0 : 1].appendChild(addEl);
-    }
+    $('#bjInvBtn').hidden = NB.role === 'guest';
 
     /* eigene Haende */
     var meEl = $('#bjMe'), mh = meEl.querySelector('.bjhands'), hands = my ? my.hands : [];
@@ -6407,7 +6410,7 @@ input.bprange[type=range]::-moz-range-thumb { width: 20px; height: 20px; border-
     CEL = {}; fly.innerHTML = '';
     $('#bjDealer .bjc').innerHTML = ''; $('#bjOthers .l').innerHTML = ''; $('#bjOthers .r').innerHTML = ''; $('#bjMe .bjhands').innerHTML = '';
     V = { phase: '', round: -1, shuf: -1, sayN: -1, turnKey: '', doneKey: '', giftKey: '', betKey: '', brokeKey: '', quiet: true };
-    myBet = 0; dlg = null; $('#bjChipDlg').hidden = true; $('#bjPause').hidden = true; $('#bjEnd').hidden = true; $('#bjToast').classList.remove('on');
+    myBet = 0; dlg = null; $('#bjChipDlg').hidden = true; $('#bjPause').hidden = true; $('#bjInvDlg').hidden = true; $('#bjEnd').hidden = true; $('#bjToast').classList.remove('on');
   }
   function openTable() {
     $('#menu').hidden = true; $('#bjf').hidden = true; bj.hidden = false;
@@ -6439,7 +6442,7 @@ input.bprange[type=range]::-moz-range-thumb { width: 20px; height: 20px; border-
   function endCard(title, text) {
     if (!T || !bj.hidden && !$('#bjEnd').hidden) return;
     $('#bjEndT').textContent = title; $('#bjEndX').textContent = text;
-    $('#bjPause').hidden = true; $('#bjChipDlg').hidden = true; dlg = null; $('#bjEnd').hidden = false;
+    $('#bjPause').hidden = true; $('#bjInvDlg').hidden = true; $('#bjChipDlg').hidden = true; dlg = null; $('#bjEnd').hidden = false;
     wipe(false);
   }
   $('#bjEndGo').addEventListener('click', leave);
@@ -6449,22 +6452,33 @@ input.bprange[type=range]::-moz-range-thumb { width: 20px; height: 20px; border-
     $('#bjPauseTxt').textContent = inRound()
       ? 'Wenn du jetzt zum Hauptmenü gehst, verfällt dein Einsatz in dieser Runde.'
       : multi() ? 'Am Tisch geht es ohne dich weiter. Deine Chips bleiben in deinem Guthaben.' : 'Deine Chips sind in deinem Guthaben gespeichert.';
-    var on = NB.role === 'host' && !!NB.code;
-    $('#bjInv').hidden = !on;
-    if (on) {
-      $('#bjPCode').textContent = NB.code;
-      $('#bjPWa').href = 'https://wa.me/?text=' + encodeURIComponent('Komm an meinen Blackjack-Tisch! Code: ' + NB.code + '\n' + PR.SITE_URL + '#bj-' + NB.code);
-    }
     if (NB.role === 'host') $('#bjMenu').textContent = 'Tisch schließen'; else $('#bjMenu').textContent = 'Zum Hauptmenü';
     [].forEach.call(document.querySelectorAll('#bjPause .guide'), function (d) { d.open = false; });   // Anleitung jedes Mal zugeklappt
     $('#bjPause').hidden = false;
   }
   $('#bjPauseBtn').addEventListener('click', openPause);
-  function inviteSeat() {
-    if (NB.role === 'host') { openPause(); return; }
-    bjToast('Öffne den Tisch für Freunde …');
-    hostNow(function (code) { if (code) openPause(); else bjToast('Keine Verbindung – versuch es gleich nochmal'); });
+  /* Knopf oben rechts (Menschen mit Plus): Tisch fuer Freunde oeffnen, Code und Freunde zum Einladen zeigen */
+  function showInv() {
+    var on = NB.role === 'host' && !!NB.code;
+    $('#bjInv').hidden = !on;
+    if (!on) return;
+    $('#bjPCode').textContent = NB.code;
+    $('#bjPWa').href = 'https://wa.me/?text=' + encodeURIComponent('Komm an meinen Blackjack-Tisch! Code: ' + NB.code + '\n' + PR.SITE_URL + '#bj-' + NB.code);
+    $('#bjInvTxt').textContent = free() ? 'Dein Tisch ist offen. Wer beitritt, setzt sich in der nächsten Runde dazu.' : 'Der Tisch ist gerade voll.';
   }
+  $('#bjInvBtn').addEventListener('click', function () {
+    if (NB.role === 'guest') return;
+    $('#bjInvDlg').hidden = false;
+    if (NB.role === 'host') { showInv(); return; }
+    $('#bjInv').hidden = true;
+    $('#bjInvTxt').textContent = !T ? 'Setz dich erst an den Tisch.' : !PR.netAvail() ? PR.MSG_NOLIB : 'Öffne den Tisch …';
+    if (!T || !PR.netAvail()) return;
+    hostNow(function (code) {
+      if (code) showInv();
+      else $('#bjInvTxt').textContent = !free() ? 'Der Tisch ist gerade voll.' : 'Keine Verbindung – versuch es gleich nochmal.';
+    });
+  });
+  $('#bjInvX').addEventListener('click', function () { $('#bjInvDlg').hidden = true; });
   (function () { var g = $('#guideBj').cloneNode(true); g.removeAttribute('id'); $('#bjGuide').appendChild(g); })();
   $('#bjCodeBtn').addEventListener('click', openPause);
   $('#bjResume').addEventListener('click', function () { $('#bjPause').hidden = true; });
@@ -6950,7 +6964,7 @@ input.bprange[type=range]::-moz-range-thumb { width: 20px; height: 20px; border-
   function readJ(k) { try { return JSON.parse(localStorage.getItem(k) || 'null'); } catch (e) { return null; } }
   function writeJ(k, v) { try { localStorage.setItem(k, JSON.stringify(v)); } catch (e) {} }
 
-  var BETS = [10, 20, 50, 100, 200, 500, 1000], GIFT = 50, COPIES = 9, FREE_N = 10, MULT_MAX = 5;
+  var BETS = [10, 20, 50, 100, 200, 500, 1000], GIFT = 50, COPIES = 10, FREE_N = 10, MULT_MAX = 5;
   var JP0 = 200, UNLOCK = 5000, LADDER = 5;
   /* Gluecksrad nach dem Nachdreh: alle Felder gleich gross, die Chance p (zusammen 100) aber nicht – kleine Faktoren
      kommen oefter. Nebeneinander steht nie zweimal derselbe Faktor (auch nicht ueber den Anfang hinweg) */
@@ -7500,7 +7514,7 @@ input.bprange[type=range]::-moz-range-thumb { width: 20px; height: 20px; border-
         place(i, posOf(i) + len(i), 0); void el.offsetWidth;
         el.classList.add('spin');
         /* liegt das Ergebnis vor der alten Stelle, eine Runde mehr (sonst ruckt v. a. die linke Walze nur ein, zwei Felder) */
-        place(i, r + len(i) * Math.min(COPIES - 1, 2 + i + (long ? 2 : 0) + (r < posOf(i) ? 1 : 0)), ms, long ? 'cubic-bezier(.1,.6,.1,1)' : '');
+        place(i, r + len(i) * Math.min(COPIES - 2, 2 + i + (long ? 2 : 0) + (r < posOf(i) ? 1 : 0)), ms, long ? 'cubic-bezier(.1,.6,.1,1)' : '');
       }
       setTimeout(function () { if (gg === gen) el.classList.remove('spin'); }, ms - (long ? 1400 : 260));
       setTimeout(function () {
@@ -8051,8 +8065,7 @@ input.bprange[type=range]::-moz-range-thumb { width: 20px; height: 20px; border-
   go.addEventListener('pointerdown', function (e) { e.preventDefault(); e.stopPropagation(); go.classList.add('down'); press(); });
   ['pointerup', 'pointercancel', 'pointerleave'].forEach(function (t) { go.addEventListener(t, function () { go.classList.remove('down'); }); });
   go.addEventListener('click', function (e) { if (e.detail === 0) press(); });   // Tastatur
-  /* Tippen neben den Knopf zaehlt auch, der Knopf geht dann kurz mit runter */
-  $('#lkStage').addEventListener('pointerdown', function (e) { if (e.pointerType === 'mouse' && e.button !== 0) return; e.preventDefault(); go.classList.add('down'); setTimeout(function () { go.classList.remove('down'); }, 90); press(); });
+  /* nur der gruene Knopf zaehlt, Tippen daneben auf den Bildschirm macht nichts */
   document.addEventListener('keydown', function (e) {
     if (lk.hidden || !$('#lkPause').hidden) return;
     if (e.key === ' ' || e.key === 'Enter') { e.preventDefault(); if (!e.repeat) press(); }
