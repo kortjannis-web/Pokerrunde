@@ -1204,7 +1204,7 @@ input.bprange[type=range]::-moz-range-thumb { width: 20px; height: 20px; border-
 #menu.drag .mbg3 { transition: none; }
 #menu .menucard { z-index: 1; }
 .lklogo { display: flex; justify-content: center; height: 41px; align-items: flex-end; }
-.lklogo svg { width: 34px; height: 44px; display: block; filter: drop-shadow(0 4px 6px rgba(0,0,0,.45)); }
+.lklogo svg { width: 44px; height: 44px; display: block; filter: drop-shadow(0 4px 6px rgba(0,0,0,.45)); }
 #lk { position: absolute; inset: 0; z-index: 58; display: flex; flex-direction: column; background: radial-gradient(120% 70% at 50% 30%, #1b2a48, var(--bg) 70%); background-color: var(--bg); }
 #lkStage { position: relative; flex: 1 1 auto; min-height: 0; overflow: hidden; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 10px; cursor: pointer; touch-action: manipulation; }
 .lkmarq { position: relative; width: min(100%, 340px); height: 50px; border-radius: 14px; display: flex; align-items: center; justify-content: space-between; padding: 0 16px; background: linear-gradient(180deg, #1f4f94, #0c2550); box-shadow: inset 0 0 0 2px rgba(140,200,255,.75), 0 4px 10px rgba(0,0,0,.4); overflow: hidden; flex: none; }
@@ -1214,22 +1214,35 @@ input.bprange[type=range]::-moz-range-thumb { width: 20px; height: 20px; border-
 .lkmarq em { position: relative; font-style: normal; display: flex; flex-direction: column; align-items: flex-end; line-height: 1; }
 .lkmarq em small { font: 700 9px var(--ui); letter-spacing: .16em; text-transform: uppercase; color: #9fc7ee; }
 .lkmarq em b { font: 800 19px var(--display); color: #ffe08a; text-shadow: 0 0 10px rgba(255,224,138,.6); }
-.lkwrap { position: relative; flex: none; width: min(72vw, 280px, 32vh); aspect-ratio: 220 / 350; }
+.lkwrap { position: relative; flex: none; width: min(86vw, 340px, 44vh); aspect-ratio: 1; }
 #lkSvg { width: 100%; height: 100%; display: block; overflow: visible; }
-#lkSvg .shk { transition: transform .45s cubic-bezier(.2,1.6,.4,1); }
-#lk.open #lkSvg .shk { transform: translateY(-34px); }
-#lkSvg .body { transform-box: view-box; transform-origin: 0 0; }
-#lk.hit #lkSvg .body { animation: lkhit .18s ease-out; }
-#lk.miss #lkSvg .body { animation: lkmiss .42s ease-in-out; }
-@keyframes lkhit { 40% { transform: scale(1.035); } }
+#lkSvg .face { transform-box: view-box; transform-origin: 0 0; }
+#lk.hit #lkSvg .face { animation: lkhit .18s ease-out; }
+#lk.miss #lkSvg .face { animation: lkmiss .42s ease-in-out; }
+@keyframes lkhit { 40% { transform: scale(1.025); } }
 @keyframes lkmiss { 15%, 55% { transform: translateX(-7px); } 35%, 75% { transform: translateX(7px); } }
 #lkSvg .tgt { transition: opacity .15s; }
 #lkSvg .tgt circle:first-child { animation: lkglow .6s ease-in-out infinite alternate; }
 @keyframes lkglow { to { opacity: .35; } }
-#lkSvg text.cnt { font: 800 54px var(--display); fill: #f2f6ff; }
-#lkSvg text.lv { font: 700 11px var(--ui); letter-spacing: .16em; fill: #9fb6d8; text-transform: uppercase; }
-#lk.miss #lkSvg text.cnt { fill: #ff7a6b; }
-#lk.open #lkSvg text.cnt { fill: #ffe08a; }
+/* Lichterkranz wie am Automaten: Lauflicht, beim Treffer kurz alle an, beim Jackpot gold blinkend, daneben rot */
+#lkBulbs circle { fill: #3a2c10; stroke: rgba(0,0,0,.5); stroke-width: .8; animation: lkchase 1.6s linear infinite; }
+@keyframes lkchase { 0%, 18% { fill: #fff3c4; } 19%, 100% { fill: #6b5418; } }
+#lk.run #lkBulbs circle { animation-duration: .9s; }
+#lk.hit #lkBulbs circle { animation: none; fill: #fff3c4; }
+#lk.open #lkBulbs circle { animation: lkblink .3s steps(2, jump-none) infinite; animation-delay: 0s !important; }
+@keyframes lkblink { from { fill: #ffe08a; } to { fill: #4a3a12; } }
+#lk.miss #lkBulbs circle { animation: none; fill: #ff5a4a; }
+#lk.open #lkSvg .track { stroke: #6b4a10; }
+#lkGo { position: absolute; left: 50%; top: 50%; width: 46%; height: 46%; transform: translate(-50%, -50%); border-radius: 50%; border: 0; padding: 0; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 2px; color: #fff; touch-action: manipulation; text-shadow: 0 2px 2px rgba(0,0,0,.45);
+  background: radial-gradient(circle at 50% 32%, #b9ffb0, #45d64a 38%, #1e9a2c 70%, #0f5c18); box-shadow: 0 0 0 7px #11161c, 0 0 0 10px #59636f, 0 8px 0 7px #0b3b12, 0 14px 24px 6px rgba(0,0,0,.55), inset 0 3px 0 rgba(255,255,255,.45), inset 0 -6px 12px rgba(0,60,10,.5); transition: transform .07s, box-shadow .07s, filter .07s; }
+#lkGo.run { animation: lkpulse 1.2s ease-in-out infinite; }
+@keyframes lkpulse { 50% { filter: brightness(1.12); } }
+#lkGo.down, #lkGo:active { transform: translate(-50%, calc(-50% + 5px)); box-shadow: 0 0 0 7px #11161c, 0 0 0 10px #59636f, 0 3px 0 7px #0b3b12, 0 6px 14px 6px rgba(0,0,0,.5), inset 0 2px 0 rgba(255,255,255,.3), inset 0 -3px 8px rgba(0,60,10,.5); filter: brightness(.92); }
+#lkGo b { font: 800 clamp(26px, 11vw, 46px)/1 var(--display); font-variant-numeric: tabular-nums; letter-spacing: .02em; }
+#lkGo b.w { font-size: clamp(17px, 6.4vw, 26px); letter-spacing: .06em; }
+#lkGo small { font: 800 10px var(--ui); letter-spacing: .16em; text-transform: uppercase; color: rgba(235,255,230,.9); }
+#lk.miss #lkGo { filter: saturate(.55) brightness(.85); }
+#lk.open #lkGo b { color: #fff3c4; }
 .lkmsg { min-height: 22px; margin: 0; font: 800 16px var(--ui); color: var(--ink); text-align: center; flex: none; }
 .lkmsg.good { color: #ffe08a; }
 .lkmsg.bad { color: #ff8a7a; }
@@ -1241,15 +1254,10 @@ input.bprange[type=range]::-moz-range-thumb { width: 20px; height: 20px; border-
 .lkpay div.jp b { color: #ffe08a; }
 .lkpay div.jp.on { background: #6b4a10; border-color: #ffe08a; box-shadow: 0 0 14px 3px rgba(255,224,138,.6); }
 #lkStage .slcoin { top: -30px; }
-#lkCtl { position: relative; flex: 0 0 auto; height: 124px; padding: 4px 4px 16px; display: flex; align-items: center; justify-content: space-between; gap: 12px; }
-.lkinfo { display: flex; flex-direction: column; gap: 6px; align-items: flex-start; }
+#lkCtl { position: relative; flex: 0 0 auto; padding: 8px 4px 18px; display: flex; align-items: center; justify-content: center; }
+.lkinfo { display: flex; gap: 18px; align-items: center; justify-content: center; flex-wrap: wrap; }
 .lkinfo div { font: 600 12px var(--ui); color: var(--muted); }
 .lkinfo div b { font: 800 15px var(--ui); color: var(--ink); font-variant-numeric: tabular-nums; margin-left: 4px; }
-#lkGo { width: 92px; height: 92px; flex: none; border-radius: 50%; border: 0; padding: 0; display: grid; place-items: center; color: #fff; font: 800 15px var(--ui); letter-spacing: .06em; text-transform: uppercase;
-  background: radial-gradient(circle at 50% 35%, #6fb6ff, #2f73d6 55%, #18438c); box-shadow: 0 6px 0 #0e2b5c, 0 12px 22px rgba(0,0,0,.5), inset 0 2px 0 rgba(255,255,255,.35); transition: transform .08s, box-shadow .08s; text-shadow: 0 1px 2px rgba(0,0,0,.5); touch-action: manipulation; }
-#lkGo.down, #lkGo:active { transform: translateY(5px); box-shadow: 0 1px 0 #0e2b5c, 0 5px 12px rgba(0,0,0,.5), inset 0 2px 0 rgba(255,255,255,.25); }
-#lkGo.run { background: radial-gradient(circle at 50% 35%, #ff8a75, #e0352f 55%, #8c1414); box-shadow: 0 6px 0 #5a0c0c, 0 12px 22px rgba(0,0,0,.5), inset 0 2px 0 rgba(255,255,255,.4); }
-#lkGo.run.down, #lkGo.run:active { box-shadow: 0 1px 0 #5a0c0c, 0 5px 12px rgba(0,0,0,.5), inset 0 2px 0 rgba(255,255,255,.25); }
 #lkHelp p { text-align: left; font-size: 14px; margin-bottom: 12px; }
 </style>
 
@@ -1376,7 +1384,7 @@ input.bprange[type=range]::-moz-range-thumb { width: 20px; height: 20px; border-
       <div class="mswipe" id="mSwipe">
         <div class="mtrack" id="mTrack">
           <div class="mpage" aria-label="Pop the Lock">
-            <div class="lklogo" aria-hidden="true"><svg viewBox="0 0 34 44" aria-hidden="true"><path d="M8 20V13a9 9 0 0 1 18 0v7" fill="none" stroke="#c9d3e0" stroke-width="4.5"/><rect x="2" y="19" width="30" height="24" rx="7" fill="#2f73d6" stroke="#cfeaff" stroke-width="1.6"/><circle cx="17" cy="31" r="7.5" fill="none" stroke="#0a1631" stroke-width="3"/><circle cx="17" cy="23.5" r="2.4" fill="#ffe08a"/></svg></div>
+            <div class="lklogo" aria-hidden="true"><svg viewBox="0 0 44 44" aria-hidden="true"><circle cx="22" cy="22" r="20" fill="#0a1631" stroke="#cfeaff" stroke-width="2"/><circle cx="22" cy="22" r="14.5" fill="none" stroke="#1f4f94" stroke-width="5"/><circle cx="22" cy="7.5" r="2.6" fill="#ffe08a"/><rect x="31" y="9" width="3.2" height="8" rx="1.6" fill="#ff5a4a" transform="rotate(45 32.6 13)"/><circle cx="22" cy="22" r="8.5" fill="#3cc843" stroke="#11161c" stroke-width="1.6"/><circle cx="20" cy="19.5" r="2.6" fill="rgba(255,255,255,.45)"/></svg></div>
             <h1>Pop the Lock</h1>
             <p class="menusub">Im richtigen Moment drücken · kostenlos</p>
           </div>
@@ -1603,25 +1611,25 @@ input.bprange[type=range]::-moz-range-thumb { width: 20px; height: 20px; border-
     <main id="lkStage">
       <div class="lkmarq"><span>POP ★ THE LOCK</span><em><small>Jackpot</small><b id="lkJp">100</b></em></div>
       <div class="lkwrap">
-        <svg id="lkSvg" viewBox="-110 -240 220 350" aria-hidden="true">
+        <svg id="lkSvg" viewBox="-120 -120 240 240" aria-hidden="true">
           <defs>
-            <linearGradient id="lkShk" x1="0" x2="1"><stop offset="0" stop-color="#8f9aab"/><stop offset=".45" stop-color="#eef3fa"/><stop offset="1" stop-color="#7d8798"/></linearGradient>
-            <linearGradient id="lkBody" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#3f7fd9"/><stop offset=".55" stop-color="#1f4f94"/><stop offset="1" stop-color="#0d2a5c"/></linearGradient>
+            <linearGradient id="lkChr" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#eef3fa"/><stop offset=".5" stop-color="#7d8798"/><stop offset="1" stop-color="#c9d3e0"/></linearGradient>
+            <radialGradient id="lkFace"><stop offset="0" stop-color="#1f4f94"/><stop offset=".7" stop-color="#102347"/><stop offset="1" stop-color="#081329"/></radialGradient>
             <radialGradient id="lkTgt"><stop offset="0" stop-color="#fff6c8"/><stop offset=".6" stop-color="#ffd85a"/><stop offset="1" stop-color="#e0a020"/></radialGradient>
           </defs>
-          <g class="shk"><path d="M-60 -60 V-125 A60 60 0 0 1 60 -125 V-60" fill="none" stroke="url(#lkShk)" stroke-width="22"/></g>
-          <g class="body">
-            <rect x="-104" y="-100" width="208" height="206" rx="48" fill="url(#lkBody)" stroke="rgba(207,234,255,.75)" stroke-width="3"/>
-            <rect x="-58" y="-93" width="116" height="9" rx="4.5" fill="rgba(255,255,255,.16)"/>
-            <circle r="76" fill="#0a1631" stroke="#06101f" stroke-width="2"/>
-            <circle r="76" fill="none" stroke="#14294d" stroke-width="22"/>
-            <circle r="54" fill="#102347" stroke="rgba(150,200,255,.25)" stroke-width="1.5"/>
+          <g class="face">
+            <circle r="117" fill="url(#lkChr)"/>
+            <circle r="112" fill="#0c1424"/>
+            <g id="lkBulbs"></g>
+            <circle r="98" fill="url(#lkFace)" stroke="rgba(150,200,255,.35)" stroke-width="1.5"/>
+            <circle class="track" r="84" fill="none" stroke="#0a1631" stroke-width="22"/>
+            <circle r="95" fill="none" stroke="rgba(150,200,255,.22)" stroke-width="1"/>
+            <circle r="73" fill="none" stroke="rgba(150,200,255,.22)" stroke-width="1"/>
             <g class="tgt" id="lkTgtG"><circle r="15" fill="rgba(255,224,138,.45)"/><circle r="10.5" fill="url(#lkTgt)"/></g>
-            <g id="lkNeedle"><rect x="-4.5" y="-90" width="9" height="28" rx="4.5" fill="#ff5a4a" stroke="#fff" stroke-width="1.5"/></g>
-            <text class="cnt" id="lkCnt" y="18" text-anchor="middle">20</text>
-            <text class="lv" id="lkLv" y="40" text-anchor="middle">Schloss 1</text>
+            <g id="lkNeedle"><rect x="-5" y="-97" width="10" height="26" rx="5" fill="#ff5a4a" stroke="#fff" stroke-width="1.5"/></g>
           </g>
         </svg>
+        <button id="lkGo" type="button"><b class="w" id="lkCnt">START</b><small id="lkLv">kostenlos</small></button>
       </div>
       <p class="lkmsg" id="lkMsg" aria-live="polite"></p>
       <div class="lkpay" id="lkPay" aria-label="Gewinn pro Treffer"></div>
@@ -1632,7 +1640,6 @@ input.bprange[type=range]::-moz-range-thumb { width: 20px; height: 20px; border-
         <div>Rekord<b id="lkBest">0</b></div>
         <div>Jackpots<b id="lkJps">0</b></div>
       </div>
-      <button id="lkGo" type="button">Start</button>
     </footer>
     <div id="lkPause" class="overlay" hidden>
       <div class="endcard">
@@ -1640,8 +1647,8 @@ input.bprange[type=range]::-moz-range-thumb { width: 20px; height: 20px; border-
         <button class="btn primary wide" id="lkResume" type="button">Weiterspielen</button>
         <button class="btn wide" id="lkHelpBtn" type="button" style="margin-top:10px" aria-expanded="false">Spielerklärung</button>
         <div id="lkHelp" hidden>
-          <p style="margin-top:14px">Der rote Zeiger läuft im Kreis. Drück genau dann, wenn er über dem gelben Punkt ist – egal wo auf dem Bildschirm oder auf den Knopf. Nach jedem Treffer dreht er die Richtung um und wird etwas schneller.</p>
-          <p>Jeder Treffer bringt Chips: am Anfang 1, später 2 und 3. Schaffst du alle 20 Treffer, springt das Schloss auf und du bekommst den Jackpot von 100 Chips. Danach kommt das nächste, schnellere Schloss.</p>
+          <p style="margin-top:14px">Der rote Balken läuft im Kreis. Drück den grünen Knopf in der Mitte genau dann, wenn er über dem gelben Punkt ist (Tippen irgendwo auf den Bildschirm geht auch). Nach jedem Treffer dreht er die Richtung um und wird etwas schneller. Mit der Zeit liegen die Punkte enger, manchmal direkt hintereinander – dann schnell nachdrücken.</p>
+          <p>Jeder Treffer bringt Chips: am Anfang 1, später 2 und 3. Schaffst du alle 50 Treffer, ist das Schloss geknackt und du bekommst den Jackpot von 100 Chips. Danach kommt die nächste, schnellere Stufe.</p>
           <p>Drückst du daneben oder lässt du den Punkt vorbeiziehen, ist die Runde vorbei. Gewonnene Chips behältst du, und spielen kostet nichts.</p>
         </div>
         <button class="btn wide" id="lkMenu" type="button" style="margin-top:10px">Zum Hauptmenü</button>
@@ -7605,18 +7612,20 @@ input.bprange[type=range]::-moz-range-thumb { width: 20px; height: 20px; border-
 </script>
 
 <script>
-/* Pop the Lock: ein roter Zeiger laeuft im Kreis, man muss druecken, wenn er ueber dem gelben Punkt steht.
-   Nach jedem Treffer dreht er die Richtung um, wird schneller und der Punkt kleiner. Spielen ist kostenlos:
-   Treffer 1 bis 7 bringen je 1 Chip, 8 bis 14 je 2, 15 bis 19 je 3, der 20. Treffer oeffnet das Schloss (Jackpot 100).
-   Danach kommt das naechste Schloss, etwas schneller. Daneben gedrueckt oder den Punkt vorbeiziehen lassen = Runde vorbei. */
+/* Pop the Lock wie am Automaten in der Spielhalle: ein roter Balken laeuft im Kreis, gedrueckt wird der gruene Knopf
+   in der Mitte, wenn er ueber dem gelben Punkt steht. Nach jedem Treffer dreht er die Richtung um und wird langsam
+   schneller; die Abstaende werden enger, und ab und zu liegt der naechste Punkt ganz kurz dahinter (schnell nachdruecken).
+   Spielen ist kostenlos: Treffer 1 bis 15 bringen je 1 Chip, 16 bis 30 je 2, 31 bis 49 je 3, der 50. Treffer knackt
+   das Schloss (Jackpot 100). Danach kommt die naechste, etwas schnellere Stufe. Daneben gedrueckt oder den Punkt
+   vorbeiziehen lassen = Runde vorbei. */
 (function () {
   'use strict';
   var PR = window.PR;
   if (!PR) return;
   var Snd = PR.Snd, fmt = PR.fmt;
   function $(s) { return document.querySelector(s); }
-  var NEED = 20, JACKPOT = 100, TOL = 3;
-  var PAY = [{ to: 7, c: 1 }, { to: 14, c: 2 }, { to: 19, c: 3 }];
+  var NEED = 50, JACKPOT = 100, TOL = 3, NB = 36;
+  var PAY = [{ to: 15, c: 1 }, { to: 30, c: 2 }, { to: 49, c: 3 }];
   function payOf(k) { for (var i = 0; i < PAY.length; i++) if (k <= PAY[i].to) return PAY[i].c; return JACKPOT; }
   function stats() { var o = null; try { o = JSON.parse(localStorage.getItem('pr-lkstats') || 'null'); } catch (e) {} o = o || {}; return { best: +o.best || 0, jp: +o.jp || 0, won: +o.won || 0 }; }
   function saveStats(st) { try { localStorage.setItem('pr-lkstats', JSON.stringify(st)); } catch (e) {} }
@@ -7626,17 +7635,29 @@ input.bprange[type=range]::-moz-range-thumb { width: 20px; height: 20px; border-
   var st = 'idle', ang = 0, dir = 1, lv = 1, k = 0, total = 0, won = 0;
   var tgt = 0, dist = 0, trav = 0, hw = 14, spd = 90, raf = 0, last = 0, fxT = 0, nextT = 0;
 
+  /* Lichterkranz: NB Lampen, jede mit versetztem Start, so laeuft das Licht im Kreis */
+  (function () {
+    var h = '';
+    for (var i = 0; i < NB; i++) { var t = i * 360 / NB * Math.PI / 180; h += '<circle cx="' + (Math.sin(t) * 105).toFixed(2) + '" cy="' + (-Math.cos(t) * 105).toFixed(2) + '" r="3.6" style="animation-delay:' + (-(NB - i) / NB * 1.6).toFixed(3) + 's"/>'; }
+    $('#lkBulbs').innerHTML = h;
+  })();
+
   function pt(a, r) { var t = a * Math.PI / 180; return [Math.sin(t) * r, -Math.cos(t) * r]; }
   function norm(a) { a %= 360; return a < 0 ? a + 360 : a; }
   function drawNeedle() { needle.setAttribute('transform', 'rotate(' + ang.toFixed(2) + ')'); }
   function place() {
-    /* der Punkt liegt in Laufrichtung 80 bis 250 Grad voraus; Tempo und Groesse haengen vom Treffer und vom Schloss ab */
-    spd = Math.min(330, 90 + k * 6 + (lv - 1) * 18);
-    hw = Math.max(7, 14 - k * 0.22 - (lv - 1) * 0.6);
-    dist = 80 + Math.random() * 170; trav = 0;
+    /* Tempo steigt sanft (Stufe 1: von 85 auf gut 200 Grad pro Sekunde), der Punkt wird nur wenig kleiner.
+       Der Abstand wird mit der Zeit enger; ab und zu liegt der Punkt ganz kurz voraus, dann muss man schnell
+       nachdruecken (aber nie kuerzer als gut eine Viertelsekunde) */
+    spd = Math.min(300, 85 + k * 2.4 + (lv - 1) * 16);
+    hw = Math.max(8, 14 - k * 0.1 - (lv - 1) * 0.5);
+    var p = Math.min(1, (k + (lv - 1) * 15) / 45), near = Math.max(30, spd * 0.27, hw * 2 + 10);
+    if (k >= 3 && Math.random() < 0.12 + p * 0.2) dist = near + Math.random() * 22;
+    else dist = Math.max(near + 20, 70 - p * 15 + Math.random() * (170 - p * 85));
+    trav = 0;
     tgt = norm(ang + dir * dist);
-    var p = pt(tgt, 76);
-    tgtG.setAttribute('transform', 'translate(' + p[0].toFixed(2) + ',' + p[1].toFixed(2) + ') scale(' + (hw / 14).toFixed(3) + ')');
+    var q = pt(tgt, 84);
+    tgtG.setAttribute('transform', 'translate(' + q[0].toFixed(2) + ',' + q[1].toFixed(2) + ') scale(' + (hw / 14).toFixed(3) + ')');
     tgtG.style.opacity = 1;
   }
   function msg(t, cls) { var m = $('#lkMsg'); m.textContent = t; m.className = 'lkmsg' + (cls ? ' ' + cls : ''); }
@@ -7657,8 +7678,11 @@ input.bprange[type=range]::-moz-range-thumb { width: 20px; height: 20px; border-
     $('#lkWon').textContent = fmt(won);
     $('#lkBest').textContent = fmt(s.best);
     $('#lkJps').textContent = fmt(s.jp);
-    $('#lkCnt').textContent = String(NEED - k);
-    $('#lkLv').textContent = 'Schloss ' + lv;
+    /* der Knopf zeigt die noch fehlenden Treffer, sonst START, NOCHMAL oder JACKPOT */
+    var c = $('#lkCnt');
+    c.textContent = st === 'run' ? String(NEED - k) : st === 'idle' ? 'START' : st === 'over' ? 'NOCHMAL' : 'JACKPOT';
+    c.className = st === 'run' ? '' : 'w';
+    $('#lkLv').textContent = st === 'idle' ? 'kostenlos' : 'Stufe ' + lv;
     renderPay();
   }
   function pay(n) {
@@ -7695,21 +7719,22 @@ input.bprange[type=range]::-moz-range-thumb { width: 20px; height: 20px; border-
 
   function begin(keepLv) {
     clearTimeout(nextT);
-    lk.classList.remove('open', 'miss', 'hit');
+    lk.classList.remove('open', 'miss', 'hit'); lk.classList.add('run');
     if (!keepLv) { lv = 1; total = 0; }
     k = 0; dir = Math.random() < 0.5 ? 1 : -1; ang = 0; drawNeedle();
     st = 'run'; place();
-    go.textContent = 'Drück!'; go.classList.add('run');
-    msg(keepLv ? 'Schloss ' + lv + ' – noch schneller!' : 'Drück, wenn der Zeiger auf dem Punkt ist', keepLv ? 'good' : '');
+    go.classList.add('run');
+    msg(keepLv ? 'Stufe ' + lv + ' – noch schneller!' : 'Drück den grünen Knopf, wenn der Balken auf dem Punkt ist', keepLv ? 'good' : '');
     renderInfo(); startLoop();
   }
   function miss(t) {
     st = 'over'; if (raf) { cancelAnimationFrame(raf); raf = 0; }
+    lk.classList.remove('run');
     fx('miss'); Snd.knock();
     try { if (Snd.vibOn() && navigator.vibrate) navigator.vibrate(120); } catch (e) {}
     var s = stats(); if (total > s.best) { s.best = total; saveStats(s); t += ' · neuer Rekord: ' + total + ' Treffer'; }
     msg(t, 'bad');
-    go.textContent = 'Nochmal'; go.classList.remove('run');
+    go.classList.remove('run');
     renderInfo();
   }
   function press() {
@@ -7721,7 +7746,7 @@ input.bprange[type=range]::-moz-range-thumb { width: 20px; height: 20px; border-
     if (k >= NEED) {
       st = 'open'; if (raf) { cancelAnimationFrame(raf); raf = 0; }
       tgtG.style.opacity = 0;
-      lk.classList.add('open'); go.textContent = 'Jackpot!'; Snd.win(); setTimeout(function () { Snd.pot(); }, 450);
+      lk.classList.remove('run'); lk.classList.add('open'); go.classList.remove('run'); Snd.win(); setTimeout(function () { Snd.pot(); }, 450);
       try { if (Snd.vibOn() && navigator.vibrate) navigator.vibrate([70, 50, 140]); } catch (e) {}
       var s = stats(); s.jp++; if (total > s.best) s.best = total; saveStats(s);
       coins(36); msg('JACKPOT! Schloss geknackt: +' + JACKPOT + ' Chips', 'good');
@@ -7737,7 +7762,8 @@ input.bprange[type=range]::-moz-range-thumb { width: 20px; height: 20px; border-
   go.addEventListener('pointerdown', function (e) { e.preventDefault(); e.stopPropagation(); go.classList.add('down'); press(); });
   ['pointerup', 'pointercancel', 'pointerleave'].forEach(function (t) { go.addEventListener(t, function () { go.classList.remove('down'); }); });
   go.addEventListener('click', function (e) { if (e.detail === 0) press(); });   // Tastatur
-  $('#lkStage').addEventListener('pointerdown', function (e) { if (e.pointerType === 'mouse' && e.button !== 0) return; e.preventDefault(); press(); });
+  /* Tippen neben den Knopf zaehlt auch, der Knopf geht dann kurz mit runter */
+  $('#lkStage').addEventListener('pointerdown', function (e) { if (e.pointerType === 'mouse' && e.button !== 0) return; e.preventDefault(); go.classList.add('down'); setTimeout(function () { go.classList.remove('down'); }, 90); press(); });
   document.addEventListener('keydown', function (e) {
     if (lk.hidden || !$('#lkPause').hidden) return;
     if (e.key === ' ' || e.key === 'Enter') { e.preventDefault(); if (!e.repeat) press(); }
@@ -7747,9 +7773,9 @@ input.bprange[type=range]::-moz-range-thumb { width: 20px; height: 20px; border-
     Snd.unlock();
     $('#menu').hidden = true; lk.hidden = false; $('#lkPause').hidden = true;
     st = 'idle'; won = 0; lv = 1; k = 0; total = 0; ang = 0; drawNeedle(); tgtG.style.opacity = 0;
-    lk.classList.remove('open', 'miss', 'hit');
-    go.textContent = 'Start'; go.classList.remove('run');
-    msg('Tippe auf Start – spielen ist kostenlos');
+    lk.classList.remove('open', 'miss', 'hit', 'run');
+    go.classList.remove('run');
+    msg('Drück den grünen Knopf – spielen ist kostenlos');
     renderInfo();
   }
   function leave() {
