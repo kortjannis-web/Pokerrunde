@@ -928,6 +928,7 @@ input.bprange[type=range]::-moz-range-thumb { width: 20px; height: 20px; border-
 .slreel { position: relative; height: calc(var(--ch) * 3); overflow: hidden; border-radius: 10px; background: linear-gradient(90deg, #ddd5c2, #f8f4ea 22%, #f8f4ea 78%, #ddd5c2); }
 .slreel::after { content: ''; position: absolute; inset: 0; pointer-events: none; background: linear-gradient(180deg, rgba(0,0,0,.55), rgba(0,0,0,.08) 26%, transparent 40%, transparent 60%, rgba(0,0,0,.08) 74%, rgba(0,0,0,.55)); }
 .slstrip { position: absolute; left: 0; right: 0; top: 0; will-change: transform; }
+.slstrip.spin { filter: blur(.5px); }
 .slcell { height: var(--ch); display: grid; place-items: center; }
 .sy { line-height: 1; transition: transform .2s; }
 .sy.e { font-size: calc(var(--ch) * .56); }
@@ -1029,6 +1030,7 @@ input.bprange[type=range]::-moz-range-thumb { width: 20px; height: 20px; border-
 #slSpin.stop span { display: block; font-size: 19px; letter-spacing: .06em; }
 #slSpin.stop small { display: block; font: 700 10px var(--ui); letter-spacing: .04em; text-transform: none; opacity: .9; }
 @keyframes slstopp { to { filter: brightness(1.18); box-shadow: 0 6px 0 #5a0c0c, 0 12px 22px rgba(0,0,0,.5), 0 0 22px 6px rgba(255,100,80,.6), inset 0 2px 0 rgba(255,255,255,.4); } }
+.slstrip.fast { filter: blur(1.4px) brightness(1.06); }
 /* ---------- Slots: zweiter Automat, Jackpot, Joker, Stein-Kirschen, Risikoleiter ---------- */
 /* Automat waehlen */
 .slpick { display: flex; gap: 6px; padding: 3px; border-radius: 999px; background: rgba(0,0,0,.35); border: 1px solid var(--line); }
@@ -6514,7 +6516,7 @@ input.bprange[type=range]::-moz-range-thumb { width: 20px; height: 20px; border-
   function readJ(k) { try { return JSON.parse(localStorage.getItem(k) || 'null'); } catch (e) { return null; } }
   function writeJ(k, v) { try { localStorage.setItem(k, JSON.stringify(v)); } catch (e) {} }
 
-  var BETS = [10, 20, 50, 100, 200, 500, 1000], GIFT = 50, FREE_N = 10, MULT_MAX = 5;
+  var BETS = [10, 20, 50, 100, 200, 500, 1000], GIFT = 50, COPIES = 9, FREE_N = 10, MULT_MAX = 5;
   var JP0 = 200, UNLOCK = 5000, LADDER = 5;
   /* Gluecksrad nach dem Nachdreh: alle Felder gleich gross, die Chance p (zusammen 100) aber nicht – kleine Faktoren
      kommen oefter. Nebeneinander steht nie zweimal derselbe Faktor (auch nicht ueber den Anfang hinweg) */
@@ -6703,74 +6705,35 @@ input.bprange[type=range]::-moz-range-thumb { width: 20px; height: 20px; border-
     winEl.style.setProperty('--nr', mc.reels);
     for (var i = 0; i < mc.reels; i++) {
       if (i === gpB + 1 && gpB >= 0) continue;
-      h += '<div class="slreel' + (i === gpB ? ' wide' + (merge ? ' merge' : '') : '') + '"><div class="slstrip">' + new Array(6).join('<div class="slcell"></div>') + '</div></div>';
+      if (i === gpB) {
+        h += '<div class="slreel wide' + (merge ? ' merge' : '') + '"><div class="slstrip">';
+        for (var c2 = 0; c2 < COPIES; c2++) M2.GS.forEach(function (x) {
+          h += x[1] === 0 ? '<div class="slcell w2">' + symHTML(x[0]) + symHTML(x[0]) + '</div>'
+             : x[1] === 1 ? '<div class="slcell g2t"><span class="g2 g2' + x[0] + '">' + symHTML(x[0]) + '</span></div>' : '<div class="slcell g2b"></div>';
+        });
+        h += '</div></div>';
+        continue;
+      }
+      h += '<div class="slreel"><div class="slstrip">';
+      for (var c = 0; c < COPIES; c++) mc.S[i].forEach(function (s) { h += '<div class="slcell">' + symHTML(s) + '</div>'; });
+      h += '</div></div>';
     }
     h += mc === M1 ? '<div class="slline" aria-hidden="true"><i></i></div>' : '<svg class="sllines" aria-hidden="true"></svg>';
     winEl.innerHTML = h;
     reels = [].slice.call(winEl.querySelectorAll('.slstrip'));
     if (gpB >= 0) reels.splice(gpB + 1, 0, reels[gpB]);
-    RX = [];
-    for (var j = 0; j < mc.reels; j++) if (j !== gpB + 1 || gpB < 0) reelSet(j, posOf(j));
+    for (var j = 0; j < mc.reels; j++) if (j !== gpB + 1 || gpB < 0) place(j, posOf(j) + len(j), 0);
   }
   function len(i) { return isG(gpB, i) ? M2.GN : cur.N; }
   function posOf(i) { return isG(gpB, i) ? M2.gpos : cur.pos[i]; }
   function setPos(i, r) { if (isG(gpB, i)) M2.gpos = r; else cur.pos[i] = r; }
-  /* Walzen: je Walze nur fuenf Felder (eins ueber und eins unter dem Fenster), die beim Drehen neu beschriftet werden –
-     kein langer Bildstreifen, nichts verwischt. x: welches Feld des Bandes gerade in der Mitte steht (zaehlt beim Drehen hoch).
-     Beim Anhalten wird das Band ab einer Stelle, die noch nicht zu sehen ist (seam), so weitergezaehlt, dass genau das
-     Ergebnis ankommt; die Walze bremst dabei gleichmaessig aus ihrem Tempo ab und federt kurz nach */
-  var RX = [], REEL_V = 0.017, BOUNCE = 170, rafOn = false;   // Felder pro Millisekunde
-  function wrap(v, L) { return ((v % L) + L) % L; }
-  function bandAt(i, s, v) { return wrap(v + (s.seam !== null && v >= s.seam ? s.offB : s.off), len(i)); }
-  function cellOf(i, b) {
-    if (!isG(gpB, i)) return ['slcell', symHTML(cur.S[i][b])];
-    var x = M2.GS[b];
-    return x[1] === 0 ? ['slcell w2', symHTML(x[0]) + symHTML(x[0])] : x[1] === 1 ? ['slcell g2t', '<span class="g2 g2' + x[0] + '">' + symHTML(x[0]) + '</span>'] : ['slcell g2b', ''];
+  /* Walze so stellen, dass Feld idx (im langen Band) in der Mitte liegt */
+  function place(i, idx, ms, ease) {
+    var el = reels[i];
+    el.style.transition = ms ? 'transform ' + ms + 'ms ' + (ease || 'cubic-bezier(.18,.7,.28,1.035)') : 'none';
+    el.style.transform = 'translateY(' + (-(idx - 1) / (COPIES * len(i)) * 100) + '%)';
   }
-  function drawReel(i) {
-    var s = RX[i], el = reels[i], fl = Math.floor(s.x);
-    for (var k = 0; k < 5; k++) {
-      var c = el.children[k], b = bandAt(i, s, fl - 2 + k);
-      if (c._b !== b) { var h = cellOf(i, b); c._b = b; c.className = h[0]; c.innerHTML = h[1]; }
-    }
-    el.style.transform = 'translateY(' + (-(1 + s.x - fl) * 20).toFixed(3) + '%)';
-  }
-  function reelSet(i, r) { RX[i] = { x: r, off: 0, seam: null, offB: 0, mode: 'idle', v: 0 }; drawReel(i); }
-  function reelRun(i) { var s = RX[i]; s.mode = 'run'; s.t0 = s.lt = performance.now(); kick(); }
-  /* anhalten: in etwa T ms auf Ergebnis r abbremsen, danach cb */
-  function reelStop(i, r, T, cb) {
-    var s = RX[i], L = len(i), x0 = s.x, v = Math.max(s.v, REEL_V * 0.4), d = Math.max(6, v * T / 2), end, seam;
-    for (;;) {
-      end = Math.ceil(x0 + d); seam = Math.floor(x0) + 4;
-      /* auf der Riesenwalze darf die Naht keinen Riesen zerschneiden */
-      if (isG(gpB, i)) while (M2.GS[bandAt(i, s, seam - 1)][1] === 1 || M2.GS[wrap(seam + r - end, L)][1] === 2) seam++;
-      if (end - 2 >= seam) break;
-      d += 1;
-    }
-    s.seam = seam; s.offB = r - end; s.mode = 'stop'; s.x0 = x0; s.d = end - x0; s.T = 2 * s.d / v; s.t0 = performance.now(); s.r = r; s.cb = cb;
-    kick();
-  }
-  function kick() { if (!rafOn) { rafOn = true; requestAnimationFrame(reelLoop); } }
-  function reelLoop(t) {
-    var any = false;
-    RX.forEach(function (s, i) {
-      if (!s || s.mode === 'idle') return;
-      any = true;
-      if (s.mode === 'run') {
-        var dt = Math.min(50, Math.max(0, t - s.lt)); s.lt = t;
-        s.v = REEL_V * Math.min(1, Math.max(0, t - s.t0) / 260); s.x += s.v * dt;
-      } else {
-        var e = Math.max(0, t - s.t0);
-        if (e < s.T) { var k = e / s.T; s.x = s.x0 + s.d * (1 - (1 - k) * (1 - k)); }
-        else if (e < s.T + BOUNCE) s.x = s.x0 + s.d + 0.12 * Math.sin(Math.PI * (e - s.T) / BOUNCE);
-        else { var cb = s.cb; reelSet(i, s.r); if (cb) cb(); return; }
-      }
-      drawReel(i);
-    });
-    if (any) requestAnimationFrame(reelLoop); else rafOn = false;
-  }
-  /* Feld der stehenden Walze: row 0 bis 2 im Fenster, -1 direkt darueber */
-  function cellEl(i, r, row) { return reels[i].children[row + 1]; }
+  function cellEl(i, r, row) { return reels[i].children[r + len(i) + row - 1]; }
 
   function curBet() { if (busy && vis) return vis.b; var f = fsOf(cur); return f.free > 0 ? f.fbet : bet; }
   function lineAmt(m, b) { return fmt(Math.round(m * b)); }
@@ -6981,13 +6944,29 @@ input.bprange[type=range]::-moz-range-thumb { width: 20px; height: 20px; border-
     if (fr) runStart(c); else animate(c, 0);
   }
 
-  /* Extra Spins: die Walzen drehen, bis man Stopp drueckt (das Ergebnis steht schon fest), dann laufen sie nacheinander
-     aus. Mit Autospin wird von allein gestoppt. run: der laufende Dreh, solange er gestoppt werden kann */
-  var run = null;
+  /* Extra Spins: die Walzen drehen richtig schnell, bis man Stopp drueckt (das Ergebnis steht schon fest), dann laufen
+     sie nacheinander aus. Mit Autospin wird von allein gestoppt. run: der laufende Dreh, solange er gestoppt werden kann */
+  var run = null, RUN_V = 0.034;   // Felder pro Millisekunde
   function runStart(c) {
-    var gg = gen, r = { c: c, gg: gg, t0: performance.now(), sndT: 0, autoT: 0 };
-    RX.forEach(function (s, i) { if (s) reelRun(i); });   // rechte Haelfte der Riesenwalze laeuft mit der linken
+    var mc = c.mc, gp = c.steps[0].gp, gg = gen, t0 = performance.now();
+    var r = { c: c, gg: gg, t0: t0, last: t0, idx: [], on: [], sndT: 0, autoT: 0 };
+    for (var i = 0; i < mc.reels; i++) {
+      var sk = gp >= 0 && i === gp + 1;   // rechte Haelfte der Riesenwalze laeuft mit der linken
+      r.on.push(!sk); r.idx.push(posOf(i) + len(i));
+      if (!sk) reels[i].classList.add('spin', 'fast');
+    }
     run = r;
+    (function tick(t) {
+      if (gg !== gen || !r.on.some(Boolean)) return;
+      var dt = Math.min(50, t - r.last), v = RUN_V * Math.min(1, (t - t0) / 320);
+      r.last = t;
+      r.idx.forEach(function (x, i) {
+        if (!r.on[i]) return;
+        x += v * dt; if (x >= len(i) * 4) x -= len(i) * 2;
+        r.idx[i] = x; place(i, x, 0);
+      });
+      requestAnimationFrame(tick);
+    })(t0);
     (function snd() { if (run !== r || gg !== gen) return; if (!document.hidden) Snd.spin(0.5); r.sndT = setTimeout(snd, 470); })();
     if (auto) r.autoT = setTimeout(runStop, 900);
     renderAll();
@@ -7013,9 +6992,9 @@ input.bprange[type=range]::-moz-range-thumb { width: 20px; height: 20px; border-
     }, ms);
   }
   /* Riesensymbol landet: der Rahmen leuchtet kurz auf, ein paar goldene Funken */
-  function giantLand(i) {
+  function giantLand(i, r) {
     var gs = [];
-    for (var row = -1; row <= 2; row++) { var ce = cellEl(i, 0, row); if (ce && ce.classList.contains('g2t')) gs.push(ce.firstChild); }
+    for (var row = -1; row <= 2; row++) { var ce = cellEl(i, r, row); if (ce && ce.classList.contains('g2t')) gs.push(ce.firstChild); }
     if (!gs.length) return;
     var st = $('#slStage'), sr = st.getBoundingClientRect(), wr = reels[i].parentNode.getBoundingClientRect();
     gs.forEach(function (g) {
@@ -7052,24 +7031,37 @@ input.bprange[type=range]::-moz-range-thumb { width: 20px; height: 20px; border-
         if (mc === M2 && i === 4 && LINES5.some(function (L) { return L.slice(0, 4).every(function (row, q) { return g[q][row] === 'D'; }); })) tz = true;
       }
       if (tz) extra += mc.tease;
-      stops.push(skip(i) ? 0 : (fr ? 600 + i * Math.round(mc.gap * 0.8) : 1150 + i * mc.gap) + extra);
+      stops.push(skip(i) ? 0 : (fr ? 240 + i * Math.round(mc.gap * 0.8) : 1150 + i * mc.gap) + extra);
       teased.push(tz);
       if (k === 0 && fRow(mc, i, res[i], gp) !== null) fseen++;
     }
     var last = Math.max.apply(null, stops), firstTease = teased.indexOf(true);
     var ratchet = firstTease > 0 ? Math.max.apply(null, stops.slice(0, firstTease)) : last;
-    var fcount = 0, need = 0, landed = 0;
+    var fcount = 0;
     res.forEach(function (r, i) {
       if (skip(i)) return;
-      var ms = stops[i], el = reels[i], long = teased[i], T = long ? mc.tease + 700 : 560;
-      need++;
-      if (!fr) reelRun(i);   // in den Extra Spins laeuft sie schon
-      setTimeout(function () { if (gg === gen) reelStop(i, r, T, land); }, Math.max(0, ms - T));
-      function land() {
+      var ms = stops[i], el = reels[i], long = teased[i];
+      if (fr) {
+        /* dreht mit voller Geschwindigkeit weiter und laeuft erst kurz vor ihrem Halt aus (im Schwung unsichtbar umgesetzt) */
+        var dec = long ? mc.tease + 600 : 300;
+        setTimeout(function () {
+          if (gg !== gen) return;
+          fr.on[i] = false; el.classList.remove('fast');
+          var tgt = r + len(i) * 5;
+          place(i, tgt - RUN_V * dec / (long ? 6 : 3.9), 0); void el.offsetWidth;
+          place(i, tgt, dec, long ? 'cubic-bezier(.1,.6,.1,1)' : '');
+        }, ms - dec);
+      } else {
+        place(i, posOf(i) + len(i), 0); void el.offsetWidth;
+        el.classList.add('spin');
+        place(i, r + len(i) * Math.min(COPIES - 1, 2 + i + (long ? 2 : 0)), ms, long ? 'cubic-bezier(.1,.6,.1,1)' : '');
+      }
+      setTimeout(function () { if (gg === gen) el.classList.remove('spin'); }, ms - (long ? 1400 : 260));
+      setTimeout(function () {
         if (gg !== gen) return;
-        setPos(i, r); Snd.reel();
+        setPos(i, r); place(i, r + len(i), 0); Snd.reel();
         el.parentNode.classList.remove('tease');
-        if (gp >= 0 && i === gp) giantLand(i);
+        if (gp >= 0 && i === gp) giantLand(i, r);
         /* Extra-Spin gelandet und noch moeglich: Klang und Leuchten, jeder weitere einen Ton hoeher */
         var d = k === 0 ? fRow(mc, i, r, gp) : null;
         if (d !== null) {
@@ -7080,10 +7072,10 @@ input.bprange[type=range]::-moz-range-thumb { width: 20px; height: 20px; border-
         if (mc === M1 && STONE[mc.S[i][r]]) { cellEl(i, r, 1).classList.add('stone'); Snd.knock(); }
         var nx = i + 1; while (nx < mc.reels && skip(nx)) nx++;
         if (nx < mc.reels && teased[nx]) { reels[nx].parentNode.classList.add('tease'); Snd.tease((stops[nx] - ms) / 1000 + 0.1); }
-        if (++landed === need) setTimeout(function () { if (gg === gen) done(c, k); }, 120);
-      }
+      }, ms);
     });
-    if (!fr) Snd.spin(ratchet / 1000 - 0.1);
+    Snd.spin(ratchet / 1000 - 0.1);
+    setTimeout(function () { if (gg === gen) done(c, k); }, last + 120);
   }
   /* festgehaltene Walzen: grauer Rahmen, die Stein-Kirsche leuchtet */
   function markHeld(s) {
@@ -7376,7 +7368,7 @@ input.bprange[type=range]::-moz-range-thumb { width: 20px; height: 20px; border-
     $('#slGamble').hidden = true; gAmt = 0; gBusy = false;
     all('#sl .slcoin').forEach(function (c) { c.remove(); });
     all('#sl .slspark').forEach(function (c) { c.remove(); });
-    RX.forEach(function (x, i) { if (x) reelSet(i, posOf(i)); });
+    reels.forEach(function (el, i) { el.classList.remove('spin', 'fast'); if (!(gpB >= 0 && i === gpB + 1)) place(i, posOf(i) + len(i), 0); });
     Snd.stopAll();
     sl.hidden = true; $('#slPause').hidden = true; $('#menu').hidden = false;
     PR.renderBank();
