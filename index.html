@@ -586,6 +586,17 @@ input.bprange[type=range]::-moz-range-thumb { width: 20px; height: 20px; border-
 #pName { height: 48px; border-radius: 12px; background: var(--bg2); border: 1px solid var(--line); color: var(--ink); font: 700 17px var(--ui); padding: 0 14px; outline: none; }
 #pName:focus { border-color: var(--brass); }
 .pstats { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; }
+/* Tomate werfen (Poker und Blackjack): Knopf unten rechts, Wurf mit Platschen */
+.tombtn { position: absolute; right: 10px; bottom: 8px; z-index: 12; width: 54px; height: 54px; border-radius: 50%; padding: 0; display: grid; place-items: center; font-size: 32px; line-height: 1;
+  border: 1px solid rgba(255,120,90,.55); background: rgba(16,18,19,.85); box-shadow: 0 6px 16px rgba(0,0,0,.45); touch-action: none; cursor: grab; }
+.tombtn[hidden] { display: none; }
+.tombtn b { position: absolute; right: -3px; bottom: -3px; min-width: 20px; height: 20px; padding: 0 5px; border-radius: 10px; background: #d8322f; color: #fff; font: 800 11px/20px var(--ui); box-shadow: 0 0 0 2px var(--bg); }
+.tombtn.aim { transform: scale(.92); }
+#bjTom { right: 8px; bottom: 50px; }
+#tomLayer { position: fixed; inset: 0; z-index: 100; pointer-events: none; overflow: hidden; }
+#tomLayer .tomfly { position: absolute; left: 0; top: 0; font-size: 34px; line-height: 1; will-change: transform; }
+#tomLayer .tomaim { position: absolute; left: 0; top: 0; width: 46px; height: 46px; margin: -23px 0 0 -23px; border-radius: 50%; border: 2.5px dashed rgba(255,110,90,.9); box-shadow: 0 0 12px rgba(255,90,70,.6); }
+#tomLayer .tomsplat { position: absolute; left: 0; top: 0; width: 96px; height: 96px; margin: -48px 0 0 -48px; }
 /* Spielzeit im Profil */
 .ptime { display: flex; align-items: center; gap: 12px; padding: 12px 14px; border-radius: 14px; background: var(--bg2); border: 1px solid var(--line); }
 .ptime i { font-style: normal; font-size: 24px; line-height: 1; }
@@ -1150,6 +1161,7 @@ input.bprange[type=range]::-moz-range-thumb { width: 20px; height: 20px; border-
   </header>
 
   <main id="stage">
+    <button class="tombtn" id="pkTom" type="button" hidden aria-label="Tomate werfen (ziehen und loslassen)"><span aria-hidden="true">🍅</span><b>0</b></button>
     <div id="table"><div class="rail"></div><div class="felt"></div></div>
     <div id="zone"><span>Zum Passen hier ablegen</span></div>
     <div id="deck"></div>
@@ -1324,6 +1336,7 @@ input.bprange[type=range]::-moz-range-thumb { width: 20px; height: 20px; border-
         <button type="button" data-e="😂">😂</button><button type="button" data-e="😱">😱</button><button type="button" data-e="😭">😭</button><button type="button" data-e="🤑">🤑</button><button type="button" data-e="👍">👍</button><button type="button" data-e="🔥">🔥</button>
       </div>
       <button class="bjtip" id="bjTip" type="button" hidden aria-label="Tipp: was wäre jetzt richtig?">💡 Tipp</button>
+      <button class="tombtn" id="bjTom" type="button" hidden aria-label="Tomate werfen (ziehen und loslassen)"><span aria-hidden="true">🍅</span><b>0</b></button>
     </main>
     <footer id="bjCtl">
       <div id="bjStatus" aria-live="polite"></div>
@@ -2802,6 +2815,14 @@ input.bprange[type=range]::-moz-range-thumb { width: 20px; height: 20px; border-
         tone(t + 0.15, 160, 0.14, 0.2, 'sine', 65); noise(t + 0.15, 0.05, 'lowpass', 500, 0.7, 0.12, 0.003);
       }),
       fold: guard(function () { noise(now(0), 0.24, 'bandpass', 900, 0.6, 0.26, 0.05); }),
+      /* Tomate: Wurf (Rauschen) und Platschen (dumpfer Schlag, nasses Spritzen, ein paar Tropfen) */
+      toss: guard(function () { noise(now(0), 0.32, 'bandpass', 1300, 0.7, 0.09, 0.12); }),
+      splat: guard(function () {
+        var t = now(0);
+        noise(t, 0.2, 'lowpass', 850, 0.9, 0.55, 0.003); tone(t, 240, 0.16, 0.26, 'sine', 60);
+        noise(t + 0.03, 0.16, 'bandpass', 1900, 1.1, 0.22, 0.008);
+        for (var k = 0; k < 4; k++) noise(t + 0.18 + k * 0.07 + Math.random() * 0.03, 0.03, 'bandpass', 2300 + Math.random() * 900, 3, 0.07, 0.002);
+      }),
       ping: guard(function () { var t = now(0); tone(t, 880, 0.18, 0.1, 'sine'); tone(t + 0.09, 1175, 0.24, 0.08, 'sine'); }),
       /* Slots: Walzen rattern, solange sie laufen (dur in Sekunden), und rasten einzeln ein */
       spin: guard(function (dur) {
@@ -4206,7 +4227,7 @@ input.bprange[type=range]::-moz-range-thumb { width: 20px; height: 20px; border-
       conn.on('open', function () { try { conn.send({ t: 'hello', v: 4, rid: NET.rid, p: myPublic(pkJoin.get()) }); } catch (e) {} });
       conn.on('data', function (d) {
         if (g !== NET.gen || !d || typeof d !== 'object') return;
-        if (d.t === 'start' || d.t === 'snap' || d.t === 'react' || d.t === 'broke' || d.t === 'ack' || d.t === 'end') { guestMsg(d); return; }
+        if (d.t === 'start' || d.t === 'snap' || d.t === 'react' || d.t === 'tom' || d.t === 'broke' || d.t === 'ack' || d.t === 'end') { guestMsg(d); return; }
         if (d.t === 'full') { fail('Der Tisch ist voll.'); return; }
         if (d.t === 'started') { fail('Das Spiel an diesem Tisch läuft schon.'); return; }
         if (d.t === 'closed') {
@@ -4277,7 +4298,7 @@ input.bprange[type=range]::-moz-range-thumb { width: 20px; height: 20px; border-
             try { conn.send({ t: 'ready' }); } catch (e) {}
             return;
           }
-          if (back && (d.t === 'snap' || d.t === 'react' || d.t === 'broke' || d.t === 'ack' || d.t === 'end')) { guestMsg(d); return; }
+          if (back && (d.t === 'snap' || d.t === 'react' || d.t === 'tom' || d.t === 'broke' || d.t === 'ack' || d.t === 'end')) { guestMsg(d); return; }
           if (d.t === 'closed') { giveUp('Spiel beendet', 'Der Ersteller hat den Tisch verlassen. Deine Chips bleiben in deinem Guthaben.'); return; }
           if (!back && (d.t === 'wait' || d.t === 'full' || d.t === 'started')) {
             giveUp('Verbindung weg', 'Dein Platz am Tisch ist nicht mehr frei. Deine Chips bleiben in deinem Guthaben.');
@@ -4457,6 +4478,10 @@ input.bprange[type=range]::-moz-range-thumb { width: 20px; height: 20px; border-
         var g = gen; showReaction(seat, d.e);
         mpReact(seat, d.e, 0, seat);
       }
+    } else if (d.t === 'tom') {
+      var tm = cleanTom(d), real = tm.s >= 0 && tm.s < MP.n ? (tm.s + seat) % MP.n : -1;
+      tomShow(seat, real, tm.x, tm.y);
+      mpTom(seat, real, tm.x, tm.y, seat);
     }
   }
   /* Verbindung eines Mitspielers abgerissen (nicht abgemeldet): Platz 90 Sekunden freihalten. Ist er dran,
@@ -4628,6 +4653,10 @@ input.bprange[type=range]::-moz-range-thumb { width: 20px; height: 20px; border-
       if (sIdx > 0 && sIdx < MP.n && typeof d.e === 'string' && d.e.length <= 8) {
         var g = gen; setTimeout(function () { if (g === gen) showReaction(sIdx, d.e); }, Math.max(0, Math.min(3000, +d.d || 0)));
       }
+    }
+    else if (d.t === 'tom') {
+      var tm = cleanTom(d), fv = d.f | 0;
+      if (fv > 0 && fv < MP.n && tm.s < MP.n) tomShow(fv, tm.s, tm.x, tm.y);
     }
     else if (d.t === 'broke') {
       uiBroke().then(function (n) { try { MP.conn.send({ t: 'rebuy', n: n }); } catch (e) {} });
@@ -4984,6 +5013,48 @@ input.bprange[type=range]::-moz-range-thumb { width: 20px; height: 20px; border-
     clearTimeout(reactLockTimer);
     if (locked) reactLockTimer = setTimeout(updateReactLock, Math.max(200, REACT_WINDOW - (Date.now() - reactTimes[0]) + 50));
   }
+  /* ---------- Tomate werfen: auf einen Platz (in der Naehe losgelassen) oder irgendwo auf den Tisch ---------- */
+  function seatPt(i) {
+    var sd = seats[i]; if (!sd || sd.el.classList.contains('gone')) return null;
+    var r = (sd.el.querySelector('.avatar') || sd.el).getBoundingClientRect();
+    return { x: r.left + r.width / 2, y: r.top + r.height / 2 };
+  }
+  function tablePt(x, y) { var r = table.getBoundingClientRect(); return { x: r.left + x * r.width, y: r.top + y * r.height }; }
+  function tomAim(p) {
+    var best = -1, bd = 80;
+    if (p) for (var i = 1; i < seats.length; i++) { var q = seatPt(i); if (q) { var d = Math.hypot(q.x - p.x, q.y - p.y); if (d < bd) { bd = d; best = i; } } }
+    var r = table.getBoundingClientRect();
+    var x = p ? (p.x - r.left) / r.width : 0.5, y = p ? (p.y - r.top) / r.height : 0.42;
+    return { s: best, x: Math.max(-0.2, Math.min(1.2, x)), y: Math.max(-0.2, Math.min(1.2, y)) };
+  }
+  function tomHit(s) { if (s > 0 && !MP.on && S.players[s] && S.players[s].kind === 'bot') setTimeout(function () { showReaction(s, Math.random() < 0.5 ? '😤' : '😱'); }, 350); }
+  function tomShow(f, s, x, y) {
+    var from = f > 0 ? seatPt(f) : null, to = s >= 0 ? seatPt(s) : null;
+    if (!from) { var sr = stage.getBoundingClientRect(); from = { x: sr.left + sr.width / 2, y: sr.bottom }; }
+    if (window.TOM) window.TOM.fly(from, to || tablePt(x, y));
+  }
+  /* reals: echte Plaetze beim Ersteller; jeder Mitspieler bekommt Werfer und Ziel aus seiner eigenen Sicht */
+  function mpTom(fromReal, toReal, x, y, except) {
+    if (!MP.on || MP.role !== 'host') return;
+    MP.seats.forEach(function (st, g) {
+      if (g === 0 || g === except || st.gone || !st.conn) return;
+      try { st.conn.send({ t: 'tom', f: (fromReal - g + MP.n) % MP.n, s: toReal < 0 ? -1 : (toReal - g + MP.n) % MP.n, x: x, y: y }); } catch (e) {}
+    });
+  }
+  window.PKT = {
+    on: function () { return playing && $('#menu').hidden; },
+    throwAt: function (p, from) {
+      var a = tomAim(p), to = a.s > 0 ? seatPt(a.s) : tablePt(a.x, a.y);
+      if (window.TOM) window.TOM.fly(from, to);
+      tomHit(a.s);
+      if (MP.on) {
+        if (MP.role === 'host') mpTom(0, a.s, a.x, a.y, -1);
+        else { try { MP.conn.send({ t: 'tom', s: a.s, x: a.x, y: a.y }); } catch (e) {} }
+      }
+    }
+  };
+  function cleanTom(d) { var x = +d.x, y = +d.y; return { s: (d.s | 0) >= 0 ? d.s | 0 : -1, x: isFinite(x) ? Math.max(-0.2, Math.min(1.2, x)) : 0.5, y: isFinite(y) ? Math.max(-0.2, Math.min(1.2, y)) : 0.42 }; }
+
   function sendReaction(emo) {
     if (reactLocked()) { updateReactLock(); return; }
     reactTimes.push(Date.now());
@@ -5807,6 +5878,47 @@ input.bprange[type=range]::-moz-range-thumb { width: 20px; height: 20px; border-
     if (b.animate) b.animate([{ transform: 'translateX(-50%) translateY(8px) scale(.4)', opacity: 0 }, { transform: 'translateX(-50%) translateY(-4px) scale(1.15)', opacity: 1, offset: .18 }, { transform: 'translateX(-50%) scale(1)', opacity: 1, offset: .28 }, { transform: 'translateX(-50%) scale(1)', opacity: 1, offset: .82 }, { transform: 'translateX(-50%) translateY(-10px) scale(.9)', opacity: 0 }], { duration: 2200, easing: 'ease-out' });
     setTimeout(function () { if (b.parentNode) b.remove(); }, 2200);
   }
+  /* ---------- Tomate werfen: auf einen Mitspieler, den Dealer oder irgendwo auf den Tisch ---------- */
+  function bjEl(id) {
+    if (id === 'D') return $('#bjDealer');
+    if (id === ME) {   // eigene Karten; ohne Karten der Einsatzkreis, sonst die Mitte unten
+      var hs = $('#bjMe .bjhands'), sp = $('#bjSpot');
+      if (hs && hs.getBoundingClientRect().width > 0) return hs;
+      return sp && !sp.classList.contains('off') ? sp : $('#bjMe');
+    }
+    var hit = null; [].forEach.call(document.querySelectorAll('#bjOthers .bjo'), function (el) { if (el._sid === id) hit = el; });
+    return hit;
+  }
+  function elPt(el) { if (!el) return null; var r = el.getBoundingClientRect(); if (!r.width) return null; return { x: r.left + r.width / 2, y: r.top + r.height / 2 }; }
+  function stPt(x, y) { var r = $('#bjStage').getBoundingClientRect(); return { x: r.left + x * r.width, y: r.top + y * r.height }; }
+  function bjAim(p) {
+    var best = '', bd = 90, ids = ['D'];
+    [].forEach.call(document.querySelectorAll('#bjOthers .bjo'), function (el) { if (el._sid) ids.push(el._sid); });
+    if (p) ids.forEach(function (id) { var q = elPt(bjEl(id)); if (q) { var d = Math.hypot(q.x - p.x, q.y - p.y); if (d < bd) { bd = d; best = id; } } });
+    var r = $('#bjStage').getBoundingClientRect();
+    var x = p ? (p.x - r.left) / r.width : 0.5, y = p ? (p.y - r.top) / r.height : 0.3;
+    return { to: best, x: Math.max(-0.2, Math.min(1.2, x)), y: Math.max(-0.2, Math.min(1.2, y)) };
+  }
+  function bjTomShow(from, to, x, y) {
+    var a = elPt(bjEl(from)), b = (to && elPt(bjEl(to))) || stPt(x, y);
+    if (!a) { var r = $('#bjStage').getBoundingClientRect(); a = { x: r.left + r.width / 2, y: r.bottom }; }
+    if (window.TOM) window.TOM.fly(a, b);
+  }
+  function cleanBjTom(d) { var x = +d.x, y = +d.y; return { to: typeof d.to === 'string' ? d.to.slice(0, 64) : '', x: isFinite(x) ? Math.max(-0.2, Math.min(1.2, x)) : 0.5, y: isFinite(y) ? Math.max(-0.2, Math.min(1.2, y)) : 0.3 }; }
+  function hTom(from, d) {
+    var tm = cleanBjTom(d);
+    bjTomShow(from, tm.to, tm.x, tm.y);
+    NB.conns.forEach(function (c) { if (c._bj && c.peer !== from) { try { c.send({ t: 'tom', id: from, to: tm.to, x: tm.x, y: tm.y }); } catch (e) {} } });
+  }
+  window.BJT = {
+    on: function () { return !bj.hidden && !!T; },
+    throwAt: function (p, from) {
+      var a = bjAim(p);
+      if (window.TOM) window.TOM.fly(from, (a.to && elPt(bjEl(a.to))) || stPt(a.x, a.y));
+      if (NB.role === 'guest' && NB.conn) { try { NB.conn.send({ t: 'tom', to: a.to, x: a.x, y: a.y }); } catch (e) {} }
+      else if (NB.role === 'host') NB.conns.forEach(function (c) { if (c._bj) { try { c.send({ t: 'tom', id: ME, to: a.to, x: a.x, y: a.y }); } catch (e) {} } });
+    }
+  };
   /* beim Ersteller: an alle weitergeben */
   function hReact(id, emo) {
     if (!T || EMOS.indexOf(emo) < 0 || !seatOf(id) || !reactOk(id)) return;
@@ -6064,6 +6176,7 @@ input.bprange[type=range]::-moz-range-thumb { width: 20px; height: 20px; border-
         else if (d.t === 'add') hTop(conn.peer, d.a, d.r);
         else if (d.t === 'bet') hBet(conn.peer, d.a);
         else if (d.t === 'react') hReact(conn.peer, d.e);
+        else if (d.t === 'tom') hTom(conn.peer, d);
         else if (d.t === 'bye') { conn._bj = false; NB.conns = NB.conns.filter(function (c) { return c !== conn; }); hostGone(conn.peer); }
         return;
       }
@@ -6153,6 +6266,7 @@ input.bprange[type=range]::-moz-range-thumb { width: 20px; height: 20px; border-
           return;
         }
         if (d.t === 'react' && finished) { showBjReact(String(d.id), String(d.e)); return; }
+        if (d.t === 'tom' && finished) { var tm = cleanBjTom(d); bjTomShow(String(d.id), tm.to, tm.x, tm.y); return; }
         if (d.t === 'old') {
           fail((d.v | 0) > BJ_V ? 'Deine App ist nicht aktuell. Schließ sie einmal ganz und öffne sie neu, dann klappt es.'
                                 : 'Der Ersteller hat noch eine ältere App-Version. Er sollte die App einmal ganz schließen und neu öffnen.');
@@ -6216,6 +6330,7 @@ input.bprange[type=range]::-moz-range-thumb { width: 20px; height: 20px; border-
             if (!back) { back = true; done = true; clearTimeout(to); NB.conn = conn; $('#bjRe').hidden = true; bjToast('Wieder verbunden'); }
             view(d.s, peer.id);
           } else if (d.t === 'react' && back) showBjReact(String(d.id), String(d.e));
+          else if (d.t === 'tom' && back) { var tm = cleanBjTom(d); bjTomShow(String(d.id), tm.to, tm.x, tm.y); }
           else if (d.t === 'closed') { $('#bjRe').hidden = true; endCard('Tisch geschlossen', 'Der Ersteller hat den Tisch verlassen. Deine Chips bleiben in deinem Guthaben.'); }
           else if (d.t === 'full' || d.t === 'old') { $('#bjRe').hidden = true; endCard('Verbindung weg', 'Dein Platz am Tisch ist nicht mehr frei. Deine Chips bleiben in deinem Guthaben.'); }
         });
@@ -7935,6 +8050,93 @@ input.bprange[type=range]::-moz-range-thumb { width: 20px; height: 20px; border-
   setInterval(function () { if (!$('#profile').hidden) render(); }, 5000);
   render();
   window.PRT = { secs: function () { return Math.round(T.s); }, fmt: fmtT };
+})();
+</script>
+
+<script>
+/* Tomaten werfen am Poker- und Blackjack-Tisch (nur zum Spass): Knopf unten rechts, solange man Tomaten hat.
+   Ziehen zielt (roter Ring), Loslassen wirft; nur antippen wirft auf die Tischmitte. Die Tomate fliegt im Bogen,
+   wird kleiner und platscht. Am Online-Tisch sehen es alle (Nachricht 'tom', aeltere Versionen ignorieren sie). */
+(function () {
+  'use strict';
+  var PR = window.PR;
+  if (!PR) return;
+  var Snd = PR.Snd;
+  function $(s) { return document.querySelector(s); }
+  function count() { var n = 0; try { n = parseInt(localStorage.getItem('pr-tom') || '0', 10); } catch (e) {} return isFinite(n) && n > 0 ? n : 0; }
+  function use() { var n = count(); if (n <= 0) return false; try { localStorage.setItem('pr-tom', String(n - 1)); } catch (e) {} return true; }
+  var layer = document.createElement('div'); layer.id = 'tomLayer'; document.body.appendChild(layer);
+  function splatSvg() {
+    var pts = [], k, n = 14;
+    for (k = 0; k < n; k++) { var a = k / n * Math.PI * 2, r = 26 + Math.random() * 12 + (k % 3 === 0 ? 10 : 0); pts.push((Math.cos(a) * r).toFixed(1) + ' ' + (Math.sin(a) * r).toFixed(1)); }
+    var drops = '';
+    for (k = 0; k < 7; k++) { var b = Math.random() * Math.PI * 2, d = 38 + Math.random() * 10; drops += '<circle cx="' + (Math.cos(b) * d).toFixed(1) + '" cy="' + (Math.sin(b) * d).toFixed(1) + '" r="' + (2 + Math.random() * 3.5).toFixed(1) + '" fill="#c9281f"/>'; }
+    var seeds = '';
+    for (k = 0; k < 6; k++) seeds += '<ellipse cx="' + ((Math.random() - 0.5) * 30).toFixed(1) + '" cy="' + ((Math.random() - 0.5) * 30).toFixed(1) + '" rx="2.6" ry="1.6" fill="#f6d77a" transform="rotate(' + Math.round(Math.random() * 180) + ')"/>';
+    return '<svg viewBox="-50 -50 100 100" width="96" height="96" aria-hidden="true"><path d="M' + pts.join(' L') + ' Z" fill="#d8322f" stroke="#a91e17" stroke-width="2" stroke-linejoin="round"/>' +
+      '<ellipse cx="-8" cy="-9" rx="12" ry="7" fill="#ff7a6b" opacity=".75"/>' + drops + seeds + '<path d="M-5 -2 l3 -6 l3 6 l6 -2 l-4 5 l5 4 l-7 0 l-3 6 l-2 -6 l-6 0 l5 -4 l-4 -5z" fill="#4a8c3a" opacity=".9"/></svg>';
+  }
+  function splat(p) {
+    var el = document.createElement('div'); el.className = 'tomsplat'; el.innerHTML = splatSvg();
+    el.style.transform = 'translate(' + p.x + 'px,' + p.y + 'px) rotate(' + Math.round(Math.random() * 360) + 'deg)';
+    layer.appendChild(el);
+    Snd.splat();
+    if (el.animate) {
+      var base = el.style.transform;
+      el.animate([{ transform: base + ' scale(.2)', opacity: 1 }, { transform: base + ' scale(1.12)', opacity: 1, offset: 0.25 }, { transform: base + ' scale(1)', opacity: 1, offset: 0.4 }, { transform: base + ' scale(1)', opacity: 1, offset: 0.8 }, { transform: base + ' scale(1.04) translateY(6px)', opacity: 0 }], { duration: 2600, easing: 'ease-out' });
+    }
+    setTimeout(function () { el.remove(); }, 2550);
+  }
+  /* Flug im Bogen, die Tomate wird dabei kleiner (fliegt "weg"), dann Platschen */
+  function fly(from, to) {
+    if (!from || !to) return;
+    var el = document.createElement('div'); el.className = 'tomfly'; el.textContent = '🍅'; layer.appendChild(el);
+    var mx = (from.x + to.x) / 2, my = Math.min(from.y, to.y) - 60 - Math.abs(to.x - from.x) * 0.15;
+    function tf(x, y, sc, rot) { return 'translate(' + x + 'px,' + y + 'px) translate(-50%,-50%) scale(' + sc + ') rotate(' + rot + 'deg)'; }
+    Snd.toss();
+    if (!el.animate) { el.remove(); splat(to); return; }
+    var an = el.animate([{ transform: tf(from.x, from.y, 1.1, 0) }, { transform: tf(mx, my, 0.8, 280) }, { transform: tf(to.x, to.y, 0.45, 560) }], { duration: 560, easing: 'cubic-bezier(.3,.1,.6,1)' });
+    an.onfinish = function () { el.remove(); splat(to); };
+  }
+  function bind(btn, H) {
+    var drag = null, ring = null;
+    btn.addEventListener('pointerdown', function (e) {
+      if (!count() || !H().on()) return;
+      e.preventDefault(); Snd.unlock();
+      try { btn.setPointerCapture(e.pointerId); } catch (x) {}
+      drag = { id: e.pointerId, x0: e.clientX, y0: e.clientY, moved: false };
+      btn.classList.add('aim');
+    });
+    btn.addEventListener('pointermove', function (e) {
+      if (!drag || e.pointerId !== drag.id) return;
+      if (!drag.moved && Math.hypot(e.clientX - drag.x0, e.clientY - drag.y0) > 12) { drag.moved = true; ring = document.createElement('div'); ring.className = 'tomaim'; layer.appendChild(ring); }
+      if (ring) ring.style.transform = 'translate(' + e.clientX + 'px,' + e.clientY + 'px)';
+    });
+    function end(e, cancel) {
+      if (!drag || e.pointerId !== drag.id) return;
+      var d = drag; drag = null; btn.classList.remove('aim');
+      if (ring) { ring.remove(); ring = null; }
+      if (cancel || !H().on() || !use()) { sync(); return; }
+      var r = btn.getBoundingClientRect(), from = { x: r.left + r.width / 2, y: r.top + r.height / 2 };
+      H().throwAt(d.moved ? { x: e.clientX, y: e.clientY } : null, from);
+      sync();
+    }
+    btn.addEventListener('pointerup', function (e) { end(e, false); });
+    btn.addEventListener('pointercancel', function (e) { end(e, true); });
+    btn.addEventListener('click', function (e) { e.preventDefault(); });
+  }
+  var pk = $('#pkTom'), bj = $('#bjTom');
+  function sync() {
+    var n = count();
+    [[pk, window.PKT], [bj, window.BJT]].forEach(function (x) {
+      var on = n > 0 && !!x[1] && x[1].on();
+      x[0].hidden = !on;
+      x[0].querySelector('b').textContent = n > 99 ? '99+' : String(n);
+    });
+  }
+  bind(pk, function () { return window.PKT; }); bind(bj, function () { return window.BJT; });
+  setInterval(sync, 700);
+  window.TOM = { fly: fly, splat: splat, count: count };
 })();
 </script>
 
