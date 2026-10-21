@@ -304,6 +304,16 @@ button { font: inherit; color: inherit; cursor: pointer; }
 .tag.win { background: var(--brass); color: var(--brass-ink); border-color: transparent; font-weight: 700; }
 .seat.folded { opacity: .45; filter: saturate(.5); }
 .seat.out { opacity: .3; filter: grayscale(1); }
+/* Bot ohne Chips ist weg: gestrichelter Kreis mit Plus, Antippen laedt Freunde an den Platz ein */
+.seat.empty { cursor: pointer; }
+.seat.empty .avatar { background: rgba(0,0,0,.18); box-shadow: none; border: 2px dashed rgba(236,231,218,.55); color: rgba(236,231,218,.8); }
+.seat.empty .avatar > span, .seat.empty .rslot, .seat.empty .pill, .seat.empty .minis { display: none; }
+.seat.empty .avatar::after { content: '+'; font: 400 30px/1 var(--ui); margin-top: -3px; }
+.seat.empty .tag { background: transparent; border-color: transparent; color: var(--muted); }
+.seat.empty .dbtn, .seat.empty .bbtn { display: none; }
+.bjadd { pointer-events: auto; cursor: pointer; display: flex; align-items: center; gap: 8px; padding: 4px; border: 0; background: none; color: var(--muted); font: 600 12px var(--ui); }
+.bjside.r .bjadd { flex-direction: row-reverse; }
+.bjadd i { flex: none; width: 34px; height: 34px; border-radius: 50%; border: 2px dashed rgba(236,231,218,.55); display: grid; place-items: center; font: 400 24px/1 var(--ui); font-style: normal; color: rgba(236,231,218,.8); }
 .seat.me { left: 50%; top: auto; bottom: 6px; transform: translateX(-50%); width: auto; flex-direction: row; gap: 10px; }
 .seat.me .minis { display: none; }
 .seat.me .avatar { width: 36px; height: 36px; font-size: 16px; }
@@ -3510,6 +3520,7 @@ input.bprange[type=range]::-moz-range-thumb { width: 20px; height: 20px; border-
       var minis = el.querySelector('.minis');
       var m = [cardEl('mini down'), cardEl('mini down')];
       m.forEach(function (c) { minis.appendChild(c); });
+      if (i > 0) el.addEventListener('click', function () { if (el.classList.contains('empty')) inviteSeat(); });
       seatsEl.appendChild(el);
       seats.push({
         el: el, minis: minis, m: m,
@@ -3614,7 +3625,9 @@ input.bprange[type=range]::-moz-range-thumb { width: 20px; height: 20px; border-
       }
     }
     var result = S.phase === 'result';
-    var out = p.chips === 0 && (!p.inHand || result);
+    var empty = i > 0 && p.kind === 'bot' && botFree(i);
+    var out = p.chips === 0 && (!p.inHand || result) && !empty;
+    el.classList.toggle('empty', empty);
     el.classList.toggle('out', out);
     el.classList.toggle('folded', p.inHand && p.folded);
     el.classList.toggle('turn', S.glow === i && S.phase === 'bet');
@@ -3624,7 +3637,7 @@ input.bprange[type=range]::-moz-range-thumb { width: 20px; height: 20px; border-
     var isSB = S.handNo > 0 && S.sbIdx === i, isBB = S.handNo > 0 && S.bbIdx === i;
     el.classList.toggle('sb', isSB); el.classList.toggle('bb', isBB);
     r.blind.textContent = isBB ? 'BB' : isSB ? 'SB' : '';
-    var txt = out ? 'Raus' : (result && p.win > 0) ? '+' + fmt(p.win) : p.label;
+    var txt = empty ? 'Freund einladen' : out ? 'Raus' : (result && p.win > 0) ? '+' + fmt(p.win) : p.label;
     r.tag.textContent = txt;
     r.tag.classList.toggle('win', result && p.win > 0);
     if (i === 0) {
@@ -5245,7 +5258,15 @@ input.bprange[type=range]::-moz-range-thumb { width: 20px; height: 20px; border-
   $('#bAgain').addEventListener('click', function () { if (MP.on) toMenu(); else openDlg('buyin'); });
   $('#bPlay').addEventListener('click', function () { openDlg('buyin'); });
   function closeGuides() { [].forEach.call(document.querySelectorAll('.guide'), function (d) { d.open = false; }); }   // Anleitung jedes Mal zugeklappt zeigen
-  $('#pauseBtn').addEventListener('click', function () { syncMute(); closeGuides(); renderInvite(); $('#pause').hidden = false; });
+  function openPause() { syncMute(); closeGuides(); renderInvite(); $('#pause').hidden = false; }
+  $('#pauseBtn').addEventListener('click', openPause);
+  /* freier Platz (Bot ohne Chips) angetippt: Tisch fuer Freunde oeffnen und das Einladen zeigen */
+  function inviteSeat() {
+    if (MP.on) { openPause(); return; }
+    if (!netAvail()) { toastMsg(MSG_NOLIB); return; }
+    toastMsg('Öffne den Tisch für Freunde …');
+    hostNow(function (code) { if (code) openPause(); else toastMsg('Keine Verbindung – versuch es gleich nochmal'); });
+  }
   /* Online-Spiel: Code auch waehrend des Spiels zeigen, damit noch jemand dazukommen kann */
   function renderInvite() {
     var on = !!(MP.on && NET.code && !MP.dead && !MP.ended);
@@ -5943,7 +5964,8 @@ input.bprange[type=range]::-moz-range-thumb { width: 20px; height: 20px; border-
     stage.classList.toggle('solo', !others.length);
     $('#bjReact').hidden = !multi(); if (!multi()) $('#bjRPanel').hidden = true;
     /* die ersten beiden links am Rand, weitere rechts */
-    var cols = [$('#bjOthers .l'), $('#bjOthers .r')];
+    var cols = [$('#bjOthers .l'), $('#bjOthers .r')], addEl = $('#bjOthers .bjadd');
+    if (addEl) addEl.remove();
     cols.forEach(function (col, c) { var n = c ? Math.max(0, others.length - 2) : Math.min(2, others.length); while (col.children.length > n) col.removeChild(col.lastChild); });
     others.forEach(function (s, i) {
       var col = cols[i < 2 ? 0 : 1], el = col.children[i < 2 ? i : i - 2];
@@ -5986,6 +6008,13 @@ input.bprange[type=range]::-moz-range-thumb { width: 20px; height: 20px; border-
       sub.textContent = st; sub.classList.toggle('ok', t.phase === 'bet' && s.ready); sub.classList.toggle('turn', turn);
       sub.classList.toggle('pos', net > 0); sub.classList.toggle('neg', net !== null && net < 0);
     });
+    /* noch ein Platz frei: gestrichelter Kreis mit Plus zum Einladen von Freunden */
+    if ((!NB.role || NB.role === 'host') && free() && PR.netAvail()) {
+      addEl = document.createElement('button'); addEl.type = 'button'; addEl.className = 'bjadd';
+      addEl.innerHTML = '<i aria-hidden="true">+</i><span>Freund einladen</span>';
+      addEl.addEventListener('click', inviteSeat);
+      cols[others.length < 2 ? 0 : 1].appendChild(addEl);
+    }
 
     /* eigene Haende */
     var meEl = $('#bjMe'), mh = meEl.querySelector('.bjhands'), hands = my ? my.hands : [];
@@ -6431,6 +6460,11 @@ input.bprange[type=range]::-moz-range-thumb { width: 20px; height: 20px; border-
     $('#bjPause').hidden = false;
   }
   $('#bjPauseBtn').addEventListener('click', openPause);
+  function inviteSeat() {
+    if (NB.role === 'host') { openPause(); return; }
+    bjToast('Öffne den Tisch für Freunde …');
+    hostNow(function (code) { if (code) openPause(); else bjToast('Keine Verbindung – versuch es gleich nochmal'); });
+  }
   (function () { var g = $('#guideBj').cloneNode(true); g.removeAttribute('id'); $('#bjGuide').appendChild(g); })();
   $('#bjCodeBtn').addEventListener('click', openPause);
   $('#bjResume').addEventListener('click', function () { $('#bjPause').hidden = true; });
