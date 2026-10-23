@@ -1241,8 +1241,6 @@ input.bprange[type=range]::-moz-range-thumb { width: 20px; height: 20px; border-
 .lkrow .lkmarq em b { font-size: min(18px, 4.9cqw); }
 .lkjar { position: absolute; top: -6px; right: -12px; width: var(--jw); height: var(--jh); }
 #lkJarC { position: absolute; inset: 0; width: 100%; height: 100%; display: block; }
-.lkjcap { position: absolute; left: -4px; right: -4px; top: 0; margin: 0; font: 700 10px/1.25 var(--ui); color: #9fc7ee; text-align: center; pointer-events: none; text-shadow: 0 1px 2px rgba(0,0,0,.8); }
-.lkjcap b { color: #ffe08a; font-weight: 800; }
 /* kleines Glas oben rechts: so viel ist gerade vom Gewinn ins Glas gewandert (in allen Spielen) */
 #jarPop { position: absolute; right: 2px; top: 54px; z-index: 99; display: flex; align-items: center; gap: 5px; padding: 4px 11px 4px 7px; border-radius: 999px; background: rgba(10,18,34,.94); box-shadow: inset 0 0 0 1.5px rgba(255,214,90,.65), 0 6px 16px rgba(0,0,0,.5); pointer-events: none; opacity: 0; transform: translateY(-8px) scale(.9); transition: opacity .3s, transform .3s; }
 #jarPop.on { opacity: 1; transform: none; transition: opacity .2s, transform .35s cubic-bezier(.2,1.6,.4,1); }
@@ -1819,7 +1817,7 @@ input.bprange[type=range]::-moz-range-thumb { width: 20px; height: 20px; border-
           </g>
         </svg>
       </div>
-      <div class="lkjar" id="lkJar" role="img" aria-label="Jackpot-Glas"><canvas id="lkJarC"></canvas><p class="lkjcap" id="lkJcap"></p></div>
+      <div class="lkjar" id="lkJar" role="img" aria-label="Jackpot-Glas"><canvas id="lkJarC"></canvas></div>
       </div>
       <div class="lkpayrow"><div class="lklast" id="lkLast" aria-live="polite"><b></b><small></small></div><div class="lkpay" id="lkPay" aria-label="Gewinn dieser Runde"><div><small>Gewinn</small><b id="lkRw">0</b></div><div><small>Treffer</small><b id="lkHits">0/50</b></div></div></div>
       <p class="lkmsg" id="lkMsg" aria-live="polite"></p>
@@ -7953,7 +7951,7 @@ input.bprange[type=range]::-moz-range-thumb { width: 20px; height: 20px; border-
   var TIERS = [[300, 0], [500, 500], [800, 1000], [1200, 2000]], RATE = 0.05, JMAX = 1200;
   /* so viele Muenzen fuellen das Glas genau bis zum Rand (ausprobiert); was ueberlaeuft (300 bis 1.200) ist nur Anzeige,
      dort steht eine Muenze fuer mehr, damit bei 1.200 alles rundherum voll ist. JGEO aendern, wenn sich das Glas aendert */
-  var NFULL = 97, COIN = 300 / NFULL, COIN2 = 900 / 88, JGEO = 3;
+  var NFULL = 98, COIN = 300 / NFULL, COIN2 = 900 / 62, JGEO = 4;
   function jarLoad() {
     var o = null; try { o = JSON.parse(localStorage.getItem('pr-jar') || 'null'); } catch (e) {} o = o || {};
     var v = +o.v, s = +o.s;
@@ -7991,17 +7989,17 @@ input.bprange[type=range]::-moz-range-thumb { width: 20px; height: 20px; border-
     v = Math.floor(v);
     $('#lkSub').textContent = v >= 1 ? 'Jackpot im Glas: ' + fmt(v) + ' · kostenlos' : 'Im richtigen Moment drücken · kostenlos';
   }
-  function capOf(v) {
+  /* ab 300 fuellt sich das Glas nur noch mit grossen Gewinnen: das steht beim Oeffnen unter dem Schloss */
+  function tierMsg(v) {
     var t = tierOf(v);
-    if (t === 0) return '<b>+5 %</b> von<br>jedem Gewinn';
-    if (t < 0) return '<b>Randvoll!</b>';
-    return (t === 1 ? 'Voll! ' : '') + 'Weiter ab<br><b>' + fmt(TIERS[t][1]) + '</b> Gewinn';
+    if (t < 0) return 'Das Glas ist randvoll – knack das Schloss!';
+    return 'Glas voll! Es füllt sich weiter ab ' + fmt(TIERS[t][1]) + ' Gewinn am Stück';
   }
 
   /* ---------- Glas: Muenzen mit einfacher Physik (Schwerkraft, Glaswand, Boden, andere Muenzen) ----------
      Logische Groesse JW x JH, alles wird auf die echte Groesse skaliert. Liegt eine Muenze still, friert sie ein
      (zaehlt dann nur noch als Hindernis) und ihre Lage wird gespeichert. */
-  var JW = 140, JH = 226, CR = 5, FLOOR = 220, JCX = 70, JHW = 38, JTOP = 72, JBOT = 216, JCOR = 12, WR = 2;
+  var JW = 140, JH = 226, CR = 5.5, FLOOR = 220, JCX = 70, JHW = 41, JTOP = 56, JBOT = 216, JCOR = 12, WR = 2;
   var SEGS = (function () {
     var p = [[JCX - JHW, JTOP]], s = [], i, a;
     for (i = 0; i <= 4; i++) { a = Math.PI - i * Math.PI / 8; p.push([JCX - JHW + JCOR + Math.cos(a) * JCOR, JBOT - JCOR + Math.sin(a) * JCOR]); }
@@ -8185,7 +8183,6 @@ input.bprange[type=range]::-moz-range-thumb { width: 20px; height: 20px; border-
   }
   function renderVal() {
     $('#lkJp').textContent = fmt(shownV);
-    $('#lkJcap').innerHTML = capOf(jd.v);
     if (!jRaf) drawJar();
   }
   window.addEventListener('resize', function () { if (!lk.hidden) drawJar(); });
@@ -8361,6 +8358,7 @@ input.bprange[type=range]::-moz-range-thumb { width: 20px; height: 20px; border-
     $('#jarPop').classList.remove('on');
     var nw = pour(); need = needOf(jd.v);
     if (nw >= 1) msg('Neu im Glas: +' + fmt(nw) + ' Chips', 'good');
+    else if (Math.floor(jd.v) >= 300) msg(tierMsg(jd.v));
     else if (Math.floor(jd.v) >= 1) msg('Knack das Schloss und hol dir den Jackpot aus dem Glas');
     else msg('Das Glas ist noch leer – gewinn in den anderen Spielen, dann füllt es sich');
     renderInfo();
