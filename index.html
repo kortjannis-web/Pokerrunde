@@ -1851,7 +1851,7 @@ input.bprange[type=range]::-moz-range-thumb { width: 20px; height: 20px; border-
         <div id="lkHelp" hidden>
           <p style="margin-top:14px">Der rote Balken läuft im Kreis. Drück den grünen Knopf unten genau dann, wenn er über dem gelben Punkt ist. Es zählt nur der grüne Knopf. Nach jedem Treffer dreht er die Richtung um und wird etwas schneller. Mit der Zeit liegen die Punkte enger, manchmal direkt hintereinander – dann schnell nachdrücken.</p>
           <p>Knackst du das Schloss, bekommst du den ganzen Jackpot aus den Gläsern, danach fängt es wieder bei 0 an. Für einzelne Treffer gibt es nichts – entweder Jackpot oder nichts. Liegt bis 300 im Glas, brauchst du 50 Treffer, bis 500 sind es 60, darüber 70.</p>
-          <p>Im Shop (Hauptmenü, Knopf unter dem Profil) gibt es unter „Pop the Lock“ Upgrades: einen größeren Knopf (4.000 Chips pro Stufe), 5 Treffer weniger (800 Chips pro Stufe) und einen langsameren Balken (800 Chips pro Stufe, je 10 % langsamer).</p>
+          <p>Im Shop (Hauptmenü, Knopf unter dem Profil) gibt es unter „Pop the Lock“ Upgrades: einen größeren Knopf (1.000 Chips pro Stufe), 5 Treffer weniger (800 Chips pro Stufe) und einen langsameren Balken (800 Chips pro Stufe, je 10 % langsamer).</p>
           <p>Das Glas füllt sich, wenn du in den anderen Spielen gewinnst (Slots, Blackjack, Roulette, Poker): 5 % von jedem Gewinn kommen obendrauf ins Glas, dein Gewinn bleibt ganz bei dir. Bis 300 zählt jeder Gewinn. Danach nur noch große Gewinne am Stück: bis 500 ab 500 Gewinn, bis 800 ab 1.000 Gewinn und bis 1.200 ab 2.000 Gewinn. Das große Glas fasst 300, ab 300 kommt davor ein mittleres Glas dazu (bis 500), ab 500 ein kleines (bis 600), danach läuft alles drumherum über. Auch was überläuft, gehört weiter zum Jackpot. Neue Münzen fallen ins Glas, sobald du wieder hier bist.</p>
           <p>Drückst du daneben oder lässt du den Punkt vorbeiziehen, ist die Runde vorbei. Der Jackpot bleibt im Glas, und spielen kostet nichts.</p>
         </div>
@@ -8001,10 +8001,10 @@ input.bprange[type=range]::-moz-range-thumb { width: 20px; height: 20px; border-
   function jarSave(d) { try { localStorage.setItem('pr-jar', JSON.stringify({ v: Math.round(d.v * 100) / 100, s: Math.round(d.s * 100) / 100, c: d.c, g: JGEO })); } catch (e) {} }
   function tierOf(v) { for (var i = 0; i < TIERS.length; i++) if (v < TIERS[i][0] - 1e-6) return i; return -1; }
   /* ---------- Upgrades aus dem Shop, je Stufe einzeln gekauft (gespeichert in pr-lkup) ----------
-     b: Knopf groesser (4.000 pro Stufe), h: 5 Treffer weniger (800 pro Stufe, hoechstens 20 weniger als normal, mindestens 20),
+     b: Knopf groesser (1.000 pro Stufe), h: 5 Treffer weniger (800 pro Stufe, hoechstens 20 weniger als normal, mindestens 20),
      s: Balken 10 % langsamer (800 pro Stufe) */
   var UPS = {
-    b: { max: 5, price: 4000 },
+    b: { max: 5, price: 1000 },
     h: { max: 6, price: 800 },
     s: { max: 5, price: 800 }
   };
