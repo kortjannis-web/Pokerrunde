@@ -1232,7 +1232,7 @@ input.bprange[type=range]::-moz-range-thumb { width: 20px; height: 20px; border-
 .lkwrap { position: relative; flex: none; height: var(--lkh); aspect-ratio: 248 / 320; }
 /* Glas mit dem Jackpot oben rechts: neben der (schmaleren) Ueberschrift und dem Buegel des Schlosses, bis zum Schlosskoerper.
    Das Schloss ist so gross, dass Glas und Buegel nebeneinander passen und unten alles auf den Bildschirm passt. */
-#lk { --lkh: max(150px, min(calc(81vh - 298px), calc(136cqw - 86px), 440px)); --jh: calc(66px + var(--lkh) * .25); --jw: calc(var(--jh) * 140 / 226); }
+#lk { --lkh: max(150px, min(calc(81vh - 298px), calc(132cqw - 90px), 440px)); --jh: calc(66px + var(--lkh) * .25); --jw: calc(var(--jh) * 150 / 226); }
 /* oben die Ueberschrift mit dem Glas, unten das Bedienpult; der freie Platz verteilt sich darueber und darunter */
 #lkStage .lkpayrow, #lkStage .lkpanel { margin-top: auto; }
 .lkrow { position: relative; flex: none; width: min(100%, 440px); display: flex; flex-direction: column; align-items: center; gap: 10px; }
@@ -1837,9 +1837,9 @@ input.bprange[type=range]::-moz-range-thumb { width: 20px; height: 20px; border-
         <button class="btn wide" id="lkHelpBtn" type="button" style="margin-top:10px" aria-expanded="false">Spielerklärung</button>
         <div id="lkHelp" hidden>
           <p style="margin-top:14px">Der rote Balken läuft im Kreis. Drück den grünen Knopf unten genau dann, wenn er über dem gelben Punkt ist. Es zählt nur der grüne Knopf. Nach jedem Treffer dreht er die Richtung um und wird etwas schneller. Mit der Zeit liegen die Punkte enger, manchmal direkt hintereinander – dann schnell nachdrücken.</p>
-          <p>Jeder Treffer bringt 1 Chip. Knackst du das Schloss, bekommst du dazu den ganzen Jackpot aus dem Glas, danach fängt das Glas wieder bei 0 an. Liegt bis 300 im Glas, brauchst du 50 Treffer, bis 500 sind es 60, darüber 70.</p>
-          <p>Das Glas füllt sich, wenn du in den anderen Spielen gewinnst (Slots, Blackjack, Roulette, Poker): 5 % von jedem Gewinn kommen obendrauf ins Glas, dein Gewinn bleibt ganz bei dir. Bis 300 zählt jeder Gewinn. Danach nur noch große Gewinne am Stück: bis 500 ab 500 Gewinn, bis 800 ab 1.000 Gewinn und bis 1.200 ab 2.000 Gewinn. Was über den Glasrand läuft, gehört weiter zum Jackpot. Neue Münzen fallen ins Glas, sobald du wieder hier bist.</p>
-          <p>Drückst du daneben oder lässt du den Punkt vorbeiziehen, ist die Runde vorbei. Gewonnene Chips behältst du, der Jackpot bleibt im Glas, und spielen kostet nichts.</p>
+          <p>Knackst du das Schloss, bekommst du den ganzen Jackpot aus den Gläsern, danach fängt es wieder bei 0 an. Für einzelne Treffer gibt es nichts – entweder Jackpot oder nichts. Liegt bis 300 im Glas, brauchst du 50 Treffer, bis 500 sind es 60, darüber 70.</p>
+          <p>Das Glas füllt sich, wenn du in den anderen Spielen gewinnst (Slots, Blackjack, Roulette, Poker): 5 % von jedem Gewinn kommen obendrauf ins Glas, dein Gewinn bleibt ganz bei dir. Bis 300 zählt jeder Gewinn. Danach nur noch große Gewinne am Stück: bis 500 ab 500 Gewinn, bis 800 ab 1.000 Gewinn und bis 1.200 ab 2.000 Gewinn. Das große Glas fasst 300, ab 300 kommt davor ein mittleres Glas dazu (bis 500), ab 500 ein kleines (bis 600), danach läuft alles drumherum über. Auch was überläuft, gehört weiter zum Jackpot. Neue Münzen fallen ins Glas, sobald du wieder hier bist.</p>
+          <p>Drückst du daneben oder lässt du den Punkt vorbeiziehen, ist die Runde vorbei. Der Jackpot bleibt im Glas, und spielen kostet nichts.</p>
         </div>
         <button class="btn wide" id="lkMenu" type="button" style="margin-top:10px">Zum Hauptmenü</button>
       </div>
@@ -7929,9 +7929,9 @@ input.bprange[type=range]::-moz-range-thumb { width: 20px; height: 20px; border-
 /* Pop the Lock wie am Automaten in der Spielhalle: ein roter Balken laeuft im Kreis um den Bildschirm im leuchtenden
    LED-Schloss, gedrueckt wird der grosse gruene Knopf unten, wenn er ueber dem gelben Punkt steht. Nach jedem
    Treffer dreht er die Richtung um und wird langsam schneller; die Abstaende werden enger, und ab und zu liegt der
-   naechste Punkt ganz kurz dahinter (schnell nachdruecken). Spielen ist kostenlos: jeder Treffer bringt 1 Chip.
-   Wer das Schloss knackt (50 Treffer, bei mehr als 300 im Glas 60, ueber 500 70), bekommt den Jackpot aus dem Glas
-   rechts daneben. Das Glas fuellt sich mit den Gewinnen aus den anderen Spielen (window.JAR.add).
+   naechste Punkt ganz kurz dahinter (schnell nachdruecken). Spielen ist kostenlos, Treffer allein bringen nichts:
+   wer das Schloss knackt (50 Treffer, bei mehr als 300 im Glas 60, ueber 500 70), bekommt den Jackpot aus dem Glas
+   oben rechts. Das Glas fuellt sich mit den Gewinnen aus den anderen Spielen (window.JAR.add).
    Daneben gedrueckt oder den Punkt vorbeiziehen lassen = Runde vorbei, der Jackpot bleibt im Glas. */
 (function () {
   'use strict';
@@ -7949,19 +7949,23 @@ input.bprange[type=range]::-moz-range-thumb { width: 20px; height: 20px; border-
      Muenzen, die schon im Glas liegen, s der Jackpot, den man zuletzt gesehen hat. Neue Muenzen fallen erst hinein,
      wenn man wieder hier ist. Was ueber den Rand laeuft, ist nur Anzeige und gehoert weiter zum Jackpot. */
   var TIERS = [[300, 0], [500, 500], [800, 1000], [1200, 2000]], RATE = 0.05, JMAX = 1200;
-  /* so viele Muenzen fuellen das Glas genau bis zum Rand (ausprobiert); was ueberlaeuft (300 bis 1.200) ist nur Anzeige,
-     dort steht eine Muenze fuer mehr, damit bei 1.200 alles rundherum voll ist. JGEO aendern, wenn sich das Glas aendert */
-  var NFULL = 98, COIN = 300 / NFULL, COIN2 = 900 / 62, JGEO = 4;
+  /* [ab, wie viel, Muenzen]: das grosse Glas fasst 0 bis 300, das mittlere davor 300 bis 500, das kleine 500 bis 600
+     (so viele Muenzen fuellen sie genau bis zum Rand, ausprobiert); 600 bis 1.200 laeuft nur noch drumherum ueber,
+     das ist bloss Anzeige. JGEO aendern, wenn sich die Glaeser aendern */
+  var PARTS = [[0, 300, 100], [300, 200, 47], [500, 100, 22], [600, 600, 78]], JGEO = 5;
   function jarLoad() {
     var o = null; try { o = JSON.parse(localStorage.getItem('pr-jar') || 'null'); } catch (e) {} o = o || {};
     var v = +o.v, s = +o.s;
-    var c = o.g === JGEO && Array.isArray(o.c) ? o.c.filter(function (q) { return Array.isArray(q) && q.length === 2 && isFinite(q[0]) && isFinite(q[1]); }) : [];
+    var c = PARTS.map(function (p, i) {
+      var a = o.g === JGEO && Array.isArray(o.c) && Array.isArray(o.c[i]) ? o.c[i] : [];
+      return a.filter(function (q) { return Array.isArray(q) && q.length === 2 && isFinite(q[0]) && isFinite(q[1]); });
+    });
     return { v: isFinite(v) ? Math.max(0, Math.min(JMAX, v)) : 0, s: isFinite(s) ? Math.max(0, s) : 0, c: c };
   }
   function jarSave(d) { try { localStorage.setItem('pr-jar', JSON.stringify({ v: Math.round(d.v * 100) / 100, s: Math.round(d.s * 100) / 100, c: d.c, g: JGEO })); } catch (e) {} }
   function tierOf(v) { for (var i = 0; i < TIERS.length; i++) if (v < TIERS[i][0] - 1e-6) return i; return -1; }
   function needOf(v) { v = Math.floor(v); return v <= 300 ? 50 : v <= 500 ? 60 : 70; }
-  function coinsOf(v) { v = Math.floor(v); return v <= 300 ? Math.round(v / COIN) : NFULL + Math.round((v - 300) / COIN2); }
+  function coinsOf(v, i) { var p = PARTS[i], x = Math.max(0, Math.min(p[1], Math.floor(v) - p[0])); return Math.round(x / p[1] * p[2]); }
   /* kleine Betraege mit einer Nachkommastelle (5 % von 10 sind 0,5) */
   function amt(a) { return a >= 10 ? fmt(Math.round(a)) : String(Math.round(a * 10) / 10).replace('.', ','); }
   function jarAdd(win) {
@@ -7996,24 +8000,29 @@ input.bprange[type=range]::-moz-range-thumb { width: 20px; height: 20px; border-
     return 'Glas voll! Es füllt sich weiter ab ' + fmt(TIERS[t][1]) + ' Gewinn am Stück';
   }
 
-  /* ---------- Glas: Muenzen mit einfacher Physik (Schwerkraft, Glaswand, Boden, andere Muenzen) ----------
-     Logische Groesse JW x JH, alles wird auf die echte Groesse skaliert. Liegt eine Muenze still, friert sie ein
-     (zaehlt dann nur noch als Hindernis) und ihre Lage wird gespeichert. */
-  var JW = 140, JH = 226, CR = 5.5, FLOOR = 220, JCX = 70, JHW = 41, JTOP = 56, JBOT = 216, JCOR = 12, WR = 2;
-  var SEGS = (function () {
-    var p = [[JCX - JHW, JTOP]], s = [], i, a;
-    for (i = 0; i <= 4; i++) { a = Math.PI - i * Math.PI / 8; p.push([JCX - JHW + JCOR + Math.cos(a) * JCOR, JBOT - JCOR + Math.sin(a) * JCOR]); }
-    for (i = 0; i <= 4; i++) { a = Math.PI / 2 - i * Math.PI / 8; p.push([JCX + JHW - JCOR + Math.cos(a) * JCOR, JBOT - JCOR + Math.sin(a) * JCOR]); }
-    p.push([JCX + JHW, JTOP]);
-    for (i = 1; i < p.length; i++) s.push([p[i - 1][0], p[i - 1][1], p[i][0], p[i][1]]);
-    return s;
-  })();
-  function jarSim() {
-    var S = { st: [], dy: [], fly: [], grid: {}, onLand: null }, D = CR * 2;
+  /* ---------- Glaeser: Muenzen mit einfacher Physik (Schwerkraft, Glaswand, Boden, andere Muenzen) ----------
+     Logische Groesse JW x JH, alles wird auf die echte Groesse skaliert. Drei Glaeser: das grosse hinten (bis 300),
+     davor leicht rechts ein mittleres (bis 500) und leicht links ein kleines (bis 600); danach laeuft es nur noch ueber.
+     Jedes Glas hat seine eigene kleine Welt, der Ueberlauf eine eigene, in der die Glaeser samt Inhalt Hindernisse sind.
+     Liegt eine Muenze still, friert sie ein (zaehlt dann nur noch als Hindernis) und ihre Lage wird gespeichert. */
+  var JW = 150, JH = 226, CR = 5, FLOOR = 224, WR = 2;
+  var JARS = [{ cx: 64, hw: 38, top: 44, bot: 196, cor: 12 }, { cx: 112, hw: 27, top: 118, bot: 218, cor: 10 }, { cx: 36, hw: 21, top: 158, bot: 218, cor: 9 }];
+  JARS.forEach(function (j) {
+    var p = [[j.cx - j.hw, j.top]], i, a;
+    for (i = 0; i <= 4; i++) { a = Math.PI - i * Math.PI / 8; p.push([j.cx - j.hw + j.cor + Math.cos(a) * j.cor, j.bot - j.cor + Math.sin(a) * j.cor]); }
+    for (i = 0; i <= 4; i++) { a = Math.PI / 2 - i * Math.PI / 8; p.push([j.cx + j.hw - j.cor + Math.cos(a) * j.cor, j.bot - j.cor + Math.sin(a) * j.cor]); }
+    p.push([j.cx + j.hw, j.top]);
+    j.segs = [];
+    for (i = 1; i < p.length; i++) j.segs.push([p[i - 1][0], p[i - 1][1], p[i][0], p[i][1]]);
+  });
+  /* segs: Waende, dx/dw: wo die Muenzen herunterfallen (Mitte, Breite) */
+  function jarSim(segs, dx, dw) {
+    var S = { st: [], dy: [], grid: {}, onLand: null }, D = CR * 2;
     function gk(x, y) { return Math.floor(x / D) + ',' + Math.floor(y / D); }
-    S.add = function (x, y) { var c = [x, y]; S.st.push(c); (S.grid[gk(x, y)] || (S.grid[gk(x, y)] = [])).push(c); };
+    /* obst: nur Hindernis (Inhalt der Glaeser in der Ueberlauf-Welt), wird nicht gezeichnet und nicht gespeichert */
+    S.add = function (x, y, obst) { var c = [x, y]; if (!obst) S.st.push(c); (S.grid[gk(x, y)] || (S.grid[gk(x, y)] = [])).push(c); };
     S.clear = function () { S.st = []; S.dy = []; S.grid = {}; };
-    S.drop = function () { S.dy.push({ x: JCX + (Math.random() - 0.5) * 36, y: -D, vx: (Math.random() - 0.5) * 40, vy: 120, calm: 0, age: 0, hit: false }); };
+    S.drop = function () { S.dy.push({ x: dx + (Math.random() - 0.5) * dw, y: -D, vx: (Math.random() - 0.5) * 40, vy: 120, calm: 0, age: 0, hit: false }); };
     function push(c, nx, ny, p) {
       c.x += nx * p; c.y += ny * p; c.hit = true;
       var vn = c.vx * nx + c.vy * ny;
@@ -8051,7 +8060,7 @@ input.bprange[type=range]::-moz-range-thumb { width: 20px; height: 20px; border-
         if (c.y > FLOOR - CR) push(c, 0, -1, c.y - FLOOR + CR);
         if (c.x < CR) push(c, 1, 0, CR - c.x);
         if (c.x > JW - CR) push(c, -1, 0, c.x - JW + CR);
-        for (j = 0; j < SEGS.length; j++) seg(c, SEGS[j]);
+        for (j = 0; j < segs.length; j++) seg(c, segs[j]);
         var gx = Math.floor(c.x / D), gy = Math.floor(c.y / D);
         for (ox = -1; ox <= 1; ox++) for (oy = -1; oy <= 1; oy++) { L = S.grid[(gx + ox) + ',' + (gy + oy)]; if (L) for (j = 0; j < L.length; j++) circ(c, L[j][0], L[j][1]); }
         for (j = i + 1; j < S.dy.length; j++) pair(c, S.dy[j]);
@@ -8060,19 +8069,26 @@ input.bprange[type=range]::-moz-range-thumb { width: 20px; height: 20px; border-
         c = S.dy[i];
         if (c.hit) { c.vx *= 0.97; c.vy *= 0.97; }
         c.calm = c.hit && Math.abs(c.vx) + Math.abs(c.vy) < 25 ? c.calm + 1 : 0;
-        if (c.calm > 12 || c.age > 8) { S.dy.splice(i, 1); S.add(Math.round(c.x * 10) / 10, Math.round(c.y * 10) / 10); if (S.onLand) S.onLand(); }
-      }
-      for (i = S.fly.length - 1; i >= 0; i--) {
-        c = S.fly[i]; c.vy += 900 * dt; c.x += c.vx * dt; c.y += c.vy * dt; c.age += dt;
-        if (c.age > 1.6 || c.y > JH + 20) S.fly.splice(i, 1);
+        if (c.calm > 12 || c.age > 8) {
+          var x = Math.round(c.x * 10) / 10, y = Math.round(c.y * 10) / 10;
+          S.dy.splice(i, 1); S.add(x, y); if (S.onLand) S.onLand(x, y);
+        }
       }
     };
     return S;
   }
 
-  /* ---------- Glas zeichnen: Glas hinten, Muenzen im Glas, Glas vorne (Rand, Spiegelungen, Betrag), Muenzen daneben ---------- */
-  var cv = $('#lkJarC'), g2 = cv.getContext('2d'), sim = jarSim(), jd = jarLoad();
-  var jRaf = 0, jLast = 0, dropN = 0, dropTot = 0, dropAcc = 0, dropGap = 0.08, fromV = 0, toV = 0, shownV = 0, landT = 0, sprite = null, jFont = '';
+  /* ---------- Glaeser zeichnen: das grosse hinten, davor das mittlere und das kleine (tauchen erst ab 300 bzw. 500 auf),
+     ganz vorne die uebergelaufenen Muenzen und der Betrag ---------- */
+  var cv = $('#lkJarC'), g2 = cv.getContext('2d'), jd = jarLoad();
+  var sims = JARS.map(function (j) { return jarSim(j.segs, j.cx, j.hw * 0.9); });
+  sims.push(jarSim([].concat.apply([], JARS.map(function (j) { return j.segs; })), JW / 2, JW - 20));
+  /* show: wie weit das mittlere und das kleine Glas schon zu sehen sind (0 bis 1); queue: was noch hineinfaellt [Welt, Anzahl] */
+  var fly = [], show = [1, 0, 0], queue = [], dropTot = 0, dropDone = 0, dropAcc = 0, dropGap = 0.08;
+  var jRaf = 0, jLast = 0, fromV = 0, toV = 0, shownV = 0, landT = 0, sprite = null, jFont = '';
+  function landSnd() { var t = Date.now(); if (t - landT > 90) { landT = t; Snd.chip(1, 0, true); } }
+  /* was in einem Glas liegt, ist in der Ueberlauf-Welt ein Hindernis */
+  sims.forEach(function (s, i) { s.onLand = i < 3 ? function (x, y) { sims[3].add(x, y, true); landSnd(); } : landSnd; });
   function coinSprite(k) {
     var r = CR * k, n = Math.ceil(r * 2 + 4), c = document.createElement('canvas'), g = c.getContext('2d');
     c.width = c.height = n;
@@ -8083,9 +8099,9 @@ input.bprange[type=range]::-moz-range-thumb { width: 20px; height: 20px; border-
     g.beginPath(); g.arc(n / 2, n / 2, r * 0.58, 0, Math.PI * 2); g.lineWidth = Math.max(0.6, r * 0.1); g.strokeStyle = 'rgba(255,236,170,.55)'; g.stroke();
     return c;
   }
-  function jarPath(g) {
-    var l = JCX - JHW - WR, r = JCX + JHW + WR, b = JBOT + WR, q = JCOR + WR;
-    g.beginPath(); g.moveTo(l, JTOP); g.lineTo(l, b - q); g.arcTo(l, b, l + q, b, q); g.lineTo(r - q, b); g.arcTo(r, b, r, b - q, q); g.lineTo(r, JTOP);
+  function jarPath(g, j) {
+    var l = j.cx - j.hw - WR, r = j.cx + j.hw + WR, b = j.bot + WR, q = j.cor + WR;
+    g.beginPath(); g.moveTo(l, j.top); g.lineTo(l, b - q); g.arcTo(l, b, l + q, b, q); g.lineTo(r - q, b); g.arcTo(r, b, r, b - q, q); g.lineTo(r, j.top);
   }
   function rr(g, x, y, w, h, r) { g.beginPath(); g.moveTo(x + r, y); g.arcTo(x + w, y, x + w, y + h, r); g.arcTo(x + w, y + h, x, y + h, r); g.arcTo(x, y + h, x, y, r); g.arcTo(x, y, x + w, y, r); g.closePath(); }
   function drawJar() {
@@ -8093,91 +8109,123 @@ input.bprange[type=range]::-moz-range-thumb { width: 20px; height: 20px; border-
     if (!w || !h) return;
     var dpr = Math.min(2, window.devicePixelRatio || 1), W = Math.round(w * dpr), H = Math.round(h * dpr);
     if (cv.width !== W || cv.height !== H) { cv.width = W; cv.height = H; sprite = null; }
-    var k = W / JW, g = g2, i, c, sw, full = Math.floor(jd.v) >= 300;
+    var k = W / JW, g = g2, sw;
     if (!sprite) sprite = coinSprite(k);
     sw = sprite.width / k;
     g.setTransform(1, 0, 0, 1, 0, 0); g.clearRect(0, 0, W, H);
     g.setTransform(k, 0, 0, k, 0, 0);
     function coin(x, y) { g.drawImage(sprite, x - sw / 2, y - sw / 2, sw, sw); }
-    function inside(x, y) { return y > JTOP && x > JCX - JHW && x < JCX + JHW; }
-    /* Schatten auf dem Boden, Glas von hinten */
-    var sh = g.createRadialGradient(JCX, FLOOR, 2, JCX, FLOOR, 60);
-    sh.addColorStop(0, full ? 'rgba(255,200,80,.35)' : 'rgba(0,0,0,.45)'); sh.addColorStop(1, 'rgba(0,0,0,0)');
-    g.fillStyle = sh; g.fillRect(JCX - 64, FLOOR - 10, 128, 16);
-    jarPath(g); g.closePath();
-    var bg = g.createLinearGradient(JCX - JHW, 0, JCX + JHW, 0);
-    bg.addColorStop(0, 'rgba(170,215,255,.16)'); bg.addColorStop(0.5, 'rgba(170,215,255,.05)'); bg.addColorStop(1, 'rgba(170,215,255,.12)');
-    g.fillStyle = bg; g.fill();
-    for (i = 0; i < sim.st.length; i++) { c = sim.st[i]; if (inside(c[0], c[1])) coin(c[0], c[1]); }
-    for (i = 0; i < sim.dy.length; i++) { c = sim.dy[i]; if (inside(c.x, c.y)) coin(c.x, c.y); }
-    /* Glas von vorne: Wand, Spiegelungen, Rand oben */
-    g.save();
-    if (full) { g.shadowColor = 'rgba(255,214,90,.9)'; g.shadowBlur = 10; }
-    jarPath(g); g.lineWidth = WR * 1.6; g.strokeStyle = full ? 'rgba(255,230,160,.85)' : 'rgba(200,235,255,.6)'; g.lineJoin = 'round'; g.stroke();
-    g.restore();
-    g.fillStyle = 'rgba(255,255,255,.22)'; rr(g, JCX - JHW + 5, JTOP + 14, 4, JBOT - JTOP - 34, 2); g.fill();
-    g.fillStyle = 'rgba(255,255,255,.12)'; rr(g, JCX - JHW + 12, JTOP + 14, 2, JBOT - JTOP - 60, 1); g.fill();
-    g.fillStyle = 'rgba(255,255,255,.1)'; rr(g, JCX + JHW - 9, JTOP + 30, 3, JBOT - JTOP - 60, 1.5); g.fill();
-    rr(g, JCX - JHW - WR - 3, JTOP - 6, (JHW + WR + 3) * 2, 8, 3);
-    g.fillStyle = full ? 'rgba(255,214,90,.45)' : 'rgba(190,225,255,.28)'; g.fill();
-    g.lineWidth = 1.2; g.strokeStyle = full ? 'rgba(255,240,190,.9)' : 'rgba(210,240,255,.7)'; g.stroke();
-    /* Betrag vorne auf dem Glas */
-    if (!jFont) jFont = '800 22px ' + (getComputedStyle(document.documentElement).getPropertyValue('--display').trim() || 'sans-serif');
-    g.font = jFont;
-    g.textAlign = 'center'; g.textBaseline = 'middle';
-    g.lineWidth = 4; g.strokeStyle = 'rgba(5,10,22,.85)'; g.lineJoin = 'round';
-    var ty = JBOT - 34, tx = fmt(shownV);
-    g.strokeText(tx, JCX, ty); g.fillStyle = '#ffe08a'; g.fillText(tx, JCX, ty);
-    /* daneben liegende Muenzen und welche, die gerade herausfliegen (Jackpot geknackt) */
-    for (i = 0; i < sim.st.length; i++) { c = sim.st[i]; if (!inside(c[0], c[1])) coin(c[0], c[1]); }
-    for (i = 0; i < sim.dy.length; i++) { c = sim.dy[i]; if (!inside(c.x, c.y)) coin(c.x, c.y); }
-    for (i = 0; i < sim.fly.length; i++) { c = sim.fly[i]; g.globalAlpha = Math.max(0, 1 - c.age / 1.6); coin(c.x, c.y); }
+    function coins(S) { var i; for (i = 0; i < S.st.length; i++) coin(S.st[i][0], S.st[i][1]); for (i = 0; i < S.dy.length; i++) coin(S.dy[i].x, S.dy[i].y); }
+    function glass(i) {
+      var j = JARS[i], full = Math.floor(jd.v) >= PARTS[i][0] + PARTS[i][1], ht = j.bot - j.top;
+      /* Schatten auf dem Boden, Glas von hinten (die vorderen Glaeser verdecken etwas, was dahinter liegt) */
+      var sh = g.createRadialGradient(j.cx, j.bot + WR, 2, j.cx, j.bot + WR, j.hw * 1.5);
+      sh.addColorStop(0, full ? 'rgba(255,200,80,.35)' : 'rgba(0,0,0,.45)'); sh.addColorStop(1, 'rgba(0,0,0,0)');
+      g.fillStyle = sh; g.fillRect(j.cx - j.hw * 1.6, j.bot - 6, j.hw * 3.2, 14);
+      jarPath(g, j); g.closePath();
+      if (i) { g.fillStyle = 'rgba(8,16,34,.6)'; g.fill(); }
+      var bg = g.createLinearGradient(j.cx - j.hw, 0, j.cx + j.hw, 0);
+      bg.addColorStop(0, 'rgba(170,215,255,.16)'); bg.addColorStop(0.5, 'rgba(170,215,255,.05)'); bg.addColorStop(1, 'rgba(170,215,255,.12)');
+      g.fillStyle = bg; g.fill();
+      coins(sims[i]);
+      /* Glas von vorne: Wand, Spiegelungen, Rand oben */
+      g.save();
+      if (full) { g.shadowColor = 'rgba(255,214,90,.9)'; g.shadowBlur = 10; }
+      jarPath(g, j); g.lineWidth = WR * 1.6; g.strokeStyle = full ? 'rgba(255,230,160,.85)' : 'rgba(200,235,255,.6)'; g.lineJoin = 'round'; g.stroke();
+      g.restore();
+      g.fillStyle = 'rgba(255,255,255,.22)'; rr(g, j.cx - j.hw + 5, j.top + 12, 4, ht - 30, 2); g.fill();
+      if (ht > 90) { g.fillStyle = 'rgba(255,255,255,.12)'; rr(g, j.cx - j.hw + 12, j.top + 12, 2, ht - 56, 1); g.fill(); }
+      g.fillStyle = 'rgba(255,255,255,.1)'; rr(g, j.cx + j.hw - 9, j.top + ht * 0.2, 3, ht * 0.55, 1.5); g.fill();
+      rr(g, j.cx - j.hw - WR - 3, j.top - 6, (j.hw + WR + 3) * 2, 8, 3);
+      g.fillStyle = full ? 'rgba(255,214,90,.45)' : 'rgba(190,225,255,.28)'; g.fill();
+      g.lineWidth = 1.2; g.strokeStyle = full ? 'rgba(255,240,190,.9)' : 'rgba(210,240,255,.7)'; g.stroke();
+    }
+    glass(0);
+    /* das mittlere und das kleine Glas wachsen beim Auftauchen von unten heraus */
+    [1, 2].forEach(function (i) {
+      var a = show[i], j = JARS[i];
+      if (a <= 0) return;
+      var s = 0.6 + 0.4 * a;
+      g.save(); g.globalAlpha = a; g.translate(j.cx, j.bot); g.scale(s, s); g.translate(-j.cx, -j.bot);
+      glass(i);
+      g.restore();
+    });
+    coins(sims[3]);
+    for (var i = 0; i < fly.length; i++) { g.globalAlpha = Math.max(0, 1 - fly[i].age / 1.6); coin(fly[i].x, fly[i].y); }
     g.globalAlpha = 1;
+    /* Betrag vorne auf dem grossen Glas, oberhalb der beiden vorderen */
+    if (!jFont) jFont = '800 22px ' + (getComputedStyle(document.documentElement).getPropertyValue('--display').trim() || 'sans-serif');
+    g.font = jFont; g.textAlign = 'center'; g.textBaseline = 'middle';
+    g.lineWidth = 4; g.strokeStyle = 'rgba(5,10,22,.85)'; g.lineJoin = 'round';
+    var tx = fmt(shownV), ty = JARS[0].top + 52;
+    g.strokeText(tx, JARS[0].cx, ty); g.fillStyle = '#ffe08a'; g.fillText(tx, JARS[0].cx, ty);
+  }
+  function stepFly(dt) {
+    for (var i = fly.length - 1; i >= 0; i--) {
+      var c = fly[i]; c.vy += 900 * dt; c.x += c.vx * dt; c.y += c.vy * dt; c.age += dt;
+      if (c.age > 1.6 || c.y > JH + 20) fly.splice(i, 1);
+    }
   }
   function jarLoop(now) {
     jRaf = 0;
     if (lk.hidden) { jLast = 0; return; }
-    var dt = jLast ? Math.min(0.05, (now - jLast) / 1000) : 1 / 60, i;
+    var dt = jLast ? Math.min(0.05, (now - jLast) / 1000) : 1 / 60, i, n, busy = false;
     jLast = now;
-    if (dropN > 0) {
+    if (queue.length) {
       dropAcc += dt;
-      while (dropN > 0 && dropAcc >= dropGap) {
-        dropAcc -= dropGap; dropN--; sim.drop();
-        shownV = Math.round(fromV + (toV - fromV) * (dropTot - dropN) / dropTot);
-        renderVal();
+      while (queue.length && dropAcc >= dropGap) {
+        var q = queue[0];
+        /* der Ueberlauf faengt erst an, wenn in den Glaesern alles liegt */
+        if (q[0] === 3 && (sims[0].dy.length || sims[1].dy.length || sims[2].dy.length)) { dropAcc = dropGap; break; }
+        dropAcc -= dropGap; sims[q[0]].drop();
+        if (--q[1] <= 0) queue.shift();
+        dropDone++; shownV = Math.round(fromV + (toV - fromV) * dropDone / dropTot); renderVal();
       }
     }
-    for (i = Math.max(1, Math.round(dt * 120)); i > 0; i--) sim.step(1 / 120);
+    for (n = Math.max(1, Math.round(dt * 120)); n > 0; n--) { for (i = 0; i < 4; i++) sims[i].step(1 / 120); stepFly(1 / 120); }
+    for (i = 1; i < 3; i++) {
+      var want = shownV >= PARTS[i][0] || sims[i].st.length || sims[i].dy.length ? 1 : 0;
+      if (show[i] !== want) { show[i] = Math.max(0, Math.min(1, show[i] + (want ? 1 : -1) * dt * 3)); busy = true; }
+    }
     drawJar();
-    if (dropN > 0 || sim.dy.length || sim.fly.length) jRaf = requestAnimationFrame(jarLoop);
+    if (busy || queue.length || fly.length || sims.some(function (s) { return s.dy.length; })) jRaf = requestAnimationFrame(jarLoop);
     else { jLast = 0; pourDone(); }
   }
   function startJar() { if (!jRaf && !lk.hidden) { jLast = 0; jRaf = requestAnimationFrame(jarLoop); } }
-  sim.onLand = function () { var t = Date.now(); if (t - landT > 90) { landT = t; Snd.chip(1, 0, true); } };
   /* alle Muenzen liegen: Lage merken */
   function pourDone() {
-    jd.c = sim.st.map(function (c) { return [c[0], c[1]]; });
-    if (!dropN) { jd.s = jd.v; shownV = Math.floor(jd.v); renderVal(); }
+    jd.c = sims.map(function (s) { return s.st.map(function (c) { return [c[0], c[1]]; }); });
+    if (!queue.length) { jd.s = jd.v; shownV = Math.floor(jd.v); renderVal(); }
     jarSave(jd);
   }
-  /* beim Oeffnen: liegende Muenzen wieder hinlegen, was seit dem letzten Mal dazugekommen ist, faellt hinein */
+  /* beim Oeffnen: liegende Muenzen wieder hinlegen, was seit dem letzten Mal dazugekommen ist, faellt hinein
+     (erst ins grosse Glas, dann ins mittlere, ins kleine und zuletzt drumherum) */
   function pour() {
-    jd = jarLoad(); sim.clear(); dropN = 0; dropAcc = 0;
-    var want = coinsOf(jd.v), have = jd.c.slice().sort(function (a, b) { return b[1] - a[1]; }).slice(0, want);
-    have.forEach(function (c) { sim.add(c[0], c[1]); });
+    jd = jarLoad(); queue = []; dropAcc = 0; dropDone = 0; fly = [];
+    sims.forEach(function (s) { s.clear(); });
+    var tot = 0;
+    PARTS.forEach(function (p, i) {
+      var want = coinsOf(jd.v, i), have = jd.c[i].slice().sort(function (a, b) { return b[1] - a[1]; }).slice(0, want);
+      have.forEach(function (c) { sims[i].add(c[0], c[1]); if (i < 3) sims[3].add(c[0], c[1], true); });
+      if (want > have.length) { queue.push([i, want - have.length]); tot += want - have.length; }
+    });
     toV = Math.floor(jd.v); fromV = Math.min(toV, Math.floor(jd.s));
-    dropTot = dropN = want - have.length;
-    dropGap = dropN ? Math.max(0.02, Math.min(0.12, 5 / dropN)) : 0.08;
-    shownV = dropN ? fromV : toV;
+    dropTot = tot; dropGap = tot ? Math.max(0.02, Math.min(0.12, 5 / tot)) : 0.08;
+    shownV = tot ? fromV : toV;
+    show = [1, sims[1].st.length || shownV >= PARTS[1][0] ? 1 : 0, sims[2].st.length || shownV >= PARTS[2][0] ? 1 : 0];
     renderVal(); drawJar(); startJar();
     return toV - fromV;
   }
-  /* Jackpot geknackt: alle Muenzen fliegen aus dem Glas, das Glas faengt wieder bei 0 an */
+  /* Jackpot geknackt: alle Muenzen fliegen heraus, die vorderen Glaeser verschwinden, es faengt wieder bei 0 an */
   function collect() {
-    var won = Math.floor(jd.v), all = sim.st.map(function (c) { return [c[0], c[1]]; }).concat(sim.dy.map(function (c) { return [c.x, c.y]; }));
-    jd.v -= won; jd.s = 0; jd.c = []; jarSave(jd);
-    sim.clear(); dropN = 0;
-    all.forEach(function (q) { sim.fly.push({ x: q[0], y: q[1], vx: (Math.random() - 0.5) * 260, vy: -260 - Math.random() * 420, age: 0 }); });
+    var won = Math.floor(jd.v), all = [];
+    sims.forEach(function (s) {
+      s.st.forEach(function (c) { all.push([c[0], c[1]]); }); s.dy.forEach(function (c) { all.push([c.x, c.y]); });
+      s.clear();
+    });
+    jd.v -= won; jd.s = 0; jd.c = PARTS.map(function () { return []; }); jarSave(jd);
+    queue = [];
+    fly = all.map(function (q) { return { x: q[0], y: q[1], vx: (Math.random() - 0.5) * 260, vy: -260 - Math.random() * 420, age: 0 }; });
     shownV = 0; renderVal(); renderSub(jd.v); startJar();
     return won;
   }
@@ -8315,7 +8363,6 @@ input.bprange[type=range]::-moz-range-thumb { width: 20px; height: 20px; border-
     if (st !== 'run') return;
     if (Math.abs(trav - dist) > hw + TOL) { miss('Daneben!'); return; }
     k++;
-    var c = 1; pay(c);
     if (k >= need) {
       st = 'open'; if (raf) { cancelAnimationFrame(raf); raf = 0; }
       tgtG.style.opacity = 0;
@@ -8335,8 +8382,8 @@ input.bprange[type=range]::-moz-range-thumb { width: 20px; height: 20px; border-
       }, 3300);
       return;
     }
-    fx('hit'); Snd.chip(Math.min(3, c), 0, true);
-    msg('+' + c + (c === 1 ? ' Chip' : ' Chips'), 'good');
+    fx('hit'); Snd.chip(1, 0, true);
+    msg('Noch ' + (need - k) + ' bis zum Jackpot', 'good');
     dir = -dir; place(); renderInfo();
   }
   /* gedrueckt wird beim Beruehren (nicht erst beim Loslassen), damit es auf den Punkt genau ist */
@@ -8366,7 +8413,7 @@ input.bprange[type=range]::-moz-range-thumb { width: 20px; height: 20px; border-
   function leave() {
     clearTimeout(nextT); if (raf) { cancelAnimationFrame(raf); raf = 0; }
     if (jRaf) { cancelAnimationFrame(jRaf); jRaf = 0; }
-    sim.fly = []; pourDone();
+    fly = []; pourDone();
     st = 'idle';
     [].forEach.call(document.querySelectorAll('#lk .slcoin'), function (c) { c.remove(); });
     lk.hidden = true; $('#lkPause').hidden = true; $('#menu').hidden = false;
