@@ -1229,7 +1229,20 @@ input.bprange[type=range]::-moz-range-thumb { width: 20px; height: 20px; border-
 .lkmarq em b { font: 800 19px var(--display); color: #ffe08a; text-shadow: 0 0 10px rgba(255,224,138,.6); }
 /* Automat wie in der Spielhalle: Bildschirm hinter einem leuchtenden LED-Schloss (Neonrahmen mit Lauflicht),
    darunter die Gewinnanzeige und unten in der Mitte der grosse gruene Knopf auf dem Bedienpult */
-.lkwrap { position: relative; flex: none; width: min(76vw, 290px, 34vh); aspect-ratio: 248 / 320; }
+.lkwrap { position: relative; flex: none; height: var(--lkh); aspect-ratio: 248 / 320; }
+/* Glas mit dem Jackpot rechts neben dem Schloss; Hoehe wie das Schloss, beide passen nebeneinander */
+#lk { --lkh: max(150px, min(34vh, calc(75vh - 280px), calc((100cqw - 12px) / 1.27), 300px)); }
+.lkrow { position: relative; flex: none; display: flex; align-items: flex-end; justify-content: center; gap: 6px; }
+.lkjar { position: relative; flex: none; height: var(--lkh); aspect-ratio: 140 / 290; }
+#lkJarC { position: absolute; inset: 0; width: 100%; height: 100%; display: block; }
+.lkjcap { position: absolute; left: -6px; right: -6px; top: 0; margin: 0; font: 700 10px/1.25 var(--ui); color: #9fc7ee; text-align: center; pointer-events: none; text-shadow: 0 1px 2px rgba(0,0,0,.8); }
+.lkjcap b { color: #ffe08a; font-weight: 800; }
+/* kleines Glas oben rechts: so viel ist gerade vom Gewinn ins Glas gewandert (in allen Spielen) */
+#jarPop { position: absolute; right: 2px; top: 54px; z-index: 99; display: flex; align-items: center; gap: 5px; padding: 4px 11px 4px 7px; border-radius: 999px; background: rgba(10,18,34,.94); box-shadow: inset 0 0 0 1.5px rgba(255,214,90,.65), 0 6px 16px rgba(0,0,0,.5); pointer-events: none; opacity: 0; transform: translateY(-8px) scale(.9); transition: opacity .3s, transform .3s; }
+#jarPop.on { opacity: 1; transform: none; transition: opacity .2s, transform .35s cubic-bezier(.2,1.6,.4,1); }
+#jarPop svg { width: 18px; height: 22px; display: block; }
+#jarPop b { font: 800 14px var(--ui); color: #ffe08a; font-variant-numeric: tabular-nums; text-shadow: 0 0 8px rgba(255,224,138,.5); }
+#jarPop.bump b { animation: lkup .35s ease-out; }
 .lkwrap::before { content: ''; position: absolute; inset: 12% -14% -6%; border-radius: 50%; background: radial-gradient(closest-side, rgba(60,170,255,.32), transparent); pointer-events: none; }
 #lk.open .lkwrap::before { background: radial-gradient(closest-side, rgba(255,210,90,.4), transparent); }
 #lkSvg { position: relative; width: 100%; height: 100%; display: block; overflow: visible; }
@@ -1288,12 +1301,12 @@ input.bprange[type=range]::-moz-range-thumb { width: 20px; height: 20px; border-
 @keyframes lkup { 40% { transform: scale(1.25); color: #fff; } }
 #lkStage .slcoin { top: -30px; }
 /* Bedienpult mit dem Knopf unten in der Mitte */
-.lkpanel { position: relative; flex: none; width: min(100%, 340px); height: 116px; display: flex; align-items: center; justify-content: center; border-radius: 26px 26px 14px 14px; background: linear-gradient(180deg, #24324a, #121a29 55%, #0b111c); box-shadow: inset 0 2px 0 rgba(255,255,255,.12), inset 0 0 0 1.5px rgba(140,200,255,.3), 0 8px 18px rgba(0,0,0,.45); }
+.lkpanel { position: relative; flex: none; width: min(100%, 440px); height: max(130px, 24vh); display: flex; align-items: center; justify-content: center; border-radius: 26px 26px 14px 14px; background: linear-gradient(180deg, #24324a, #121a29 55%, #0b111c); box-shadow: inset 0 2px 0 rgba(255,255,255,.12), inset 0 0 0 1.5px rgba(140,200,255,.3), 0 8px 18px rgba(0,0,0,.45); }
 .lkpanel::before, .lkpanel::after { content: ''; position: absolute; top: 18px; bottom: 18px; width: 6px; border-radius: 3px; background: linear-gradient(180deg, #39b6ff, #b45cff, #39b6ff); background-size: 100% 200%; box-shadow: 0 0 10px rgba(80,170,255,.7); animation: lkrgb 3s linear infinite; }
 .lkpanel::before { left: 14px; } .lkpanel::after { right: 14px; }
 @keyframes lkrgb { to { background-position: 0 200%; } }
-#lkGo { position: relative; width: 92px; height: 92px; flex: none; border-radius: 50%; border: 0; padding: 0; display: grid; place-items: center; color: #fff; font: 800 15px var(--ui); letter-spacing: .08em; text-transform: uppercase; touch-action: manipulation; text-shadow: 0 1px 2px rgba(0,0,0,.5);
-  background: radial-gradient(circle at 50% 32%, #b9ffb0, #45d64a 38%, #1e9a2c 70%, #0f5c18); box-shadow: 0 0 0 6px #0a0e15, 0 0 0 9px #8a95a5, 0 7px 0 6px #0b3b12, 0 12px 20px 6px rgba(0,0,0,.55), inset 0 3px 0 rgba(255,255,255,.45), inset 0 -6px 12px rgba(0,60,10,.5); transition: transform .07s, box-shadow .07s, filter .07s; }
+#lkGo { position: relative; width: calc(100% - 56px); height: calc(100% - 36px); flex: none; border-radius: 999px; border: 0; padding: 0; display: grid; place-items: center; color: #fff; font: 800 28px var(--ui); letter-spacing: .12em; text-transform: uppercase; touch-action: manipulation; text-shadow: 0 1px 2px rgba(0,0,0,.5);
+  background: radial-gradient(ellipse at 50% 28%, #b9ffb0, #45d64a 38%, #1e9a2c 70%, #0f5c18); box-shadow: 0 0 0 6px #0a0e15, 0 0 0 9px #8a95a5, 0 7px 0 6px #0b3b12, 0 12px 20px 6px rgba(0,0,0,.55), inset 0 3px 0 rgba(255,255,255,.45), inset 0 -6px 12px rgba(0,60,10,.5); transition: transform .07s, box-shadow .07s, filter .07s; }
 #lkGo.run { animation: lkpulse 1.2s ease-in-out infinite; }
 @keyframes lkpulse { 50% { filter: brightness(1.15); } }
 #lkGo.down, #lkGo:active { transform: translateY(5px); box-shadow: 0 0 0 6px #0a0e15, 0 0 0 9px #8a95a5, 0 2px 0 6px #0b3b12, 0 5px 12px 6px rgba(0,0,0,.5), inset 0 2px 0 rgba(255,255,255,.3), inset 0 -3px 8px rgba(0,60,10,.5); filter: brightness(.92); }
@@ -1525,7 +1538,7 @@ input.bprange[type=range]::-moz-range-thumb { width: 20px; height: 20px; border-
           <div class="mpage" aria-label="Pop the Lock">
             <div class="lklogo" aria-hidden="true"><svg viewBox="0 0 40 48" aria-hidden="true"><path d="M10 21V14a10 10 0 0 1 20 0v7" fill="none" stroke="#39b6ff" stroke-width="3.5"/><path d="M10 21V14a10 10 0 0 1 20 0v7" fill="none" stroke="#c8f0ff" stroke-width="1.2"/><rect x="2" y="20" width="36" height="26" rx="8" fill="#0b1630" stroke="#39b6ff" stroke-width="2.4"/><circle cx="20" cy="33" r="8" fill="none" stroke="#1f4f94" stroke-width="3.5"/><circle cx="20" cy="25" r="2.2" fill="#ffe08a"/><rect x="25.4" y="25.2" width="2.6" height="6" rx="1.3" fill="#ff5a4a" transform="rotate(45 26.7 28.2)"/></svg></div>
             <h1>Pop the Lock</h1>
-            <p class="menusub">Im richtigen Moment drücken · kostenlos</p>
+            <p class="menusub" id="lkSub">Im richtigen Moment drücken · kostenlos</p>
           </div>
           <div class="mpage" aria-label="Slots">
             <div class="sllogo" aria-hidden="true"><i>7</i><i>7</i><i>7</i></div>
@@ -1755,6 +1768,8 @@ input.bprange[type=range]::-moz-range-thumb { width: 20px; height: 20px; border-
     </div>
   </div>
 
+  <div id="jarPop" aria-live="polite"><svg viewBox="0 0 20 24" aria-hidden="true"><rect x="5" y="1" width="10" height="3" rx="1.2" fill="#ffd65a"/><path d="M4.5 5h11v2.2c1.6.9 2.5 2.4 2.5 4.3V20a3 3 0 0 1-3 3H5a3 3 0 0 1-3-3v-8.5c0-1.9.9-3.4 2.5-4.3z" fill="rgba(170,215,255,.18)" stroke="#bfe3ff" stroke-width="1.3"/><path d="M3.3 14.5h13.4V20a1.8 1.8 0 0 1-1.8 1.8H5.1A1.8 1.8 0 0 1 3.3 20z" fill="#f2c14a"/><circle cx="7.5" cy="17.5" r="1.4" fill="#fff1b8"/><circle cx="12.5" cy="16.5" r="1.4" fill="#fff1b8"/></svg><b></b></div>
+
   <div id="lk" hidden>
     <header class="bjbar">
       <span class="brand">Pop the Lock</span>
@@ -1765,6 +1780,7 @@ input.bprange[type=range]::-moz-range-thumb { width: 20px; height: 20px; border-
     </header>
     <main id="lkStage">
       <div class="lkmarq"><span>POP ★ THE LOCK</span><em><small>Jackpot</small><b id="lkJp">100</b></em></div>
+      <div class="lkrow">
       <div class="lkwrap">
         <svg id="lkSvg" viewBox="-124 -196 248 320" aria-hidden="true">
           <defs>
@@ -1797,6 +1813,8 @@ input.bprange[type=range]::-moz-range-thumb { width: 20px; height: 20px; border-
           </g>
         </svg>
       </div>
+      <div class="lkjar" id="lkJar" role="img" aria-label="Jackpot-Glas"><canvas id="lkJarC"></canvas><p class="lkjcap" id="lkJcap"></p></div>
+      </div>
       <div class="lkpayrow"><div class="lklast" id="lkLast" aria-live="polite"><b></b><small></small></div><div class="lkpay" id="lkPay" aria-label="Gewinn dieser Runde"><div><small>Gewinn</small><b id="lkRw">0</b></div><div><small>Treffer</small><b id="lkHits">0/50</b></div></div></div>
       <p class="lkmsg" id="lkMsg" aria-live="polite"></p>
       <div class="lkpanel"><button id="lkGo" type="button">Start</button></div>
@@ -1815,8 +1833,9 @@ input.bprange[type=range]::-moz-range-thumb { width: 20px; height: 20px; border-
         <button class="btn wide" id="lkHelpBtn" type="button" style="margin-top:10px" aria-expanded="false">Spielerklärung</button>
         <div id="lkHelp" hidden>
           <p style="margin-top:14px">Der rote Balken läuft im Kreis. Drück den grünen Knopf unten genau dann, wenn er über dem gelben Punkt ist. Es zählt nur der grüne Knopf. Nach jedem Treffer dreht er die Richtung um und wird etwas schneller. Mit der Zeit liegen die Punkte enger, manchmal direkt hintereinander – dann schnell nachdrücken.</p>
-          <p>Jeder Treffer bringt 1 Chip, die Gewinnanzeige zählt also mit jedem Treffer eins hoch. Schaffst du alle 50 Treffer, ist das Schloss geknackt und du bekommst den Jackpot von 100 Chips. Danach kommt die nächste, schnellere Stufe, und dort gibt es mehr: auf Stufe 2 bringt jeder Treffer 2 Chips und der Jackpot 200, auf Stufe 3 sind es 3 und 300 und so weiter.</p>
-          <p>Drückst du daneben oder lässt du den Punkt vorbeiziehen, ist die Runde vorbei. Gewonnene Chips behältst du, und spielen kostet nichts.</p>
+          <p>Jeder Treffer bringt 1 Chip. Knackst du das Schloss, bekommst du dazu den ganzen Jackpot aus dem Glas, danach fängt das Glas wieder bei 0 an. Liegt bis 300 im Glas, brauchst du 50 Treffer, bis 500 sind es 60, darüber 70.</p>
+          <p>Das Glas füllt sich, wenn du in den anderen Spielen gewinnst (Slots, Blackjack, Roulette, Poker): 5 % von jedem Gewinn kommen obendrauf ins Glas, dein Gewinn bleibt ganz bei dir. Bis 300 zählt jeder Gewinn. Danach nur noch große Gewinne am Stück: bis 500 ab 500 Gewinn, bis 800 ab 1.000 Gewinn und bis 1.200 ab 2.000 Gewinn. Was über den Glasrand läuft, gehört weiter zum Jackpot. Neue Münzen fallen ins Glas, sobald du wieder hier bist.</p>
+          <p>Drückst du daneben oder lässt du den Punkt vorbeiziehen, ist die Runde vorbei. Gewonnene Chips behältst du, der Jackpot bleibt im Glas, und spielen kostet nichts.</p>
         </div>
         <button class="btn wide" id="lkMenu" type="button" style="margin-top:10px">Zum Hauptmenü</button>
       </div>
@@ -3384,6 +3403,7 @@ input.bprange[type=range]::-moz-range-thumb { width: 20px; height: 20px; border-
       if (S.phase === 'result' && snap.phase !== 'result' && S.result) {
         var dealt = S.players[0].inHand;
         if (dealt) { PROF.hands++; if (S.players[0].win > 0) PROF.wins++; saveProf(); }
+        if (dealt && window.JAR && S.players[0].win > (S.players[0].total || 0)) window.JAR.add(S.players[0].win - (S.players[0].total || 0));
         saveBank();
         if (dealt) logHand();
         if (S.players[0].win > 0) Snd.win(); else Snd.pot();
@@ -6044,6 +6064,7 @@ input.bprange[type=range]::-moz-range-thumb { width: 20px; height: 20px; border-
       var net = my.hands.reduce(function (a, h) { return a + h.pay - h.bet; }, 0);
       if (!V.quiet) {
         if (net > 0) Snd.win(); else if (net === 0) Snd.knock();
+        if (net > 0 && window.JAR) window.JAR.add(net);
         bjStat(net, my.hands.filter(function (h) { return h.res === 'bj'; }).length);
       }
     }
@@ -7396,7 +7417,7 @@ input.bprange[type=range]::-moz-range-thumb { width: 20px; height: 20px; border-
     clearHits(); renderAll();
     showBank(before - cost); $('#slWinL').textContent = '0';
     $('#slSpin').classList.add('down'); setTimeout(function () { $('#slSpin').classList.remove('down'); }, 140);
-    var c = { mc: mc, f: f, fr: fr, b: b, base: before - cost, total: total, jp: jpAny, steps: steps, st: st,
+    var c = { mc: mc, f: f, fr: fr, b: b, cost: cost, base: before - cost, total: total, jp: jpAny, steps: steps, st: st,
               retrig: !!(sc0 && fr), endFs: fr && !sc0 && f.free === 0 };
     if (fr && mc === M2) runStart(c); else animate(c, 0);   // Lucky Seven: Extra Spins dreht man selbst, ohne Stopp
   }
@@ -7732,6 +7753,7 @@ input.bprange[type=range]::-moz-range-thumb { width: 20px; height: 20px; border-
   }
   function finish(c) {
     busy = false;
+    if (window.JAR && c.total > c.cost) window.JAR.add(c.total - c.cost);
     all('#sl .slreel.held').forEach(function (r) { r.classList.remove('held'); });
     if (!c.fr && !c.steps[0].sc && c.total > 0 && !c.jp) riskAmt = c.total;
     if (c.endFs && c.f.fwon > 0) riskAmt = c.f.fwon;
@@ -7803,7 +7825,7 @@ input.bprange[type=range]::-moz-range-thumb { width: 20px; height: 20px; border-
     gHist.unshift(s); if (gHist.length > 7) gHist.pop();
     setTimeout(function () {
       if (ok) {
-        P.bank += gAmt; slStat(gAmt, gAmt * 2, false, true); gAmt *= 2; gStep++;
+        P.bank += gAmt; slStat(gAmt, gAmt * 2, false, true); if (window.JAR) window.JAR.add(gAmt); gAmt *= 2; gStep++;
         $('#slgMsg').textContent = gStep >= LADDER ? 'Ganz oben!' : 'Richtig!';
         Snd.chip(3, 0, true); if (gStep >= 3) Snd.pot();
         if (gStep >= LADDER) { Snd.win(); coins(30); }
@@ -7901,26 +7923,269 @@ input.bprange[type=range]::-moz-range-thumb { width: 20px; height: 20px; border-
 
 <script>
 /* Pop the Lock wie am Automaten in der Spielhalle: ein roter Balken laeuft im Kreis um den Bildschirm im leuchtenden
-   LED-Schloss, gedrueckt wird der gruene Knopf unten in der Mitte, wenn er ueber dem gelben Punkt steht. Nach jedem
+   LED-Schloss, gedrueckt wird der grosse gruene Knopf unten, wenn er ueber dem gelben Punkt steht. Nach jedem
    Treffer dreht er die Richtung um und wird langsam schneller; die Abstaende werden enger, und ab und zu liegt der
-   naechste Punkt ganz kurz dahinter (schnell nachdruecken). Spielen ist kostenlos: jeder Treffer bringt 1 Chip
-   (die Gewinnanzeige zaehlt eins hoch), der 50. Treffer knackt das Schloss (Jackpot 100). Danach kommt die naechste, etwas schnellere Stufe; dort zahlt alles das Stufen-Fache (Stufe 2: 2 pro Treffer, Jackpot 200). Daneben gedrueckt oder den Punkt
-   vorbeiziehen lassen = Runde vorbei. */
+   naechste Punkt ganz kurz dahinter (schnell nachdruecken). Spielen ist kostenlos: jeder Treffer bringt 1 Chip.
+   Wer das Schloss knackt (50 Treffer, bei mehr als 300 im Glas 60, ueber 500 70), bekommt den Jackpot aus dem Glas
+   rechts daneben. Das Glas fuellt sich mit den Gewinnen aus den anderen Spielen (window.JAR.add).
+   Daneben gedrueckt oder den Punkt vorbeiziehen lassen = Runde vorbei, der Jackpot bleibt im Glas. */
 (function () {
   'use strict';
   var PR = window.PR;
   if (!PR) return;
   var Snd = PR.Snd, fmt = PR.fmt;
   function $(s) { return document.querySelector(s); }
-  var NEED = 50, JACKPOT = 100, TOL = 1.5, NB = 36;
-  /* je hoeher die Stufe, desto mehr: Stufe 2 zahlt das Doppelte, Stufe 3 das Dreifache usw. */
-  function payOf(k) { return (k >= NEED ? JACKPOT : 1) * lv; }
+  var TOL = 1.5, NB = 36;
   function stats() { var o = null; try { o = JSON.parse(localStorage.getItem('pr-lkstats') || 'null'); } catch (e) {} o = o || {}; return { best: +o.best || 0, jp: +o.jp || 0, won: +o.won || 0 }; }
   function saveStats(st) { try { localStorage.setItem('pr-lkstats', JSON.stringify(st)); } catch (e) {} }
 
+  /* ---------- Jackpot-Glas: 5 % von jedem Gewinn in den anderen Spielen kommen obendrauf ins Glas ----------
+     Bis 300 zaehlt jeder Gewinn, darueber nur grosse Gewinne am Stueck: bis 500 ab 500 Gewinn, bis 800 ab 1.000,
+     bis 1.200 ab 2.000. Gespeichert: v Jackpot (mit Nachkommastellen, damit auch kleine Gewinne zaehlen), c Lage der
+     Muenzen, die schon im Glas liegen, s der Jackpot, den man zuletzt gesehen hat. Neue Muenzen fallen erst hinein,
+     wenn man wieder hier ist. Was ueber den Rand laeuft, ist nur Anzeige und gehoert weiter zum Jackpot. */
+  var TIERS = [[300, 0], [500, 500], [800, 1000], [1200, 2000]], RATE = 0.05, JMAX = 1200;
+  /* so viele Muenzen fuellen das Glas genau bis zum Rand (ausprobiert); JGEO aendern, wenn sich das Glas aendert */
+  var NFULL = 78, COIN = 300 / NFULL, JGEO = 1;
+  function jarLoad() {
+    var o = null; try { o = JSON.parse(localStorage.getItem('pr-jar') || 'null'); } catch (e) {} o = o || {};
+    var v = +o.v, s = +o.s;
+    var c = o.g === JGEO && Array.isArray(o.c) ? o.c.filter(function (q) { return Array.isArray(q) && q.length === 2 && isFinite(q[0]) && isFinite(q[1]); }) : [];
+    return { v: isFinite(v) ? Math.max(0, Math.min(JMAX, v)) : 0, s: isFinite(s) ? Math.max(0, s) : 0, c: c };
+  }
+  function jarSave(d) { try { localStorage.setItem('pr-jar', JSON.stringify({ v: Math.round(d.v * 100) / 100, s: Math.round(d.s * 100) / 100, c: d.c, g: JGEO })); } catch (e) {} }
+  function tierOf(v) { for (var i = 0; i < TIERS.length; i++) if (v < TIERS[i][0] - 1e-6) return i; return -1; }
+  function needOf(v) { v = Math.floor(v); return v <= 300 ? 50 : v <= 500 ? 60 : 70; }
+  function coinsOf(v) { return Math.round(Math.floor(v) / COIN); }
+  /* kleine Betraege mit einer Nachkommastelle (5 % von 10 sind 0,5) */
+  function amt(a) { return a >= 10 ? fmt(Math.round(a)) : String(Math.round(a * 10) / 10).replace('.', ','); }
+  function jarAdd(win) {
+    win = Math.round(+win || 0);
+    if (!(win > 0)) return 0;
+    var d = jarLoad(), t = tierOf(d.v);
+    if (t < 0 || win < TIERS[t][1]) return 0;
+    var a = Math.min(TIERS[t][0] - d.v, win * RATE);
+    if (!(a > 0)) return 0;
+    d.v += a; jarSave(d);
+    pop(a); renderSub(d.v);
+    return a;
+  }
+  /* kleines Glas oben rechts mit dem, was gerade hineingewandert ist; kommt mehr dazu, solange es zu sehen ist, wird addiert */
+  var popT = 0, popSum = 0;
+  function pop(a) {
+    var e = $('#jarPop');
+    if (!e || !lk.hidden) return;
+    popSum = e.classList.contains('on') ? popSum + a : a;
+    e.querySelector('b').textContent = '+' + amt(popSum);
+    e.classList.add('on'); e.classList.remove('bump'); void e.offsetWidth; e.classList.add('bump');
+    clearTimeout(popT); popT = setTimeout(function () { e.classList.remove('on'); }, 2600);
+  }
+  function renderSub(v) {
+    v = Math.floor(v);
+    $('#lkSub').textContent = v >= 1 ? 'Jackpot im Glas: ' + fmt(v) + ' · kostenlos' : 'Im richtigen Moment drücken · kostenlos';
+  }
+  function capOf(v) {
+    var t = tierOf(v);
+    if (t === 0) return '<b>5 %</b> von jedem Gewinn<br>fließen ins Glas';
+    if (t < 0) return '<b>Randvoll!</b><br>Mehr passt nicht hinein';
+    return (t === 1 ? 'Glas voll! ' : '') + 'Weiter ab <b>' + fmt(TIERS[t][1]) + '</b><br>Gewinn am Stück (5 %)';
+  }
+
+  /* ---------- Glas: Muenzen mit einfacher Physik (Schwerkraft, Glaswand, Boden, andere Muenzen) ----------
+     Logische Groesse JW x JH, alles wird auf die echte Groesse skaliert. Liegt eine Muenze still, friert sie ein
+     (zaehlt dann nur noch als Hindernis) und ihre Lage wird gespeichert. */
+  var JW = 140, JH = 290, CR = 5, FLOOR = 284, JCX = 70, JHW = 34, JTOP = 150, JBOT = 280, JCOR = 12, WR = 2;
+  var SEGS = (function () {
+    var p = [[JCX - JHW, JTOP]], s = [], i, a;
+    for (i = 0; i <= 4; i++) { a = Math.PI - i * Math.PI / 8; p.push([JCX - JHW + JCOR + Math.cos(a) * JCOR, JBOT - JCOR + Math.sin(a) * JCOR]); }
+    for (i = 0; i <= 4; i++) { a = Math.PI / 2 - i * Math.PI / 8; p.push([JCX + JHW - JCOR + Math.cos(a) * JCOR, JBOT - JCOR + Math.sin(a) * JCOR]); }
+    p.push([JCX + JHW, JTOP]);
+    for (i = 1; i < p.length; i++) s.push([p[i - 1][0], p[i - 1][1], p[i][0], p[i][1]]);
+    return s;
+  })();
+  function jarSim() {
+    var S = { st: [], dy: [], fly: [], grid: {}, onLand: null }, D = CR * 2;
+    function gk(x, y) { return Math.floor(x / D) + ',' + Math.floor(y / D); }
+    S.add = function (x, y) { var c = [x, y]; S.st.push(c); (S.grid[gk(x, y)] || (S.grid[gk(x, y)] = [])).push(c); };
+    S.clear = function () { S.st = []; S.dy = []; S.grid = {}; };
+    S.drop = function () { S.dy.push({ x: JCX + (Math.random() - 0.5) * 36, y: -D, vx: (Math.random() - 0.5) * 40, vy: 120, calm: 0, age: 0, hit: false }); };
+    function push(c, nx, ny, p) {
+      c.x += nx * p; c.y += ny * p; c.hit = true;
+      var vn = c.vx * nx + c.vy * ny;
+      if (vn < 0) { c.vx -= 1.25 * vn * nx; c.vy -= 1.25 * vn * ny; }
+    }
+    function circ(c, x, y) {
+      var dx = c.x - x, dy = c.y - y, d2 = dx * dx + dy * dy;
+      if (d2 >= D * D) return;
+      var d = Math.sqrt(d2);
+      if (d < 1e-4) { dx = Math.random() - 0.5; dy = -1; d = Math.sqrt(dx * dx + 1); }
+      push(c, dx / d, dy / d, D - d);
+    }
+    function seg(c, g) {
+      var ex = g[2] - g[0], ey = g[3] - g[1], t = ((c.x - g[0]) * ex + (c.y - g[1]) * ey) / (ex * ex + ey * ey);
+      t = t < 0 ? 0 : t > 1 ? 1 : t;
+      var dx = c.x - (g[0] + ex * t), dy = c.y - (g[1] + ey * t), d2 = dx * dx + dy * dy, m = CR + WR;
+      if (d2 >= m * m) return;
+      var d = Math.sqrt(d2) || 1e-4;
+      push(c, dx / d, dy / d, m - d);
+    }
+    function pair(a, b) {
+      var dx = a.x - b.x, dy = a.y - b.y, d2 = dx * dx + dy * dy;
+      if (d2 >= D * D) return;
+      var d = Math.sqrt(d2) || 1e-4, nx = dx / d, ny = dy / d, p = (D - d) / 2;
+      a.x += nx * p; a.y += ny * p; b.x -= nx * p; b.y -= ny * p;
+      var vn = (a.vx - b.vx) * nx + (a.vy - b.vy) * ny;
+      if (vn < 0) { var j = -0.6 * vn; a.vx += j * nx; a.vy += j * ny; b.vx -= j * nx; b.vy -= j * ny; }
+      a.hit = b.hit = true;
+    }
+    S.step = function (dt) {
+      var i, j, c, it, ox, oy, L;
+      for (i = 0; i < S.dy.length; i++) { c = S.dy[i]; c.vy += 900 * dt; c.x += c.vx * dt; c.y += c.vy * dt; c.age += dt; c.hit = false; }
+      for (it = 0; it < 3; it++) for (i = 0; i < S.dy.length; i++) {
+        c = S.dy[i];
+        if (c.y > FLOOR - CR) push(c, 0, -1, c.y - FLOOR + CR);
+        if (c.x < CR) push(c, 1, 0, CR - c.x);
+        if (c.x > JW - CR) push(c, -1, 0, c.x - JW + CR);
+        for (j = 0; j < SEGS.length; j++) seg(c, SEGS[j]);
+        var gx = Math.floor(c.x / D), gy = Math.floor(c.y / D);
+        for (ox = -1; ox <= 1; ox++) for (oy = -1; oy <= 1; oy++) { L = S.grid[(gx + ox) + ',' + (gy + oy)]; if (L) for (j = 0; j < L.length; j++) circ(c, L[j][0], L[j][1]); }
+        for (j = i + 1; j < S.dy.length; j++) pair(c, S.dy[j]);
+      }
+      for (i = S.dy.length - 1; i >= 0; i--) {
+        c = S.dy[i];
+        if (c.hit) { c.vx *= 0.97; c.vy *= 0.97; }
+        c.calm = c.hit && Math.abs(c.vx) + Math.abs(c.vy) < 25 ? c.calm + 1 : 0;
+        if (c.calm > 12 || c.age > 8) { S.dy.splice(i, 1); S.add(Math.round(c.x * 10) / 10, Math.round(c.y * 10) / 10); if (S.onLand) S.onLand(); }
+      }
+      for (i = S.fly.length - 1; i >= 0; i--) {
+        c = S.fly[i]; c.vy += 900 * dt; c.x += c.vx * dt; c.y += c.vy * dt; c.age += dt;
+        if (c.age > 1.6 || c.y > JH + 20) S.fly.splice(i, 1);
+      }
+    };
+    return S;
+  }
+
+  /* ---------- Glas zeichnen: Glas hinten, Muenzen im Glas, Glas vorne (Rand, Spiegelungen, Betrag), Muenzen daneben ---------- */
+  var cv = $('#lkJarC'), g2 = cv.getContext('2d'), sim = jarSim(), jd = jarLoad();
+  var jRaf = 0, jLast = 0, dropN = 0, dropTot = 0, dropAcc = 0, dropGap = 0.08, fromV = 0, toV = 0, shownV = 0, landT = 0, sprite = null, jFont = '';
+  function coinSprite(k) {
+    var r = CR * k, n = Math.ceil(r * 2 + 4), c = document.createElement('canvas'), g = c.getContext('2d');
+    c.width = c.height = n;
+    var gr = g.createRadialGradient(n / 2 - r * 0.35, n / 2 - r * 0.4, r * 0.1, n / 2, n / 2, r);
+    gr.addColorStop(0, '#fff1b8'); gr.addColorStop(0.45, '#e8b84a'); gr.addColorStop(1, '#a8741c');
+    g.beginPath(); g.arc(n / 2, n / 2, r - 0.5, 0, Math.PI * 2); g.fillStyle = gr; g.fill();
+    g.lineWidth = Math.max(1, r * 0.16); g.strokeStyle = 'rgba(100,62,8,.7)'; g.stroke();
+    g.beginPath(); g.arc(n / 2, n / 2, r * 0.58, 0, Math.PI * 2); g.lineWidth = Math.max(0.6, r * 0.1); g.strokeStyle = 'rgba(255,236,170,.55)'; g.stroke();
+    return c;
+  }
+  function jarPath(g) {
+    var l = JCX - JHW - WR, r = JCX + JHW + WR, b = JBOT + WR, q = JCOR + WR;
+    g.beginPath(); g.moveTo(l, JTOP); g.lineTo(l, b - q); g.arcTo(l, b, l + q, b, q); g.lineTo(r - q, b); g.arcTo(r, b, r, b - q, q); g.lineTo(r, JTOP);
+  }
+  function rr(g, x, y, w, h, r) { g.beginPath(); g.moveTo(x + r, y); g.arcTo(x + w, y, x + w, y + h, r); g.arcTo(x + w, y + h, x, y + h, r); g.arcTo(x, y + h, x, y, r); g.arcTo(x, y, x + w, y, r); g.closePath(); }
+  function drawJar() {
+    var w = cv.clientWidth, h = cv.clientHeight;
+    if (!w || !h) return;
+    var dpr = Math.min(2, window.devicePixelRatio || 1), W = Math.round(w * dpr), H = Math.round(h * dpr);
+    if (cv.width !== W || cv.height !== H) { cv.width = W; cv.height = H; sprite = null; }
+    var k = W / JW, g = g2, i, c, sw, full = Math.floor(jd.v) >= 300;
+    if (!sprite) sprite = coinSprite(k);
+    sw = sprite.width / k;
+    g.setTransform(1, 0, 0, 1, 0, 0); g.clearRect(0, 0, W, H);
+    g.setTransform(k, 0, 0, k, 0, 0);
+    function coin(x, y) { g.drawImage(sprite, x - sw / 2, y - sw / 2, sw, sw); }
+    function inside(x, y) { return y > JTOP && x > JCX - JHW && x < JCX + JHW; }
+    /* Schatten auf dem Boden, Glas von hinten */
+    var sh = g.createRadialGradient(JCX, FLOOR, 2, JCX, FLOOR, 60);
+    sh.addColorStop(0, full ? 'rgba(255,200,80,.35)' : 'rgba(0,0,0,.45)'); sh.addColorStop(1, 'rgba(0,0,0,0)');
+    g.fillStyle = sh; g.fillRect(JCX - 64, FLOOR - 10, 128, 16);
+    jarPath(g); g.closePath();
+    var bg = g.createLinearGradient(JCX - JHW, 0, JCX + JHW, 0);
+    bg.addColorStop(0, 'rgba(170,215,255,.16)'); bg.addColorStop(0.5, 'rgba(170,215,255,.05)'); bg.addColorStop(1, 'rgba(170,215,255,.12)');
+    g.fillStyle = bg; g.fill();
+    for (i = 0; i < sim.st.length; i++) { c = sim.st[i]; if (inside(c[0], c[1])) coin(c[0], c[1]); }
+    for (i = 0; i < sim.dy.length; i++) { c = sim.dy[i]; if (inside(c.x, c.y)) coin(c.x, c.y); }
+    /* Glas von vorne: Wand, Spiegelungen, Rand oben */
+    g.save();
+    if (full) { g.shadowColor = 'rgba(255,214,90,.9)'; g.shadowBlur = 10; }
+    jarPath(g); g.lineWidth = WR * 1.6; g.strokeStyle = full ? 'rgba(255,230,160,.85)' : 'rgba(200,235,255,.6)'; g.lineJoin = 'round'; g.stroke();
+    g.restore();
+    g.fillStyle = 'rgba(255,255,255,.22)'; rr(g, JCX - JHW + 5, JTOP + 14, 4, JBOT - JTOP - 34, 2); g.fill();
+    g.fillStyle = 'rgba(255,255,255,.12)'; rr(g, JCX - JHW + 12, JTOP + 14, 2, JBOT - JTOP - 60, 1); g.fill();
+    g.fillStyle = 'rgba(255,255,255,.1)'; rr(g, JCX + JHW - 9, JTOP + 30, 3, JBOT - JTOP - 60, 1.5); g.fill();
+    rr(g, JCX - JHW - WR - 3, JTOP - 6, (JHW + WR + 3) * 2, 8, 3);
+    g.fillStyle = full ? 'rgba(255,214,90,.45)' : 'rgba(190,225,255,.28)'; g.fill();
+    g.lineWidth = 1.2; g.strokeStyle = full ? 'rgba(255,240,190,.9)' : 'rgba(210,240,255,.7)'; g.stroke();
+    /* Betrag vorne auf dem Glas */
+    if (!jFont) jFont = '800 22px ' + (getComputedStyle(document.documentElement).getPropertyValue('--display').trim() || 'sans-serif');
+    g.font = jFont;
+    g.textAlign = 'center'; g.textBaseline = 'middle';
+    g.lineWidth = 4; g.strokeStyle = 'rgba(5,10,22,.85)'; g.lineJoin = 'round';
+    var ty = JBOT - 34, tx = fmt(shownV);
+    g.strokeText(tx, JCX, ty); g.fillStyle = '#ffe08a'; g.fillText(tx, JCX, ty);
+    /* daneben liegende Muenzen und welche, die gerade herausfliegen (Jackpot geknackt) */
+    for (i = 0; i < sim.st.length; i++) { c = sim.st[i]; if (!inside(c[0], c[1])) coin(c[0], c[1]); }
+    for (i = 0; i < sim.dy.length; i++) { c = sim.dy[i]; if (!inside(c.x, c.y)) coin(c.x, c.y); }
+    for (i = 0; i < sim.fly.length; i++) { c = sim.fly[i]; g.globalAlpha = Math.max(0, 1 - c.age / 1.6); coin(c.x, c.y); }
+    g.globalAlpha = 1;
+  }
+  function jarLoop(now) {
+    jRaf = 0;
+    if (lk.hidden) { jLast = 0; return; }
+    var dt = jLast ? Math.min(0.05, (now - jLast) / 1000) : 1 / 60, i;
+    jLast = now;
+    if (dropN > 0) {
+      dropAcc += dt;
+      while (dropN > 0 && dropAcc >= dropGap) {
+        dropAcc -= dropGap; dropN--; sim.drop();
+        shownV = Math.round(fromV + (toV - fromV) * (dropTot - dropN) / dropTot);
+        renderVal();
+      }
+    }
+    for (i = Math.max(1, Math.round(dt * 120)); i > 0; i--) sim.step(1 / 120);
+    drawJar();
+    if (dropN > 0 || sim.dy.length || sim.fly.length) jRaf = requestAnimationFrame(jarLoop);
+    else { jLast = 0; pourDone(); }
+  }
+  function startJar() { if (!jRaf && !lk.hidden) { jLast = 0; jRaf = requestAnimationFrame(jarLoop); } }
+  sim.onLand = function () { var t = Date.now(); if (t - landT > 90) { landT = t; Snd.chip(1, 0, true); } };
+  /* alle Muenzen liegen: Lage merken */
+  function pourDone() {
+    jd.c = sim.st.map(function (c) { return [c[0], c[1]]; });
+    if (!dropN) { jd.s = jd.v; shownV = Math.floor(jd.v); renderVal(); }
+    jarSave(jd);
+  }
+  /* beim Oeffnen: liegende Muenzen wieder hinlegen, was seit dem letzten Mal dazugekommen ist, faellt hinein */
+  function pour() {
+    jd = jarLoad(); sim.clear(); dropN = 0; dropAcc = 0;
+    var want = coinsOf(jd.v), have = jd.c.slice().sort(function (a, b) { return b[1] - a[1]; }).slice(0, want);
+    have.forEach(function (c) { sim.add(c[0], c[1]); });
+    toV = Math.floor(jd.v); fromV = Math.min(toV, Math.floor(jd.s));
+    dropTot = dropN = want - have.length;
+    dropGap = dropN ? Math.max(0.02, Math.min(0.12, 5 / dropN)) : 0.08;
+    shownV = dropN ? fromV : toV;
+    renderVal(); drawJar(); startJar();
+    return toV - fromV;
+  }
+  /* Jackpot geknackt: alle Muenzen fliegen aus dem Glas, das Glas faengt wieder bei 0 an */
+  function collect() {
+    var won = Math.floor(jd.v), all = sim.st.map(function (c) { return [c[0], c[1]]; }).concat(sim.dy.map(function (c) { return [c.x, c.y]; }));
+    jd.v -= won; jd.s = 0; jd.c = []; jarSave(jd);
+    sim.clear(); dropN = 0;
+    all.forEach(function (q) { sim.fly.push({ x: q[0], y: q[1], vx: (Math.random() - 0.5) * 260, vy: -260 - Math.random() * 420, age: 0 }); });
+    shownV = 0; renderVal(); renderSub(jd.v); startJar();
+    return won;
+  }
+  function renderVal() {
+    $('#lkJp').textContent = fmt(shownV);
+    $('#lkJcap').innerHTML = capOf(jd.v);
+    if (!jRaf) drawJar();
+  }
+  window.addEventListener('resize', function () { if (!lk.hidden) drawJar(); });
+
   var lk = $('#lk'), needle = $('#lkNeedle'), tgtG = $('#lkTgtG'), go = $('#lkGo');
   /* st: idle (vor dem Start), run, over (daneben), open (Schloss springt auf) */
-  var st = 'idle', ang = 0, dir = 1, lv = 1, k = 0, total = 0, won = 0, rw = 0;
+  var st = 'idle', ang = 0, dir = 1, need = 50, k = 0, won = 0, rw = 0;
   var tgt = 0, dist = 0, trav = 0, hw = 14, spd = 90, raf = 0, last = 0, fxT = 0, nextT = 0, lastT = 0;
 
   /* Lauflicht: NB Lampen gleichmaessig im Schlossrahmen (abgerundetes Quadrat, halbe Seite A, Eckradius R),
@@ -7952,9 +8217,9 @@ input.bprange[type=range]::-moz-range-thumb { width: 20px; height: 20px; border-
        Der Abstand wird mit der Zeit etwas enger, bleibt aber immer gut sichtbar: mindestens 60 Grad und mindestens
        eine knappe halbe Sekunde Laufzeit (je schneller, desto weiter weg). Kurz hintereinander kommt erst ab dem
        10. Treffer und nur ab und zu */
-    spd = Math.min(340, 100 + k * 3 + (lv - 1) * 20);
-    hw = Math.max(6, 12 - k * 0.11 - (lv - 1) * 0.6);
-    var p = Math.min(1, (k + (lv - 1) * 15) / 45), near = Math.max(60, spd * 0.42, hw * 2 + 34);
+    spd = Math.min(340, 100 + k * 3);
+    hw = Math.max(6, 12 - k * 0.11);
+    var p = Math.min(1, k / 45), near = Math.max(60, spd * 0.42, hw * 2 + 34);
     if (k >= 10 && Math.random() < 0.08 + p * 0.12) dist = near + Math.random() * 25;
     else dist = Math.max(near + 30, 95 - p * 10 + Math.random() * (150 - p * 50));
     trav = 0;
@@ -7979,11 +8244,11 @@ input.bprange[type=range]::-moz-range-thumb { width: 20px; height: 20px; border-
     $('#lkWon').textContent = fmt(won);
     $('#lkBest').textContent = fmt(s.best);
     $('#lkJps').textContent = fmt(s.jp);
-    $('#lkJp').textContent = fmt(JACKPOT * lv);
-    $('#lkCnt').textContent = String(NEED - k);
-    $('#lkLv').textContent = st === 'idle' ? 'Start drücken' : st === 'open' ? 'Geknackt!' : 'Stufe ' + lv;
+    $('#lkCnt').textContent = String(need - k);
+    $('#lkLv').textContent = st === 'idle' ? 'Start drücken' : st === 'open' ? 'Geknackt!' : 'Treffer';
     $('#lkRw').textContent = fmt(rw);
-    $('#lkHits').textContent = k + '/' + NEED;
+    $('#lkHits').textContent = k + '/' + need;
+    renderVal();
     go.textContent = st === 'idle' ? 'Start' : st === 'over' ? 'Nochmal' : st === 'open' ? 'Jackpot' : 'Drück';
   }
   function pay(n) {
@@ -8019,14 +8284,14 @@ input.bprange[type=range]::-moz-range-thumb { width: 20px; height: 20px; border-
   }
   function startLoop() { if (!raf) { last = 0; raf = requestAnimationFrame(loop); } }
 
-  function begin(keepLv) {
+  function begin() {
     clearTimeout(nextT);
     lk.classList.remove('open', 'miss', 'hit'); lk.classList.add('run');
-    if (!keepLv) { lv = 1; total = 0; rw = 0; }
+    rw = 0; need = needOf(jd.v);
     k = 0; dir = Math.random() < 0.5 ? 1 : -1; ang = 0; drawNeedle();
     st = 'run'; place();
     go.classList.add('run');
-    msg(keepLv ? 'Stufe ' + lv + ': schneller, dafür ' + lv + ' Chips pro Treffer!' : 'Drück, wenn der rote Balken auf dem gelben Punkt ist', keepLv ? 'good' : '');
+    msg(need + ' Treffer knacken das Schloss – drück, wenn der rote Balken auf dem gelben Punkt ist');
     renderInfo(); startLoop();
   }
   function miss(t) {
@@ -8034,27 +8299,36 @@ input.bprange[type=range]::-moz-range-thumb { width: 20px; height: 20px; border-
     lk.classList.remove('run');
     fx('miss'); Snd.knock();
     try { if (Snd.vibOn() && navigator.vibrate) navigator.vibrate(120); } catch (e) {}
-    var s = stats(); if (total > s.best) { s.best = total; saveStats(s); t += ' · neuer Rekord: ' + total + ' Treffer'; }
+    var s = stats(); if (k > s.best) { s.best = k; saveStats(s); t += ' · neuer Rekord: ' + k + ' Treffer'; }
+    if (Math.floor(jd.v) >= 1) t += ' · der Jackpot bleibt im Glas';
     msg(t, 'bad');
     go.classList.remove('run');
     showLast(rw, 'gewonnen');
     renderInfo();
   }
   function press() {
-    if (st === 'idle' || st === 'over') { Snd.unlock(); begin(false); return; }
+    if (st === 'idle' || st === 'over') { Snd.unlock(); begin(); return; }
     if (st !== 'run') return;
     if (Math.abs(trav - dist) > hw + TOL) { miss('Daneben!'); return; }
-    k++; total++;
-    var c = payOf(k); pay(c);
-    if (k >= NEED) {
+    k++;
+    var c = 1; pay(c);
+    if (k >= need) {
       st = 'open'; if (raf) { cancelAnimationFrame(raf); raf = 0; }
       tgtG.style.opacity = 0;
       lk.classList.remove('run'); lk.classList.add('open'); go.classList.remove('run'); Snd.win(); setTimeout(function () { Snd.pot(); }, 450);
       try { if (Snd.vibOn() && navigator.vibrate) navigator.vibrate([70, 50, 140]); } catch (e) {}
-      var s = stats(); s.jp++; if (total > s.best) s.best = total; saveStats(s);
-      coins(36); showLast(rw, 'Jackpot!'); msg('JACKPOT! Schloss geknackt: +' + fmt(c) + ' Chips', 'good');
+      var jp = collect(); if (jp) pay(jp);
+      var s = stats(); s.jp++; if (k > s.best) s.best = k; saveStats(s);
+      coins(jp ? 36 : 12); showLast(rw, 'Jackpot!');
+      msg(jp ? 'JACKPOT! Schloss geknackt: +' + fmt(jp) + ' Chips aus dem Glas' : 'Schloss geknackt! Das Glas war aber noch leer', 'good');
       renderInfo();
-      nextT = setTimeout(function () { if (st === 'open' && !lk.hidden) { lv++; begin(true); } }, 3300);
+      /* danach ist das Glas leer: Schloss zu, neue Runde mit dem Knopf */
+      nextT = setTimeout(function () {
+        if (st !== 'open' || lk.hidden) return;
+        st = 'over'; k = 0; lk.classList.remove('open'); need = needOf(jd.v);
+        msg('Das Glas füllt sich wieder, wenn du in den anderen Spielen gewinnst');
+        renderInfo();
+      }, 3300);
       return;
     }
     fx('hit'); Snd.chip(Math.min(3, c), 0, true);
@@ -8074,14 +8348,20 @@ input.bprange[type=range]::-moz-range-thumb { width: 20px; height: 20px; border-
   function open() {
     Snd.unlock();
     $('#menu').hidden = true; lk.hidden = false; $('#lkPause').hidden = true;
-    st = 'idle'; won = 0; rw = 0; lv = 1; k = 0; total = 0; ang = 0; drawNeedle(); tgtG.style.opacity = 0;
+    st = 'idle'; won = 0; rw = 0; k = 0; ang = 0; drawNeedle(); tgtG.style.opacity = 0;
     lk.classList.remove('open', 'miss', 'hit', 'run');
     go.classList.remove('run');
-    msg('Drück den grünen Knopf – spielen ist kostenlos');
+    $('#jarPop').classList.remove('on');
+    var nw = pour(); need = needOf(jd.v);
+    if (nw >= 1) msg('Neu im Glas: +' + fmt(nw) + ' Chips', 'good');
+    else if (Math.floor(jd.v) >= 1) msg('Knack das Schloss und hol dir den Jackpot aus dem Glas');
+    else msg('Das Glas ist noch leer – gewinn in den anderen Spielen, dann füllt es sich');
     renderInfo();
   }
   function leave() {
     clearTimeout(nextT); if (raf) { cancelAnimationFrame(raf); raf = 0; }
+    if (jRaf) { cancelAnimationFrame(jRaf); jRaf = 0; }
+    sim.fly = []; pourDone();
     st = 'idle';
     [].forEach.call(document.querySelectorAll('#lk .slcoin'), function (c) { c.remove(); });
     lk.hidden = true; $('#lkPause').hidden = true; $('#menu').hidden = false;
@@ -8096,12 +8376,14 @@ input.bprange[type=range]::-moz-range-thumb { width: 20px; height: 20px; border-
   $('#lkMenu').addEventListener('click', leave);
   /* App im Hintergrund: anhalten, damit der Punkt nicht unbemerkt vorbeizieht */
   document.addEventListener('visibilitychange', function () { if (document.hidden && st === 'run' && !lk.hidden) { help(false); $('#lkPause').hidden = false; } });
-  renderInfo();
+  renderInfo(); renderSub(jd.v);
 
   /* Update-Pruefung: nicht neu laden, solange man am Schloss ist */
   var idle = window.prIdle;
   window.prIdle = function () { return (!idle || idle()) && lk.hidden; };
   window.LK = { on: function () { return !lk.hidden; } };
+  /* fuer die anderen Spiele: Gewinn einer Runde (Auszahlung minus Einsatz) melden, 5 % davon kommen ins Glas */
+  window.JAR = { add: jarAdd };
 })();
 </script>
 
@@ -8453,6 +8735,7 @@ input.bprange[type=range]::-moz-range-thumb { width: 20px; height: 20px; border-
       m.innerHTML = (L.win > L.stake ? '+' + fmt(L.win - L.stake) : fmt(L.win) + ' zurück') + '<small>' + resName(L.res) + ' · ' + fmt(L.win) + ' ausgezahlt bei ' + fmt(L.stake) + ' Einsatz</small>';
       m.className = 'rlwmsg on';
       Snd.win(); setTimeout(function () { Snd.pot(); }, 300);
+      if (L.win > L.stake && window.JAR) window.JAR.add(L.win - L.stake);
       if (L.win >= 30 * L.stake && L.win >= 1000 && window.PRF) window.PRF.brag('big', L.win, 'Roulette');
     } else {
       m.innerHTML = resName(L.res) + (L.stake ? '<small>Diesmal nichts</small>' : '');
