@@ -8000,7 +8000,7 @@ input.bprange[type=range]::-moz-range-thumb { width: 20px; height: 20px; border-
   }
   function jarSave(d) { try { localStorage.setItem('pr-jar', JSON.stringify({ v: Math.round(d.v * 100) / 100, s: Math.round(d.s * 100) / 100, c: d.c, g: JGEO })); } catch (e) {} }
   function tierOf(v) { for (var i = 0; i < TIERS.length; i++) if (v < TIERS[i][0] - 1e-6) return i; return -1; }
-  /* ---------- Upgrades aus dem Shop, je Stufe einzeln gekauft (gespeichert in pr-lkup) ----------
+  /* ---------- Upgrades aus dem Shop, je Stufe einzeln gekauft (gespeichert in pr-lkup2) ----------
      b: Knopf groesser (10.000 pro Stufe), h: 5 Treffer weniger (8.000 pro Stufe, hoechstens 20 weniger als normal, mindestens 20),
      s: Balken 10 % langsamer (8.000 pro Stufe) */
   var UPS = {
@@ -8008,8 +8008,10 @@ input.bprange[type=range]::-moz-range-thumb { width: 20px; height: 20px; border-
     h: { max: 6, price: 8000 },
     s: { max: 5, price: 8000 }
   };
+  /* die zum alten, billigen Preis gekauften Upgrades (pr-lkup) gelten nicht mehr: alle fangen wieder bei 0 an */
+  try { localStorage.removeItem('pr-lkup'); } catch (e) {}
   function ups() {
-    var o = null; try { o = JSON.parse(localStorage.getItem('pr-lkup') || 'null'); } catch (e) {} o = o || {};
+    var o = null; try { o = JSON.parse(localStorage.getItem('pr-lkup2') || 'null'); } catch (e) {} o = o || {};
     var r = {}; Object.keys(UPS).forEach(function (k) { var n = Math.floor(+o[k] || 0); r[k] = Math.max(0, Math.min(UPS[k].max, n)); });
     return r;
   }
@@ -8017,7 +8019,7 @@ input.bprange[type=range]::-moz-range-thumb { width: 20px; height: 20px; border-
     var u = ups(), d = UPS[k], P = PR.prof();
     if (!d || u[k] >= d.max || (P.bank | 0) < d.price) return false;
     P.bank -= d.price; PR.saveProf(); PR.renderBank();
-    u[k]++; try { localStorage.setItem('pr-lkup', JSON.stringify(u)); } catch (e) {}
+    u[k]++; try { localStorage.setItem('pr-lkup2', JSON.stringify(u)); } catch (e) {}
     sizeGo();
     return true;
   }
