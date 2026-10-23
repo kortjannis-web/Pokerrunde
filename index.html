@@ -484,7 +484,9 @@ input[type=range]::-moz-range-thumb {
 .tomchip i { font-style: normal; font-size: 16px; line-height: 1; }
 .tomchip.pop { animation: pop .4s cubic-bezier(.2,.9,.3,1.4); }
 #shop { z-index: 70; }
-#shop .endcard { display: flex; flex-direction: column; gap: 14px; }
+#shop .endcard > div, #shopUps { display: flex; flex-direction: column; gap: 14px; }
+#shopUps { gap: 10px; }
+#shop .endcard > div[hidden] { display: none; }
 #shop h2 { margin: 0; }
 .shopitem { display: flex; align-items: center; gap: 12px; padding: 12px; border-radius: 16px; background: var(--bg); border: 1px solid var(--line); text-align: left; }
 .shopitem .si { width: 52px; height: 52px; flex: none; border-radius: 14px; display: grid; place-items: center; font-size: 32px; background: radial-gradient(circle at 40% 35%, rgba(255,120,90,.25), rgba(255,120,90,.05)); }
@@ -496,6 +498,18 @@ input[type=range]::-moz-range-thumb {
 .shopitem .sb { display: flex; flex-direction: column; gap: 6px; flex: none; }
 .shopitem .sb .btn { height: 36px; }
 .shopown { margin: 0; font: 600 13px var(--ui); color: var(--muted); }
+/* Pop the Lock im Shop: Eintrag zum Antippen, dahinter die Upgrades */
+button.shopitem { width: 100%; color: var(--ink); font: inherit; cursor: pointer; }
+button.shopitem:active { transform: scale(.98); }
+.shopitem .si.lk { background: radial-gradient(circle at 40% 35%, rgba(57,182,255,.3), rgba(57,182,255,.06)); font-size: 26px; }
+.shopitem .si.lk svg { width: 32px; height: 38px; display: block; }
+.shopitem .go { width: 18px; height: 18px; flex: none; color: var(--muted); }
+.shopitem .sn small.d { display: block; font-weight: 500; line-height: 1.35; }
+.shopitem .lvl { display: flex; gap: 3px; margin-top: 2px; }
+.shopitem .lvl i { width: 12px; height: 5px; border-radius: 3px; background: rgba(236,231,218,.18); }
+.shopitem .lvl i.on { background: #39b6ff; box-shadow: 0 0 6px rgba(57,182,255,.6); }
+.shopitem .si .gbtn { width: 22px; height: 22px; border-radius: 50%; background: radial-gradient(ellipse at 50% 28%, #b9ffb0, #45d64a 38%, #1e9a2c 70%, #0f5c18); box-shadow: 0 0 0 2px #0a0e15, 0 0 0 3.5px #8a95a5; }
+.shopitem .si .gbtn.big { width: 36px; height: 26px; }
 .profchip #pnameMenu { display: block; line-height: 1; }
 .pav { width: 36px; height: 36px; border-radius: 50%; display: grid; place-items: center; background: var(--av, #7f776a); color: #fff; font: 800 17px/1 var(--display); padding-bottom: .06em; box-sizing: border-box; box-shadow: inset 0 0 0 2px rgba(255,255,255,.14); flex: none; }
 #friends { position: absolute; inset: 0; z-index: 70; overflow-y: auto; padding: 16px 20px 28px; background: radial-gradient(ellipse at 50% 0%, var(--felt2), var(--bg) 60%); }
@@ -1310,7 +1324,8 @@ input.bprange[type=range]::-moz-range-thumb { width: 20px; height: 20px; border-
 .lkpanel::before, .lkpanel::after { content: ''; position: absolute; top: 18px; bottom: 18px; width: 6px; border-radius: 3px; background: linear-gradient(180deg, #39b6ff, #b45cff, #39b6ff); background-size: 100% 200%; box-shadow: 0 0 10px rgba(80,170,255,.7); animation: lkrgb 3s linear infinite; }
 .lkpanel::before { left: 14px; } .lkpanel::after { right: 14px; }
 @keyframes lkrgb { to { background-position: 0 200%; } }
-#lkGo { position: relative; width: min(calc(100% - 56px), 240px); height: calc(100% - 30px); flex: none; border-radius: 999px; border: 0; padding: 0; display: grid; place-items: center; color: #fff; font: 800 26px var(--ui); letter-spacing: .12em; text-transform: uppercase; touch-action: manipulation; text-shadow: 0 1px 2px rgba(0,0,0,.5);
+/* Knopf: von Haus aus klein und rund (92 px), im Shop in fuenf Stufen groesser kaufbar (--gw, --gh, --gf setzt das Spiel) */
+#lkGo { position: relative; width: min(calc(100% - 56px), var(--gw, 92px)); height: min(calc(100% - 24px), var(--gh, 92px)); flex: none; border-radius: 999px; border: 0; padding: 0; display: grid; place-items: center; color: #fff; font: 800 var(--gf, 15px) var(--ui); letter-spacing: .1em; text-transform: uppercase; touch-action: manipulation; text-shadow: 0 1px 2px rgba(0,0,0,.5);
   background: radial-gradient(ellipse at 50% 28%, #b9ffb0, #45d64a 38%, #1e9a2c 70%, #0f5c18); box-shadow: 0 0 0 6px #0a0e15, 0 0 0 9px #8a95a5, 0 7px 0 6px #0b3b12, 0 12px 20px 6px rgba(0,0,0,.55), inset 0 3px 0 rgba(255,255,255,.45), inset 0 -6px 12px rgba(0,60,10,.5); transition: transform .07s, box-shadow .07s, filter .07s; }
 #lkGo.run { animation: lkpulse 1.2s ease-in-out infinite; }
 @keyframes lkpulse { 50% { filter: brightness(1.15); } }
@@ -1836,6 +1851,7 @@ input.bprange[type=range]::-moz-range-thumb { width: 20px; height: 20px; border-
         <div id="lkHelp" hidden>
           <p style="margin-top:14px">Der rote Balken läuft im Kreis. Drück den grünen Knopf unten genau dann, wenn er über dem gelben Punkt ist. Es zählt nur der grüne Knopf. Nach jedem Treffer dreht er die Richtung um und wird etwas schneller. Mit der Zeit liegen die Punkte enger, manchmal direkt hintereinander – dann schnell nachdrücken.</p>
           <p>Knackst du das Schloss, bekommst du den ganzen Jackpot aus den Gläsern, danach fängt es wieder bei 0 an. Für einzelne Treffer gibt es nichts – entweder Jackpot oder nichts. Liegt bis 300 im Glas, brauchst du 50 Treffer, bis 500 sind es 60, darüber 70.</p>
+          <p>Im Shop (Hauptmenü, Knopf unter dem Profil) gibt es unter „Pop the Lock“ Upgrades: einen größeren Knopf (4.000 Chips pro Stufe), 5 Treffer weniger (800 Chips pro Stufe) und einen langsameren Balken (800 Chips pro Stufe, je 10 % langsamer).</p>
           <p>Das Glas füllt sich, wenn du in den anderen Spielen gewinnst (Slots, Blackjack, Roulette, Poker): 5 % von jedem Gewinn kommen obendrauf ins Glas, dein Gewinn bleibt ganz bei dir. Bis 300 zählt jeder Gewinn. Danach nur noch große Gewinne am Stück: bis 500 ab 500 Gewinn, bis 800 ab 1.000 Gewinn und bis 1.200 ab 2.000 Gewinn. Das große Glas fasst 300, ab 300 kommt davor ein mittleres Glas dazu (bis 500), ab 500 ein kleines (bis 600), danach läuft alles drumherum über. Auch was überläuft, gehört weiter zum Jackpot. Neue Münzen fallen ins Glas, sobald du wieder hier bist.</p>
           <p>Drückst du daneben oder lässt du den Punkt vorbeiziehen, ist die Runde vorbei. Der Jackpot bleibt im Glas, und spielen kostet nichts.</p>
         </div>
@@ -2172,6 +2188,7 @@ input.bprange[type=range]::-moz-range-thumb { width: 20px; height: 20px; border-
 
   <div id="shop" class="overlay" hidden>
     <div class="endcard">
+      <div id="shopMain">
       <h2>Shop</h2>
       <div class="shopitem">
         <span class="si" aria-hidden="true">🍅</span>
@@ -2181,8 +2198,20 @@ input.bprange[type=range]::-moz-range-thumb { width: 20px; height: 20px; border-
           <button class="btn" id="shopSell" type="button">Verkaufen</button>
         </span>
       </div>
+      <button class="shopitem" id="shopLk" type="button">
+        <span class="si lk" aria-hidden="true"><svg viewBox="0 0 40 48" aria-hidden="true"><path d="M10 21V14a10 10 0 0 1 20 0v7" fill="none" stroke="#39b6ff" stroke-width="3.5"/><rect x="2" y="20" width="36" height="26" rx="8" fill="#0b1630" stroke="#39b6ff" stroke-width="2.4"/><circle cx="20" cy="33" r="8" fill="none" stroke="#1f4f94" stroke-width="3.5"/><circle cx="20" cy="25" r="2.2" fill="#ffe08a"/></svg></span>
+        <span class="sn"><b>Pop the Lock</b><small class="d">Upgrades: größerer Knopf, weniger Treffer, langsamer</small></span>
+        <svg class="go" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M9 5l7 7-7 7"/></svg>
+      </button>
       <p class="shopown" id="shopOwn"></p>
       <button class="btn wide" id="shopClose" type="button">Schließen</button>
+      </div>
+      <div id="shopLkView" hidden>
+        <h2>Pop the Lock</h2>
+        <div id="shopUps"></div>
+        <p class="shopown" id="shopLkOwn"></p>
+        <button class="btn wide" id="shopBack" type="button">Zurück</button>
+      </div>
     </div>
   </div>
 
@@ -7938,7 +7967,8 @@ input.bprange[type=range]::-moz-range-thumb { width: 20px; height: 20px; border-
    naechste Punkt ganz kurz dahinter (schnell nachdruecken). Spielen ist kostenlos, Treffer allein bringen nichts:
    wer das Schloss knackt (50 Treffer, bei mehr als 300 im Glas 60, ueber 500 70), bekommt den Jackpot aus dem Glas
    oben rechts. Das Glas fuellt sich mit den Gewinnen aus den anderen Spielen (window.JAR.add).
-   Daneben gedrueckt oder den Punkt vorbeiziehen lassen = Runde vorbei, der Jackpot bleibt im Glas. */
+   Daneben gedrueckt oder den Punkt vorbeiziehen lassen = Runde vorbei, der Jackpot bleibt im Glas.
+   Im Shop gibt es Upgrades (window.LKUP): groesserer Knopf, 5 Treffer weniger, langsamerer Balken. */
 (function () {
   'use strict';
   var PR = window.PR;
@@ -7970,7 +8000,35 @@ input.bprange[type=range]::-moz-range-thumb { width: 20px; height: 20px; border-
   }
   function jarSave(d) { try { localStorage.setItem('pr-jar', JSON.stringify({ v: Math.round(d.v * 100) / 100, s: Math.round(d.s * 100) / 100, c: d.c, g: JGEO })); } catch (e) {} }
   function tierOf(v) { for (var i = 0; i < TIERS.length; i++) if (v < TIERS[i][0] - 1e-6) return i; return -1; }
-  function needOf(v) { v = Math.floor(v); return v <= 300 ? 50 : v <= 500 ? 60 : 70; }
+  /* ---------- Upgrades aus dem Shop, je Stufe einzeln gekauft (gespeichert in pr-lkup) ----------
+     b: Knopf groesser (4.000 pro Stufe), h: 5 Treffer weniger (800 pro Stufe, hoechstens 20 weniger als normal, mindestens 20),
+     s: Balken 10 % langsamer (800 pro Stufe) */
+  var UPS = {
+    b: { max: 5, price: 4000 },
+    h: { max: 6, price: 800 },
+    s: { max: 5, price: 800 }
+  };
+  function ups() {
+    var o = null; try { o = JSON.parse(localStorage.getItem('pr-lkup') || 'null'); } catch (e) {} o = o || {};
+    var r = {}; Object.keys(UPS).forEach(function (k) { var n = Math.floor(+o[k] || 0); r[k] = Math.max(0, Math.min(UPS[k].max, n)); });
+    return r;
+  }
+  function buyUp(k) {
+    var u = ups(), d = UPS[k], P = PR.prof();
+    if (!d || u[k] >= d.max || (P.bank | 0) < d.price) return false;
+    P.bank -= d.price; PR.saveProf(); PR.renderBank();
+    u[k]++; try { localStorage.setItem('pr-lkup', JSON.stringify(u)); } catch (e) {}
+    sizeGo();
+    return true;
+  }
+  /* Knopfgroesse je Stufe: Stufe 0 der kleine runde Knopf, Stufe 5 der breite wie frueher */
+  var GW = [92, 120, 150, 180, 210, 240], GH = [92, 96, 100, 106, 112, 124], GF = [15, 17, 19, 21, 23, 26];
+  function sizeGo() {
+    var b = ups().b, g = document.querySelector('#lkGo'); if (!g) return;
+    g.style.setProperty('--gw', GW[b] + 'px'); g.style.setProperty('--gh', GH[b] + 'px'); g.style.setProperty('--gf', GF[b] + 'px');
+  }
+  sizeGo();
+  function needOf(v) { v = Math.floor(v); return Math.max(20, (v <= 300 ? 50 : v <= 500 ? 60 : 70) - 5 * ups().h); }
   function coinsOf(v, i) { var p = PARTS[i], x = Math.max(0, Math.min(p[1], Math.floor(v) - p[0])); return Math.round(x / p[1] * p[2]); }
   /* kleine Betraege mit einer Nachkommastelle (5 % von 10 sind 0,5) */
   function amt(a) { return a >= 10 ? fmt(Math.round(a)) : String(Math.round(a * 10) / 10).replace('.', ','); }
@@ -8275,7 +8333,7 @@ input.bprange[type=range]::-moz-range-thumb { width: 20px; height: 20px; border-
        Der Abstand wird mit der Zeit etwas enger, bleibt aber immer gut sichtbar: mindestens 60 Grad und mindestens
        eine knappe halbe Sekunde Laufzeit (je schneller, desto weiter weg). Kurz hintereinander kommt erst ab dem
        10. Treffer und nur ab und zu */
-    spd = Math.min(340, 100 + k * 3);
+    spd = Math.min(340, 100 + k * 3) * (1 - 0.1 * ups().s);
     hw = Math.max(6, 12 - k * 0.11);
     var p = Math.min(1, k / 45), near = Math.max(60, spd * 0.42, hw * 2 + 34);
     if (k >= 10 && Math.random() < 0.08 + p * 0.12) dist = near + Math.random() * 25;
@@ -8409,6 +8467,7 @@ input.bprange[type=range]::-moz-range-thumb { width: 20px; height: 20px; border-
     lk.classList.remove('open', 'miss', 'hit', 'run');
     go.classList.remove('run');
     $('#jarPop').classList.remove('on');
+    sizeGo();
     var nw = pour(); need = needOf(jd.v);
     if (nw >= 1) msg('Neu im Glas: +' + fmt(nw) + ' Chips', 'good');
     else if (Math.floor(jd.v) >= 300) msg(tierMsg(jd.v));
@@ -8440,6 +8499,7 @@ input.bprange[type=range]::-moz-range-thumb { width: 20px; height: 20px; border-
   var idle = window.prIdle;
   window.prIdle = function () { return (!idle || idle()) && lk.hidden; };
   window.LK = { on: function () { return !lk.hidden; } };
+  window.LKUP = { get: ups, buy: buyUp, def: UPS };
   /* fuer die anderen Spiele: Gewinn einer Runde (Auszahlung minus Einsatz) melden, 5 % davon kommen ins Glas */
   window.JAR = { add: jarAdd };
 })();
@@ -10322,7 +10382,36 @@ input.bprange[type=range]::-moz-range-thumb { width: 20px; height: 20px; border-
     $('#shopSell').disabled = n < 1;
     $('#shopOwn').textContent = 'Du hast ' + fmt(n) + (n === 1 ? ' Tomate' : ' Tomaten') + ' · Guthaben ' + fmt(bank) + ' Chips' + (bank < PRICE ? ' – zu wenig für eine Tomate' : '');
   }
-  $('#shopBtn').addEventListener('click', function () { Snd.unlock(); render(false); $('#shop').hidden = false; });
+  /* Pop the Lock: eigene Seite im Shop mit den Upgrades */
+  var UPI = [
+    { k: 'b', name: 'Größerer Knopf', d: 'Der grüne Knopf wird ein Stück größer', ic: function (n) { return '<span class="gbtn' + (n >= 3 ? ' big' : '') + '"></span>'; } },
+    { k: 'h', name: '5 Treffer weniger', d: 'Du knackst das Schloss mit 5 Treffern weniger', ic: function () { return '<b style="font:800 18px var(--ui);color:#ffe08a">−5</b>'; } },
+    { k: 's', name: 'Langsamer', d: 'Der rote Balken dreht sich 10 % langsamer', ic: function () { return '🐢'; } }
+  ];
+  function renderUps() {
+    var L = window.LKUP; if (!L) return;
+    var u = L.get(), bank = PR.prof().bank | 0, h = '';
+    UPI.forEach(function (x) {
+      var d = L.def[x.k], n = u[x.k], full = n >= d.max, bars = '';
+      for (var i = 0; i < d.max; i++) bars += '<i' + (i < n ? ' class="on"' : '') + '></i>';
+      h += '<div class="shopitem"><span class="si lk" aria-hidden="true">' + x.ic(n) + '</span>' +
+        '<span class="sn"><b>' + x.name + '</b><small class="d">' + x.d + '</small>' +
+        '<small>' + (full ? 'Ganz ausgebaut' : '<i class="bchip" aria-hidden="true"></i>' + fmt(d.price) + ' Chips') + ' · Stufe ' + n + '/' + d.max + '</small>' +
+        '<span class="lvl" aria-hidden="true">' + bars + '</span></span>' +
+        '<button class="btn primary" type="button" data-up="' + x.k + '"' + (full || bank < d.price ? ' disabled' : '') + '>' + (full ? 'Max' : 'Kaufen') + '</button></div>';
+    });
+    if ($('#shopUps')._h !== h) { $('#shopUps').innerHTML = h; $('#shopUps')._h = h; }   // nur neu bauen, wenn sich was aendert (sonst geht ein Tippen verloren)
+    $('#shopLkOwn').textContent = 'Guthaben ' + fmt(bank) + ' Chips';
+  }
+  function view(lkv) { $('#shopMain').hidden = lkv; $('#shopLkView').hidden = !lkv; if (lkv) renderUps(); }
+  $('#shopLk').addEventListener('click', function () { view(true); });
+  $('#shopBack').addEventListener('click', function () { view(false); render(false); });
+  $('#shopUps').addEventListener('click', function (e) {
+    var b = e.target.closest('[data-up]'); if (!b || !window.LKUP) return;
+    if (window.LKUP.buy(b.dataset.up)) Snd.chip(3, 0, true);
+    renderUps(); render(false);
+  });
+  $('#shopBtn').addEventListener('click', function () { Snd.unlock(); view(false); render(false); $('#shop').hidden = false; });
   $('#shopClose').addEventListener('click', function () { $('#shop').hidden = true; });
   $('#shop').addEventListener('click', function (e) { if (e.target === this) this.hidden = true; });
   $('#shopBuy').addEventListener('click', function () {
@@ -10343,7 +10432,7 @@ input.bprange[type=range]::-moz-range-thumb { width: 20px; height: 20px; border-
     render(true);
   });
   /* Guthaben kann sich ueberall aendern (Spiele, taegliche Belohnung): Anzeige im Menue aktuell halten */
-  setInterval(function () { if (!$('#menu').hidden) render(false); }, 1500);
+  setInterval(function () { if (!$('#menu').hidden) { render(false); if (!$('#shop').hidden && !$('#shopLkView').hidden) renderUps(); } }, 1500);
   render(false);
 })();
 </script>
