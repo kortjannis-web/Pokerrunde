@@ -1219,7 +1219,7 @@ input.bprange[type=range]::-moz-range-thumb { width: 20px; height: 20px; border-
 .lklogo { display: flex; justify-content: center; height: 41px; align-items: flex-end; }
 .lklogo svg { width: 36px; height: 44px; display: block; filter: drop-shadow(0 4px 6px rgba(0,0,0,.45)); }
 #lk { position: absolute; inset: 0; z-index: 58; display: flex; flex-direction: column; background: radial-gradient(120% 70% at 50% 30%, #1b2a48, var(--bg) 70%); background-color: var(--bg); }
-#lkStage { position: relative; flex: 1 1 auto; min-height: 0; overflow: hidden; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 10px; cursor: pointer; touch-action: manipulation; }
+#lkStage { position: relative; flex: 1 1 auto; min-height: 0; overflow: hidden; display: flex; flex-direction: column; align-items: center; justify-content: flex-start; gap: 10px; margin: 0 -12px; padding: 8px 12px 4px; cursor: pointer; touch-action: manipulation; }
 .lkmarq { position: relative; width: min(100%, 340px); height: 50px; border-radius: 14px; display: flex; align-items: center; justify-content: space-between; padding: 0 16px; background: linear-gradient(180deg, #1f4f94, #0c2550); box-shadow: inset 0 0 0 2px rgba(140,200,255,.75), 0 4px 10px rgba(0,0,0,.4); overflow: hidden; flex: none; }
 .lkmarq::before, .lkmarq::after { content: ''; position: absolute; left: 8px; right: 8px; height: 5px; background: radial-gradient(circle, #cfeaff 0 1.8px, transparent 2.6px) 0 0 / 13px 5px repeat-x; opacity: .8; }
 .lkmarq::before { top: 4px; } .lkmarq::after { bottom: 4px; }
@@ -1232,12 +1232,14 @@ input.bprange[type=range]::-moz-range-thumb { width: 20px; height: 20px; border-
 .lkwrap { position: relative; flex: none; height: var(--lkh); aspect-ratio: 248 / 320; }
 /* Glas mit dem Jackpot oben rechts: neben der (schmaleren) Ueberschrift und dem Buegel des Schlosses, bis zum Schlosskoerper.
    Das Schloss ist so gross, dass Glas und Buegel nebeneinander passen und unten alles auf den Bildschirm passt. */
-#lk { --lkh: max(170px, min(calc(81vh - 285px), calc(133cqw - 104px), 420px)); --jh: calc(60px + var(--lkh) * .25); --jw: calc(var(--jh) * 140 / 226); }
+#lk { --lkh: max(150px, min(calc(81vh - 298px), calc(136cqw - 86px), 440px)); --jh: calc(66px + var(--lkh) * .25); --jw: calc(var(--jh) * 140 / 226); }
+/* oben die Ueberschrift mit dem Glas, unten das Bedienpult; der freie Platz verteilt sich darueber und darunter */
+#lkStage .lkpayrow, #lkStage .lkpanel { margin-top: auto; }
 .lkrow { position: relative; flex: none; width: min(100%, 440px); display: flex; flex-direction: column; align-items: center; gap: 10px; }
-.lkrow .lkmarq { align-self: flex-start; width: calc(100% - var(--jw) - 8px); padding: 0 12px; gap: 8px; }
+.lkrow .lkmarq { align-self: flex-start; width: calc(100% - var(--jw) + 4px); padding: 0 12px; gap: 8px; }
 .lkrow .lkmarq span { font-size: min(17px, 4.6cqw); }
 .lkrow .lkmarq em b { font-size: min(18px, 4.9cqw); }
-.lkjar { position: absolute; top: 0; right: 0; width: var(--jw); height: var(--jh); }
+.lkjar { position: absolute; top: -6px; right: -12px; width: var(--jw); height: var(--jh); }
 #lkJarC { position: absolute; inset: 0; width: 100%; height: 100%; display: block; }
 .lkjcap { position: absolute; left: -4px; right: -4px; top: 0; margin: 0; font: 700 10px/1.25 var(--ui); color: #9fc7ee; text-align: center; pointer-events: none; text-shadow: 0 1px 2px rgba(0,0,0,.8); }
 .lkjcap b { color: #ffe08a; font-weight: 800; }
