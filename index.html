@@ -1230,12 +1230,16 @@ input.bprange[type=range]::-moz-range-thumb { width: 20px; height: 20px; border-
 /* Automat wie in der Spielhalle: Bildschirm hinter einem leuchtenden LED-Schloss (Neonrahmen mit Lauflicht),
    darunter die Gewinnanzeige und unten in der Mitte der grosse gruene Knopf auf dem Bedienpult */
 .lkwrap { position: relative; flex: none; height: var(--lkh); aspect-ratio: 248 / 320; }
-/* Glas mit dem Jackpot rechts neben dem Schloss; Hoehe wie das Schloss, beide passen nebeneinander */
-#lk { --lkh: max(150px, min(34vh, calc(75vh - 280px), calc((100cqw - 12px) / 1.27), 300px)); }
-.lkrow { position: relative; flex: none; display: flex; align-items: flex-end; justify-content: center; gap: 6px; }
-.lkjar { position: relative; flex: none; height: var(--lkh); aspect-ratio: 140 / 290; }
+/* Glas mit dem Jackpot oben rechts: neben der (schmaleren) Ueberschrift und dem Buegel des Schlosses, bis zum Schlosskoerper.
+   Das Schloss ist so gross, dass Glas und Buegel nebeneinander passen und unten alles auf den Bildschirm passt. */
+#lk { --lkh: max(170px, min(calc(81vh - 285px), calc(133cqw - 104px), 420px)); --jh: calc(60px + var(--lkh) * .25); --jw: calc(var(--jh) * 140 / 226); }
+.lkrow { position: relative; flex: none; width: min(100%, 440px); display: flex; flex-direction: column; align-items: center; gap: 10px; }
+.lkrow .lkmarq { align-self: flex-start; width: calc(100% - var(--jw) - 8px); padding: 0 12px; gap: 8px; }
+.lkrow .lkmarq span { font-size: min(17px, 4.6cqw); }
+.lkrow .lkmarq em b { font-size: min(18px, 4.9cqw); }
+.lkjar { position: absolute; top: 0; right: 0; width: var(--jw); height: var(--jh); }
 #lkJarC { position: absolute; inset: 0; width: 100%; height: 100%; display: block; }
-.lkjcap { position: absolute; left: -6px; right: -6px; top: 0; margin: 0; font: 700 10px/1.25 var(--ui); color: #9fc7ee; text-align: center; pointer-events: none; text-shadow: 0 1px 2px rgba(0,0,0,.8); }
+.lkjcap { position: absolute; left: -4px; right: -4px; top: 0; margin: 0; font: 700 10px/1.25 var(--ui); color: #9fc7ee; text-align: center; pointer-events: none; text-shadow: 0 1px 2px rgba(0,0,0,.8); }
 .lkjcap b { color: #ffe08a; font-weight: 800; }
 /* kleines Glas oben rechts: so viel ist gerade vom Gewinn ins Glas gewandert (in allen Spielen) */
 #jarPop { position: absolute; right: 2px; top: 54px; z-index: 99; display: flex; align-items: center; gap: 5px; padding: 4px 11px 4px 7px; border-radius: 999px; background: rgba(10,18,34,.94); box-shadow: inset 0 0 0 1.5px rgba(255,214,90,.65), 0 6px 16px rgba(0,0,0,.5); pointer-events: none; opacity: 0; transform: translateY(-8px) scale(.9); transition: opacity .3s, transform .3s; }
@@ -1301,11 +1305,11 @@ input.bprange[type=range]::-moz-range-thumb { width: 20px; height: 20px; border-
 @keyframes lkup { 40% { transform: scale(1.25); color: #fff; } }
 #lkStage .slcoin { top: -30px; }
 /* Bedienpult mit dem Knopf unten in der Mitte */
-.lkpanel { position: relative; flex: none; width: min(100%, 440px); height: max(130px, 24vh); display: flex; align-items: center; justify-content: center; border-radius: 26px 26px 14px 14px; background: linear-gradient(180deg, #24324a, #121a29 55%, #0b111c); box-shadow: inset 0 2px 0 rgba(255,255,255,.12), inset 0 0 0 1.5px rgba(140,200,255,.3), 0 8px 18px rgba(0,0,0,.45); }
+.lkpanel { position: relative; flex: none; width: min(100%, 440px); height: max(110px, 19vh); display: flex; align-items: center; justify-content: center; border-radius: 26px 26px 14px 14px; background: linear-gradient(180deg, #24324a, #121a29 55%, #0b111c); box-shadow: inset 0 2px 0 rgba(255,255,255,.12), inset 0 0 0 1.5px rgba(140,200,255,.3), 0 8px 18px rgba(0,0,0,.45); }
 .lkpanel::before, .lkpanel::after { content: ''; position: absolute; top: 18px; bottom: 18px; width: 6px; border-radius: 3px; background: linear-gradient(180deg, #39b6ff, #b45cff, #39b6ff); background-size: 100% 200%; box-shadow: 0 0 10px rgba(80,170,255,.7); animation: lkrgb 3s linear infinite; }
 .lkpanel::before { left: 14px; } .lkpanel::after { right: 14px; }
 @keyframes lkrgb { to { background-position: 0 200%; } }
-#lkGo { position: relative; width: min(calc(100% - 56px), 240px); height: calc(100% - 36px); flex: none; border-radius: 999px; border: 0; padding: 0; display: grid; place-items: center; color: #fff; font: 800 26px var(--ui); letter-spacing: .12em; text-transform: uppercase; touch-action: manipulation; text-shadow: 0 1px 2px rgba(0,0,0,.5);
+#lkGo { position: relative; width: min(calc(100% - 56px), 240px); height: calc(100% - 30px); flex: none; border-radius: 999px; border: 0; padding: 0; display: grid; place-items: center; color: #fff; font: 800 26px var(--ui); letter-spacing: .12em; text-transform: uppercase; touch-action: manipulation; text-shadow: 0 1px 2px rgba(0,0,0,.5);
   background: radial-gradient(ellipse at 50% 28%, #b9ffb0, #45d64a 38%, #1e9a2c 70%, #0f5c18); box-shadow: 0 0 0 6px #0a0e15, 0 0 0 9px #8a95a5, 0 7px 0 6px #0b3b12, 0 12px 20px 6px rgba(0,0,0,.55), inset 0 3px 0 rgba(255,255,255,.45), inset 0 -6px 12px rgba(0,60,10,.5); transition: transform .07s, box-shadow .07s, filter .07s; }
 #lkGo.run { animation: lkpulse 1.2s ease-in-out infinite; }
 @keyframes lkpulse { 50% { filter: brightness(1.15); } }
@@ -1779,8 +1783,8 @@ input.bprange[type=range]::-moz-range-thumb { width: 20px; height: 20px; border-
       </div>
     </header>
     <main id="lkStage">
-      <div class="lkmarq"><span>POP ★ THE LOCK</span><em><small>Jackpot</small><b id="lkJp">100</b></em></div>
       <div class="lkrow">
+      <div class="lkmarq"><span>POP ★ THE LOCK</span><em><small>Jackpot</small><b id="lkJp">100</b></em></div>
       <div class="lkwrap">
         <svg id="lkSvg" viewBox="-124 -196 248 320" aria-hidden="true">
           <defs>
@@ -7945,8 +7949,9 @@ input.bprange[type=range]::-moz-range-thumb { width: 20px; height: 20px; border-
      Muenzen, die schon im Glas liegen, s der Jackpot, den man zuletzt gesehen hat. Neue Muenzen fallen erst hinein,
      wenn man wieder hier ist. Was ueber den Rand laeuft, ist nur Anzeige und gehoert weiter zum Jackpot. */
   var TIERS = [[300, 0], [500, 500], [800, 1000], [1200, 2000]], RATE = 0.05, JMAX = 1200;
-  /* so viele Muenzen fuellen das Glas genau bis zum Rand (ausprobiert); JGEO aendern, wenn sich das Glas aendert */
-  var NFULL = 78, COIN = 300 / NFULL, JGEO = 1;
+  /* so viele Muenzen fuellen das Glas genau bis zum Rand (ausprobiert); was ueberlaeuft (300 bis 1.200) ist nur Anzeige,
+     dort steht eine Muenze fuer mehr, damit bei 1.200 alles rundherum voll ist. JGEO aendern, wenn sich das Glas aendert */
+  var NFULL = 97, COIN = 300 / NFULL, COIN2 = 900 / 88, JGEO = 3;
   function jarLoad() {
     var o = null; try { o = JSON.parse(localStorage.getItem('pr-jar') || 'null'); } catch (e) {} o = o || {};
     var v = +o.v, s = +o.s;
@@ -7956,7 +7961,7 @@ input.bprange[type=range]::-moz-range-thumb { width: 20px; height: 20px; border-
   function jarSave(d) { try { localStorage.setItem('pr-jar', JSON.stringify({ v: Math.round(d.v * 100) / 100, s: Math.round(d.s * 100) / 100, c: d.c, g: JGEO })); } catch (e) {} }
   function tierOf(v) { for (var i = 0; i < TIERS.length; i++) if (v < TIERS[i][0] - 1e-6) return i; return -1; }
   function needOf(v) { v = Math.floor(v); return v <= 300 ? 50 : v <= 500 ? 60 : 70; }
-  function coinsOf(v) { return Math.round(Math.floor(v) / COIN); }
+  function coinsOf(v) { v = Math.floor(v); return v <= 300 ? Math.round(v / COIN) : NFULL + Math.round((v - 300) / COIN2); }
   /* kleine Betraege mit einer Nachkommastelle (5 % von 10 sind 0,5) */
   function amt(a) { return a >= 10 ? fmt(Math.round(a)) : String(Math.round(a * 10) / 10).replace('.', ','); }
   function jarAdd(win) {
@@ -7986,15 +7991,15 @@ input.bprange[type=range]::-moz-range-thumb { width: 20px; height: 20px; border-
   }
   function capOf(v) {
     var t = tierOf(v);
-    if (t === 0) return '<b>5 %</b> von jedem Gewinn<br>fließen ins Glas';
-    if (t < 0) return '<b>Randvoll!</b><br>Mehr passt nicht hinein';
-    return (t === 1 ? 'Glas voll! ' : '') + 'Weiter ab <b>' + fmt(TIERS[t][1]) + '</b><br>Gewinn am Stück (5 %)';
+    if (t === 0) return '<b>+5 %</b> von<br>jedem Gewinn';
+    if (t < 0) return '<b>Randvoll!</b>';
+    return (t === 1 ? 'Voll! ' : '') + 'Weiter ab<br><b>' + fmt(TIERS[t][1]) + '</b> Gewinn';
   }
 
   /* ---------- Glas: Muenzen mit einfacher Physik (Schwerkraft, Glaswand, Boden, andere Muenzen) ----------
      Logische Groesse JW x JH, alles wird auf die echte Groesse skaliert. Liegt eine Muenze still, friert sie ein
      (zaehlt dann nur noch als Hindernis) und ihre Lage wird gespeichert. */
-  var JW = 140, JH = 290, CR = 5, FLOOR = 284, JCX = 70, JHW = 34, JTOP = 150, JBOT = 280, JCOR = 12, WR = 2;
+  var JW = 140, JH = 226, CR = 5, FLOOR = 220, JCX = 70, JHW = 38, JTOP = 72, JBOT = 216, JCOR = 12, WR = 2;
   var SEGS = (function () {
     var p = [[JCX - JHW, JTOP]], s = [], i, a;
     for (i = 0; i <= 4; i++) { a = Math.PI - i * Math.PI / 8; p.push([JCX - JHW + JCOR + Math.cos(a) * JCOR, JBOT - JCOR + Math.sin(a) * JCOR]); }
