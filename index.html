@@ -601,10 +601,11 @@ input.bprange[type=range]::-moz-range-thumb { width: 20px; height: 20px; border-
 .tombtn[hidden] { display: none; }
 .tombtn b { position: absolute; right: -3px; bottom: -3px; min-width: 20px; height: 20px; padding: 0 5px; border-radius: 10px; background: #d8322f; color: #fff; font: 800 11px/20px var(--ui); box-shadow: 0 0 0 2px var(--bg); }
 .tombtn.aim { transform: scale(.92); }
+.tombtn.aim span { opacity: .2; }
 #bjTom { right: 8px; bottom: 50px; }
 #tomLayer { position: fixed; inset: 0; z-index: 100; pointer-events: none; overflow: hidden; }
 #tomLayer .tomfly { position: absolute; left: 0; top: 0; font-size: 34px; line-height: 1; will-change: transform; }
-#tomLayer .tomaim { position: absolute; left: 0; top: 0; width: 46px; height: 46px; margin: -23px 0 0 -23px; border-radius: 50%; border: 2.5px dashed rgba(255,110,90,.9); box-shadow: 0 0 12px rgba(255,90,70,.6); }
+#tomLayer .tomfly.hold { filter: drop-shadow(0 8px 6px rgba(0,0,0,.45)); }
 #tomLayer .tomsplat { position: absolute; left: 0; top: 0; width: 96px; height: 96px; margin: -48px 0 0 -48px; }
 /* Spielzeit im Profil */
 .ptime { display: flex; align-items: center; gap: 12px; padding: 12px 14px; border-radius: 14px; background: var(--bg2); border: 1px solid var(--line); }
@@ -5510,9 +5511,9 @@ input.bprange[type=range]::-moz-range-thumb { width: 20px; height: 20px; border-
     return { x: r.left + r.width / 2, y: r.top + r.height / 2 };
   }
   function tablePt(x, y) { var r = table.getBoundingClientRect(); return { x: r.left + x * r.width, y: r.top + y * r.height }; }
-  function tomAim(p) {
+  function tomAim(p, from) {
     var best = -1, bd = 80;
-    if (p) for (var i = 1; i < seats.length; i++) { var q = seatPt(i); if (q) { var d = Math.hypot(q.x - p.x, q.y - p.y); if (d < bd) { bd = d; best = i; } } }
+    if (p) for (var i = 1; i < seats.length; i++) { var q = seatPt(i); if (q && window.TOM.onLine(from, p, q)) { var d = Math.hypot(q.x - p.x, q.y - p.y); if (d < bd) { bd = d; best = i; } } }
     var r = table.getBoundingClientRect();
     var x = p ? (p.x - r.left) / r.width : 0.5, y = p ? (p.y - r.top) / r.height : 0.42;
     return { s: best, x: Math.max(-0.2, Math.min(1.2, x)), y: Math.max(-0.2, Math.min(1.2, y)) };
@@ -5534,7 +5535,7 @@ input.bprange[type=range]::-moz-range-thumb { width: 20px; height: 20px; border-
   window.PKT = {
     on: function () { return playing && $('#menu').hidden; },
     throwAt: function (p, from) {
-      var a = tomAim(p), to = a.s > 0 ? seatPt(a.s) : tablePt(a.x, a.y);
+      var a = tomAim(p, from), to = a.s > 0 ? seatPt(a.s) : tablePt(a.x, a.y);
       if (window.TOM) window.TOM.fly(from, to);
       tomHit(a.s);
       if (MP.on) {
@@ -6386,10 +6387,10 @@ input.bprange[type=range]::-moz-range-thumb { width: 20px; height: 20px; border-
   }
   function elPt(el) { if (!el) return null; var r = el.getBoundingClientRect(); if (!r.width) return null; return { x: r.left + r.width / 2, y: r.top + r.height / 2 }; }
   function stPt(x, y) { var r = $('#bjStage').getBoundingClientRect(); return { x: r.left + x * r.width, y: r.top + y * r.height }; }
-  function bjAim(p) {
+  function bjAim(p, from) {
     var best = '', bd = 90, ids = ['D'];
     [].forEach.call(document.querySelectorAll('#bjOthers .bjo'), function (el) { if (el._sid) ids.push(el._sid); });
-    if (p) ids.forEach(function (id) { var q = elPt(bjEl(id)); if (q) { var d = Math.hypot(q.x - p.x, q.y - p.y); if (d < bd) { bd = d; best = id; } } });
+    if (p) ids.forEach(function (id) { var q = elPt(bjEl(id)); if (q && window.TOM.onLine(from, p, q)) { var d = Math.hypot(q.x - p.x, q.y - p.y); if (d < bd) { bd = d; best = id; } } });
     var r = $('#bjStage').getBoundingClientRect();
     var x = p ? (p.x - r.left) / r.width : 0.5, y = p ? (p.y - r.top) / r.height : 0.3;
     return { to: best, x: Math.max(-0.2, Math.min(1.2, x)), y: Math.max(-0.2, Math.min(1.2, y)) };
@@ -6408,7 +6409,7 @@ input.bprange[type=range]::-moz-range-thumb { width: 20px; height: 20px; border-
   window.BJT = {
     on: function () { return !bj.hidden && !!T; },
     throwAt: function (p, from) {
-      var a = bjAim(p);
+      var a = bjAim(p, from);
       if (window.TOM) window.TOM.fly(from, (a.to && elPt(bjEl(a.to))) || stPt(a.x, a.y));
       if (NB.role === 'guest' && NB.conn) { try { NB.conn.send({ t: 'tom', to: a.to, x: a.x, y: a.y }); } catch (e) {} }
       else if (NB.role === 'host') NB.conns.forEach(function (c) { if (c._bj) { try { c.send({ t: 'tom', id: ME, to: a.to, x: a.x, y: a.y }); } catch (e) {} } });
@@ -10126,9 +10127,10 @@ input.bprange[type=range]::-moz-range-thumb { width: 20px; height: 20px; border-
 
 <script>
 /* Tomaten werfen am Poker- und Blackjack-Tisch (nur zum Spass): Knopf unten rechts, solange man Tomaten hat.
-   Langsam ziehen zielt (roter Ring) und wirft beim Loslassen genau dorthin; schnell wischen wirft in Wischrichtung,
-   je schneller, desto weiter; nur antippen wirft auf die Tischmitte. Die Tomate fliegt im Bogen,
-   wird kleiner und platscht. Am Online-Tisch sehen es alle (Nachricht 'tom', aeltere Versionen ignorieren sie). */
+   Beim Draufdruecken hat man die Tomate am Finger und zieht sie mit; beim Loslassen fliegt sie genau in die Richtung,
+   in die der Finger zuletzt gezogen hat (je schneller, desto weiter; stand der Finger still, in Zugrichtung vom Knopf aus).
+   Nur antippen wirft auf die Tischmitte. Die Tomate fliegt gerade los, steigt (wird groesser), faellt (wird kleiner)
+   und platscht. Am Online-Tisch sehen es alle (Nachricht 'tom', aeltere Versionen ignorieren sie). */
 (function () {
   'use strict';
   var PR = window.PR;
@@ -10205,61 +10207,84 @@ input.bprange[type=range]::-moz-range-thumb { width: 20px; height: 20px; border-
     if (el.animate) el.animate(splatAnim(v, el.style.transform), { duration: 2600, easing: 'ease-out' });
     setTimeout(function () { el.remove(); }, 2550);
   }
-  /* Flug im Bogen, die Tomate wird dabei kleiner (fliegt "weg"), dann Platschen */
+  /* Flug von oben gesehen: auf gerader Linie (so bleibt die Wurfrichtung genau erhalten), die Hoehe zeigt nur die Groesse:
+     erst groesser (steigt), dann kleiner (faellt), dabei dreht sie sich; dann Platschen */
   /* Landepunkt mit Abstand zum Bildschirmrand, damit der Klecks ganz zu sehen ist */
   var EDGE = 56;
   function inside(p) { return { x: Math.max(EDGE, Math.min(window.innerWidth - EDGE, p.x)), y: Math.max(EDGE, Math.min(window.innerHeight - EDGE, p.y)) }; }
+  function tf(x, y, sc, rot) { return 'translate(' + x + 'px,' + y + 'px) translate(-50%,-50%) scale(' + sc + ') rotate(' + rot + 'deg)'; }
   function fly(from, to) {
     if (!from || !to) return;
     var el = document.createElement('div'); el.className = 'tomfly'; el.textContent = '🍅'; layer.appendChild(el);
     to = inside(to);
     var dist = Math.hypot(to.x - from.x, to.y - from.y), dur = Math.max(420, Math.min(900, 300 + dist * 0.75));
-    /* Bogen nur so hoch, dass die Tomate nie ueber den Rand hinaus und wieder zurueck fliegt (sieht sonst wie Abprallen aus) */
-    var mx = (from.x + to.x) / 2, my = Math.max(EDGE / 2, Math.min(from.y, to.y) - 30 - dist * 0.12);
-    if (to.y < from.y) my = Math.max(my, to.y - 8);   // nach oben geworfen: kaum ueber das Ziel hinaus
-    function tf(x, y, sc, rot) { return 'translate(' + x + 'px,' + y + 'px) translate(-50%,-50%) scale(' + sc + ') rotate(' + rot + 'deg)'; }
+    var spin = (to.x < from.x ? -1 : 1) * Math.round(dur * 0.7), up = Math.min(1.6, 1.15 + dist * 0.0008);
     Snd.toss();
     if (!el.animate) { el.remove(); splat(to); return; }
-    var an = el.animate([{ transform: tf(from.x, from.y, 1.1, 0) }, { transform: tf(mx, my, 0.8, dur / 2) }, { transform: tf(to.x, to.y, 0.45, dur) }], { duration: dur, easing: 'cubic-bezier(.3,.1,.6,1)' });
+    var an = el.animate([{ transform: tf(from.x, from.y, 1.15, 0) },
+      { transform: tf(from.x + (to.x - from.x) * 0.45, from.y + (to.y - from.y) * 0.45, up, spin * 0.45), offset: 0.45 },
+      { transform: tf(to.x, to.y, 0.45, spin) }], { duration: dur, easing: 'cubic-bezier(.2,.35,.55,1)' });
     an.onfinish = function () { el.remove(); splat(to); };
   }
+  /* liegt q (ein Platz) fast genau auf der Wurflinie von from nach p? Nur dann wird der Platz getroffen,
+     damit die Tomate nicht zur Seite abbiegt */
+  function onLine(from, p, q) {
+    if (!from || Math.hypot(q.x - p.x, q.y - p.y) < 28) return true;
+    var ax = p.x - from.x, ay = p.y - from.y, bx = q.x - from.x, by = q.y - from.y, la = Math.hypot(ax, ay), lb = Math.hypot(bx, by);
+    return la > 1 && lb > 1 && (ax * bx + ay * by) / (la * lb) > 0.985;   // hoechstens etwa 10 Grad daneben
+  }
+  /* die Tomate am Finger sitzt ein Stueck ueber der Fingerspitze, damit man sie sieht */
+  var LIFT = 30;
   function bind(btn, H) {
-    var drag = null, ring = null;
+    var drag = null, held = null;
+    function hold(x, y) { if (held) held.style.transform = tf(x, y - LIFT, 1.15, 0); }
     btn.addEventListener('pointerdown', function (e) {
       if (!count() || !H().on()) return;
       e.preventDefault(); Snd.unlock();
       try { btn.setPointerCapture(e.pointerId); } catch (x) {}
       drag = { id: e.pointerId, x0: e.clientX, y0: e.clientY, moved: false, pts: [{ x: e.clientX, y: e.clientY, t: performance.now() }] };
       btn.classList.add('aim');
+      if (held) held.remove();
+      held = document.createElement('div'); held.className = 'tomfly hold'; held.textContent = '🍅'; layer.appendChild(held);
+      hold(e.clientX, e.clientY);
     });
     btn.addEventListener('pointermove', function (e) {
       if (!drag || e.pointerId !== drag.id) return;
-      if (!drag.moved && Math.hypot(e.clientX - drag.x0, e.clientY - drag.y0) > 12) { drag.moved = true; ring = document.createElement('div'); ring.className = 'tomaim'; layer.appendChild(ring); }
-      if (ring) ring.style.transform = 'translate(' + e.clientX + 'px,' + e.clientY + 'px)';
+      if (!drag.moved && Math.hypot(e.clientX - drag.x0, e.clientY - drag.y0) > 12) drag.moved = true;
+      hold(e.clientX, e.clientY);
       var now = performance.now(); drag.pts.push({ x: e.clientX, y: e.clientY, t: now });
-      while (drag.pts.length > 2 && now - drag.pts[0].t > 120) drag.pts.shift();
+      while (drag.pts.length > 2 && now - drag.pts[0].t > 250) drag.pts.shift();
     });
-    /* Wischen: Geschwindigkeit der letzten gut 100 ms; ab etwa 0,7 Pixel pro ms wird geworfen statt gezielt */
-    function flick(d, e) {
-      var now = performance.now(), a = d.pts[0], dt = Math.max(16, now - a.t), vx = (e.clientX - a.x) / dt, vy = (e.clientY - a.y) / dt, v = Math.hypot(vx, vy);
-      if (v < 0.7) return null;
-      var reach = Math.max(120, Math.min(1100, v * 260)), ux = vx / v, uy = vy / v;
-      var x = e.clientX + ux * reach, y = e.clientY + uy * reach, W = window.innerWidth, Hh = window.innerHeight, m = EDGE;
+    /* Wurfrichtung: wie sich der Finger in den letzten 90 ms bewegt hat; stand er still, die ganze Zugrichtung vom Knopf aus.
+       Weite: je schneller gewischt, desto weiter */
+    function aimPt(d, e, from) {
+      var now = performance.now(), x = e.clientX, y = e.clientY, ux, uy, reach;
+      var pts = d.pts.filter(function (q) { return now - q.t <= 90; }), a = pts[0];
+      var dx = a ? x - a.x : 0, dy = a ? y - a.y : 0, L = Math.hypot(dx, dy);
+      if (L >= 8) {
+        var v = L / Math.max(16, now - a.t);
+        ux = dx / L; uy = dy / L; reach = Math.max(160, Math.min(1100, v * 280));
+      } else {
+        dx = x - d.x0; dy = y - d.y0; L = Math.hypot(dx, dy);
+        if (L < 1) return null;
+        ux = dx / L; uy = dy / L; reach = Math.max(160, L * 1.4);
+      }
+      var tx = from.x + ux * reach, ty = from.y + uy * reach, W = window.innerWidth, Hh = window.innerHeight, m = EDGE;
       /* nicht bis an die Wand: entlang der Wurfrichtung schon ein Stueck vor dem Rand landen */
       var k = 1;
-      if (x < m) k = Math.min(k, (m - e.clientX) / (x - e.clientX)); if (x > W - m) k = Math.min(k, (W - m - e.clientX) / (x - e.clientX));
-      if (y < m) k = Math.min(k, (m - e.clientY) / (y - e.clientY)); if (y > Hh - m) k = Math.min(k, (Hh - m - e.clientY) / (y - e.clientY));
+      if (tx < m) k = Math.min(k, (m - from.x) / (tx - from.x)); if (tx > W - m) k = Math.min(k, (W - m - from.x) / (tx - from.x));
+      if (ty < m) k = Math.min(k, (m - from.y) / (ty - from.y)); if (ty > Hh - m) k = Math.min(k, (Hh - m - from.y) / (ty - from.y));
       k = Math.max(0, Math.min(1, k));
-      return { x: e.clientX + (x - e.clientX) * k, y: e.clientY + (y - e.clientY) * k };
+      return { x: from.x + (tx - from.x) * k, y: from.y + (ty - from.y) * k };
     }
     function end(e, cancel) {
       if (!drag || e.pointerId !== drag.id) return;
       var d = drag; drag = null; btn.classList.remove('aim');
-      if (ring) { ring.remove(); ring = null; }
+      if (held) { held.remove(); held = null; }
       if (cancel || !H().on() || !use()) { sync(); return; }
-      var r = btn.getBoundingClientRect(), from = { x: r.left + r.width / 2, y: r.top + r.height / 2 };
-      var fl = d.moved ? flick(d, e) : null;
-      H().throwAt(fl || (d.moved ? { x: e.clientX, y: e.clientY } : null), from);
+      /* los geht es dort, wo die Tomate am Finger war */
+      var from = { x: e.clientX, y: e.clientY - LIFT };
+      H().throwAt(d.moved ? aimPt(d, e, from) : null, from);
       sync();
     }
     btn.addEventListener('pointerup', function (e) { end(e, false); });
@@ -10277,7 +10302,7 @@ input.bprange[type=range]::-moz-range-thumb { width: 20px; height: 20px; border-
   }
   bind(pk, function () { return window.PKT; }); bind(bj, function () { return window.BJT; });
   setInterval(sync, 700);
-  window.TOM = { fly: fly, splat: splat, count: count };
+  window.TOM = { fly: fly, splat: splat, count: count, onLine: onLine };
 })();
 </script>
 
