@@ -1775,6 +1775,8 @@ input.bprange[type=range]::-moz-range-thumb { width: 20px; height: 20px; border-
 #shopCos .shopown { margin: 0; }
 .cosempty { margin: 6px 0; padding: 18px 14px; border-radius: 14px; border: 1px dashed var(--line); color: var(--muted); font: 500 14px/1.45 var(--ui); text-align: center; }
 .cosach { width: 100%; }
+.cosav { position: relative; flex: none; display: block; cursor: pointer; }
+.cosav .cosed { position: absolute; right: -6px; bottom: -4px; z-index: 3; width: 26px; height: 26px; padding: 0; border-radius: 50%; display: grid; place-items: center; font-size: 13px; line-height: 1; background: var(--bg2); border: 1.5px solid rgba(224,170,74,.7); box-shadow: 0 2px 6px rgba(0,0,0,.5); }
 
 /* ---------- Erfolge ---------- */
 #achView { z-index: 77; }
@@ -1806,6 +1808,60 @@ input.bprange[type=range]::-moz-range-thumb { width: 20px; height: 20px; border-
 .cprev.fxbump .fxpv { animation: fxbump .5s ease-out; }
 @keyframes fxbump { 0% { transform: scale(1); } 35% { transform: scale(1.25) rotate(-8deg); } 70% { transform: scale(.95) rotate(4deg); } 100% { transform: scale(1); } }
 @media (prefers-reduced-motion: reduce) { .cprev.fxbump .fxpv { animation: none; } }
+/* ---------- Profilbild gestalten: Muster, Schriften, Emoji (gilt fuer .pav und .avatar) ---------- */
+.avb-verlauf { background: linear-gradient(145deg, var(--av2, #f4d67f), var(--av) 74%); }
+.avb-streifen { background: repeating-linear-gradient(135deg, var(--av) 0 9%, var(--av2, rgba(255,255,255,.3)) 9% 18%); }
+.avb-punkte { background: radial-gradient(circle, var(--av2, rgba(255,255,255,.38)) 0 24%, transparent 28%) 0 0 / 31% 31%, var(--av); }
+.avb-karo { background: conic-gradient(var(--av2, rgba(255,255,255,.3)) 25%, var(--av) 0 50%, var(--av2, rgba(255,255,255,.3)) 0 75%, var(--av) 0) 0 0 / 38% 38%; }
+.avb-ringe { background: repeating-radial-gradient(circle, var(--av) 0 9%, var(--av2, rgba(255,255,255,.3)) 9% 18%); }
+.avb-strahlen { background: repeating-conic-gradient(var(--av) 0 15deg, var(--av2, rgba(255,255,255,.3)) 15deg 30deg); }
+.avb-regenbogen { background: conic-gradient(#ff6b6b, #ffb84d, #ffe66b, #6fdc8c, #5ab8ff, #9b7bff, #ff6b6b); }
+.avb-galaxie { background: radial-gradient(circle at 28% 30%, #fff 0 2.5%, transparent 4%), radial-gradient(circle at 72% 62%, #fff 0 2%, transparent 3.5%), radial-gradient(circle at 44% 78%, rgba(255,255,255,.85) 0 1.6%, transparent 3%), radial-gradient(circle at 66% 22%, rgba(255,255,255,.8) 0 1.4%, transparent 2.8%), radial-gradient(circle at 18% 66%, rgba(255,255,255,.7) 0 1.4%, transparent 2.8%), radial-gradient(circle at 50% 45%, #7b4fd0, #2a1a66 55%, #0d0a26); }
+.avb-gold { background: linear-gradient(135deg, #fff1b8 0%, #c8932f 38%, #ffe08a 56%, #8a6420 100%); color: #3b2a08; }
+[class*="avb-"] { text-shadow: 0 1px 3px rgba(0,0,0,.55); }
+.avb-gold { text-shadow: 0 1px 0 rgba(255,244,200,.6); }
+.avf-klar { font-family: var(--ui); font-weight: 700; }
+.avf-kursiv { font-style: italic; font-weight: 600; }
+.avf-schreib { font-family: 'Segoe Script', 'Brush Script MT', 'Snell Roundhand', 'Dancing Script', cursive; font-weight: 700; font-style: normal; }
+.avf-mono { font-family: ui-monospace, 'SF Mono', Menlo, Consolas, 'Roboto Mono', monospace; font-weight: 800; }
+.avf-umriss { color: transparent !important; -webkit-text-stroke: .07em #fff8ea; text-shadow: none; }
+.ave { font-family: 'Apple Color Emoji', 'Segoe UI Emoji', 'Noto Color Emoji', sans-serif; font-weight: 400; font-style: normal; padding-bottom: 0 !important; text-shadow: 0 1px 2px rgba(0,0,0,.35); }
+.avatar.ave > span { transform: scale(1.12); }
+#pfAvEd { height: 38px; padding: 0 16px; border-radius: 999px; font-size: 14px; }
+#avEdit { z-index: 78; padding: 12px; }
+#avEdit .endcard { width: min(420px, 100%); max-height: 100%; overflow-y: auto; padding: 0 16px 18px; display: flex; flex-direction: column; gap: 14px; text-align: left; }
+#avEdit .endcard > * { flex-shrink: 0; }
+.aetop { position: sticky; top: 0; z-index: 3; margin: 0 -16px; padding: 14px 16px 10px; background: var(--bg2); border-bottom: 1px solid var(--line); text-align: center; }
+.aetop h2 { margin: 0 0 8px; font-size: 22px; }
+.aeprev { display: flex; align-items: center; justify-content: center; gap: 24px; }
+.aeprev .pav { width: 72px; height: 72px; font-size: 33px; padding-bottom: .02em; }
+.aeprev .pav > .cfr { --cfw: 5px; }
+.aeprev .pav > .cfr::after { font-size: 24px; }
+.aeseat { display: flex; flex-direction: column; align-items: center; gap: 8px; padding: 10px 14px 8px; border-radius: 16px; background: radial-gradient(ellipse at 50% 40%, var(--felt1), var(--felt3)); }
+.aeseat small { font: 600 11px var(--ui); color: rgba(236,231,218,.75); }
+.aemode { grid-template-columns: 1fr 1fr; margin-top: 0; }
+.aesec { display: flex; flex-direction: column; gap: 8px; }
+.aesec[hidden] { display: none; }
+.aesec .psec { margin: 0; }
+.aeemo { display: grid; grid-template-columns: repeat(auto-fill, minmax(44px, 1fr)); gap: 6px; }
+.aeemo button { position: relative; height: 44px; padding: 0; border-radius: 12px; background: var(--bg); border: 1.5px solid var(--line); font-size: 24px; line-height: 1; display: grid; place-items: center; }
+.aeemo button.on, .aegrid button.on { border-color: var(--brass); box-shadow: inset 0 0 0 1px rgba(224,170,74,.5); background: rgba(224,170,74,.12); }
+.aeemo button.lk span { opacity: .55; filter: saturate(.5); }
+.aeemo button i, .aegrid button i { position: absolute; right: 2px; bottom: 1px; font: 800 8.5px/1 var(--ui); font-style: normal; color: #f4d67f; background: rgba(0,0,0,.6); border-radius: 6px; padding: 2px 3px; pointer-events: none; }
+.aeemo button i:empty, .aegrid button i:empty { display: none; }
+.aegrid { display: grid; grid-template-columns: repeat(auto-fill, minmax(62px, 1fr)); gap: 6px; }
+.aegrid button { position: relative; display: flex; flex-direction: column; align-items: center; gap: 4px; padding: 7px 2px 6px; border-radius: 12px; background: var(--bg); border: 1.5px solid var(--line); color: var(--ink); min-width: 0; }
+.aegrid button .pav { width: 36px; height: 36px; font-size: 17px; }
+.aegrid button small { font: 600 10.5px/1.15 var(--ui); color: var(--muted); max-width: 100%; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.aegrid button.on small { color: #f4d67f; }
+.aegrid button.lk .pav { opacity: .6; }
+.aegrid button i { bottom: auto; top: 3px; right: 3px; }
+.aesw { display: flex; flex-wrap: wrap; gap: 9px; }
+.aesw button { width: 30px; height: 30px; border-radius: 50%; padding: 0; background: var(--c); border: 2px solid transparent; box-shadow: 0 0 0 1px var(--line); }
+.aesw button.on { border-color: var(--ink); box-shadow: 0 0 0 2px var(--brass); }
+.aemsg { margin: 0; padding: 10px 12px; border-radius: 12px; background: rgba(224,170,74,.1); border: 1px solid rgba(224,170,74,.35); color: #f4d67f; font: 600 13px/1.4 var(--ui); }
+#aeBuy.sure { background: #e07a5f; color: #1d0d07; }
+#avEdit .btn.wide { margin: 0; }
 </style>
 
 <div id="app">
@@ -2497,6 +2553,7 @@ input.bprange[type=range]::-moz-range-thumb { width: 20px; height: 20px; border-
         <div class="pav" id="pavBig">S</div>
         <div class="swatches" id="swatches" role="radiogroup" aria-label="Profilfarbe"></div>
         <div id="swMore" hidden role="radiogroup" aria-label="Mehr Farben"></div>
+        <button class="btn" id="pfAvEd" type="button">🎨 Profilbild gestalten</button>
       </div>
       <div class="pfield">
         <label for="pName">Name</label>
@@ -2709,6 +2766,25 @@ input.bprange[type=range]::-moz-range-thumb { width: 20px; height: 20px; border-
     </div>
   </div>
 
+  <div id="avEdit" class="overlay" hidden>
+    <div class="endcard" role="dialog" aria-label="Profilbild gestalten">
+      <div class="aetop">
+        <h2>Profilbild gestalten</h2>
+        <div class="aeprev"><span class="pav" id="aePrev"></span><div class="aeseat"><span class="avatar" id="aeSeat"><span></span></span><small>am Tisch</small></div></div>
+      </div>
+      <div class="seg aemode" id="aeMode" role="radiogroup" aria-label="Buchstabe oder Emoji"><button type="button" data-m="l" role="radio">Buchstabe</button><button type="button" data-m="e" role="radio">Emoji</button></div>
+      <div class="aesec" id="aeFontBox"><div class="psec">Schrift</div><div class="aegrid aefont" id="aeFont"></div></div>
+      <div class="aesec" id="aeEmoBox" hidden><div class="psec">Emoji</div><div class="aeemo" id="aeEmo"></div></div>
+      <div class="aesec"><div class="psec">Farbe</div><div class="aesw" id="aeCol" role="radiogroup" aria-label="Grundfarbe"></div></div>
+      <div class="aesec"><div class="psec">Hintergrund</div><div class="aegrid aebg" id="aeBg"></div></div>
+      <div class="aesec" id="aeCol2Box"><div class="psec">Zweite Farbe</div><div class="aesw" id="aeCol2" role="radiogroup" aria-label="Zweite Farbe"></div></div>
+      <p class="aemsg" id="aeMsg" hidden></p>
+      <button class="btn primary wide" id="aeBuy" type="button" hidden>Kaufen</button>
+      <button class="btn primary wide" id="aeSave" type="button">Speichern</button>
+      <button class="btn wide" id="aeCancel" type="button">Abbrechen</button>
+    </div>
+  </div>
+
   <div id="giftDlg" class="overlay" hidden>
     <div class="endcard">
       <h2>Chips schicken</h2>
@@ -2866,6 +2942,104 @@ input.bprange[type=range]::-moz-range-thumb { width: 20px; height: 20px; border-
     },
     field: function (name, clean, mine) { if (name && typeof clean === 'function' && name !== 'frame' && name !== 'title') cosF[name] = { clean: clean, mine: mine }; }
   };
+})();
+</script>
+
+<script>
+/* Profilbild selbst gestalten (Grundlage fuer alle Spiele; der Editor steht weiter unten, nach dem Shop).
+   Statt nur Buchstabe + Farbe: Buchstabe ODER Emoji, Hintergrund (einfarbig, Verlauf, Muster), zweite Farbe, Schriftstil.
+   Die Grundfarbe bleibt wie bisher die Profilfarbe (pr-profile.color, --av). Gespeichert in pr-av { e, b, c, f }.
+   Uebers Netz als Feld av im cos des oeffentlichen Profils (PRLook.field), nur Ids aus festen Listen, nie freier Text:
+     { e: Emoji-Id, b: Hintergrund-Id, c: zweite Farbe (#rrggbb aus COLS), f: Schrift-Id }; Standardwerte fehlen ganz.
+   Neue Emojis/Muster immer nur hinten anhaengen (aeltere Apps kennen sie nicht und zeigen dann den Buchstaben).
+   window.PRAv:
+     EMO [[id, zeichen, preis, sterne]], BG [[id, name, preis, sterne, zweite Farbe?]], FONTS [[id, name]], COLS [#rrggbb]
+     clean(v)                       av von anderen pruefen -> { e, b, c, f } (unbekanntes faellt weg) oder null
+     get()                          eigenes av (nur, was man auch besitzt)      set(av)  speichern und melden
+     net()                          eigenes av kompakt fuers Netz ('' = alles Standard)
+     paint(el, name, color, av, txt?)  Profilbild zeichnen (el = .pav / .avatar, txt = Element fuer Buchstabe oder Emoji,
+                                    sonst el selbst). Kinder wie Rahmen, Sterne-Abzeichen oder Online-Punkt bleiben stehen.
+     mine(el, txt?)                 eigenes Profilbild zeichnen          onChange(fn)  nach jeder Aenderung
+     owned(kind, id)                besitzt man das Emoji ('avemo') / Muster ('avbg')? (Preise und Sterne ueber PRCos) */
+(function () {
+  'use strict';
+  var EMO = [
+    ['lachen', '😀'], ['cool', '😎'], ['cowboy', '🤠'], ['party', '🥳'], ['teufel', '😈'], ['clown', '🤡'], ['geist', '👻'], ['schaedel', '💀'],
+    ['roboter', '🤖'], ['alien', '👽'], ['hund', '🐶'], ['katze', '🐱'], ['fuchs', '🦊'], ['baer', '🐻'], ['panda', '🐼'], ['koala', '🐨'],
+    ['tiger', '🐯'], ['loewe', '🦁'], ['frosch', '🐸'], ['affe', '🐵'], ['pinguin', '🐧'], ['eule', '🦉'], ['krake', '🐙'], ['hai', '🦈'],
+    ['wal', '🐳'], ['biene', '🐝'], ['schmetterling', '🦋'], ['kaktus', '🌵'], ['klee', '🍀'], ['sonnenblume', '🌻'], ['pilz', '🍄'], ['kirsche', '🍒'],
+    ['pizza', '🍕'], ['burger', '🍔'], ['donut', '🍩'], ['avocado', '🥑'], ['chili', '🌶️'], ['fussball', '⚽'], ['basketball', '🏀'], ['gitarre', '🎸'],
+    ['controller', '🎮'], ['wuerfel', '🎲'], ['joker', '🃏'], ['pik', '♠️'], ['herz', '♥️'], ['mond', '🌙'], ['stern', '⭐'], ['blitz', '⚡'],
+    ['feuer', '🔥'], ['schnee', '❄️'], ['zylinder', '🎩'], ['brille', '🕶️'], ['regenbogen', '🌈', 2000], ['einhorn', '🦄', 5000], ['drache', '🐉', 8000],
+    ['rakete', '🚀', 3000], ['geld', '💰', 10000], ['krone', '👑', 0, 100], ['diamant', '💎', 0, 500], ['dino', '🦖', 4000]
+  ];
+  var BG = [
+    ['std', 'Einfarbig'], ['verlauf', 'Verlauf', 0, 0, 1], ['streifen', 'Streifen', 0, 0, 1], ['punkte', 'Punkte', 0, 0, 1], ['karo', 'Karo', 0, 0, 1],
+    ['ringe', 'Ringe', 2000, 0, 1], ['strahlen', 'Strahlen', 4000, 0, 1], ['regenbogen', 'Regenbogen', 0, 50], ['galaxie', 'Galaxie', 0, 250], ['gold', 'Gold', 20000]
+  ];
+  var FONTS = [['std', 'Klassisch'], ['klar', 'Modern'], ['kursiv', 'Kursiv'], ['schreib', 'Schreibschrift'], ['mono', 'Computer'], ['umriss', 'Umriss']];
+  var COLS = ['#7f776a', '#6e8a78', '#8f6e5e', '#5e7a8e', '#8b6f8e', '#b5543f', '#c8873a', '#c4a84a', '#6f9a5a', '#4f9a8a', '#4a86a8', '#5a6fb0',
+    '#8a68b0', '#b0689a', '#a65a6a', '#6b6f75', '#3f4a52', '#f4d67f', '#ffffff', '#1b1d1f'];
+  function by(list) { var o = {}; list.forEach(function (x) { o[x[0]] = x; }); return o; }
+  var EMO_BY = by(EMO), BG_BY = by(BG), FONT_BY = by(FONTS);
+  function okId(v, B) { return typeof v === 'string' && /^[a-z]{1,16}$/.test(v) && Object.prototype.hasOwnProperty.call(B, v); }
+  function clean(v) {
+    if (!v || typeof v !== 'object') return null;
+    var o = {};
+    if (okId(v.e, EMO_BY)) o.e = v.e;
+    if (okId(v.b, BG_BY) && v.b !== 'std') o.b = v.b;
+    if (typeof v.c === 'string' && COLS.indexOf(v.c.toLowerCase()) >= 0) o.c = v.c.toLowerCase();
+    if (okId(v.f, FONT_BY) && v.f !== 'std') o.f = v.f;
+    return Object.keys(o).length ? o : null;
+  }
+  /* Besitz: Preise und Sterne kennt der Shop (PRCos, Arten 'avemo' und 'avbg'); ohne Eintrag dort ist es frei */
+  function owned(kind, id) {
+    var C = window.PRCos; if (!C) return true;
+    var it = C.item(id, kind);
+    return !it || C.owned(id, kind);
+  }
+  var KEY = 'pr-av', subs = [], mine0 = null;
+  try { mine0 = clean(JSON.parse(localStorage.getItem(KEY) || 'null')); } catch (e) {}
+  function get() {
+    var o = mine0 ? JSON.parse(JSON.stringify(mine0)) : {};
+    if (o.e && !owned('avemo', o.e)) delete o.e;
+    if (o.b && !owned('avbg', o.b)) delete o.b;
+    return o;
+  }
+  function set(v) {
+    mine0 = clean(v);
+    try { if (mine0) localStorage.setItem(KEY, JSON.stringify(mine0)); else localStorage.removeItem(KEY); } catch (e) {}
+    subs.forEach(function (fn) { try { fn(); } catch (e) {} });
+  }
+  function net() { var o = clean(get()); return o || ''; }
+  /* Text (Buchstabe/Emoji) als erster Textknoten; alle anderen Kinder (Rahmen, Abzeichen, Punkt) bleiben unberuehrt */
+  function setTxt(el, t) {
+    var first = null;
+    [].slice.call(el.childNodes).forEach(function (n) { if (n.nodeType === 3) { if (!first) first = n; else el.removeChild(n); } });
+    if (!first) { first = document.createTextNode(''); el.insertBefore(first, el.firstChild); }
+    if (first.nodeValue !== t) first.nodeValue = t;
+  }
+  function paint(el, name, color, av, txt) {
+    if (!el) return;
+    av = clean(av) || {};
+    var e = av.e ? EMO_BY[av.e] : null, b = av.b || 'std', f = av.f || 'std', cl = el.classList;
+    if (color) el.style.setProperty('--av', color);
+    if (av.c) el.style.setProperty('--av2', av.c); else el.style.removeProperty('--av2');
+    [].slice.call(cl).forEach(function (c) { if (/^av[bf]-/.test(c) || c === 'ave') cl.remove(c); });
+    if (b !== 'std') cl.add('avb-' + b);
+    if (e) cl.add('ave'); else if (f !== 'std') cl.add('avf-' + f);
+    setTxt(txt || el, e ? e[1] : (String(name || '?').trim().charAt(0) || '?').toUpperCase());
+  }
+  function mine(el, txt) {
+    var P = window.PR && window.PR.prof ? window.PR.prof() : null;
+    paint(el, P ? (window.PR.profName ? window.PR.profName() : P.name) : 'S', P ? P.color : '', get(), txt);
+  }
+  window.PRAv = {
+    EMO: EMO, BG: BG, FONTS: FONTS, COLS: COLS, clean: clean, get: get, set: set, net: net, paint: paint, mine: mine, owned: owned,
+    emo: function (id) { return EMO_BY[id] || null; }, bg: function (id) { return BG_BY[id] || null; },
+    onChange: function (fn) { if (typeof fn === 'function') subs.push(fn); }
+  };
+  window.PRLook.field('av', function (v) { return clean(v) || ''; }, net);
 })();
 </script>
 
@@ -4598,11 +4772,11 @@ input.bprange[type=range]::-moz-range-thumb { width: 20px; height: 20px; border-
     window.PRLook.frame(el.querySelector('.avatar'), sc.frame);
     if (i > 0) window.PRLook.title(r.name, sc.title);
     if (i > 0) {
-      var wc = p.color || AV[i], wi = (p.name || '?').charAt(0).toUpperCase();
-      if (r.look !== wc + wi) {
-        r.look = wc + wi;
-        var avEl = el.querySelector('.avatar'); avEl.style.setProperty('--av', wc);
-        var avSp = avEl.querySelector('span'); if (avSp) avSp.textContent = wi;
+      var wc = p.color || AV[i], lk = wc + (p.name || '?') + JSON.stringify(sc.av || '');
+      if (r.look !== lk) {
+        r.look = lk;
+        var avEl = el.querySelector('.avatar');
+        window.PRAv.paint(avEl, p.name, wc, sc.av, avEl.querySelector('span'));
       }
       window.PRStarBadge(el.querySelector('.avatar'), seatStars(p, i));
       window.PRChat.badge(el.querySelector('.avatar'), p.name);
@@ -5193,11 +5367,10 @@ input.bprange[type=range]::-moz-range-thumb { width: 20px; height: 20px; border-
   function applyProfToSeat() {
     var av = seats[0] && seats[0].el.querySelector('.avatar');
     if (!av) return;
-    av.style.setProperty('--av', PROF.color);
-    var sp = av.querySelector('span'); if (sp) sp.textContent = profInitial();
+    window.PRAv.mine(av, av.querySelector('span'));   // Profilbild (Buchstabe/Emoji, Muster, Schrift)
   }
   function renderProf() {
-    [$('#pavMenu'), $('#pavBig'), $('#pfCosAv')].forEach(function (e) { e.style.setProperty('--av', PROF.color); e.textContent = profInitial(); window.PRLook.frame(e, window.PRLook.mine().frame); });
+    [$('#pavMenu'), $('#pavBig'), $('#pfCosAv')].forEach(function (e) { window.PRAv.mine(e); window.PRLook.frame(e, window.PRLook.mine().frame); });
     $('#pnameMenu').textContent = profName();
     [].forEach.call(document.querySelectorAll('#swatches button[data-c], #swMore button'), function (b) { var on = b.dataset.c === PROF.color; b.classList.toggle('on', on); b.setAttribute('aria-checked', on ? 'true' : 'false'); });
     syncMute();
@@ -5354,6 +5527,7 @@ input.bprange[type=range]::-moz-range-thumb { width: 20px; height: 20px; border-
   $('#profBtn').addEventListener('click', drawStats);
   $('#profBack').addEventListener('click', function () { $('#profile').hidden = true; });
   renderProf(); applyProfToSeat();
+  window.PRAv.onChange(function () { renderProf(); applyProfToSeat(); });
   /* Ladebildschirm: mindestens ~1,7 s, solange Schriften & Co. noch laden, maximal 4 s */
   (function () {
     var splash = $('#splash'), t0 = Date.now(), done = false;
@@ -6250,7 +6424,8 @@ input.bprange[type=range]::-moz-range-thumb { width: 20px; height: 20px; border-
     pl.forEach(function (p) {
       var isMe = host ? p.id === 'host' : p.id === me;
       var b = document.createElement('button'); b.type = 'button'; b.className = 'pl';
-      var av = document.createElement('span'); av.className = 'pav'; av.style.setProperty('--av', p.color); av.textContent = initialOf(p);
+      var av = document.createElement('span'); av.className = 'pav';
+      window.PRAv.paint(av, p.name, p.color, isMe ? window.PRAv.get() : p.cos && p.cos.av);
       window.PRLook.frame(av, isMe ? window.PRLook.mine().frame : p.cos && p.cos.frame);
       var pn = document.createElement('span'); pn.className = 'pn';
       var nm = document.createElement('b'); nm.textContent = p.name + (isMe ? ' (Du)' : '');
@@ -6287,7 +6462,7 @@ input.bprange[type=range]::-moz-range-thumb { width: 20px; height: 20px; border-
     NET.shown = pl.length;
   }
   function openPView(p) {
-    $('#pvAv').style.setProperty('--av', p.color); $('#pvAv').textContent = initialOf(p);
+    window.PRAv.paint($('#pvAv'), p.name, p.color, p.cos && p.cos.av);
     $('#pvName').textContent = p.name; $('#pvRole').textContent = p.host ? 'Ersteller' : '';
     var pc = p.cos || {}; window.PRLook.frame($('#pvAv'), pc.frame); window.PRLook.title($('#pvName'), pc.title);
     $('#pvHands').textContent = fmt(p.hands); $('#pvWins').textContent = fmt(p.wins); $('#pvRate').textContent = rateOf(p); $('#pvBuy').textContent = p.buyin ? fmt(p.buyin) : '–';
@@ -7415,9 +7590,9 @@ input.bprange[type=range]::-moz-range-thumb { width: 20px; height: 20px; border-
       s.hands.forEach(function (h, j) { fillHand(handBox(hs, j), h, turn && s.cur === j && s.hands.length > 1, true); });
       trimBoxes(hs, s.hands.length);
       el.classList.toggle('many', s.hands.length > 1);
-      var av = el.querySelector('.pav'); av.style.setProperty('--av', s.color); av.textContent = (s.name.charAt(0) || '?').toUpperCase();
-      window.PRStarBadge(av, s.st);
-      var sc = s.cos || {}; window.PRLook.frame(av, sc.frame); window.PRLook.title(el.querySelector('.bjwho'), sc.title);
+      var av = el.querySelector('.pav'), sc = s.cos || {};
+      window.PRAv.paint(av, s.name, s.color, sc.av);
+      window.PRStarBadge(av, s.st); window.PRLook.frame(av, sc.frame); window.PRLook.title(el.querySelector('.bjwho'), sc.title);
       el._nm = s.name; window.PRChat.badge(av, s.name);
       el.querySelector('.bjwho span:last-child').textContent = s.name;
       el.classList.toggle('turn', turn);
@@ -10428,7 +10603,7 @@ input.bprange[type=range]::-moz-range-thumb { width: 20px; height: 20px; border-
     list.slice(0, 5).forEach(function (p) {
       var pc = p.cos || {}, tt = window.PRLook.titleText(pc.title);
       var el = document.createElement('span'); el.className = 'slfa rlfa' + (p.rdy ? ' rdy' : ''); el.title = p.name + (tt ? ' · ' + tt : '') + (p.rdy ? ' (fertig)' : '');
-      var a = document.createElement('span'); a.className = 'pav'; a.style.setProperty('--av', p.color); a.textContent = (p.name || '?').charAt(0).toUpperCase();
+      var a = document.createElement('span'); a.className = 'pav'; window.PRAv.paint(a, p.name, p.color, pc.av);
       window.PRStarBadge(a, p.st);
       window.PRLook.frame(a, pc.frame);
       window.PRChat.badge(a, p.name);
@@ -11153,7 +11328,7 @@ input.bprange[type=range]::-moz-range-thumb { width: 20px; height: 20px; border-
   var openRow = '', invited = {};
   function avatar(f) {
     var a = document.createElement('span'); a.className = 'pav';
-    a.style.setProperty('--av', f.color); a.textContent = (f.name || '?').charAt(0).toUpperCase();
+    window.PRAv.paint(a, f.name, f.color, f.cos && f.cos.av);
     a.appendChild(document.createElement('i'));
     if (f.cos) window.PRLook.frame(a, f.cos.frame);
     return a;
@@ -11305,7 +11480,7 @@ input.bprange[type=range]::-moz-range-thumb { width: 20px; height: 20px; border-
   /* Rangliste: du und deine Freunde nach Chips (bei Offline-Freunden der zuletzt bekannte Stand) */
   function renderRank(box) {
     var P = PR.prof(), rows = FR.filter(function (f) { return f.bank != null && !f.pending; })
-      .map(function (f) { return { name: f.name || f.code, color: f.color, bank: f.bank, on: isOn(f.code) }; });
+      .map(function (f) { return { name: f.name || f.code, color: f.color, bank: f.bank, on: isOn(f.code), cos: f.cos }; });
     box.hidden = !rows.length;
     if (!rows.length) return;
     rows.push({ name: PR.profName(), color: P.color, bank: Math.round(P.bank || 0), me: true });
@@ -11315,7 +11490,7 @@ input.bprange[type=range]::-moz-range-thumb { width: 20px; height: 20px; border-
       if (i >= 10 && !r.me) return;
       var el = document.createElement('div'); el.className = 'frr' + (r.me ? ' me' : '');
       var n = document.createElement('span'); n.className = 'frn'; n.textContent = i === 0 ? '🏆' : (i + 1) + '.';
-      var a = document.createElement('span'); a.className = 'pav'; a.style.setProperty('--av', r.color); a.textContent = (r.name || '?').charAt(0).toUpperCase();
+      var a = document.createElement('span'); a.className = 'pav'; window.PRAv.paint(a, r.name, r.color, r.me ? window.PRAv.get() : r.cos && r.cos.av);
       var nm = document.createElement('b'); nm.textContent = r.me ? r.name + ' (du)' : r.name;
       var c = document.createElement('span'); c.className = 'frc'; c.textContent = fmt(r.bank);
       el.appendChild(n); el.appendChild(a); el.appendChild(nm); el.appendChild(c);
@@ -11325,7 +11500,7 @@ input.bprange[type=range]::-moz-range-thumb { width: 20px; height: 20px; border-
   /* Slots-Bestenliste: groesster Einzelgewinn, dazu wie oft der Jackpot geknackt wurde */
   function renderSlRank(box) {
     var P = PR.prof(), me = mySl(), rows = FR.filter(function (f) { return f.sb != null && !f.pending; })
-      .map(function (f) { return { name: f.name || f.code, color: f.color, best: f.sb, jp: f.sj || 0 }; });
+      .map(function (f) { return { name: f.name || f.code, color: f.color, best: f.sb, jp: f.sj || 0, cos: f.cos }; });
     box.hidden = !rows.length;
     if (!rows.length) return;
     rows.push({ name: PR.profName(), color: P.color, best: me[0], jp: me[1], me: true });
@@ -11335,7 +11510,7 @@ input.bprange[type=range]::-moz-range-thumb { width: 20px; height: 20px; border-
       if (i >= 10 && !r.me) return;
       var el = document.createElement('div'); el.className = 'frr' + (r.me ? ' me' : '');
       var n = document.createElement('span'); n.className = 'frn'; n.textContent = i === 0 ? '🎰' : (i + 1) + '.';
-      var a = document.createElement('span'); a.className = 'pav'; a.style.setProperty('--av', r.color); a.textContent = (r.name || '?').charAt(0).toUpperCase();
+      var a = document.createElement('span'); a.className = 'pav'; window.PRAv.paint(a, r.name, r.color, r.me ? window.PRAv.get() : r.cos && r.cos.av);
       var nm = document.createElement('b'); nm.textContent = r.me ? r.name + ' (du)' : r.name;
       var c = document.createElement('span'); c.className = 'frc'; c.textContent = r.best ? fmt(r.best) : '–';
       var sm = document.createElement('small'); sm.textContent = r.jp ? r.jp + '× Jackpot' : 'bester Gewinn';
@@ -11347,7 +11522,7 @@ input.bprange[type=range]::-moz-range-thumb { width: 20px; height: 20px; border-
   /* Spielzeit-Rangliste: wer am laengsten gespielt hat (bei Offline-Freunden der zuletzt bekannte Stand) */
   function renderPtRank(box) {
     var P = PR.prof(), rows = FR.filter(function (f) { return f.pt != null && !f.pending; })
-      .map(function (f) { return { name: f.name || f.code, color: f.color, pt: f.pt }; });
+      .map(function (f) { return { name: f.name || f.code, color: f.color, pt: f.pt, cos: f.cos }; });
     box.hidden = !rows.length;
     if (!rows.length) return;
     rows.push({ name: PR.profName(), color: P.color, pt: window.PRT ? window.PRT.secs() : myPt(), me: true });
@@ -11357,7 +11532,7 @@ input.bprange[type=range]::-moz-range-thumb { width: 20px; height: 20px; border-
       if (i >= 10 && !r.me) return;
       var el = document.createElement('div'); el.className = 'frr' + (r.me ? ' me' : '');
       var n = document.createElement('span'); n.className = 'frn'; n.textContent = i === 0 ? '⏱️' : (i + 1) + '.';
-      var a = document.createElement('span'); a.className = 'pav'; a.style.setProperty('--av', r.color); a.textContent = (r.name || '?').charAt(0).toUpperCase();
+      var a = document.createElement('span'); a.className = 'pav'; window.PRAv.paint(a, r.name, r.color, r.me ? window.PRAv.get() : r.cos && r.cos.av);
       var nm = document.createElement('b'); nm.textContent = r.me ? r.name + ' (du)' : r.name;
       var c = document.createElement('span'); c.className = 'frc'; c.textContent = window.PRT ? window.PRT.fmt(r.pt) : Math.floor(r.pt / 60) + ' Min.';
       el.appendChild(n); el.appendChild(a); el.appendChild(nm); el.appendChild(c);
@@ -11403,7 +11578,7 @@ input.bprange[type=range]::-moz-range-thumb { width: 20px; height: 20px; border-
       var el = keep[f.code] || document.createElement('span');
       el.className = el.className || 'slfa'; el.dataset.c = f.code; el.title = f.name || f.code;
       if (!el.firstChild) { var a = document.createElement('span'); a.className = 'pav'; el.appendChild(a); }
-      var av = el.querySelector('.pav'); av.style.setProperty('--av', f.color); av.textContent = (f.name || '?').charAt(0).toUpperCase();
+      window.PRAv.paint(el.querySelector('.pav'), f.name, f.color, f.cos && f.cos.av);
       host.appendChild(el);
     });
     if (list.length > 3) { var m = document.createElement('span'); m.className = 'slfmore'; m.textContent = '+' + (list.length - 3); host.appendChild(m); }
@@ -11527,7 +11702,7 @@ input.bprange[type=range]::-moz-range-thumb { width: 20px; height: 20px; border-
   function askReply(code, m) { var L = LIVE[code]; if (L && L.on) send(L.conn, m); }
   function showAsk(f, g, text) {
     ask = { code: f.code, g: g };
-    var av = $('#abAv'); av.style.setProperty('--av', f.color); av.textContent = (f.name || '?').charAt(0).toUpperCase();
+    window.PRAv.paint($('#abAv'), f.name, f.color, f.cos && f.cos.av);
     $('#abName').textContent = f.name || f.code;
     $('#abText').textContent = text;
     $('#abYes').disabled = false; $('#abNo').disabled = false; $('#abYes').textContent = 'Annehmen';
@@ -11570,7 +11745,7 @@ input.bprange[type=range]::-moz-range-thumb { width: 20px; height: 20px; border-
     var me = lastSt || myStatus();
     if (me.code === st.code) return;
     invSt = st;
-    var av = $('#ibAv'); av.style.setProperty('--av', f.color); av.textContent = (f.name || '?').charAt(0).toUpperCase();
+    window.PRAv.paint($('#ibAv'), f.name, f.color, f.cos && f.cos.av);
     $('#ibName').textContent = f.name || f.code;
     $('#ibText').textContent = (st.g === 'bj' ? 'lädt dich an den Blackjack-Tisch ein' : st.g === 'rl' ? 'lädt dich zum Roulette ein' : 'lädt dich an den Pokertisch ein') +
       (window.prIdle() ? '' : ' (erst nach deinem Spiel)');
@@ -13042,8 +13217,8 @@ input.bprange[type=range]::-moz-range-thumb { width: 20px; height: 20px; border-
   function pvFelt(id) { return function (el) { el.setAttribute('data-felt', id); el.innerHTML = '<span class="cpfelt' + (id === 'std' ? ' std' : '') + '"></span>'; }; }
   function pvChip(id) { return function (el) { el.setAttribute('data-chip', id); el.innerHTML = '<i class="pchip c100"><b>100</b></i><i class="pchip c1000"><b>1K</b></i><i class="pchip c10"><b>10</b></i>'; }; }
   function myAv() {
-    var a = document.createElement('span'), P = PR.prof();
-    a.className = 'pav'; a.style.setProperty('--av', P.color); a.textContent = PR.profName().charAt(0).toUpperCase();
+    var a = document.createElement('span');
+    a.className = 'pav'; window.PRAv.mine(a);
     return a;
   }
   function pvFrame(id) { return function (el) { el.innerHTML = ''; var a = myAv(); el.appendChild(a); window.PRLook.frame(a, id); }; }
@@ -13161,7 +13336,7 @@ input.bprange[type=range]::-moz-range-thumb { width: 20px; height: 20px; border-
     var t = tabOf(tab), host = $('#shopCos'), bank = PR.prof().bank | 0;
     if (!t || tab === 'art') return;
     var secs = (t.secs || []).filter(function (s) { return ITEMS.some(function (it) { return it.kind === s.kind && visible(it); }); });
-    var key = JSON.stringify([tab, bank, sure && sure.k, PR.prof().color, PR.profName(), secs.map(function (s) {
+    var key = JSON.stringify([tab, bank, sure && sure.k, PR.prof().color, PR.profName(), window.PRAv.get(), secs.map(function (s) {
       return ITEMS.filter(function (it) { return it.kind === s.kind && visible(it); }).map(function (it) { return it.id + stateOf(it); });
     })]);
     if (key === cosKey) return;
@@ -13202,7 +13377,13 @@ input.bprange[type=range]::-moz-range-thumb { width: 20px; height: 20px; border-
   }
   function meCard() {
     var d = document.createElement('div'); d.className = 'cosme';
-    var a = myAv(); window.PRLook.frame(a, current('frame')); d.appendChild(a);
+    var a = myAv(); window.PRLook.frame(a, current('frame'));
+    /* Profilbild antippen (oder das kleine 🎨) = Profilbild gestalten (PRAvEdit, Editor steht weiter unten) */
+    var aw = document.createElement('span'); aw.className = 'cosav'; aw.appendChild(a);
+    var eb = document.createElement('button'); eb.type = 'button'; eb.className = 'cosed'; eb.textContent = '🎨'; eb.setAttribute('aria-label', 'Profilbild gestalten');
+    aw.appendChild(eb);
+    aw.addEventListener('click', function () { if (window.PRAvEdit) window.PRAvEdit.open(); });
+    d.appendChild(aw);
     var tx = document.createElement('div'), b = document.createElement('b'); b.textContent = PR.profName(); tx.appendChild(b);
     window.PRLook.title(b, current('title'));
     var c = window.PRAch ? window.PRAch.count() : { done: 0, total: 0 };
@@ -13326,6 +13507,162 @@ input.bprange[type=range]::-moz-range-thumb { width: 20px; height: 20px; border-
   buildTabs(); markTabs();
   apply();
   render(false);
+})();
+</script>
+
+<script>
+/* Profilbild-Editor (Profil → „Profilbild gestalten“, auch aus dem Shop-Reiter „Profil“). Zeichnet ueber window.PRAv.
+   Einige Emojis und Muster kosten Chips oder brauchen Sterne: sie stehen als Artikel der Arten 'avemo' / 'avbg' im
+   Katalog von PRCos (Kauf nur im Menue, Sterne-Freischaltungen erscheinen in der Sterne-Ansicht). Ausprobieren geht
+   immer, speichern erst, wenn alles freigeschaltet ist. Grundfarbe = Profilfarbe (pr-profile.color). */
+(function () {
+  'use strict';
+  var PR = window.PR, A = window.PRAv, C = window.PRCos;
+  if (!PR || !A || !C) return;
+  var Snd = PR.Snd, fmt = PR.fmt;
+  function $(s) { return document.querySelector(s); }
+  A.EMO.forEach(function (e) { if (e[2] || e[3]) C.addItem({ kind: 'avemo', id: e[0], name: e[1], price: e[2] || 0, stars: e[3] || 0, icon: e[1], hidden: true }); });
+  A.BG.forEach(function (b) { if (b[2] || b[3]) C.addItem({ kind: 'avbg', id: b[0], name: b[1], price: b[2] || 0, stars: b[3] || 0, icon: '🎨', hidden: true }); });
+  var MAIN = ['#7f776a', '#6e8a78', '#8f6e5e', '#5e7a8e', '#8b6f8e', '#b5543f', '#c8873a', '#c4a84a', '#6f9a5a', '#4f9a8a', '#4a86a8', '#5a6fb0', '#8a68b0', '#b0689a', '#a65a6a', '#6b6f75', '#3f4a52'];
+  var ov = $('#avEdit'), D = null, mode = 'l', sure = '', sureT = 0;
+  function locked(kind, id) { return !!id && !A.owned(kind, id); }
+  function lockOf(kind, id) {
+    var it = C.item(id, kind); if (!it) return null;
+    return { it: it, kind: kind, price: it.price, stars: it.stars };
+  }
+  /* nur, was auch zu sehen ist: Schrift nur beim Buchstaben, zweite Farbe nur bei Mustern, die sie nutzen */
+  function draft() {
+    var bd = A.bg(D.b || 'std'), o = { b: D.b };
+    if (mode === 'e') o.e = D.e; else o.f = D.f;
+    if (bd && bd[4] && D.c) o.c = D.c;
+    return o;
+  }
+  function mkAv(cls) { var a = document.createElement('span'); a.className = cls; return a; }
+  function paintPrev() {
+    var nm = PR.profName(), fr = C.current('frame');
+    A.paint($('#aePrev'), nm, D.color, draft()); window.PRLook.frame($('#aePrev'), fr);
+    var st = $('#aeSeat'); A.paint(st, nm, D.color, draft(), st.querySelector('span')); window.PRLook.frame(st, fr);
+  }
+  function sw(host, list, cur, attr) {
+    host.innerHTML = '';
+    list.forEach(function (c) {
+      var b = document.createElement('button'); b.type = 'button'; b.dataset[attr] = c; b.style.setProperty('--c', c);
+      b.setAttribute('role', 'radio'); b.setAttribute('aria-checked', c === cur ? 'true' : 'false'); b.setAttribute('aria-label', 'Farbe ' + c);
+      if (c === cur) b.className = 'on';
+      host.appendChild(b);
+    });
+  }
+  function lockTag(kind, id) {
+    var l = lockOf(kind, id); if (!l || A.owned(kind, id)) return '';
+    return l.stars ? '⭐' + fmt(l.stars) : fmt(l.price);
+  }
+  function render() {
+    var nm = PR.profName();
+    [].forEach.call($('#aeMode').children, function (b) { var on = b.dataset.m === mode; b.classList.toggle('on', on); b.setAttribute('aria-checked', on ? 'true' : 'false'); });
+    $('#aeEmoBox').hidden = mode !== 'e'; $('#aeFontBox').hidden = mode !== 'l';
+    /* Emojis */
+    var g = $('#aeEmo');
+    if (!g.children.length) A.EMO.forEach(function (e) {
+      var b = document.createElement('button'); b.type = 'button'; b.dataset.e = e[0]; b.setAttribute('aria-label', 'Emoji ' + e[1]);
+      b.innerHTML = '<span>' + e[1] + '</span><i></i>'; g.appendChild(b);
+    });
+    [].forEach.call(g.children, function (b) {
+      var id = b.dataset.e, t = lockTag('avemo', id);
+      b.classList.toggle('on', D.e === id); b.classList.toggle('lk', !!t); b.querySelector('i').textContent = t;
+    });
+    /* Schrift */
+    var fh = $('#aeFont');
+    if (!fh.children.length) A.FONTS.forEach(function (f) {
+      var b = document.createElement('button'); b.type = 'button'; b.dataset.f = f[0];
+      var a = mkAv('pav'); b.appendChild(a); var s = document.createElement('small'); s.textContent = f[1]; b.appendChild(s); fh.appendChild(b);
+    });
+    [].forEach.call(fh.children, function (b) {
+      b.classList.toggle('on', (D.f || 'std') === b.dataset.f);
+      A.paint(b.querySelector('.pav'), nm, D.color, { b: D.b, c: D.c, f: b.dataset.f });
+    });
+    sw($('#aeCol'), MAIN, D.color, 'c');
+    /* Hintergrund */
+    var bh = $('#aeBg');
+    if (!bh.children.length) A.BG.forEach(function (x) {
+      var b = document.createElement('button'); b.type = 'button'; b.dataset.b = x[0];
+      var a = mkAv('pav'); b.appendChild(a); var s = document.createElement('small'); s.textContent = x[1]; b.appendChild(s);
+      var i = document.createElement('i'); b.appendChild(i); bh.appendChild(b);
+    });
+    [].forEach.call(bh.children, function (b) {
+      var id = b.dataset.b, t = lockTag('avbg', id);
+      b.classList.toggle('on', (D.b || 'std') === id); b.classList.toggle('lk', !!t); b.querySelector('i').textContent = t;
+      A.paint(b.querySelector('.pav'), nm, D.color, { e: mode === 'e' ? D.e : '', b: id, c: D.c, f: D.f });
+    });
+    var bdef = A.bg(D.b || 'std'), two = !!(bdef && bdef[4]);
+    $('#aeCol2Box').hidden = !two;
+    sw($('#aeCol2'), A.COLS, D.c || '', 'c2');
+    paintPrev();
+    /* gesperrt? dann kaufen bzw. Sterne-Hinweis */
+    var need = null;
+    if (mode === 'e' && locked('avemo', D.e)) need = lockOf('avemo', D.e);
+    else if (locked('avbg', D.b)) need = lockOf('avbg', D.b);
+    var msg = $('#aeMsg'), buy = $('#aeBuy'), save = $('#aeSave'), bank = PR.prof().bank | 0;
+    if (need) {
+      var what = need.kind === 'avemo' ? 'Das Emoji ' + need.it.name : 'Das Muster „' + need.it.name + '“';
+      if (need.stars) { msg.textContent = '🔒 ' + what + ' gibt es ab ' + fmt(need.stars) + ' ⭐ (du hast ' + fmt(window.PRStars ? window.PRStars.count() : 0) + ' ⭐).'; buy.hidden = true; }
+      else {
+        msg.textContent = '🔒 ' + what + ' kostet ' + fmt(need.price) + ' Chips' + (bank < need.price ? ' – du hast nur ' + fmt(bank) + '.' : '.');
+        var k = need.kind + ':' + need.it.id;
+        buy.hidden = false; buy.disabled = bank < need.price || (window.prIdle && !window.prIdle());
+        buy.textContent = sure === k ? 'Wirklich? ' + fmt(need.price) : 'Kaufen · ' + fmt(need.price);
+        buy.classList.toggle('sure', sure === k); buy.dataset.k = k;
+      }
+      msg.hidden = false; save.disabled = true; save.textContent = 'Erst freischalten';
+    } else { msg.hidden = true; buy.hidden = true; save.disabled = false; save.textContent = 'Speichern'; }
+  }
+  function open() {
+    var cur = A.get(), P = PR.prof();
+    D = { e: cur.e || '', b: cur.b || 'std', c: cur.c || '', f: cur.f || 'std', color: P.color };
+    mode = D.e ? 'e' : 'l'; sure = '';
+    Snd.unlock();
+    render();
+    ov.hidden = false; ov.querySelector('.endcard').scrollTop = 0;
+  }
+  function close() { ov.hidden = true; D = null; }
+  $('#aeMode').addEventListener('click', function (e) {
+    var b = e.target.closest('[data-m]'); if (!b || !D) return;
+    mode = b.dataset.m; if (mode === 'e' && !D.e) D.e = A.EMO[0][0];
+    Snd.chip(1, 0, true); render();
+  });
+  ov.addEventListener('click', function (e) {
+    if (e.target === ov) { close(); return; }
+    if (!D) return;
+    var b = e.target.closest('button'); if (!b) return;
+    if (b.dataset.e && b.parentNode.id === 'aeEmo') D.e = b.dataset.e;
+    else if (b.dataset.f && b.parentNode.id === 'aeFont') D.f = b.dataset.f;
+    else if (b.dataset.b && b.parentNode.id === 'aeBg') D.b = b.dataset.b;
+    else if (b.dataset.c && b.parentNode.id === 'aeCol') D.color = b.dataset.c;
+    else if (b.dataset.c2 !== undefined && b.parentNode.id === 'aeCol2') D.c = D.c === b.dataset.c2 ? '' : b.dataset.c2;
+    else return;
+    sure = ''; Snd.chip(1, 0, true); render();
+  });
+  $('#aeBuy').addEventListener('click', function () {
+    var k = this.dataset.k || ''; if (!D || !k) return;
+    if (sure !== k) { sure = k; clearTimeout(sureT); sureT = setTimeout(function () { sure = ''; if (D) render(); }, 3500); render(); return; }
+    sure = ''; clearTimeout(sureT);
+    var p = k.split(':');
+    if (C.buy(p[1], p[0])) { Snd.chip(3, 0, true); setTimeout(function () { try { Snd.pot(); } catch (x) {} }, 180); }
+    render();
+  });
+  $('#aeSave').addEventListener('click', function () {
+    if (!D) return;
+    var d = draft();
+    if ((d.e && locked('avemo', d.e)) || locked('avbg', d.b)) { render(); return; }
+    var P = PR.prof(); P.color = D.color; PR.saveProf();
+    A.set(d);
+    if (window.PRAch) window.PRAch.unlock('kuenstler');
+    Snd.chip(2, 0, true);
+    close();
+  });
+  $('#aeCancel').addEventListener('click', close);
+  $('#pfAvEd').addEventListener('click', open);
+  if (window.PRAch) window.PRAch.add({ id: 'kuenstler', icon: '🎨', name: 'Künstler', desc: 'Gestalte dein eigenes Profilbild (Profil → Profilbild gestalten)' });
+  window.PRAvEdit = { open: open, close: close };
 })();
 </script>
 
