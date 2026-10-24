@@ -122,9 +122,10 @@ Wenn du eine Schnittstelle baust, dokumentiere sie mit einem kurzen Kommentar an
   (z. B. „XP und Level: Balken im Menü, Level-Aufstieg mit Chips …“). Commit-Nachricht endet mit:
   ```
   Co-Authored-By: Claude Opus 5.5 <noreply@anthropic.com>
-  Claude-Session: https://claude.ai/code/session_01HjgeFiuHZDdrAJSMbetpW5
+  Claude-Session: https://claude.ai/code/session_01BGGiJPZhTGkVUrw8rVpspC
   ```
-  Dann pushen: `git push origin HEAD:main` und `git push -u origin ccr-770c49e5-tojlvh`
+  Dann pushen: `git push origin HEAD:main` und `git push -u origin HEAD:claude/blissful-lamport-nk836l`
+  (Branch-Name ggf. aus der Nachricht des Auftraggebers nehmen)
   (bei Netzfehlern bis zu 4 Mal mit 2/4/8/16 s Pause wiederholen). Lieber mehrere kleine Commits (einer pro
   Teilschritt) als einen riesigen.
 - Deine Antwort an mich (auf Deutsch, knapp):
