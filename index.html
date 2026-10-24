@@ -1427,55 +1427,61 @@ input.bprange[type=range]::-moz-range-thumb { width: 20px; height: 20px; border-
 #stGame { grid-template-columns: repeat(4, 1fr); }
 #stGame button { padding: 0 4px; font-size: 13px; }
 
-/* ---------- XP und Level ---------- */
-/* Balken im Hauptmenue: rechts neben dem runden Shop-Knopf, unter der Profil-Pille */
-.xpbar { position: absolute; left: 72px; top: 80px; z-index: 2; display: flex; align-items: center; gap: 8px; width: 122px; height: 32px; padding: 0 11px 0 10px; border-radius: 999px; background: rgba(16,18,19,.7); border: 1px solid var(--line); color: var(--ink); cursor: pointer; transition: border-color .3s, box-shadow .3s; }
-.xpbar:active { transform: scale(.96); }
-.xpbar b { flex: none; min-width: 34px; text-align: left; font: 800 12px var(--ui); color: var(--brass); white-space: nowrap; font-variant-numeric: tabular-nums; }
-.xpbar.gain { border-color: rgba(224,170,74,.7); box-shadow: 0 0 14px rgba(224,170,74,.35); }
-.xpbar.gain b { color: #f4d67f; animation: xpgain .45s cubic-bezier(.2,.9,.3,1.4); }
+/* ---------- Sterne (1 Stern pro 1.000 gewonnene Chips) ---------- */
+/* Anzeige im Hauptmenue: rechts neben dem runden Shop-Knopf, unter der Profil-Pille */
+.starbar { position: absolute; left: 72px; top: 80px; z-index: 2; display: flex; align-items: center; gap: 8px; width: 122px; height: 32px; padding: 0 11px 0 10px; border-radius: 999px; background: rgba(16,18,19,.7); border: 1px solid var(--line); color: var(--ink); cursor: pointer; transition: border-color .3s, box-shadow .3s; }
+.starbar:active { transform: scale(.96); }
+.starbar b { flex: none; min-width: 34px; max-width: 66px; overflow: hidden; text-align: left; font: 800 12px var(--ui); color: var(--brass); white-space: nowrap; font-variant-numeric: tabular-nums; }
+.starbar .xpt { height: 4px; }
+.starbar.gain { border-color: rgba(224,170,74,.7); box-shadow: 0 0 14px rgba(224,170,74,.35); }
+.starbar.gain b { color: #f4d67f; animation: xpgain .45s cubic-bezier(.2,.9,.3,1.4); }
 @keyframes xpgain { from { transform: scale(.6); opacity: 0; } to { transform: none; opacity: 1; } }
+/* schmale Fortschrittsleiste (auch von den Aufgaben benutzt) */
 .xpt { display: block; flex: 1; min-width: 0; height: 6px; border-radius: 999px; background: rgba(236,231,218,.14); overflow: hidden; }
 .xpt i { display: block; height: 100%; width: 0; border-radius: inherit; background: linear-gradient(90deg, #c8873a, #f4d67f); transition: width .9s cubic-bezier(.2,.9,.3,1); }
-/* Level-Kreis (Profil, Detailansicht, Aufstieg) */
-.lvring { display: grid; place-items: center; flex: none; width: 46px; height: 46px; border-radius: 50%; background: radial-gradient(circle at 35% 30%, #f4d67f, #d0a040 58%, #a2742a); box-shadow: 0 0 0 3px rgba(224,170,74,.22), 0 4px 12px rgba(0,0,0,.4); }
-.lvring b { font: 800 19px var(--display); color: #3a2506; font-variant-numeric: tabular-nums; }
-.lvring.big { width: 84px; height: 84px; margin: 0 auto; }
-.lvring.big b { font-size: 36px; }
+/* goldener Stern (Profil, Ansicht, Meilenstein); der Schatten sitzt am Rahmen, weil clip-path ihn sonst abschneidet */
+.stico { position: relative; display: block; flex: none; width: 44px; height: 44px; filter: drop-shadow(0 3px 6px rgba(0,0,0,.45)) drop-shadow(0 0 8px rgba(224,170,74,.25)); }
+.stico::before { content: ''; position: absolute; inset: 0; background: radial-gradient(circle at 38% 30%, #fff1b8, #f4d67f 30%, #d0a040 62%, #a2742a);
+  clip-path: polygon(50% 2%, 62.5% 36%, 98% 37%, 70% 59%, 80% 95%, 50% 74%, 20% 95%, 30% 59%, 2% 37%, 37.5% 36%); }
+.stico.big { width: 88px; height: 88px; margin: 0 auto; }
 /* Profil */
-.plv { display: flex; align-items: center; gap: 12px; width: 100%; padding: 12px 14px; border-radius: 14px; background: var(--bg2); border: 1px solid var(--line); color: var(--ink); text-align: left; cursor: pointer; }
-.plv > svg { width: 14px; height: 14px; opacity: .55; flex: none; }
-.plvt { flex: 1; min-width: 0; display: flex; flex-direction: column; gap: 6px; }
-.plvt b { font: 800 18px var(--display); }
-.plvt small { font: 500 12px/1.35 var(--ui); color: var(--muted); }
-.plvt .xpt { flex: none; height: 7px; }
-/* Detailansicht */
-#xpView { z-index: 75; }
-#xpView .endcard { display: flex; flex-direction: column; gap: 12px; max-height: 100%; overflow-y: auto; }
-#xpView .endcard h2, #xpView .endcard p { margin: 0; }
-#xpView .endcard > *, #lvUp .endcard > * { flex-shrink: 0; }
-#luUnl { max-height: 28vh; overflow-y: auto; }
-@media (max-height: 700px) { #xpView .endcard { gap: 9px; padding-top: 20px; } #xpView .lvring.big { width: 58px; height: 58px; } #xpView .lvring.big b { font-size: 25px; } .xvlist div { padding: 6px 10px; } }
+.pstar { display: flex; align-items: center; gap: 12px; width: 100%; padding: 12px 14px; border-radius: 14px; background: var(--bg2); border: 1px solid var(--line); color: var(--ink); text-align: left; cursor: pointer; }
+.pstar > svg { width: 14px; height: 14px; opacity: .55; flex: none; }
+.pstart { flex: 1; min-width: 0; display: flex; flex-direction: column; gap: 6px; }
+.pstart b { font: 800 18px var(--display); font-variant-numeric: tabular-nums; }
+.pstart small { font: 500 12px/1.35 var(--ui); color: var(--muted); }
+.pstart .xpt { flex: none; height: 7px; }
+/* Ansicht */
+#starView { z-index: 75; }
+#starView .endcard { display: flex; flex-direction: column; gap: 12px; max-height: 100%; overflow-y: auto; }
+#starView .endcard h2, #starView .endcard p { margin: 0; }
+#starView .endcard > *, #starUp .endcard > * { flex-shrink: 0; }
+#suUnl { max-height: 28vh; overflow-y: auto; }
+@media (max-height: 700px) { #starView .endcard { gap: 9px; padding-top: 20px; } #starView .stico.big { width: 58px; height: 58px; } .xvlist div { padding: 6px 10px; } }
 .xvbar { display: flex; flex-direction: column; gap: 6px; }
 .xvbar .xpt { flex: none; height: 9px; }
 .xvbar small { font: 700 12px var(--ui); color: var(--muted); font-variant-numeric: tabular-nums; }
-#xvNext { color: var(--ink); font-size: 14px; }
+#svNext { color: var(--ink); font-size: 14px; }
+.svnums { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
+.svnums div { padding: 10px 6px; border-radius: 12px; background: var(--bg); border: 1px solid var(--line); }
+.svnums b { display: block; font: 800 18px var(--display); color: var(--ink); font-variant-numeric: tabular-nums; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.svnums span { display: block; margin-top: 2px; color: var(--muted); font: 600 11px/1.3 var(--ui); }
 .xvlist { display: flex; flex-direction: column; gap: 6px; text-align: left; }
 .xvlist div { display: flex; align-items: center; gap: 10px; padding: 8px 10px; border-radius: 10px; background: var(--bg); border: 1px solid var(--line); font: 600 13px var(--ui); }
-.xvlist div > b { flex: none; min-width: 44px; font: 800 12px var(--ui); color: var(--brass); font-variant-numeric: tabular-nums; }
+.xvlist div > b { flex: none; min-width: 58px; font: 800 12px var(--ui); color: var(--brass); white-space: nowrap; font-variant-numeric: tabular-nums; }
 .xvlist div > span { flex: 1; min-width: 0; }
 .xvlist div > span em { display: block; font-style: normal; font-weight: 700; color: #f4d67f; }
 .xvhint { font-size: 12px !important; line-height: 1.45 !important; }
 .xvhint b { color: var(--ink); }
-/* Level-Aufstieg */
-#lvUp { z-index: 93; }
-#lvUp .endcard { display: flex; flex-direction: column; gap: 10px; overflow: hidden; position: relative; animation: luin .5s cubic-bezier(.2,.9,.3,1.2) both; }
-#lvUp .endcard h2, #lvUp .endcard p { margin: 0; }
+/* Meilenstein-Feier (nur im Menue) */
+#starUp { z-index: 93; }
+#starUp .endcard { display: flex; flex-direction: column; gap: 10px; overflow: hidden; position: relative; animation: luin .5s cubic-bezier(.2,.9,.3,1.2) both; }
+#starUp .endcard h2, #starUp .endcard p { margin: 0; }
 @keyframes luin { from { transform: scale(.7); opacity: 0; } to { transform: none; opacity: 1; } }
 .lustar { position: relative; display: grid; place-items: center; height: 112px; }
-.lustar .lvring { position: relative; z-index: 1; animation: lupop .8s cubic-bezier(.2,.9,.3,1.5) .15s both, luglow 1.6s ease-in-out 1s 2; }
-@keyframes lupop { from { transform: scale(.2) rotate(-40deg); opacity: 0; } to { transform: none; opacity: 1; } }
-@keyframes luglow { 50% { box-shadow: 0 0 0 6px rgba(224,170,74,.25), 0 0 34px 10px rgba(244,214,127,.55); } }
+.lustar .stico { position: relative; z-index: 1; animation: lupop .8s cubic-bezier(.2,.9,.3,1.5) .15s both, luglow 1.6s ease-in-out 1s 2; }
+@keyframes lupop { from { transform: scale(.2) rotate(-60deg); opacity: 0; } to { transform: none; opacity: 1; } }
+@keyframes luglow { 50% { filter: drop-shadow(0 3px 6px rgba(0,0,0,.45)) drop-shadow(0 0 22px rgba(244,214,127,.85)); } }
 .lurays { position: absolute; left: 50%; top: 50%; width: 220px; height: 220px; margin: -110px 0 0 -110px; border-radius: 50%; pointer-events: none;
   background: repeating-conic-gradient(rgba(244,214,127,.28) 0 9deg, transparent 9deg 24deg);
   -webkit-mask: radial-gradient(circle, #000 25%, transparent 68%); mask: radial-gradient(circle, #000 25%, transparent 68%);
@@ -1483,17 +1489,15 @@ input.bprange[type=range]::-moz-range-thumb { width: 20px; height: 20px; border-
 @keyframes lurays { to { transform: rotate(360deg); } }
 @keyframes lufade { from { opacity: 0; transform: scale(.4); } }
 .lukick { font: 800 11px var(--ui); letter-spacing: .2em; text-transform: uppercase; color: var(--brass); }
-.lureward { display: inline-flex; align-self: center; align-items: center; gap: 8px; padding: 8px 16px; border-radius: 999px; background: rgba(224,170,74,.14); border: 1px solid rgba(224,170,74,.5); font: 800 20px var(--display); color: #f4d67f; font-variant-numeric: tabular-nums; opacity: 0; }
-.lureward.on { animation: luchip .5s cubic-bezier(.2,.9,.3,1.4) both; }
 @keyframes luchip { from { transform: scale(.5) translateY(10px); opacity: 0; } to { transform: none; opacity: 1; } }
-.lureward .bchip { position: relative; width: 20px; height: 20px; border-radius: 50%; flex: none; background: radial-gradient(circle at 35% 30%, #f4d67f, #d0a040 58%, #a2742a); box-shadow: 0 1px 2px rgba(0,0,0,.45); }
 .luconf { position: absolute; top: -12px; width: 7px; height: 11px; border-radius: 2px; pointer-events: none; animation: luconf var(--t, 1.8s) ease-in var(--d, 0s) both; }
 @keyframes luconf { from { transform: translate(0, 0) rotate(0); opacity: 1; } to { transform: translate(var(--dx), 460px) rotate(var(--r)); opacity: 0; } }
-/* Level-Abzeichen am Profilbild der Mitspieler (Poker, Blackjack, Roulette) */
-.lvb { position: absolute; right: -9px; bottom: -4px; z-index: 5; min-width: 18px; height: 15px; padding: 0 3px; box-sizing: border-box; border-radius: 8px; background: #1b1d1f; border: 1px solid rgba(224,170,74,.85); color: #f4d67f; font: 800 9px/13px var(--ui); font-style: normal; text-align: center; letter-spacing: 0; font-variant-numeric: tabular-nums; pointer-events: none; }
-.avatar > .lvb { right: -12px; bottom: auto; top: 17px; }
+/* Sterne-Abzeichen am Profilbild der Mitspieler (Poker, Blackjack, Roulette) */
+.stb { position: absolute; right: -14px; bottom: -4px; z-index: 5; min-width: 18px; height: 15px; padding: 0 3px 0 2px; box-sizing: border-box; border-radius: 8px; background: #1b1d1f; border: 1px solid rgba(224,170,74,.85); color: #f4d67f; font: 800 9px/13px var(--ui); font-style: normal; text-align: center; letter-spacing: 0; white-space: nowrap; font-variant-numeric: tabular-nums; pointer-events: none; }
+.stb::before { content: '★'; margin-right: 1px; color: #f4d67f; }
+.avatar > .stb { right: -16px; bottom: auto; top: 17px; }
 .bjwho .pav, .slfa .pav { position: relative; overflow: visible; }
-.bjwho .lvb { right: auto; left: -6px; bottom: -5px; min-width: 16px; height: 13px; font-size: 8px; line-height: 11px; }
+.bjwho .stb { right: auto; left: -8px; bottom: -5px; min-width: 16px; height: 13px; font-size: 8px; line-height: 11px; }
 
 /* ---------- Truhe (Serie und Aufgaben) ---------- */
 #chestDlg { z-index: 94; }
@@ -1701,7 +1705,7 @@ input.bprange[type=range]::-moz-range-thumb { width: 20px; height: 20px; border-
     <button class="shopbtn" id="shopBtn" type="button" aria-label="Shop öffnen"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 9.5V20h16V9.5"/><path d="M3 9.5l1.6-5h14.8l1.6 5"/><path d="M3 9.5c0 1.4 1.1 2.5 2.5 2.5S8 10.9 8 9.5c0 1.4 1.1 2.5 2.5 2.5S13 10.9 13 9.5c0 1.4 1.1 2.5 2.5 2.5S18 10.9 18 9.5c0 1.4 1.1 2.5 2.5 2.5S21 10.9 21 9.5"/><path d="M10 20v-5h4v5"/></svg></button>
     <button class="qbtn" id="qBtn" type="button" aria-label="Tägliche Aufgaben öffnen"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M9 4h6v3H9z"/><path d="M15 5.5h2.5A1.5 1.5 0 0 1 19 7v12.5a1.5 1.5 0 0 1-1.5 1.5h-11A1.5 1.5 0 0 1 5 19.5V7a1.5 1.5 0 0 1 1.5-1.5H9"/><path d="M8.5 13.5l2.3 2.3 4.7-4.8"/></svg><i class="qdot" id="qDot" hidden></i></button>
     <div class="tomchip" id="tomChip" role="status" aria-label="Deine Tomaten"><i aria-hidden="true">🍅</i><span id="tomVal">0</span></div>
-    <button class="xpbar" id="xpBar" type="button" aria-label="Level und XP ansehen"><b id="xpLv">Lv 1</b><span class="xpt"><i id="xpFill"></i></span></button>
+    <button class="starbar" id="starBar" type="button" aria-label="Sterne ansehen"><b id="starN">⭐ 0</b><span class="xpt"><i id="starFill"></i></span></button>
     <div class="mbg3" aria-hidden="true"></div>
     <div class="mbgrl" aria-hidden="true"></div>
     <div class="menucard">
@@ -2281,16 +2285,16 @@ input.bprange[type=range]::-moz-range-thumb { width: 20px; height: 20px; border-
         <div class="ptime"><i aria-hidden="true">⏱️</i><div><b id="ptVal">0 Min.</b><small id="ptNote">insgesamt in Poker, Blackjack, Slots und Roulette</small></div></div>
       </div>
       <div>
-        <div class="psec" style="margin-bottom:8px">Level</div>
-        <button class="plv" id="pfLv" type="button" aria-label="Level und nächste Belohnungen ansehen">
-          <span class="lvring" aria-hidden="true"><b id="pfLvN">1</b></span>
-          <span class="plvt"><b id="pfLvT">Level 1</b><span class="xpt"><i id="pfLvF"></i></span><small id="pfLvS"></small></span>
+        <div class="psec" style="margin-bottom:8px">Sterne</div>
+        <button class="pstar" id="pfSt" type="button" aria-label="Sterne und nächste Freischaltungen ansehen">
+          <span class="stico" aria-hidden="true"></span>
+          <span class="pstart"><b id="pfStT">0 Sterne</b><span class="xpt"><i id="pfStF"></i></span><small id="pfStS"></small></span>
           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M9 5l7 7-7 7"/></svg>
         </button>
         <div class="pstats" style="margin-top:8px">
-          <div class="pstat"><b id="pfXp">0</b><span>XP gesamt</span></div>
-          <div class="pstat"><b id="pfXpTo">0</b><span id="pfXpToL">XP bis Level 2</span></div>
-          <div class="pstat"><b id="pfWag">0</b><span>Chips gesetzt</span></div>
+          <div class="pstat"><b id="pfStN">0</b><span>Sterne</span></div>
+          <div class="pstat"><b id="pfStW">0</b><span>Chips gewonnen</span></div>
+          <div class="pstat"><b id="pfStM">10</b><span id="pfStML">nächster Meilenstein</span></div>
         </div>
       </div>
       <div>
@@ -2375,28 +2379,31 @@ input.bprange[type=range]::-moz-range-thumb { width: 20px; height: 20px; border-
     </div>
   </div>
 
-  <div id="xpView" class="overlay" hidden>
+  <div id="starView" class="overlay" hidden>
     <div class="endcard">
-      <span class="lvring big" aria-hidden="true"><b id="xvLv">1</b></span>
-      <h2 id="xvTitle">Level 1</h2>
-      <div class="xvbar"><span class="xpt"><i id="xvFill"></i></span><small id="xvNums">0 / 500 XP</small></div>
-      <p id="xvNext"></p>
-      <div class="psec">Nächste Belohnungen</div>
-      <div class="xvlist" id="xvList"></div>
-      <p class="xvhint">XP gibt es für jeden gesetzten Chip (höchstens 5.000 pro Einsatz) und in Pop the Lock (5 pro Treffer, 50 pro Runde). Insgesamt gesetzt: <b id="xvWag">0</b> Chips.</p>
-      <button class="btn wide" id="xvClose" type="button">Schließen</button>
+      <span class="stico big" aria-hidden="true"></span>
+      <h2 id="svTitle">0 Sterne</h2>
+      <div class="xvbar"><span class="xpt"><i id="svFill"></i></span><small id="svNums">0 / 1.000 Chips</small></div>
+      <p id="svNext"></p>
+      <div class="svnums">
+        <div><b id="svWon">0</b><span>Chips insgesamt gewonnen</span></div>
+        <div><b id="svMile">10 ⭐</b><span id="svMileL">nächster Meilenstein</span></div>
+      </div>
+      <div class="psec">Nächste Freischaltungen</div>
+      <div class="xvlist" id="svList"></div>
+      <p class="xvhint"><b>1 Stern pro 1.000 gewonnene Chips</b> – Sterne zeigen, wie viel du schon gewonnen hast. Es zählt der Gewinn jeder Hand, Runde oder Drehung in allen Spielen (auch der Pop-the-Lock-Jackpot). Verluste ziehen nichts ab, Geschenke, Tagesbonus, Aufgaben und Truhen zählen nicht.</p>
+      <button class="btn wide" id="svClose" type="button">Schließen</button>
     </div>
   </div>
 
-  <div id="lvUp" class="overlay" hidden>
+  <div id="starUp" class="overlay" hidden>
     <div class="endcard">
-      <div class="lustar" aria-hidden="true"><i class="lurays"></i><span class="lvring big"><b id="luLv">2</b></span></div>
-      <small class="lukick">Level-Aufstieg</small>
-      <h2 id="luTitle">Level 2</h2>
-      <p id="luText"></p>
-      <div class="lureward" id="luChips"><i class="bchip" aria-hidden="true"></i><span></span></div>
-      <div class="xvlist" id="luUnl" hidden></div>
-      <button class="btn primary wide" id="luGo" type="button">Weiter</button>
+      <div class="lustar" aria-hidden="true"><i class="lurays"></i><span class="stico big"></span></div>
+      <small class="lukick">Meilenstein</small>
+      <h2 id="suTitle">10 Sterne!</h2>
+      <p id="suText"></p>
+      <div class="xvlist" id="suUnl" hidden></div>
+      <button class="btn primary wide" id="suGo" type="button">Weiter</button>
     </div>
   </div>
 
@@ -2490,7 +2497,9 @@ input.bprange[type=range]::-moz-range-thumb { width: 20px; height: 20px; border-
      'lock:round'   { level, hits, jackpot, amount }
      'tomato'       { game }       'gift' { amount }       'game:open' { game }
      'online:round' { game }       eine Runde mit echten Mitspielern
-     'xp'           { amount, reason, xp, lv }    'level' { lv, reward, unlocks }   (aus dem XP-Skript)
+     'stars'        { added, stars, won, chips, game }  ein Gewinn wurde fuer die Sterne gezaehlt (aus dem Sterne-Skript;
+                                           chips: dieser Gewinn, won: alle Gewinne bisher, added: neue Sterne, auch 0)
+     'milestone'    { stars }              ein Stern-Meilenstein ist erreicht (10, 25, 50 ...; gefeiert wird erst im Menue)
      'streak'       { streak, best, saved, chest }  taegliche Belohnung abgeholt (saved: Streak-Schutz verbraucht,
                                            chest: { chips, frame? } an Truhen-Tagen, sonst null)
      'quest'        { id, diff, chips }            eine Aufgabe ist geschafft (im Spiel moeglich, abgeholt wird im Menue)
@@ -2502,7 +2511,7 @@ input.bprange[type=range]::-moz-range-thumb { width: 20px; height: 20px; border-
   var L = {}, Q = [], busy = false;
   function on(name, fn) { if (typeof fn === 'function') (L[name] || (L[name] = [])).push(fn); }
   function off(name, fn) { var a = L[name], i = a ? a.indexOf(fn) : -1; if (i >= 0) a.splice(i, 1); }
-  /* meldet ein Zuhoerer selbst etwas (z. B. 'xp' waehrend 'bet'), kommt das erst danach: Reihenfolge bleibt bet, xp, level */
+  /* meldet ein Zuhoerer selbst etwas (z. B. 'stars' waehrend 'win'), kommt das erst danach: Reihenfolge bleibt win, stars, milestone */
   function emit(name, d) {
     Q.push([name, d]);
     if (busy) return;
@@ -2519,14 +2528,23 @@ input.bprange[type=range]::-moz-range-thumb { width: 20px; height: 20px; border-
     } finally { busy = false; }
   }
   window.PRBus = { on: on, off: off, emit: emit };
-  /* kleines Level-Abzeichen am Profilbild der Mitspieler: host = Profilbild, lv 0 = keins */
-  window.PRLvBadge = function (host, lv) {
+  /* Sterne kompakt fuer kleine Anzeigen: 37, 1,2k (ab 1.000), 12k, 1,5M. Abgerundet, damit nie mehr dasteht als erreicht */
+  function starShort(n) {
+    n = Math.max(0, Math.floor(+n) || 0);
+    function dec(v) { return (Math.floor(v * 10) / 10).toString().replace('.', ','); }
+    return n < 1000 ? String(n) : n < 1e4 ? dec(n / 1000) + 'k' : n < 1e6 ? Math.floor(n / 1000) + 'k' : dec(n / 1e6) + 'M';
+  }
+  window.PRStarShort = starShort;
+  /* kleines Sterne-Abzeichen am Profilbild der Mitspieler: host = Profilbild, n = Sternzahl (0 = keins).
+     Der Stern davor kommt aus dem CSS (.stb::before), im Text steht nur die Zahl */
+  window.PRStarBadge = function (host, n) {
     if (!host) return;
-    lv = Math.max(0, Math.min(100, lv | 0));
-    var b = host.querySelector(':scope > .lvb');
-    if (!lv) { if (b) b.remove(); return; }
-    if (!b) { b = document.createElement('i'); b.className = 'lvb'; b.setAttribute('aria-hidden', 'true'); host.appendChild(b); }
-    if (b.textContent !== String(lv)) b.textContent = String(lv);
+    n = Math.max(0, Math.min(1e9, Math.floor(+n) || 0));
+    var b = host.querySelector(':scope > .stb');
+    if (!n) { if (b) b.remove(); return; }
+    if (!b) { b = document.createElement('i'); b.className = 'stb'; b.setAttribute('aria-hidden', 'true'); host.appendChild(b); }
+    var t = starShort(n);
+    if (b.textContent !== t) b.textContent = t;
   };
 })();
 </script>
@@ -4002,11 +4020,11 @@ input.bprange[type=range]::-moz-range-thumb { width: 20px; height: 20px; border-
   }
 
   var profit = 0;
-  /* Level-Abzeichen: nur echte Mitspieler am Online-Tisch (Bots bekommen keins) */
-  function seatLv(p, i) {
+  /* Sterne-Abzeichen: nur echte Mitspieler am Online-Tisch (Bots bekommen keins) */
+  function seatStars(p, i) {
     if (!MP.on || i === 0) return 0;
-    if (MP.role === 'host') { var st = MP.seats && MP.seats[i]; return st && st.kind === 'human' && !st.gone ? st.lv | 0 : 0; }
-    return p.lv | 0;
+    if (MP.role === 'host') { var se = MP.seats && MP.seats[i]; return se && se.kind === 'human' && !se.gone ? se.st | 0 : 0; }
+    return p.st | 0;
   }
   function renderSeat(p, i) {
     var r = seats[i], el = r.el;
@@ -4019,7 +4037,7 @@ input.bprange[type=range]::-moz-range-thumb { width: 20px; height: 20px; border-
         var avEl = el.querySelector('.avatar'); avEl.style.setProperty('--av', wc);
         var avSp = avEl.querySelector('span'); if (avSp) avSp.textContent = wi;
       }
-      window.PRLvBadge(el.querySelector('.avatar'), seatLv(p, i));
+      window.PRStarBadge(el.querySelector('.avatar'), seatStars(p, i));
     }
     var result = S.phase === 'result';
     var empty = i > 0 && p.kind === 'bot' && botFree(i);
@@ -4947,19 +4965,20 @@ input.bprange[type=range]::-moz-range-thumb { width: 20px; height: 20px; border-
   /* ---------- Online-Tisch (Vermittlung ueber PeerJS, Verbindung direkt von Handy zu Handy) ---------- */
   var PEER_PREFIX = 'pokerrunde-';
   /* Version der Tisch-Nachrichten (hello-Feld v). Der Ersteller laesst nur Mitspieler ab PK_V an den Tisch,
-     aeltere bekommen { t: 'old' } und den Hinweis, die App neu zu oeffnen. 5: Level (lv) im oeffentlichen Profil */
-  var PK_V = 5;
+     aeltere bekommen { t: 'old' } und den Hinweis, die App neu zu oeffnen. 6: Sterne (st) statt Level (lv) im oeffentlichen Profil */
+  var PK_V = 6;
   var MSG_NOLIB = 'Online-Tische gehen nur über den Link zum Spiel (kortjannis-web.github.io/Pokerrunde), nicht in dieser Vorschau.';
   function peerOpts() { return window.PR_PEER_OPTS || {}; }
   function netAvail() { return typeof window.Peer === 'function'; }
-  /* lv: eigenes Level (XP-Skript), fuer das Abzeichen am Platz; 0 = unbekannt */
-  function myPublic(buyin) { return { name: profName(), color: PROF.color, hands: PROF.hands, wins: PROF.wins, buyin: buyin || 0, lv: window.PRXP ? window.PRXP.level() : 0 }; }
+  /* st: eigene Sterne (Sterne-Skript), fuer das Abzeichen am Platz; 0 = keine */
+  function myStars() { return window.PRStars ? Math.min(1e9, window.PRStars.count()) : 0; }
+  function myPublic(buyin) { return { name: profName(), color: PROF.color, hands: PROF.hands, wins: PROF.wins, buyin: buyin || 0, st: myStars() }; }
   function cleanProf(p) {
     p = (p && typeof p === 'object') ? p : {};
     var nm = String(p.name == null ? '' : p.name).slice(0, 14).trim();
     return { name: nm || 'Spieler', color: (typeof p.color === 'string' && /^#[0-9a-f]{6}$/i.test(p.color)) ? p.color : AV[0],
              hands: Math.min(1e7, Math.max(0, p.hands | 0)), wins: Math.min(1e7, Math.max(0, p.wins | 0)),
-             buyin: Math.min(1e9, Math.max(0, Math.round(+p.buyin || 0))), lv: Math.min(100, Math.max(0, p.lv | 0)) };
+             buyin: Math.min(1e9, Math.max(0, Math.round(+p.buyin || 0))), st: Math.min(1e9, Math.max(0, p.st | 0)) };
   }
   function rateOf(p) { return p.hands ? Math.round(p.wins / p.hands * 100) + '%' : '–'; }
   function initialOf(p) { return p.name.charAt(0).toUpperCase(); }
@@ -5211,7 +5230,7 @@ input.bprange[type=range]::-moz-range-thumb { width: 20px; height: 20px; border-
     var seatsArr = [], used = {};
     function uniq(nm) { var k = nm, c = 1; while (used[k.toLowerCase()]) { c++; k = nm + ' ' + c; } used[k.toLowerCase()] = 1; return k; }
     hum.forEach(function (p, i) {
-      seatsArr.push({ rid: p.host ? '' : (NET.rids[p.id] || ''), name: uniq(p.name), color: p.color, peer: p.host ? '' : p.id, conn: p.host ? null : NET.conns.filter(function (c) { return c.peer === p.id; })[0], chips: buys[i], kind: 'human', gone: false, last: '', v: p.host ? PK_V : p.v | 0, lv: p.host ? myPublic().lv : p.lv | 0 });
+      seatsArr.push({ rid: p.host ? '' : (NET.rids[p.id] || ''), name: uniq(p.name), color: p.color, peer: p.host ? '' : p.id, conn: p.host ? null : NET.conns.filter(function (c) { return c.peer === p.id; })[0], chips: buys[i], kind: 'human', gone: false, last: '', v: p.host ? PK_V : p.v | 0, st: p.host ? myStars() : p.st | 0 });
     });
     for (var bi = 0; bi < cfg.bots; bi++) seatsArr.push({ name: uniq(BOT_NAMES[bi % BOT_NAMES.length]), color: BOT_COL, peer: '', conn: null, chips: avg, kind: 'bot', gone: false, last: '' });
     prepTable();
@@ -5244,7 +5263,7 @@ input.bprange[type=range]::-moz-range-thumb { width: 20px; height: 20px; border-
       var open = v === 0 || p.revealed;
       pl.push({
         name: v === 0 ? 'Du' : st.name, color: st.color, chips: p.chips, bet: p.bet, total: p.total, folded: p.folded, allIn: p.allIn, acted: p.acted, inHand: p.inHand,
-        label: p.label, win: p.win, revealed: p.revealed, lv: st.kind === 'human' ? st.lv | 0 : 0,
+        label: p.label, win: p.win, revealed: p.revealed, st: st.kind === 'human' ? st.st | 0 : 0,
         hole: open ? p.hole : p.hole.map(function () { return { r: 2, s: 0 }; }),
         value: p.revealed ? p.value : undefined
       });
@@ -5440,7 +5459,7 @@ input.bprange[type=range]::-moz-range-thumb { width: 20px; height: 20px; border-
       var chips = Math.max(10, Math.min(1e9, Math.round(j.p.buyin) || P.START_CHIPS));
       var botOut = MP.seats[idx] && MP.seats[idx].kind === 'bot' ? MP.seats[idx].name : '';   // Bot ohne Chips macht Platz
       if (game.seat({ name: nm, color: j.p.color, chips: chips }, idx) !== idx) return;
-      var st = { name: nm, color: j.p.color, peer: j.p.id, conn: j.conn, chips: chips, kind: 'human', gone: false, last: '', v: j.p.v, rid: j.rid || '', lv: j.p.lv | 0 };
+      var st = { name: nm, color: j.p.color, peer: j.p.id, conn: j.conn, chips: chips, kind: 'human', gone: false, last: '', v: j.p.v, rid: j.rid || '', st: j.p.st | 0 };
       MP.seats[idx] = st; MP.brokes[idx] = null; MP.n = S.players.length;
       NET.players.push(j.p);
       try { j.conn.send({ t: 'start', seat: idx, n: MP.n, chips: chips }); } catch (e) {}
@@ -5470,7 +5489,7 @@ input.bprange[type=range]::-moz-range-thumb { width: 20px; height: 20px; border-
         NET.players = [Object.assign({ id: 'host', host: true }, cleanProf(myPublic(S.players[0].chips)))];
         MP = { on: true, role: 'host', n: S.players.length, wait: null, brokes: [], joins: [], ended: false,
                seats: S.players.map(function (p, i) {
-                 return i === 0 ? { rid: '', name: profName(), color: PROF.color, peer: '', conn: null, chips: p.chips, kind: 'human', gone: false, last: '', v: PK_V, lv: myPublic().lv }
+                 return i === 0 ? { rid: '', name: profName(), color: PROF.color, peer: '', conn: null, chips: p.chips, kind: 'human', gone: false, last: '', v: PK_V, st: myStars() }
                                 : { name: p.name, color: p.color || AV[i], peer: '', conn: null, chips: p.chips, kind: p.kind, gone: false, last: '' };
                }) };
         peer.on('connection', hostAccept);
@@ -5547,7 +5566,7 @@ input.bprange[type=range]::-moz-range-thumb { width: 20px; height: 20px; border-
     G.players = d.pl.map(function (p, i) {
       return { id: i, name: String(p.name || '').slice(0, 14), color: p.color, chips: p.chips | 0, bet: p.bet | 0, total: p.total | 0, folded: !!p.folded, allIn: !!p.allIn, acted: !!p.acted,
                inHand: !!p.inHand, label: String(p.label || ''), win: p.win | 0, revealed: !!p.revealed, hole: Array.isArray(p.hole) ? p.hole : [], value: p.value,
-               lv: Math.min(100, Math.max(0, p.lv | 0)) };
+               st: Math.min(1e9, Math.max(0, p.st | 0)) };
     });
     G.board = Array.isArray(d.bd) ? d.bd : []; G.phase = d.ph; G.dealer = d.dl; G.sbIdx = d.sbI; G.bbIdx = d.bbI; G.glow = d.gl; G.toAct = d.ta;
     G.sb = d.sb; G.bb = d.bb; G.currentBet = d.cb; G.lastRaise = d.lr; G.handNo = d.hn; G.result = d.rs; G.humanStart = d.st;
@@ -5615,7 +5634,7 @@ input.bprange[type=range]::-moz-range-thumb { width: 20px; height: 20px; border-
       var av = document.createElement('span'); av.className = 'pav'; av.style.setProperty('--av', p.color); av.textContent = initialOf(p);
       var pn = document.createElement('span'); pn.className = 'pn';
       var nm = document.createElement('b'); nm.textContent = p.name + (isMe ? ' (Du)' : '');
-      var sm = document.createElement('small'); sm.textContent = (p.lv ? 'Lv ' + p.lv + ' · ' : '') + (p.hands ? fmt(p.hands) + ' Hände · ' + rateOf(p) + ' Quote' : 'Noch keine Hände');
+      var sm = document.createElement('small'); sm.textContent = (p.st ? '⭐ ' + fmt(p.st) + ' · ' : '') + (p.hands ? fmt(p.hands) + ' Hände · ' + rateOf(p) + ' Quote' : 'Noch keine Hände');
       pn.appendChild(nm);
       if (p.old && host) { var ol = document.createElement('small'); ol.className = 'by'; ol.style.color = '#e07a5f'; ol.textContent = 'Alte App-Version – App ganz schließen und neu öffnen lassen'; pn.appendChild(ol); }
       if (p.buyin) { var by = document.createElement('small'); by.className = 'by'; by.textContent = 'Bringt ' + fmt(p.buyin) + ' Chips'; pn.appendChild(by); }
@@ -6021,7 +6040,7 @@ input.bprange[type=range]::-moz-range-thumb { width: 20px; height: 20px; border-
   var GIFT = 50;   // so viele Chips gibt es, wenn man pleite ist und auch im Guthaben nichts mehr hat
   var MIN_OPTS = [10, 25, 50], SEAT_OPTS = [2, 3, 4, 5];
   var PEER_PREFIX = 'pokerrunde-bj-';
-  var BJ_V = 5;   // Version des Tisch-Protokolls: Ersteller und Mitspieler muessen gleich sein (5: Level lv im Profil)
+  var BJ_V = 6;   // Version des Tisch-Protokolls: Ersteller und Mitspieler muessen gleich sein (6: Sterne st statt Level lv im Profil)
 
   /* ---------- Karten und Werte ---------- */
   function randInt(n) {
@@ -6072,14 +6091,14 @@ input.bprange[type=range]::-moz-range-thumb { width: 20px; height: 20px; border-
     H = { shoe: newShoe(), hole: null, cid: 0, dl: 0, tt: 0, bt: 0, busy: false, rid: {} };   // rid: Wiederkehr-Kennung -> Platz
     T = { phase: 'bet', round: 0, min: min, cap: cap || MAX_SEATS, seats: [], dealer: [], turn: -1, left: 0, shuf: 0, shoe: H.shoe.length, say: '', sayN: 0 };
     ME = me;
-    addSeat(me, { name: PR.profName(), color: PR.prof().color, chips: chips, res: BW, lv: myLv() });
+    addSeat(me, { name: PR.profName(), color: PR.prof().color, chips: chips, res: BW, st: myStars() });
     betPhase();
   }
   function addSeat(id, p) {
-    /* res: was der Spieler noch im Guthaben hat (nicht am Tisch), add: so viel hat er schon nachgeladen, lv: Level */
-    T.seats.push({ id: id, name: p.name, color: p.color, chips: p.chips, res: p.res || 0, add: 0, bet: 0, pend: 0, last: 0, ready: false, hands: [], cur: 0, inR: false, gone: false, gift: 0, lv: p.lv | 0 });
+    /* res: was der Spieler noch im Guthaben hat (nicht am Tisch), add: so viel hat er schon nachgeladen, st: Sterne */
+    T.seats.push({ id: id, name: p.name, color: p.color, chips: p.chips, res: p.res || 0, add: 0, bet: 0, pend: 0, last: 0, ready: false, hands: [], cur: 0, inR: false, gone: false, gift: 0, st: p.st | 0 });
   }
-  function myLv() { return window.PRXP ? window.PRXP.level() : 0; }
+  function myStars() { return window.PRStars ? Math.min(1e9, window.PRStars.count()) : 0; }
   /* Chips aus dem Guthaben an den Tisch holen: liegen sofort bereit, auch mitten in der Runde */
   function hTop(id, v, r) {
     var s = seatOf(id); v = Math.round(+v || 0);
@@ -6398,7 +6417,7 @@ input.bprange[type=range]::-moz-range-thumb { width: 20px; height: 20px; border-
       trimBoxes(hs, s.hands.length);
       el.classList.toggle('many', s.hands.length > 1);
       var av = el.querySelector('.pav'); av.style.setProperty('--av', s.color); av.textContent = (s.name.charAt(0) || '?').toUpperCase();
-      window.PRLvBadge(av, s.lv);
+      window.PRStarBadge(av, s.st);
       el.querySelector('.bjwho span:last-child').textContent = s.name;
       el.classList.toggle('turn', turn);
       el.classList.toggle('out', s.gone || (t.phase !== 'bet' && !s.inR));
@@ -7034,7 +7053,7 @@ input.bprange[type=range]::-moz-range-thumb { width: 20px; height: 20px; border-
     var nm = String(p.name == null ? '' : p.name).slice(0, 14).trim();
     return { name: nm || 'Spieler', color: (typeof p.color === 'string' && /^#[0-9a-f]{6}$/i.test(p.color)) ? p.color : PR.AV[0],
              chips: Math.min(1e9, Math.max(0, Math.round(+p.chips || 0))), res: Math.min(1e9, Math.max(0, Math.round(+p.res || 0))),
-             lv: Math.min(100, Math.max(0, p.lv | 0)) };
+             st: Math.min(1e9, Math.max(0, p.st | 0)) };
   }
 
   /* --- Ersteller: der Tisch ist sofort offen, Freunde setzen sich in der naechsten Setzrunde dazu --- */
@@ -7159,7 +7178,7 @@ input.bprange[type=range]::-moz-range-thumb { width: 20px; height: 20px; border-
       conn.on('open', function () {
         var P = PR.prof(), buy = takeBuy(kJoin.get());
         NB.rid = newRid();
-        try { conn.send({ t: 'hello', g: 'bj', v: BJ_V, rid: NB.rid, p: { name: PR.profName(), color: P.color, chips: buy, res: BW, lv: myLv() } }); } catch (e) {}
+        try { conn.send({ t: 'hello', g: 'bj', v: BJ_V, rid: NB.rid, p: { name: PR.profName(), color: P.color, chips: buy, res: BW, st: myStars() } }); } catch (e) {}
       });
       conn.on('data', function (d) {
         if (g !== NB.gen || !d || typeof d !== 'object') return;
@@ -7226,7 +7245,7 @@ input.bprange[type=range]::-moz-range-thumb { width: 20px; height: 20px; border-
         var conn = peer.connect(PEER_PREFIX + code.toLowerCase(), { serialization: 'json', reliable: true }), back = false;
         conn.on('open', function () {
           var my = seatOf(ME), P = PR.prof();
-          try { conn.send({ t: 'hello', g: 'bj', v: BJ_V, rid: NB.rid, p: { name: PR.profName(), color: P.color, chips: my ? my.chips : 0, res: BW, lv: myLv() } }); } catch (e) {}
+          try { conn.send({ t: 'hello', g: 'bj', v: BJ_V, rid: NB.rid, p: { name: PR.profName(), color: P.color, chips: my ? my.chips : 0, res: BW, st: myStars() } }); } catch (e) {}
         });
         conn.on('data', function (d) {
           if (g !== NB.gen || !d || typeof d !== 'object') return;
@@ -7274,7 +7293,7 @@ input.bprange[type=range]::-moz-range-thumb { width: 20px; height: 20px; border-
   } catch (e) {}
   [].forEach.call(document.querySelectorAll('.mdots button'), function (b) { b.addEventListener('click', function () { setPage(+b.dataset.p, true); }); });
   menu.addEventListener('pointerdown', function (e) {
-    if (e.target.closest('.profchip, .bank, .shopbtn, .qbtn, .tomchip, .xpbar') || (e.pointerType === 'mouse' && e.button !== 0)) return;
+    if (e.target.closest('.profchip, .bank, .shopbtn, .qbtn, .tomchip, .starbar') || (e.pointerType === 'mouse' && e.button !== 0)) return;
     sw = { x: e.clientX, y: e.clientY, id: e.pointerId, on: false, dx: 0, w: $('#mSwipe').offsetWidth || 300 };
   });
   menu.addEventListener('pointermove', function (e) {
@@ -8897,7 +8916,7 @@ input.bprange[type=range]::-moz-range-thumb { width: 20px; height: 20px; border-
   function $(s) { return document.querySelector(s); }
   function all(s) { return [].slice.call(document.querySelectorAll(s)); }
 
-  var RL_V = 2;   // Version des Tisch-Protokolls: Ersteller und Mitspieler muessen gleich sein (2: Level lv im Profil)
+  var RL_V = 3;   // Version des Tisch-Protokolls: Ersteller und Mitspieler muessen gleich sein (3: Sterne st statt Level lv im Profil)
   var PEER_PREFIX = 'pokerrunde-rl-', MAX_PL = 6, SPIN_MS = 6500, HOLD_MS = 2600, BET_MS = 15000, GIFT = 50;
   var CHIPS = [10, 50, 100, 500, 1000, 5000];
   var WHEEL = [0, 32, 15, 19, 4, 21, 2, 25, 17, 34, 6, 27, 13, 36, 11, 30, 8, 23, 10, 5, 24, 16, 33, 1, 20, 14, 31, 9, 22, 18, 29, 7, 28, 12, 35, 3, 26];
@@ -9111,7 +9130,7 @@ input.bprange[type=range]::-moz-range-thumb { width: 20px; height: 20px; border-
     H = { bt: 0, st: 0, dl: 0, t0: 0 };
     R = { ph: 'bet', rd: Math.max(V.spun, V.betRd) + 1, res: -1, el: 0, dl: 0, hist: hist, pl: [] };
     ME = 'me';
-    R.pl.push({ id: ME, name: PR.profName(), color: PR.prof().color, rdy: false, b: cleanBets(myB), lv: myLv() });
+    R.pl.push({ id: ME, name: PR.profName(), color: PR.prof().color, rdy: false, b: cleanBets(myB), st: myStars() });
     push();
   }
   function push() {
@@ -9338,14 +9357,14 @@ input.bprange[type=range]::-moz-range-thumb { width: 20px; height: 20px; border-
   var plKey = '';
   function renderPl() {
     var host = $('#rlFr'), list = R && multi() ? R.pl.filter(function (p) { return p.id !== ME; }) : [];
-    var k = JSON.stringify(list.map(function (p) { return [p.id, p.name, p.color, p.rdy, p.lv | 0]; }));
+    var k = JSON.stringify(list.map(function (p) { return [p.id, p.name, p.color, p.rdy, p.st | 0]; }));
     if (k === plKey) return;
     plKey = k;
     host.hidden = !list.length; host.innerHTML = '';
     list.slice(0, 5).forEach(function (p) {
       var el = document.createElement('span'); el.className = 'slfa rlfa' + (p.rdy ? ' rdy' : ''); el.title = p.name + (p.rdy ? ' (fertig)' : '');
       var a = document.createElement('span'); a.className = 'pav'; a.style.setProperty('--av', p.color); a.textContent = (p.name || '?').charAt(0).toUpperCase();
-      window.PRLvBadge(a, p.lv);
+      window.PRStarBadge(a, p.st);
       el.appendChild(a); host.appendChild(el);
     });
     if (list.length > 5) { var m = document.createElement('span'); m.className = 'slfmore'; m.textContent = '+' + (list.length - 5); host.appendChild(m); }
@@ -9546,9 +9565,9 @@ input.bprange[type=range]::-moz-range-thumb { width: 20px; height: 20px; border-
   function cleanProf(p) {
     p = (p && typeof p === 'object') ? p : {};
     var nm = String(p.name == null ? '' : p.name).slice(0, 14).trim();
-    return { name: nm || 'Spieler', color: (typeof p.color === 'string' && /^#[0-9a-f]{6}$/i.test(p.color)) ? p.color : PR.AV[0], lv: Math.min(100, Math.max(0, p.lv | 0)) };
+    return { name: nm || 'Spieler', color: (typeof p.color === 'string' && /^#[0-9a-f]{6}$/i.test(p.color)) ? p.color : PR.AV[0], st: Math.min(1e9, Math.max(0, p.st | 0)) };
   }
-  function myLv() { return window.PRXP ? window.PRXP.level() : 0; }
+  function myStars() { return window.PRStars ? Math.min(1e9, window.PRStars.count()) : 0; }
   function free() { return !!R && R.pl.length < MAX_PL; }
   function hostNow(done) {
     if (NB.role === 'host' && NB.code) { done(free() ? NB.code : ''); return; }
@@ -9595,7 +9614,7 @@ input.bprange[type=range]::-moz-range-thumb { width: 20px; height: 20px; border-
       var old = plOf(conn.peer); if (old) R.pl.splice(R.pl.indexOf(old), 1);
       var p = cleanProf(d.p);
       conn._rl = true; NB.conns.push(conn);
-      R.pl.push({ id: conn.peer, name: p.name, color: p.color, rdy: false, b: {}, lv: p.lv });
+      R.pl.push({ id: conn.peer, name: p.name, color: p.color, rdy: false, b: {}, st: p.st });
       toast(p.name + ' spielt jetzt mit'); Snd.ping();
       push();
     });
@@ -9620,7 +9639,7 @@ input.bprange[type=range]::-moz-range-thumb { width: 20px; height: 20px; border-
       el: Math.max(0, Math.min(60000, +s.el || 0)), dl: Math.max(0, Math.min(60000, +s.dl || 0)),
       hist: s.hist.filter(function (n) { return n === (n | 0) && n >= 0 && n <= 36; }).slice(0, 14),
       pl: s.pl.slice(0, MAX_PL).filter(function (p) { return p && typeof p.id === 'string'; }).map(function (p) {
-        var c = cleanProf(p); return { id: p.id.slice(0, 64), name: c.name, color: c.color, rdy: !!p.rdy, b: cleanBets(p.b), lv: c.lv };
+        var c = cleanProf(p); return { id: p.id.slice(0, 64), name: c.name, color: c.color, rdy: !!p.rdy, b: cleanBets(p.b), st: c.st };
       })
     };
   }
@@ -9644,7 +9663,7 @@ input.bprange[type=range]::-moz-range-thumb { width: 20px; height: 20px; border-
       var conn = peer.connect(PEER_PREFIX + code.toLowerCase(), { serialization: 'json', reliable: true });
       conn.on('open', function () {
         var P = PR.prof();
-        try { conn.send({ t: 'hello', g: 'rl', v: RL_V, p: { name: PR.profName(), color: P.color, lv: myLv() } }); } catch (e) {}
+        try { conn.send({ t: 'hello', g: 'rl', v: RL_V, p: { name: PR.profName(), color: P.color, st: myStars() } }); } catch (e) {}
       });
       conn.on('data', function (d) {
         if (g !== NB.gen || !d || typeof d !== 'object') return;
@@ -10536,7 +10555,7 @@ input.bprange[type=range]::-moz-range-thumb { width: 20px; height: 20px; border-
 
   /* ---------- Taegliche Belohnung (Serie 2.0): jeden Tag einmal Chips, mehr bei mehreren Tagen in Folge ----------
      Tag 1 bis 7 aus DAILY, ab Tag 8 jeden Tag 500. Truhen (zusaetzlich zu den Chips des Tages) an Tag 7, 14, 21, 28,
-     danach alle 7 Tage (siehe chestOf). Serie und Truhen geben nur Chips (keine XP). Mitternacht und „gestern“ in lokaler Zeit (dayKey) wie bisher.
+     danach alle 7 Tage (siehe chestOf). Serie und Truhen geben nur Chips (zaehlen nicht fuer die Sterne). Mitternacht und „gestern“ in lokaler Zeit (dayKey) wie bisher.
      Streak-Schutz (im Shop, hoechstens 2): fehlt genau ein Tag, wird einer verbraucht und die Serie laeuft weiter.
      Gespeichert in pr-daily { day, streak, best, shields } (alte Daten { day, streak } werden weiter gelesen,
      unbekannte Felder bleiben erhalten). Bei jedem Abholen: Ereignis 'streak' { streak, best, saved, chest }.
@@ -10592,7 +10611,7 @@ input.bprange[type=range]::-moz-range-thumb { width: 20px; height: 20px; border-
   function menuFree() {
     if ($('#menu').hidden || !$('#splash').hidden || !$('#daily').hidden) return false;
     if (window.prIdle && !window.prIdle()) return false;
-    return ['#friends', '#bjf', '#profile', '#pview', '#chipdlg', '#invBan', '#askBan', '#shop', '#giftDlg', '#xpView', '#lvUp', '#quests', '#chestDlg'].every(function (s) { var e = $(s); return !e || e.hidden; });
+    return ['#friends', '#bjf', '#profile', '#pview', '#chipdlg', '#invBan', '#askBan', '#shop', '#giftDlg', '#starView', '#starUp', '#quests', '#chestDlg'].every(function (s) { var e = $(s); return !e || e.hidden; });
   }
   function showDaily() {
     var d = loadDaily(); if (d.day === today()) return;
@@ -10687,22 +10706,27 @@ input.bprange[type=range]::-moz-range-thumb { width: 20px; height: 20px; border-
 </script>
 
 <script>
-/* XP und Level ueber alle Spiele (hoert nur an der Ereignis-Zentrale zu).
-   1 XP pro gesetztem Chip ('bet'), hoechstens 5.000 aus einem einzelnen Einsatz; Pop the Lock 5 XP pro Treffer und
-   50 pro Runde (ab einem Treffer). Von Level n auf n+1 braucht man round(500 * n^1.5) XP, hoechstes Level 100.
-   Beim ersten Start werden die XP einmal aus der bisherigen Statistik geschaetzt (ohne nachtraegliche Belohnungen).
-   Gespeichert in pr-xp { xp, lv, wagered: gesamt gesetzte Chips, claimed: Level, dessen Belohnung schon ausgezahlt ist }.
-   Level-Aufstieg: XP und Level zaehlen sofort (auch fuer die anderen am Tisch), die Animation und die Chips
-   (100 x neues Level) kommen erst, wenn man wieder im Menue ist. Bis dahin bleibt es in pr-xp vorgemerkt, es geht
-   also nichts verloren, und am Tisch ueberschreibt die Tisch-Abrechnung (saveBank) die Gutschrift nicht.
-   Schnittstelle:
-     PR.addXP(menge, grund)  XP gutschreiben (fuer Aufgaben, Serie ...), gibt die gutgeschriebene Menge zurueck
-     PR.xp()                 { xp, lv, wagered, claimed, into, need, toNext } (into/need: XP im aktuellen Level)
-     window.PRXP             { add, info, level, need(n), total(n), MAX, REWARDS, addReward(e), rewardsFor(lv), chipsFor(lv) }
-     PRXP.REWARDS = PR.LEVEL_REWARDS: Liste { lv, kind, id, label, icon? } fuer Freischaltungen (Rahmen, Titel, Kartenruecken);
-                             spaetere Schritte tragen mit PRXP.addReward({ lv: 30, kind: 'back', id: 'diamond', label: 'Kartenrücken Diamant' })
-                             ein, die Detailansicht zeigt sie dann von selbst unter „Nächste Belohnungen“.
-   Ereignisse: 'xp' { amount, reason, xp, lv } bei jeder Gutschrift, 'level' { lv, reward, unlocks } beim Erreichen. */
+/* Sterne: zeigen, wie viel man schon gewonnen hat (ersetzt XP und Level; hoert nur an der Ereignis-Zentrale zu).
+   Jede Hand, Runde oder Drehung mit positivem Netto zaehlt: Ereignis 'win' (Poker, Blackjack, Slots, Roulette und
+   kuenftige Spiele, die 'win' melden) mit net > 0, dazu der Pop-the-Lock-Jackpot aus 'lock:round' (jackpot, amount).
+   'win' kommt pro Runde hoechstens einmal, deshalb zaehlt jede Runde genau einmal. Verluste ziehen nichts ab.
+   Geschenke, Tagesbonus, Aufgaben und Truhen melden kein 'win' und zaehlen deshalb nicht.
+   1 Stern pro STAR_CHIPS (1.000) gewonnene Chips. Meilensteine (MILESTONES) werden im Menue kurz gefeiert, nie im
+   Spiel, und geben keine Chips. Beim ersten Start wird der Gewinn einmal vorsichtig aus der Statistik geschaetzt.
+   Gespeichert in pr-stars { won: Netto-Gewinne gesamt, stars, seen: bis zu dieser Sternzahl sind Meilensteine schon
+   gefeiert, est: geschaetzter Startwert in Chips }. Das alte pr-xp wird nicht mehr benutzt.
+   Schnittstelle window.PRStars (auch PR.stars):
+     count()          eigene Sterne          won()   Netto-Gewinne gesamt in Chips
+     info()           { stars, won, into, toNext, next, est }  (into: Chips im aktuellen Stern, next: naechster Meilenstein, 0 = keiner)
+     STAR_CHIPS, MILESTONES
+     addUnlock({ stars, kind, id, label, icon? })  Freischaltung ab einer Sternzahl eintragen (Rahmen, Kartenruecken ...),
+                      z. B. PRStars.addUnlock({ stars: 500, kind: 'back', id: 'diamond', label: 'Kartenrücken Diamant', icon: '💎' });
+                      die Ansicht zeigt sie dann von selbst unter „Nächste Freischaltungen“, die Feier beim Erreichen
+     unlocksFor(n)    alle Freischaltungen, die man mit n Sternen hat (stars <= n)
+     unlocked(id, kind?)  hat man die Freischaltung schon? (id ohne Eintrag: true, dann braucht sie keine Sterne)
+     need(id, kind?)  noetige Sterne fuer id (0 = keine)
+   Ereignisse: 'stars' { added, stars, won, chips, game } bei jedem gezaehlten Gewinn (added: neue Sterne, auch 0),
+   'milestone' { stars } beim Erreichen eines Meilensteins (sofort, gefeiert wird spaeter im Menue). */
 (function () {
   'use strict';
   var PR = window.PR;
@@ -10710,112 +10734,140 @@ input.bprange[type=range]::-moz-range-thumb { width: 20px; height: 20px; border-
   var Snd = PR.Snd, fmt = PR.fmt;
   function $(s) { return document.querySelector(s); }
   function readJ(k) { try { return JSON.parse(localStorage.getItem(k) || 'null'); } catch (e) { return null; } }
-  var MAX = 100, BET_CAP = 5000, KEY = 'pr-xp';
-  /* NEED[n]: XP von Level n auf n+1, TOT[n]: XP gesamt, ab denen man Level n ist */
-  var NEED = [0], TOT = [0, 0];
-  for (var n = 1; n < MAX; n++) { NEED[n] = Math.round(500 * Math.pow(n, 1.5)); TOT[n + 1] = TOT[n] + NEED[n]; }
-  function levelOf(xp) { var lv = 1; while (lv < MAX && xp >= TOT[lv + 1]) lv++; return lv; }
-  function chipsFor(lv) { return 100 * lv; }
+  var STAR_CHIPS = 1000, KEY = 'pr-stars', MAXW = 1e15;
+  var MILESTONES = [10, 25, 50, 100, 250, 500, 1000, 2500, 5000, 10000];
+  function starsOf(won) { return Math.floor(won / STAR_CHIPS); }
+  function nextMile(n) { for (var i = 0; i < MILESTONES.length; i++) if (MILESTONES[i] > n) return MILESTONES[i]; return 0; }
 
-  /* ---------- Freischaltungen je Level (spaetere Schritte tragen hier ein) ---------- */
-  var REWARDS = [];
-  function addReward(e) {
-    if (!e || !(e.lv >= 2 && e.lv <= MAX) || !e.label) return;
-    if (e.id && REWARDS.some(function (r) { return r.id === e.id && r.kind === e.kind; })) return;
-    REWARDS.push({ lv: e.lv | 0, kind: String(e.kind || ''), id: String(e.id || ''), label: String(e.label), icon: e.icon ? String(e.icon) : '' });
-    REWARDS.sort(function (a, b) { return a.lv - b.lv; });
+  /* ---------- Freischaltungen je Sternzahl (spaetere Schritte tragen hier ein) ---------- */
+  var UNLOCKS = [];
+  function findU(id, kind) { return UNLOCKS.filter(function (u) { return u.id === String(id) && (kind == null || u.kind === String(kind)); })[0]; }
+  function addUnlock(e) {
+    if (!e || !(+e.stars >= 1) || !e.label) return;
+    var u = { stars: Math.round(+e.stars), kind: String(e.kind || ''), id: String(e.id || ''), label: String(e.label), icon: e.icon ? String(e.icon) : '' };
+    if (u.id && findU(u.id, u.kind)) return;
+    UNLOCKS.push(u);
+    UNLOCKS.sort(function (a, b) { return a.stars - b.stars; });
   }
-  function rewardsFor(lv) { return REWARDS.filter(function (r) { return r.lv === lv; }); }
+  function unlocksFor(n) { n = +n || 0; return UNLOCKS.filter(function (u) { return u.stars <= n; }); }
+  function need(id, kind) { var u = findU(id, kind); return u ? u.stars : 0; }
+  function unlocked(id, kind) { return S.stars >= need(id, kind); }
 
   /* ---------- Speichern und Start-Schaetzung ---------- */
-  var X;
-  function num(v, d) { v = +v; return isFinite(v) && v >= 0 ? Math.round(v) : d; }
-  function estimate() {
-    var P = PR.prof(), bj = readJ('pr-bjstats') || {}, sl = readJ('pr-slstats') || {}, rl = readJ('pr-rlstats') || {}, lk = readJ('pr-lkstats') || {};
-    /* Pop the Lock zaehlt keine Runden: geknackte Schloesser (jp) stehen fuer die Runden */
-    return Math.min(1e9, num(P.hands, 0) * 20 + num(bj.r, 0) * 20 + num(sl.n, 0) * 5 + num(rl.n, 0) * 10 + num(lk.jp, 0) * 50);
+  var S;
+  function num(v) { v = +v; return isFinite(v) && v > 0 ? Math.round(v) : 0; }
+  /* Summe aller Anstiege in einem Saldo-Verlauf: alle Gewinne zwischen zwei Punkten. Der Verlauf wird bei vielen
+     Punkten ausgeduennt, dann verrechnen sich Gewinne und Verluste dazwischen: die Schaetzung bleibt eher zu niedrig */
+  function ups(log, idx) {
+    if (!Array.isArray(log)) return 0;
+    var sum = 0, prev = null;
+    log.forEach(function (e) {
+      if (!Array.isArray(e) || e.length <= idx) return;
+      var v = +e[idx];
+      if (!isFinite(v)) return;
+      if (prev !== null && v > prev) sum += v - prev;
+      prev = v;
+    });
+    return sum;
   }
-  function save() { try { localStorage.setItem(KEY, JSON.stringify({ xp: X.xp, lv: X.lv, wagered: X.wagered, claimed: X.claimed })); } catch (e) {} }
+  function estimate() {
+    var P = PR.prof() || {}, bj = readJ('pr-bjstats') || {}, sl = readJ('pr-slstats') || {}, rl = readJ('pr-rlstats') || {}, lk = readJ('pr-lkstats') || {};
+    var plog = Array.isArray(P.log) ? P.log.filter(function (e) { return Array.isArray(e) && e.length > 3; }) : [];
+    var pk = Math.max(ups(plog, 3), num(P.pnet));            // Poker: Verlauf [Haende, Siege, Guthaben, Saldo]
+    var b = Math.max(ups(readJ('pr-bjlog'), 1), num(bj.net));  // Blackjack, Slots, Roulette: Verlauf [Runden, Saldo]
+    var s = Math.max(ups(readJ('pr-sllog'), 1), num(sl.net));
+    var r = Math.max(ups(readJ('pr-rllog'), 1), num(rl.net));
+    var l = num(lk.won);                                       // Pop the Lock: alle Jackpots zusammen
+    return Math.min(1e12, Math.round(num(pk) + num(b) + num(s) + num(r) + l));
+  }
+  function save() { try { localStorage.setItem(KEY, JSON.stringify({ won: S.won, stars: S.stars, seen: S.seen, est: S.est })); } catch (e) {} }
   (function load() {
     var o = readJ(KEY);
-    if (o && typeof o === 'object' && isFinite(+o.xp)) {
-      var xp = Math.min(1e12, num(o.xp, 0)), lv = levelOf(xp);
-      X = { xp: xp, lv: lv, wagered: Math.min(1e15, num(o.wagered, 0)), claimed: Math.max(1, Math.min(lv, num(o.claimed, lv))) };
+    if (o && typeof o === 'object' && isFinite(+o.won)) {
+      var w = Math.min(MAXW, num(o.won)), st = starsOf(w);
+      S = { won: w, stars: st, seen: Math.min(st, num(o.seen)), est: num(o.est) };
+      if (!isFinite(+o.seen)) S.seen = st;
     } else {
-      var e = estimate(), l = levelOf(e);
-      X = { xp: e, lv: l, wagered: 0, claimed: l };
+      var e = 0;
+      try { e = estimate(); } catch (x) { e = 0; }
+      S = { won: e, stars: starsOf(e), seen: starsOf(e), est: e };   // alte Meilensteine werden nicht nachgefeiert
       save();
     }
   })();
   function info() {
-    var lv = X.lv, top = lv >= MAX, into = top ? 0 : X.xp - TOT[lv], need = top ? 0 : NEED[lv];
-    return { xp: X.xp, lv: lv, wagered: X.wagered, claimed: X.claimed, into: into, need: need, toNext: top ? 0 : need - into };
+    var into = S.won - S.stars * STAR_CHIPS;
+    return { stars: S.stars, won: S.won, into: into, toNext: STAR_CHIPS - into, next: nextMile(S.stars), est: S.est };
   }
 
-  /* ---------- XP gutschreiben ---------- */
-  var gainShow = 0;   // seit der letzten Anzeige am Balken dazugekommen
-  function addXP(amount, reason) {
-    amount = Math.round(+amount);
-    if (!(amount > 0) || !isFinite(amount)) return 0;
-    amount = Math.min(amount, 1e8);
-    var before = X.lv;
-    X.xp = Math.min(1e12, X.xp + amount); X.lv = levelOf(X.xp);
-    gainShow += amount;
+  /* ---------- Gewinne zaehlen ---------- */
+  var gainStars = 0, gainChips = 0;   // seit der letzten Anzeige im Menue dazugekommen
+  function addWon(chips, game) {
+    chips = Math.round(+chips);
+    if (!(chips > 0) || !isFinite(chips)) return 0;
+    chips = Math.min(chips, 1e12);
+    var before = S.stars;
+    S.won = Math.min(MAXW, S.won + chips); S.stars = starsOf(S.won);
+    var added = S.stars - before;
+    gainStars += added; gainChips += chips;
     save();
-    PR.emit('xp', { amount: amount, reason: String(reason || ''), xp: X.xp, lv: X.lv });
-    for (var l = before + 1; l <= X.lv; l++) PR.emit('level', { lv: l, reward: chipsFor(l), unlocks: rewardsFor(l) });
-    return amount;
+    PR.emit('stars', { added: added, stars: S.stars, won: S.won, chips: chips, game: String(game || '') });
+    MILESTONES.forEach(function (m) { if (m > before && m <= S.stars) PR.emit('milestone', { stars: m }); });
+    return added;
   }
-  PR.on('bet', function (d) {
-    var a = Math.round(+(d && d.amount) || 0);
-    if (!(a > 0)) return;
-    X.wagered = Math.min(1e15, X.wagered + a);
-    addXP(Math.min(a, BET_CAP), 'bet:' + (d.game || ''));
-  });
-  PR.on('lock:round', function (d) {
-    var h = Math.max(0, Math.min(500, (d && d.hits) | 0));
-    if (h > 0) addXP(5 * h + 50, 'lock');
-  });
+  /* Pop the Lock meldet kein 'win', sein Jackpot kommt ueber 'lock:round' (so zaehlt er sicher nur einmal) */
+  PR.on('win', function (d) { if (d && d.game !== 'lock' && +d.net > 0) addWon(d.net, d.game); });
+  PR.on('lock:round', function (d) { if (d && d.jackpot && +d.amount > 0) addWon(d.amount, 'lock'); });
 
-  /* ---------- Balken im Menue ---------- */
-  var bar = $('#xpBar'), lab = $('#xpLv'), fill = $('#xpFill'), shownXp = X.xp, anim = false;
-  function frac(xp) { var lv = levelOf(xp); return lv >= MAX ? 1 : Math.max(0, Math.min(1, (xp - TOT[lv]) / NEED[lv])); }
+  /* ---------- Anzeige im Menue ---------- */
+  function short(v) {
+    v = Math.max(0, Math.floor(v));
+    function dec(x) { return (Math.floor(x * 10) / 10).toString().replace('.', ','); }
+    return v >= 1e9 ? dec(v / 1e9) + ' Mrd.' : v >= 1e6 ? dec(v / 1e6) + ' Mio.' : v >= 1e5 ? Math.floor(v / 1000) + 'K' : fmt(v);
+  }
+  function starTxt(n) { return n >= 1e5 ? window.PRStarShort(n) : fmt(n); }
+  function sterne(n) { return fmt(n) + (n === 1 ? ' Stern' : ' Sterne'); }
+  var bar = $('#starBar'), lab = $('#starN'), fill = $('#starFill'), shownWon = S.won, anim = false;
+  function frac(won) { return Math.max(0, Math.min(1, (won - starsOf(won) * STAR_CHIPS) / STAR_CHIPS)); }
   function setW(el, f, instant) {
     if (instant) { el.style.transition = 'none'; el.style.width = (f * 100).toFixed(1) + '%'; void el.offsetWidth; el.style.transition = ''; }
     else el.style.width = (f * 100).toFixed(1) + '%';
   }
   function barLabel() {
     var I = info();
-    bar.setAttribute('aria-label', 'Level ' + I.lv + (I.lv < MAX ? ', noch ' + fmt(I.toNext) + ' XP bis Level ' + (I.lv + 1) : '') + ' – Details ansehen');
+    bar.setAttribute('aria-label', sterne(I.stars) + ', noch ' + fmt(I.toNext) + ' gewonnene Chips bis zum nächsten Stern – Details ansehen');
   }
-  function paintBar() { lab.textContent = 'Lv ' + levelOf(shownXp); setW(fill, frac(shownXp), true); barLabel(); }
+  function paintBar() { lab.textContent = '⭐ ' + starTxt(starsOf(shownWon)); setW(fill, frac(shownWon), true); barLabel(); }
   paintBar();
-  /* nach einer Runde: kurz „+120 XP“ im Balken, der Balken laeuft nach (ueber eine Levelgrenze erst bis voll) */
+  /* nach Runden: kurz „+2 ⭐“, die Leiste laeuft nach (ueber eine Sterngrenze erst bis voll). Ohne neuen Stern
+     laeuft nur die Leiste still weiter */
   function playGain() {
-    var from = shownXp, to = X.xp, g = gainShow;
-    gainShow = 0; shownXp = to; anim = true;
+    var from = shownWon, to = S.won, g = gainStars;
+    gainStars = 0; gainChips = 0; shownWon = to;
+    var up = starsOf(to) > starsOf(from);
+    if (!up) { setW(fill, frac(to)); barLabel(); return; }
+    anim = true;
     bar.classList.remove('gain'); void bar.offsetWidth; bar.classList.add('gain');
-    lab.textContent = '+' + short(g) + ' XP';
-    var up = levelOf(to) > levelOf(from);
-    if (up) {
-      setW(fill, 1);
-      setTimeout(function () { setW(fill, 0, true); setW(fill, frac(to)); }, 950);
-    } else setW(fill, frac(to));
-    setTimeout(function () {
-      bar.classList.remove('gain'); lab.textContent = 'Lv ' + X.lv; barLabel(); anim = false;
-    }, up ? 2600 : 2000);
+    lab.textContent = '+' + starTxt(g) + ' ⭐';
+    try { if (!navigator.userActivation || navigator.userActivation.hasBeenActive) Snd.chip(2, 0, true); } catch (e) {}
+    setW(fill, 1);
+    setTimeout(function () { setW(fill, 0, true); setW(fill, frac(to)); }, 950);
+    setTimeout(function () { bar.classList.remove('gain'); paintBar(); anim = false; }, 2400);
   }
 
-  /* ---------- Level-Aufstieg: Animation mit Sound und Vibration, dann Chips ---------- */
+  /* ---------- Meilenstein-Feier (nur im Menue, ohne Chips) ---------- */
   function free() {
     if ($('#menu').hidden || !$('#splash').hidden) return false;
     if (window.prIdle && !window.prIdle()) return false;
-    return ['#daily', '#friends', '#bjf', '#profile', '#pview', '#chipdlg', '#invBan', '#askBan', '#shop', '#giftDlg', '#xpView', '#lvUp', '#end', '#quests', '#chestDlg']
+    return ['#daily', '#friends', '#bjf', '#profile', '#pview', '#chipdlg', '#invBan', '#askBan', '#shop', '#giftDlg', '#starView', '#starUp', '#end', '#quests', '#chestDlg']
       .every(function (s) { var e = $(s); return !e || e.hidden; });
   }
-  var luT = [];
+  function pendingMile() {
+    var m = 0;
+    MILESTONES.forEach(function (x) { if (x > S.seen && x <= S.stars) m = x; });
+    return m;
+  }
   function confetti(card) {
-    var cols = ['#f4d67f', '#e0aa4a', '#8fcf9a', '#6fb7e8', '#e5826f', '#ffffff'];
+    var cols = ['#f4d67f', '#e0aa4a', '#fff1b8', '#ffffff', '#ffb36b'];
     for (var i = 0; i < 26; i++) {
       var c = document.createElement('i'); c.className = 'luconf';
       c.style.left = Math.round(Math.random() * 96 + 2) + '%';
@@ -10828,98 +10880,88 @@ input.bprange[type=range]::-moz-range-thumb { width: 20px; height: 20px; border-
       card.appendChild(c);
     }
   }
-  function showLevelUp() {
-    var from = X.claimed, to = X.lv;
-    if (to <= from) return;
-    var chips = 0, unl = [];
-    for (var l = from + 1; l <= to; l++) { chips += chipsFor(l); unl = unl.concat(rewardsFor(l)); }
-    /* gleich gutschreiben und merken (im Menue rechnet kein Tisch das Guthaben neu) */
-    var P = PR.prof(); P.bank = Math.round((P.bank || 0) + chips); PR.saveProf();
-    X.claimed = to; save();
-    luT.forEach(clearTimeout); luT = [];
-    $('#luLv').textContent = String(to);
-    $('#luTitle').textContent = 'Level ' + to;
-    $('#luText').textContent = to - from > 1 ? 'Gleich ' + (to - from) + ' Level auf einmal – stark!' : to >= MAX ? 'Höchstes Level erreicht. Respekt!' : 'Weiter so! Nächstes Ziel: Level ' + (to + 1) + '.';
-    var rw = $('#luChips'); rw.classList.remove('on'); rw.querySelector('span').textContent = '+' + fmt(chips) + ' Chips';
-    var ul = $('#luUnl'); ul.innerHTML = ''; ul.hidden = !unl.length;
-    unl.forEach(function (r) { ul.appendChild(row('Neu', r.icon || '🎁', r.label, '')); });
-    var ov = $('#lvUp'), card = ov.querySelector('.endcard');
+  function showMilestone() {
+    var m = pendingMile(), from = S.seen;
+    S.seen = S.stars; save();
+    if (!m) return;
+    var unl = UNLOCKS.filter(function (u) { return u.stars > from && u.stars <= S.stars; });
+    var nx = nextMile(m);
+    $('#suTitle').textContent = fmt(m) + ' Sterne!';
+    $('#suText').textContent = 'Du hast schon ' + fmt(m * STAR_CHIPS) + ' Chips gewonnen.' + (nx ? ' Nächster Meilenstein: ' + fmt(nx) + ' ⭐' : ' Das ist der höchste Meilenstein – Respekt!');
+    var ul = $('#suUnl'); ul.innerHTML = ''; ul.hidden = !unl.length;
+    unl.forEach(function (u) { ul.appendChild(row('Neu', u.icon || '🎁', u.label, '')); });
+    var ov = $('#starUp'), card = ov.querySelector('.endcard');
     [].forEach.call(card.querySelectorAll('.luconf'), function (c) { c.remove(); });
     /* Animationen neu starten */
-    [card, card.querySelector('.lvring'), card.querySelector('.lurays')].forEach(function (e) { e.style.animation = 'none'; void e.offsetWidth; e.style.animation = ''; });
+    [card, card.querySelector('.stico'), card.querySelector('.lurays')].forEach(function (e) { e.style.animation = 'none'; void e.offsetWidth; e.style.animation = ''; });
     ov.hidden = false;
     confetti(card);
     /* Snd.win spielt den Gewinn-Klang und vibriert (Einstellung Vibration). Erst nach einer Beruehrung, sonst blockt der Browser */
-    var touched = !navigator.userActivation || navigator.userActivation.hasBeenActive;
-    try { if (touched) { Snd.unlock(); Snd.win(); } } catch (e) {}
-    luT.push(setTimeout(function () {
-      rw.classList.add('on'); PR.renderBank();
-      try { if (touched) { Snd.chip(4, 0, true); Snd.pot(); } } catch (e) {}
-    }, 900));
+    try { if (!navigator.userActivation || navigator.userActivation.hasBeenActive) { Snd.unlock(); Snd.win(); } } catch (e) {}
   }
-  $('#luGo').addEventListener('click', function () { $('#lvUp').hidden = true; $('#luChips').classList.add('on'); PR.renderBank(); });
+  $('#suGo').addEventListener('click', function () { $('#starUp').hidden = true; });
   setInterval(function () {
     if (anim || !free()) return;
-    if (gainShow > 0) { playGain(); return; }
-    if (X.claimed < X.lv) showLevelUp();
+    if (gainChips > 0) { playGain(); return; }
+    if (pendingMile()) showMilestone();
+    else if (S.seen !== S.stars) { S.seen = S.stars; save(); }
   }, 700);
 
-  /* ---------- Detailansicht und Profil ---------- */
+  /* ---------- Ansicht und Profil ---------- */
   function row(left, icon, label, sub) {
     var d = document.createElement('div'), b = document.createElement('b'), s = document.createElement('span');
     b.textContent = left;
     s.textContent = (icon ? icon + ' ' : '') + label;
     if (sub) { var em = document.createElement('em'); em.textContent = sub; s.appendChild(em); }
-    d.appendChild(b); d.appendChild(s);
+    if (left) d.appendChild(b);
+    d.appendChild(s);
     return d;
   }
-  function short(v) { return v >= 1e6 ? (Math.round(v / 1e5) / 10).toString().replace('.', ',') + ' Mio.' : v >= 1e5 ? Math.round(v / 1000) + 'K' : fmt(v); }
   function renderView() {
-    var I = info(), top = I.lv >= MAX;
-    $('#xvLv').textContent = String(I.lv);
-    $('#xvTitle').textContent = 'Level ' + I.lv;
-    setW($('#xvFill'), top ? 1 : I.into / I.need, true);
-    $('#xvNums').textContent = top ? fmt(I.xp) + ' XP' : fmt(I.into) + ' / ' + fmt(I.need) + ' XP';
-    $('#xvNext').textContent = top ? 'Du hast das höchste Level erreicht.' : 'Noch ' + fmt(I.toNext) + ' XP bis Level ' + (I.lv + 1);
-    $('#xvWag').textContent = fmt(I.wagered);
-    var list = $('#xvList'); list.innerHTML = '';
-    var shown = {};
-    for (var l = I.lv + 1; l <= Math.min(MAX, I.lv + 5); l++) {
-      var ex = rewardsFor(l);
-      ex.forEach(function (r) { shown[r.kind + ':' + r.id + ':' + r.lv] = 1; });
-      list.appendChild(row('Lv ' + l, '🪙', fmt(chipsFor(l)) + ' Chips', ex.map(function (r) { return (r.icon || '🎁') + ' ' + r.label; }).join(' · ')));
-    }
-    /* besondere Freischaltungen weiter weg: die naechsten drei */
-    REWARDS.filter(function (r) { return r.lv > I.lv && !shown[r.kind + ':' + r.id + ':' + r.lv]; }).slice(0, 3).forEach(function (r) {
-      list.appendChild(row('Lv ' + r.lv, r.icon || '🎁', r.label, ''));
+    var I = info();
+    $('#svTitle').textContent = sterne(I.stars);
+    setW($('#svFill'), I.into / STAR_CHIPS, true);
+    $('#svNums').textContent = fmt(I.into) + ' / ' + fmt(STAR_CHIPS) + ' Chips';
+    $('#svNext').textContent = 'Noch ' + fmt(I.toNext) + ' gewonnene Chips bis zum nächsten Stern';
+    $('#svWon').textContent = short(I.won);
+    $('#svMile').textContent = I.next ? fmt(I.next) + ' ⭐' : '–';
+    $('#svMileL').textContent = I.next ? 'nächster Meilenstein, noch ' + sterne(I.next - I.stars) : 'alle Meilensteine geschafft';
+    /* die naechsten Meilensteine und Freischaltungen zusammen, nach Sternen sortiert */
+    var list = $('#svList'); list.innerHTML = '';
+    var items = [];
+    MILESTONES.forEach(function (m) { if (m > I.stars) items.push({ stars: m, icon: '🏅', label: 'Meilenstein: ' + fmt(m * STAR_CHIPS) + ' Chips gewonnen' }); });
+    UNLOCKS.forEach(function (u) { if (u.stars > I.stars) items.push(u); });
+    items.sort(function (a, b) { return a.stars - b.stars; });
+    var mi = 0;
+    items.filter(function (it) { return it.icon !== '🏅' || mi++ < 2; }).slice(0, 5).forEach(function (it) {
+      list.appendChild(row(fmt(it.stars) + ' ⭐', it.icon || '🎁', it.label, ''));
     });
-    if (!list.children.length) list.appendChild(row('', '🏆', 'Alle Belohnungen abgeholt', ''));
+    if (!list.children.length) list.appendChild(row('', '🏆', 'Alles freigeschaltet', ''));
   }
-  function openView() { renderView(); $('#xpView').hidden = false; }
+  function openView() { renderView(); $('#starView').hidden = false; }
   bar.addEventListener('click', function () { if (anim) return; openView(); });
-  $('#xvClose').addEventListener('click', function () { $('#xpView').hidden = true; });
-  $('#xpView').addEventListener('click', function (e) { if (e.target === this) this.hidden = true; });
+  $('#svClose').addEventListener('click', function () { $('#starView').hidden = true; });
+  $('#starView').addEventListener('click', function (e) { if (e.target === this) this.hidden = true; });
   function renderProfile() {
-    var I = info(), top = I.lv >= MAX;
-    $('#pfLvN').textContent = String(I.lv);
-    $('#pfLvT').textContent = 'Level ' + I.lv;
-    setW($('#pfLvF'), top ? 1 : I.into / I.need, true);
-    $('#pfLvS').textContent = top ? 'Höchstes Level erreicht' : fmt(I.into) + ' / ' + fmt(I.need) + ' XP in diesem Level';
-    $('#pfXp').textContent = short(I.xp);
-    $('#pfXpTo').textContent = top ? '–' : short(I.toNext);
-    $('#pfXpToL').textContent = top ? 'höchstes Level' : 'XP bis Level ' + (I.lv + 1);
-    $('#pfWag').textContent = short(I.wagered);
+    var I = info();
+    $('#pfStT').textContent = sterne(I.stars);
+    setW($('#pfStF'), I.into / STAR_CHIPS, true);
+    $('#pfStS').textContent = 'Noch ' + fmt(I.toNext) + ' gewonnene Chips bis zum nächsten Stern';
+    $('#pfStN').textContent = starTxt(I.stars);
+    $('#pfStW').textContent = short(I.won);
+    $('#pfStM').textContent = I.next ? starTxt(I.next) + ' ⭐' : '–';
+    $('#pfStML').textContent = I.next ? 'nächster Meilenstein' : 'alle Meilensteine';
   }
   $('#profBtn').addEventListener('click', renderProfile);
-  $('#pfLv').addEventListener('click', openView);
+  $('#pfSt').addEventListener('click', openView);
   renderProfile();
 
-  window.PRXP = {
-    add: addXP, info: info, level: function () { return X.lv; }, MAX: MAX, BET_CAP: BET_CAP,
-    need: function (lv) { return NEED[lv] || 0; }, total: function (lv) { return TOT[Math.max(1, Math.min(MAX, lv | 0))]; },
-    REWARDS: REWARDS, addReward: addReward, rewardsFor: rewardsFor, chipsFor: chipsFor
+  window.PRStars = {
+    count: function () { return S.stars; }, won: function () { return S.won; }, info: info,
+    STAR_CHIPS: STAR_CHIPS, MILESTONES: MILESTONES.slice(), UNLOCKS: UNLOCKS,
+    addUnlock: addUnlock, unlocksFor: unlocksFor, unlocked: unlocked, need: need
   };
-  PR.addXP = addXP; PR.xp = info; PR.LEVEL_REWARDS = REWARDS;
+  PR.stars = window.PRStars;
 })();
 </script>
 
@@ -11216,7 +11258,7 @@ input.bprange[type=range]::-moz-range-thumb { width: 20px; height: 20px; border-
   function menuFree() {
     if ($('#menu').hidden || !$('#splash').hidden) return false;
     if (window.prIdle && !window.prIdle()) return false;
-    return ['#daily', '#friends', '#bjf', '#profile', '#pview', '#chipdlg', '#invBan', '#askBan', '#shop', '#giftDlg', '#xpView', '#lvUp', '#chestDlg']
+    return ['#daily', '#friends', '#bjf', '#profile', '#pview', '#chipdlg', '#invBan', '#askBan', '#shop', '#giftDlg', '#starView', '#starUp', '#chestDlg']
       .every(function (s) { var e = $(s); return !e || e.hidden; });
   }
   function credit(chips) { var P = PR.prof(); P.bank = Math.round((P.bank || 0) + chips); PR.saveProf(); PR.renderBank(); }
