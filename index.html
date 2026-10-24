@@ -1495,6 +1495,91 @@ input.bprange[type=range]::-moz-range-thumb { width: 20px; height: 20px; border-
 .bjwho .pav, .slfa .pav { position: relative; overflow: visible; }
 .bjwho .lvb { right: auto; left: -6px; bottom: -5px; min-width: 16px; height: 13px; font-size: 8px; line-height: 11px; }
 
+/* ---------- Truhe (Serie und Aufgaben) ---------- */
+#chestDlg { z-index: 94; }
+#chestDlg .endcard { display: flex; flex-direction: column; gap: 10px; position: relative; overflow: hidden; animation: luin .45s cubic-bezier(.2,.9,.3,1.2) both; }
+#chestDlg .endcard h2, #chestDlg .endcard p { margin: 0; }
+.chbox { position: relative; display: grid; place-items: center; height: 128px; cursor: pointer; }
+.chbox .lurays { opacity: 0; animation: none; }
+.chbox.open .lurays { opacity: 1; animation: lurays 9s linear infinite, lufade .6s ease both; }
+.chest { position: relative; z-index: 1; width: 96px; height: 78px; margin-top: 18px; animation: chwob 1.6s ease-in-out .3s infinite; }
+.chbox.open .chest { animation: chpop .5s cubic-bezier(.2,.9,.3,1.5) both; }
+@keyframes chwob { 0%, 60%, 100% { transform: none; } 66% { transform: rotate(-6deg); } 74% { transform: rotate(5deg); } 82% { transform: rotate(-3deg); } 90% { transform: rotate(2deg); } }
+@keyframes chpop { 40% { transform: scale(1.12); } to { transform: none; } }
+.chest .cb { position: absolute; left: 0; right: 0; bottom: 0; height: 50px; border-radius: 6px 6px 12px 12px; background: linear-gradient(#a8652a, #7a4317); box-shadow: inset 0 0 0 3px #e0aa4a, 0 6px 16px rgba(0,0,0,.45); }
+.chest .cb::before { content: ""; position: absolute; left: 50%; top: -2px; width: 16px; height: 20px; margin-left: -8px; border-radius: 0 0 5px 5px; background: #f4d67f; box-shadow: inset 0 0 0 2px #a2742a; }
+.chest .cl { position: absolute; left: -3px; right: -3px; top: 0; height: 32px; border-radius: 40px 40px 6px 6px; background: linear-gradient(#c07a35, #8c4f1e); box-shadow: inset 0 0 0 3px #e0aa4a; transform-origin: 10% 100%; transition: transform .5s cubic-bezier(.3,1.4,.5,1); }
+.chbox.open .chest .cl { transform: translateY(-14px) rotate(-38deg); }
+.chest .cg { position: absolute; left: 10px; right: 10px; bottom: 44px; height: 14px; border-radius: 50%; background: radial-gradient(#fff6c8, #f4d67f 45%, rgba(244,214,127,0) 72%); opacity: 0; transition: opacity .4s .15s; }
+.chbox.open .chest .cg { opacity: 1; }
+.chlist { display: flex; flex-direction: column; gap: 6px; }
+.chlist div { display: flex; align-items: center; justify-content: center; gap: 8px; padding: 8px 12px; border-radius: 999px; background: rgba(224,170,74,.14); border: 1px solid rgba(224,170,74,.5); font: 800 15px var(--ui); color: #f4d67f; font-variant-numeric: tabular-nums; animation: luchip .5s cubic-bezier(.2,.9,.3,1.4) both; }
+.chlist div:nth-child(2) { animation-delay: .12s; } .chlist div:nth-child(3) { animation-delay: .24s; } .chlist div:nth-child(4) { animation-delay: .36s; }
+.chlist[hidden] { display: none; }
+
+/* ---------- Serie (taegliche Belohnung) ---------- */
+.dlstreak { font: 800 22px var(--display); color: #ffb36b; }
+.dlstreak small { display: block; margin-top: 3px; font: 600 12px var(--ui); color: var(--muted); }
+#dlNote { padding: 9px 12px; border-radius: 12px; background: var(--bg); border: 1px solid var(--line); font-size: 13px; line-height: 1.4; color: var(--ink); }
+#dlNote[hidden] { display: none; }
+.dldays i.dch b { font-size: 14px; line-height: 1; }
+.dldays i.dch:not(.now):not(.done) { border-color: rgba(224,170,74,.45); }
+/* Flamme an der Profil-Pille im Menue: klein auf dem Profilbild, aendert die Breite der Pille nicht */
+.pflame { position: absolute; left: 19px; bottom: -3px; z-index: 1; display: inline-flex; align-items: center; gap: 1px; height: 17px; padding: 0 5px 0 3px; border-radius: 9px; background: #1b1d1f; border: 1px solid rgba(255,150,70,.6); font: 800 10px/1 var(--ui); color: #ffb36b; font-variant-numeric: tabular-nums; pointer-events: none; }
+.pflame[hidden] { display: none; }
+/* langer Name und grosses Guthaben: Name kuerzen, damit die Pille nie an die Chips oben rechts stoesst */
+.profchip #pnameMenu { max-width: 96px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; line-height: 1.25; }
+@container (max-width: 340px) { .profchip #pnameMenu { max-width: 72px; } }
+#shop .endcard { max-height: 100%; overflow-y: auto; }
+.shopitem .sn small .bchip { position: relative; flex: none; border-radius: 50%; background: radial-gradient(circle at 35% 30%, #f4d67f, #d0a040 58%, #a2742a); }
+.shopitem .si.sh { background: radial-gradient(circle at 40% 35%, rgba(111,183,232,.3), rgba(111,183,232,.06)); font-size: 28px; }
+
+/* ---------- Taegliche Aufgaben ---------- */
+/* runder Knopf unter dem Shop-Knopf, gleiche Groesse */
+.qbtn { position: absolute; left: 16px; top: 128px; z-index: 2; width: 46px; height: 46px; border-radius: 50%; padding: 0; display: grid; place-items: center; background: rgba(16,18,19,.7); border: 1px solid rgba(224,170,74,.55); color: var(--brass); }
+.qbtn svg { width: 22px; height: 22px; display: block; }
+.qbtn:active { transform: scale(.94); }
+.qbtn .qdot { position: absolute; top: -3px; right: -3px; min-width: 19px; height: 19px; padding: 0 5px; box-sizing: border-box; border-radius: 10px; background: #e5484d; border: 2px solid #141617; color: #fff; font: 800 10px/15px var(--ui); text-align: center; font-style: normal; }
+.qbtn .qdot.dot { min-width: 13px; width: 13px; height: 13px; padding: 0; top: 0; right: 0; }
+.qbtn .qdot[hidden] { display: none; }
+.qbtn.pulse { animation: qpulse 1s ease 2; }
+@keyframes qpulse { 40% { transform: scale(1.14); box-shadow: 0 0 16px rgba(224,170,74,.55); } }
+#quests { z-index: 74; padding: 16px; }
+#quests .endcard { display: flex; flex-direction: column; gap: 10px; max-height: 100%; overflow-y: auto; padding: 22px 16px 16px; }
+#quests .endcard > * { flex-shrink: 0; }
+#quests .endcard h2, #quests .endcard p { margin: 0; }
+.qtime { font: 600 12px var(--ui); color: var(--muted); font-variant-numeric: tabular-nums; }
+.qcard { display: flex; flex-direction: column; gap: 7px; padding: 11px 12px; border-radius: 14px; background: var(--bg); border: 1px solid var(--line); text-align: left; }
+.qcard.done { border-color: rgba(224,170,74,.6); background: rgba(224,170,74,.08); }
+.qcard.claimed { opacity: .62; }
+.qtop { display: flex; align-items: center; gap: 8px; }
+.qtag { flex: none; padding: 2px 7px; border-radius: 6px; font: 800 10px var(--ui); letter-spacing: .06em; text-transform: uppercase; }
+.qtag.e { background: rgba(143,207,154,.16); color: #8fcf9a; }
+.qtag.m { background: rgba(111,183,232,.16); color: #6fb7e8; }
+.qtag.h { background: rgba(229,130,111,.18); color: #f0a08f; }
+.qrew { margin-left: auto; font: 700 11px var(--ui); color: var(--muted); white-space: nowrap; font-variant-numeric: tabular-nums; }
+.qrew b { color: #f4d67f; }
+.qt { font: 700 14px/1.3 var(--ui); color: var(--ink); }
+.qrow { display: flex; align-items: center; gap: 10px; min-height: 34px; }
+.qrow .xpt { height: 7px; }
+.qn { flex: none; min-width: 44px; text-align: right; font: 800 12px var(--ui); color: var(--muted); font-variant-numeric: tabular-nums; }
+.qrow .btn { flex: none; height: 34px; padding: 0 14px; font-size: 13px; }
+.qrow .qok { flex: none; font: 800 12px var(--ui); color: #8fcf9a; }
+.qroll { flex: none; width: 34px; height: 34px; padding: 0; border-radius: 50%; display: grid; place-items: center; background: transparent; border: 1px solid var(--line); color: var(--muted); font-size: 16px; line-height: 1; }
+.qroll:disabled { opacity: .35; }
+.qchest { display: flex; align-items: center; gap: 12px; padding: 10px 12px; border-radius: 14px; background: linear-gradient(135deg, rgba(224,170,74,.14), rgba(224,170,74,.03)); border: 1px solid rgba(224,170,74,.4); text-align: left; }
+.qchest .qci { flex: none; width: 40px; height: 40px; display: grid; place-items: center; font-size: 28px; }
+.qchest .qcs { flex: 1; min-width: 0; display: flex; flex-direction: column; gap: 2px; }
+.qchest .qcs b { font: 800 14px var(--ui); color: var(--ink); }
+.qchest .qcs small { font: 600 11px/1.35 var(--ui); color: var(--muted); }
+.qchest .btn { flex: none; height: 36px; padding: 0 14px; font-size: 13px; }
+.qchest.ready .qci { animation: chwob 1.6s ease-in-out infinite; }
+#qList { display: flex; flex-direction: column; gap: 8px; }
+@media (max-height: 700px) { #quests .endcard { gap: 8px; padding-top: 16px; } #quests h2 { font-size: 24px; } .qcard { gap: 5px; padding: 9px 11px; } .qhint { display: none; } }
+.qhint { font-size: 12px !important; line-height: 1.4 !important; }
+#qToast { position: absolute; left: 50%; bottom: max(24px, env(safe-area-inset-bottom)); z-index: 97; transform: translate(-50%, 12px); padding: 9px 16px; border-radius: 999px; background: var(--brass); color: var(--brass-ink); font: 800 13px var(--ui); opacity: 0; pointer-events: none; transition: opacity .3s, transform .3s; white-space: nowrap; max-width: calc(100% - 20px); overflow: hidden; text-overflow: ellipsis; box-shadow: 0 6px 18px rgba(0,0,0,.5); }
+#qToast.on { opacity: 1; transform: translate(-50%, 0); }
+
 </style>
 
 <div id="app">
@@ -1609,11 +1694,12 @@ input.bprange[type=range]::-moz-range-thumb { width: 20px; height: 20px; border-
 
   <div id="menu">
     <button class="profchip" id="profBtn" type="button" aria-label="Profil und Einstellungen öffnen">
-      <span class="pav" id="pavMenu">S</span><span id="pnameMenu">Spieler</span>
+      <span class="pav" id="pavMenu">S</span><span id="pnameMenu">Spieler</span><span class="pflame" id="pFlame" hidden aria-hidden="true">🔥<b>1</b></span>
       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M9 5l7 7-7 7"/></svg>
     </button>
     <div class="bank" role="status" aria-label="Deine Chips"><i class="bchip" aria-hidden="true"></i><span id="bankVal">1.000</span></div>
     <button class="shopbtn" id="shopBtn" type="button" aria-label="Shop öffnen"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 9.5V20h16V9.5"/><path d="M3 9.5l1.6-5h14.8l1.6 5"/><path d="M3 9.5c0 1.4 1.1 2.5 2.5 2.5S8 10.9 8 9.5c0 1.4 1.1 2.5 2.5 2.5S13 10.9 13 9.5c0 1.4 1.1 2.5 2.5 2.5S18 10.9 18 9.5c0 1.4 1.1 2.5 2.5 2.5S21 10.9 21 9.5"/><path d="M10 20v-5h4v5"/></svg></button>
+    <button class="qbtn" id="qBtn" type="button" aria-label="Tägliche Aufgaben öffnen"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M9 4h6v3H9z"/><path d="M15 5.5h2.5A1.5 1.5 0 0 1 19 7v12.5a1.5 1.5 0 0 1-1.5 1.5h-11A1.5 1.5 0 0 1 5 19.5V7a1.5 1.5 0 0 1 1.5-1.5H9"/><path d="M8.5 13.5l2.3 2.3 4.7-4.8"/></svg><i class="qdot" id="qDot" hidden></i></button>
     <div class="tomchip" id="tomChip" role="status" aria-label="Deine Tomaten"><i aria-hidden="true">🍅</i><span id="tomVal">0</span></div>
     <button class="xpbar" id="xpBar" type="button" aria-label="Level und XP ansehen"><b id="xpLv">Lv 1</b><span class="xpt"><i id="xpFill"></i></span></button>
     <div class="mbg3" aria-hidden="true"></div>
@@ -2255,9 +2341,37 @@ input.bprange[type=range]::-moz-range-thumb { width: 20px; height: 20px; border-
     <div class="endcard">
       <div class="dlchip" aria-hidden="true"><i class="bchip"></i></div>
       <h2>Tägliche Belohnung</h2>
+      <div class="dlstreak" id="dlStreak"></div>
       <p id="dlText"></p>
+      <div id="dlNote" hidden></div>
       <div class="dldays" id="dlDays" aria-hidden="true"></div>
       <button class="btn primary wide" id="dlGo" type="button">Abholen</button>
+    </div>
+  </div>
+
+  <div id="chestDlg" class="overlay" hidden>
+    <div class="endcard">
+      <div class="chbox" id="chBox" aria-hidden="true"><i class="lurays"></i><span class="chest"><i class="cg"></i><i class="cb"></i><i class="cl"></i></span></div>
+      <small class="lukick" id="chKick">Truhe</small>
+      <h2 id="chTitle">Truhe</h2>
+      <p id="chText"></p>
+      <div class="chlist" id="chList" hidden></div>
+      <button class="btn primary wide" id="chGo" type="button">Öffnen</button>
+    </div>
+  </div>
+
+  <div id="quests" class="overlay" hidden>
+    <div class="endcard">
+      <h2>Tägliche Aufgaben</h2>
+      <div class="qtime" id="qTime"></div>
+      <div id="qList"></div>
+      <div class="qchest" id="qChest">
+        <span class="qci" aria-hidden="true">🧰</span>
+        <span class="qcs"><b>Bonus-Truhe</b><small id="qChestTxt"></small></span>
+        <button class="btn primary" id="qChestGo" type="button" hidden>Öffnen</button>
+      </div>
+      <p class="qhint" id="qHint">Jeden Tag gibt es drei neue Aufgaben – für alle gleich, also auch für deine Freunde. Eine Aufgabe pro Tag kannst du mit 🎲 kostenlos neu würfeln.</p>
+      <button class="btn wide" id="qClose" type="button">Schließen</button>
     </div>
   </div>
 
@@ -2304,6 +2418,11 @@ input.bprange[type=range]::-moz-range-thumb { width: 20px; height: 20px; border-
           <button class="btn primary" id="shopBuy" type="button">Kaufen</button>
           <button class="btn" id="shopSell" type="button">Verkaufen</button>
         </span>
+      </div>
+      <div class="shopitem" id="shopShield">
+        <span class="si sh" aria-hidden="true">🛡️</span>
+        <span class="sn"><b>Streak-Schutz</b><small class="d">Rettet deine Serie, wenn du einen Tag vergisst</small><small><i class="bchip" aria-hidden="true"></i><span><span id="shShPrice">2.000</span> Chips · Bestand <span id="shShN">0</span>/2</span></small></span>
+        <button class="btn primary" id="shopShBuy" type="button">Kaufen</button>
       </div>
       <button class="shopitem" id="shopLk" type="button">
         <span class="si lk" aria-hidden="true"><svg viewBox="0 0 40 48" aria-hidden="true"><path d="M10 21V14a10 10 0 0 1 20 0v7" fill="none" stroke="#39b6ff" stroke-width="3.5"/><rect x="2" y="20" width="36" height="26" rx="8" fill="#0b1630" stroke="#39b6ff" stroke-width="2.4"/><circle cx="20" cy="33" r="8" fill="none" stroke="#1f4f94" stroke-width="3.5"/><circle cx="20" cy="25" r="2.2" fill="#ffe08a"/></svg></span>
@@ -2366,11 +2485,17 @@ input.bprange[type=range]::-moz-range-thumb { width: 20px; height: 20px; border-
      'poker:hand'   { won, net, pot, handName, cat, showdown, allin, folded, hole, board, online, bigBlind }
      'bj:round'     { result: 'win'|'lose'|'push'|'bj', net, bet, doubled, split, online }
      'slots:spin'   { bet, stake, win, mult, extraSpins, free, jackpot }
-     'rl:spin'      { bet, win, number, straightHit, online }
+     'rl:spin'      { bet, win, number, straightHit, colorBet, colorWon, online }  (colorBet: Chip auf Rot oder Schwarz,
+                                           colorWon: eine dieser Wetten hat gewonnen)
      'lock:round'   { level, hits, jackpot, amount }
      'tomato'       { game }       'gift' { amount }       'game:open' { game }
      'online:round' { game }       eine Runde mit echten Mitspielern
      'xp'           { amount, reason, xp, lv }    'level' { lv, reward, unlocks }   (aus dem XP-Skript)
+     'streak'       { streak, best, saved, chest }  taegliche Belohnung abgeholt (saved: Streak-Schutz verbraucht,
+                                           chest: { chips, frame? } an Truhen-Tagen, sonst null)
+     'quest'        { id, diff, chips }            eine Aufgabe ist geschafft (im Spiel moeglich, abgeholt wird im Menue)
+     'quest:claim'  { id, diff, chips }            Belohnung einer Aufgabe abgeholt
+     'quests:chest' { day, chips }                 Bonus-Truhe der Aufgaben geoeffnet (siehe PRQ.onChest)
    game: 'poker' | 'bj' | 'slots' | 'rl' | 'lock'. Mit window.PR_DEBUG = true steht jedes Ereignis in der Konsole. */
 (function () {
   'use strict';
@@ -7149,7 +7274,7 @@ input.bprange[type=range]::-moz-range-thumb { width: 20px; height: 20px; border-
   } catch (e) {}
   [].forEach.call(document.querySelectorAll('.mdots button'), function (b) { b.addEventListener('click', function () { setPage(+b.dataset.p, true); }); });
   menu.addEventListener('pointerdown', function (e) {
-    if (e.target.closest('.profchip, .bank, .shopbtn, .tomchip, .xpbar') || (e.pointerType === 'mouse' && e.button !== 0)) return;
+    if (e.target.closest('.profchip, .bank, .shopbtn, .qbtn, .tomchip, .xpbar') || (e.pointerType === 'mouse' && e.button !== 0)) return;
     sw = { x: e.clientX, y: e.clientY, id: e.pointerId, on: false, dx: 0, w: $('#mSwipe').offsetWidth || 300 };
   });
   menu.addEventListener('pointermove', function (e) {
@@ -9058,9 +9183,11 @@ input.bprange[type=range]::-moz-range-thumb { width: 20px; height: 20px; border-
       lastB = myB;
       /* Ereignis-Zentrale: Summe aller eigenen Chips dieses Drehs */
       var straight = Object.keys(myB).some(function (k) { var ns = numsOf(k); return !!ns && ns.length === 1 && ns[0] === res; }), on = others();
+      /* Rot/Schwarz: lag ein Chip darauf, und hat einer davon gewonnen? (fuer Aufgaben wie „3 Mal in Folge“) */
+      var colorBet = !!(myB.red || myB.black), colorWon = !!((myB.red && colOf(res) === 'r') || (myB.black && colOf(res) === 'b'));
       PR.emit('bet', { game: 'rl', amount: stake });
       if (win > 0) PR.emit('win', { game: 'rl', amount: win, net: win - stake });
-      PR.emit('rl:spin', { bet: stake, win: win, number: res, straightHit: straight, online: on });
+      PR.emit('rl:spin', { bet: stake, win: win, number: res, straightHit: straight, colorBet: colorBet, colorWon: colorWon, online: on });
       if (on) PR.emit('online:round', { game: 'rl' });
     }
     V.shown = bank() - win;
@@ -10340,6 +10467,65 @@ input.bprange[type=range]::-moz-range-thumb { width: 20px; height: 20px; border-
 </script>
 
 <script>
+/* Truhe mit kleiner Oeffnen-Animation (Serie und Aufgaben, spaeter auch andere Boni).
+   window.PRChest.open({ kick, title, text, lines: [{ icon, text }], onOpen: function (add) {}, onClose: function () {} })
+     zeigt die geschlossene, wackelnde Truhe. Antippen von „Öffnen“ (oder der Truhe) ruft zuerst onOpen(add) auf
+     (dort gutschreiben; add(icon, text) haengt weitere Belohnungszeilen an), dann springt der Deckel auf und die
+     Belohnungen erscheinen. Ohne Oeffnen laesst sich die Truhe nicht schliessen. Nur aus dem Menue aufrufen. */
+(function () {
+  'use strict';
+  var PR = window.PR;
+  if (!PR) return;
+  var Snd = PR.Snd;
+  function $(s) { return document.querySelector(s); }
+  var cur = null, ov = $('#chestDlg'), box = $('#chBox'), list = $('#chList'), go = $('#chGo');
+  function add(icon, text) { var d = document.createElement('div'); d.textContent = (icon ? icon + ' ' : '') + text; list.appendChild(d); }
+  function confetti() {
+    var card = ov.querySelector('.endcard'), cols = ['#f4d67f', '#e0aa4a', '#ffffff', '#ffb36b'];
+    for (var i = 0; i < 22; i++) {
+      var c = document.createElement('i'); c.className = 'luconf';
+      c.style.left = Math.round(Math.random() * 96 + 2) + '%';
+      c.style.background = cols[i % cols.length];
+      c.style.borderRadius = '50%'; c.style.width = c.style.height = '9px';
+      c.style.setProperty('--dx', Math.round((Math.random() - 0.5) * 120) + 'px');
+      c.style.setProperty('--r', '0deg');
+      c.style.setProperty('--t', (1.2 + Math.random() * 1).toFixed(2) + 's');
+      c.style.setProperty('--d', (0.1 + Math.random() * 0.4).toFixed(2) + 's');
+      c.addEventListener('animationend', function () { this.remove(); });
+      card.appendChild(c);
+    }
+  }
+  function open(o) {
+    cur = o || {}; cur.opened = false;
+    box.classList.remove('open');
+    [].forEach.call(ov.querySelectorAll('.luconf'), function (c) { c.remove(); });
+    $('#chKick').textContent = cur.kick || 'Truhe';
+    $('#chTitle').textContent = cur.title || 'Truhe';
+    $('#chText').textContent = cur.text || '';
+    $('#chText').hidden = !cur.text;
+    list.innerHTML = ''; list.hidden = true;
+    go.textContent = 'Öffnen';
+    ov.hidden = false;
+  }
+  function burst() {
+    if (!cur || cur.opened) return;
+    cur.opened = true;
+    (cur.lines || []).forEach(function (l) { add(l.icon, l.text); });
+    if (cur.onOpen) { try { cur.onOpen(add); } catch (e) { try { console.error('Truhe', e); } catch (x) {} } }
+    box.classList.add('open'); list.hidden = !list.children.length;
+    go.textContent = 'Super!';
+    confetti();
+    try { Snd.unlock(); Snd.win(); setTimeout(function () { Snd.chip(4, 0, true); Snd.pot(); }, 380); } catch (e) {}
+    PR.renderBank();
+  }
+  function close() { ov.hidden = true; var c = cur; cur = null; if (c && c.onClose) { try { c.onClose(); } catch (e) {} } }
+  go.addEventListener('click', function () { if (cur && !cur.opened) burst(); else close(); });
+  box.addEventListener('click', burst);
+  window.PRChest = { open: open, isOpen: function () { return !ov.hidden; } };
+})();
+</script>
+
+<script>
 /* Extras: taegliche Belohnung, Blackjack-Statistik im Profil, Vibration an/aus */
 (function () {
   'use strict';
@@ -10348,46 +10534,144 @@ input.bprange[type=range]::-moz-range-thumb { width: 20px; height: 20px; border-
   var Snd = PR.Snd, fmt = PR.fmt;
   function $(s) { return document.querySelector(s); }
 
-  /* ---------- Taegliche Belohnung: jeden Tag einmal Chips, mehr bei mehreren Tagen in Folge ---------- */
-  var DAILY = [100, 150, 200, 250, 300, 400, 500];
+  /* ---------- Taegliche Belohnung (Serie 2.0): jeden Tag einmal Chips, mehr bei mehreren Tagen in Folge ----------
+     Tag 1 bis 7 aus DAILY, ab Tag 8 jeden Tag 500. Truhen (zusaetzlich zu den Chips des Tages) an Tag 7, 14, 21, 28,
+     danach alle 7 Tage (siehe chestOf). Serie und Truhen geben nur Chips (keine XP). Mitternacht und „gestern“ in lokaler Zeit (dayKey) wie bisher.
+     Streak-Schutz (im Shop, hoechstens 2): fehlt genau ein Tag, wird einer verbraucht und die Serie laeuft weiter.
+     Gespeichert in pr-daily { day, streak, best, shields } (alte Daten { day, streak } werden weiter gelesen,
+     unbekannte Felder bleiben erhalten). Bei jedem Abholen: Ereignis 'streak' { streak, best, saved, chest }.
+     Der Profilrahmen „Stammgast“ (Tag 28) wird erst mit den Profilrahmen gebaut: der kann best >= 28 aus pr-daily
+     bzw. window.PRDaily.info().best lesen oder auf 'streak' hoeren (chest.frame === 'stammgast').
+     Schnittstelle: window.PRDaily { info(): { day, streak, alive, best, shields }, chestOf(tag), amountOf(tag),
+                                     SHIELD_PRICE, MAX_SHIELDS, buyShield(): true/false } */
+  var DAILY = [100, 150, 200, 250, 300, 400, 500], AFTER = 500, SHIELD_PRICE = 2000, MAX_SHIELDS = 2;
   function dayKey(d) { return d.getFullYear() + '-' + (d.getMonth() + 1) + '-' + d.getDate(); }
+  function dayOff(n) { var d = new Date(); d.setDate(d.getDate() + n); return dayKey(d); }
   function today() { return dayKey(new Date()); }
-  function yesterday() { var d = new Date(); d.setDate(d.getDate() - 1); return dayKey(d); }
+  function yesterday() { return dayOff(-1); }
+  function cnt(v, max) { v = Math.floor(+v); return isFinite(v) && v > 0 ? Math.min(v, max) : 0; }
   function loadDaily() {
-    try { var o = JSON.parse(localStorage.getItem('pr-daily') || 'null'); if (o && typeof o.day === 'string') return { day: o.day, streak: Math.max(0, Math.min(99, o.streak | 0)) }; } catch (e) {}
-    return { day: '', streak: 0 };
+    try {
+      var o = JSON.parse(localStorage.getItem('pr-daily') || 'null');
+      if (o && typeof o.day === 'string') {
+        var st = cnt(o.streak, 99999);
+        return { day: o.day, streak: st, best: Math.max(st, cnt(o.best, 99999)), shields: cnt(o.shields, MAX_SHIELDS), raw: o };
+      }
+    } catch (e) {}
+    return { day: '', streak: 0, best: 0, shields: 0, raw: {} };
   }
-  function nextStreak(d) { return d.day === yesterday() ? d.streak + 1 : 1; }
-  function amountOf(streak) { return DAILY[Math.min(streak, DAILY.length) - 1]; }
+  function saveDaily(d) {
+    var o = {}, k;
+    for (k in d.raw) if (Object.prototype.hasOwnProperty.call(d.raw, k)) o[k] = d.raw[k];
+    o.day = d.day; o.streak = d.streak; o.best = d.best; o.shields = d.shields;
+    try { localStorage.setItem('pr-daily', JSON.stringify(o)); } catch (e) {}
+  }
+  /* was passiert beim naechsten Abholen? { st, saved: alte Serie (Schutz verbraucht), lost: alte Serie (verloren) } */
+  function nextOf(d) {
+    if (d.day === yesterday()) return { st: d.streak + 1, saved: 0, lost: 0 };
+    if (d.day === dayOff(-2) && d.shields > 0 && d.streak > 0) return { st: d.streak + 1, saved: d.streak, lost: 0 };
+    return { st: 1, saved: 0, lost: d.day && d.streak > 1 ? d.streak : 0 };
+  }
+  /* laufende Serie fuer die Anzeige (0 = keine bzw. schon verloren) */
+  function alive(d) {
+    if (d.day === today() || d.day === yesterday()) return d.streak;
+    if (d.day === dayOff(-2) && d.shields > 0) return d.streak;
+    return 0;
+  }
+  function amountOf(streak) { return streak <= DAILY.length ? DAILY[Math.max(1, streak) - 1] : AFTER; }
+  function chestOf(st) {
+    if (st === 7) return { chips: 1000 };
+    if (st === 14) return { chips: 2500 };
+    if (st === 21) return { chips: 5000 };
+    if (st === 28) return { chips: 10000, frame: 'stammgast' };
+    if (st > 28 && st % 7 === 0) return { chips: 5000 };
+    return null;
+  }
+  function nextChest(st) { var n = Math.max(1, st); while (!chestOf(n)) n++; return n; }
+  function tage(n) { return n === 1 ? '1 Tag' : fmt(n) + ' Tage'; }
   function menuFree() {
     if ($('#menu').hidden || !$('#splash').hidden || !$('#daily').hidden) return false;
     if (window.prIdle && !window.prIdle()) return false;
-    return ['#friends', '#bjf', '#profile', '#pview', '#chipdlg', '#invBan', '#askBan', '#shop', '#giftDlg', '#xpView', '#lvUp'].every(function (s) { var e = $(s); return !e || e.hidden; });
+    return ['#friends', '#bjf', '#profile', '#pview', '#chipdlg', '#invBan', '#askBan', '#shop', '#giftDlg', '#xpView', '#lvUp', '#quests', '#chestDlg'].every(function (s) { var e = $(s); return !e || e.hidden; });
   }
   function showDaily() {
     var d = loadDaily(); if (d.day === today()) return;
-    var st = nextStreak(d), amt = amountOf(st);
-    $('#dlText').innerHTML = (st > 1 ? st + ' Tage in Folge dabei!' : 'Schön, dass du da bist!') + '<b>+' + fmt(amt) + ' Chips</b>';
+    var nx = nextOf(d), st = nx.st, amt = amountOf(st), ch = chestOf(st);
+    $('#dlStreak').innerHTML = '🔥 ' + tage(st) + (st > 1 ? ' in Folge' : '');
+    var nc = nextChest(st), sub = document.createElement('small');
+    sub.textContent = nc === st ? 'Heute gibt es eine Truhe!' : 'Nächste Truhe: Tag ' + fmt(nc) + ' · noch ' + tage(nc - st);
+    $('#dlStreak').appendChild(sub);
+    $('#dlText').innerHTML = (st > 1 ? 'Schön, dass du wieder da bist!' : 'Schön, dass du da bist!') + '<b>+' + fmt(amt) + ' Chips' + (ch ? ' + Truhe' : '') + '</b>';
+    var note = $('#dlNote');
+    note.hidden = !(nx.saved || nx.lost);
+    if (nx.saved) note.textContent = 'Dein Streak-Schutz hat deine ' + fmt(nx.saved) + '-Tage-Serie gerettet 🛡️' + (d.shields > 1 ? ' (noch ' + (d.shields - 1) + ' übrig)' : '');
+    else if (nx.lost) note.textContent = 'Deine Serie von ' + (nx.lost === 1 ? '1 Tag' : fmt(nx.lost) + ' Tagen') + ' ist vorbei – kein Problem, heute geht es neu los. Rekord: ' + tage(d.best) + '.' + (d.shields ? '' : ' Tipp: Ein Streak-Schutz aus dem Shop rettet einen vergessenen Tag.');
     var days = $('#dlDays'); days.innerHTML = '';
-    var pos = Math.min(st, DAILY.length);
-    DAILY.forEach(function (v, i) {
-      var e = document.createElement('i');
-      e.className = i + 1 < pos ? 'done' : i + 1 === pos ? 'now' : '';
-      e.innerHTML = 'Tag ' + (i + 1) + '<b>' + fmt(v) + '</b>';
+    var w0 = Math.floor((st - 1) / 7) * 7;
+    for (var i = 1; i <= 7; i++) {
+      var n = w0 + i, e = document.createElement('i'), c = chestOf(n);
+      e.className = (n < st ? 'done' : n === st ? 'now' : '') + (c ? ' dch' : '');
+      e.innerHTML = (n < 10 ? 'Tag ' : '') + n + '<b>' + (c ? '🧰' : fmt(amountOf(n))) + '</b>';
       days.appendChild(e);
-    });
+    }
+    $('#dlGo').textContent = ch ? 'Abholen und Truhe öffnen' : 'Abholen';
     $('#daily').hidden = false;
   }
   $('#dlGo').addEventListener('click', function () {
     var d = loadDaily();
     $('#daily').hidden = true;
     if (d.day === today()) return;
-    var st = nextStreak(d), amt = amountOf(st), P = PR.prof();
-    P.bank = Math.round((P.bank || 0) + amt); PR.saveProf(); PR.renderBank();
-    try { localStorage.setItem('pr-daily', JSON.stringify({ day: today(), streak: st })); } catch (e) {}
+    var nx = nextOf(d), st = nx.st, amt = amountOf(st), ch = chestOf(st), P = PR.prof();
+    /* Chips des Tages und der Truhe gleich gutschreiben und merken (der Dialog kommt nur im Menue, siehe menuFree) */
+    P.bank = Math.round((P.bank || 0) + amt + (ch ? ch.chips : 0)); PR.saveProf(); PR.renderBank();
+    if (nx.saved) d.shields--;
+    d.day = today(); d.streak = st; d.best = Math.max(d.best, st);
+    saveDaily(d);
+    PR.emit('streak', { streak: st, best: d.best, saved: !!nx.saved, chest: ch });
+    renderFlame();
     Snd.unlock(); Snd.chip(4, 0, 1.4); setTimeout(function () { Snd.pot(); }, 250);
+    if (ch && window.PRChest) {
+      var lines = [{ icon: '🪙', text: '+' + fmt(ch.chips) + ' Chips' }];
+      if (ch.frame === 'stammgast') lines.push({ icon: '🖼️', text: 'Profilrahmen „Stammgast“' });
+      window.PRChest.open({ kick: 'Serie · Tag ' + fmt(st), title: st === 28 ? 'Große Truhe' : 'Truhe', text: tage(st) + ' in Folge – stark!', lines: lines });
+    }
   });
   setInterval(function () { if (menuFree()) showDaily(); }, 1500);
+
+  /* Flamme mit der laufenden Serie klein an der Profil-Pille im Menue */
+  function renderFlame() {
+    var n = alive(loadDaily()), f = $('#pFlame');
+    f.hidden = n < 1;
+    f.querySelector('b').textContent = n > 999 ? '999+' : String(n);
+    $('#profBtn').setAttribute('aria-label', 'Profil und Einstellungen öffnen' + (n > 0 ? ' – Serie: ' + tage(n) : ''));
+  }
+  renderFlame();
+  setInterval(renderFlame, 30000);
+
+  /* Streak-Schutz im Shop (nur im Menue erreichbar) */
+  function renderShield() {
+    var d = loadDaily(), bank = PR.prof().bank | 0;
+    $('#shShPrice').textContent = fmt(SHIELD_PRICE);
+    $('#shShN').textContent = String(d.shields);
+    var b = $('#shopShBuy');
+    b.disabled = d.shields >= MAX_SHIELDS || bank < SHIELD_PRICE;
+    b.textContent = d.shields >= MAX_SHIELDS ? 'Voll' : 'Kaufen';
+  }
+  function buyShield() {
+    var d = loadDaily(), P = PR.prof();
+    if (d.shields >= MAX_SHIELDS || (P.bank | 0) < SHIELD_PRICE) return false;
+    P.bank = (P.bank | 0) - SHIELD_PRICE; PR.saveProf(); PR.renderBank();
+    d.shields++; saveDaily(d);
+    return true;
+  }
+  $('#shopShBuy').addEventListener('click', function () { if (buyShield()) Snd.chip(3, 0, true); renderShield(); renderFlame(); });
+  $('#shopBtn').addEventListener('click', renderShield);
+  setInterval(function () { if (!$('#shop').hidden) renderShield(); }, 1500);
+  renderShield();
+  window.PRDaily = {
+    info: function () { var d = loadDaily(); return { day: d.day, streak: d.streak, alive: alive(d), best: d.best, shields: d.shields }; },
+    chestOf: chestOf, amountOf: amountOf, SHIELD_PRICE: SHIELD_PRICE, MAX_SHIELDS: MAX_SHIELDS, buyShield: buyShield
+  };
 
   /* ---------- Profil: Vibration (die Statistik je Spiel steht im Profil-Teil oben) ---------- */
   function renderVib() { var on = Snd.vibOn(); $('#vibSw').setAttribute('aria-checked', on ? 'true' : 'false'); }
@@ -10526,7 +10810,7 @@ input.bprange[type=range]::-moz-range-thumb { width: 20px; height: 20px; border-
   function free() {
     if ($('#menu').hidden || !$('#splash').hidden) return false;
     if (window.prIdle && !window.prIdle()) return false;
-    return ['#daily', '#friends', '#bjf', '#profile', '#pview', '#chipdlg', '#invBan', '#askBan', '#shop', '#giftDlg', '#xpView', '#lvUp', '#end']
+    return ['#daily', '#friends', '#bjf', '#profile', '#pview', '#chipdlg', '#invBan', '#askBan', '#shop', '#giftDlg', '#xpView', '#lvUp', '#end', '#quests', '#chestDlg']
       .every(function (s) { var e = $(s); return !e || e.hidden; });
   }
   var luT = [];
@@ -10680,6 +10964,375 @@ input.bprange[type=range]::-moz-range-thumb { width: 20px; height: 20px; border-
   setInterval(function () { if (!$('#profile').hidden) render(); }, 5000);
   render();
   window.PRT = { secs: function () { return Math.round(T.s); }, fmt: fmtT };
+})();
+</script>
+
+<script>
+/* Taegliche Aufgaben: jeden Tag drei (leicht, mittel, schwer), fuer alle gleich, weil die Auswahl aus dem Datum
+   (Europe/Berlin) berechnet wird. Neu um Mitternacht (Berlin). Fortschritt kommt nur ueber die Ereignis-Zentrale (PR.on).
+   Belohnung nur Chips (leicht 300, mittel 800, schwer 2.000), alle drei geschafft: Bonus-Truhe mit 1.500 Chips.
+   Gutgeschrieben wird erst beim Antippen von „Abholen“ im Menue (dort rechnet kein Tisch das Guthaben neu).
+   Eine Aufgabe pro Tag kostenlos neu wuerfeln. Online-Aufgaben (Freund, Geschenk) nur leicht/mittel und nur mit Freunden.
+   Wird eine Aufgabe fertig, kommt die Meldung erst, wenn man wieder im Menue ist (nie mitten in einer Hand).
+   Nicht abgeholte Belohnungen vom Vortag werden am naechsten Tag im Menue gutgeschrieben (owed).
+   Gespeichert in pr-quests { day, list: [{ id, prog, done, claimed, b?, c?, g? }], reroll, chest, seen, owed }
+     b: Spielzeit beim Start (Aufgabe „Spiele 15 Minuten“), c: laufende Serie, g: heute gespielte Spiele.
+   Schnittstelle window.PRQ:
+     list()          [{ id, diff, text, n, prog, done, claimed }] die heutigen Aufgaben
+     progress(id, n) Fortschritt von Hand dazuzaehlen (fuer Aufgaben, die kein Ereignis haben), true wenn aktiv
+     done()          Anzahl geschaffter Aufgaben heute
+     onChest(fn)     fn(info) beim Oeffnen der Bonus-Truhe, info = { day, chips, add(icon, text) }: dort darf ein
+                     spaeterer Schritt einen Bonus gutschreiben (z. B. Rubbellos) und mit add() in der Truhe anzeigen.
+                     Zusaetzlich kommt das Ereignis 'quests:chest' { day, chips }.
+     addQuest(def)   weitere Aufgabe in den Pool { id, d: 'e'|'m'|'h', t: Text, n: Ziel, ev: Ereignis(se), f(daten, q, name)
+                     -> Zuwachs, fr: nur mit Freunden }. Nur beim Laden aufrufen (vor DOMContentLoaded), Reihenfolge fest,
+                     sonst bekommen Freunde unterschiedliche Aufgaben. */
+(function () {
+  'use strict';
+  var PR = window.PR;
+  if (!PR || !PR.on) return;
+  var Snd = PR.Snd, fmt = PR.fmt, KEY = 'pr-quests';
+  function $(s) { return document.querySelector(s); }
+  var REW = { e: { chips: 300, name: 'Leicht' }, m: { chips: 800, name: 'Mittel' }, h: { chips: 2000, name: 'Schwer' } };
+  var CHEST = 1500;
+
+  /* ---------- Aufgaben-Pool ---------- */
+  var GAMEEV = { 'poker:hand': 'poker', 'bj:round': 'bj', 'slots:spin': 'slots', 'rl:spin': 'rl', 'lock:round': 'lock' };
+  function one() { return 1; }
+  function netOf(d, name) {
+    if (name === 'slots:spin' || name === 'rl:spin') return (d.win | 0) - (d.bet | 0);
+    if (name === 'lock:round') return d.amount | 0;
+    return d.net | 0;
+  }
+  var POOL = [
+    /* leicht */
+    { id: 'pk10', d: 'e', t: 'Spiele 10 Pokerhände', n: 10, ev: 'poker:hand', f: one },
+    { id: 'pkw3', d: 'e', t: 'Gewinne 3 Pokerhände', n: 3, ev: 'poker:hand', f: function (d) { return d.won ? 1 : 0; } },
+    { id: 'bj10', d: 'e', t: 'Spiele 10 Runden Blackjack', n: 10, ev: 'bj:round', f: one },
+    { id: 'bjw3', d: 'e', t: 'Gewinne 3 Runden Blackjack', n: 3, ev: 'bj:round', f: function (d) { return d.net > 0 ? 1 : 0; } },
+    { id: 'sl30', d: 'e', t: 'Drehe 30 Mal an den Slots', n: 30, ev: 'slots:spin', f: one },
+    { id: 'slw5', d: 'e', t: 'Gewinne 5 Mal an den Slots', n: 5, ev: 'slots:spin', f: function (d) { return d.win > 0 ? 1 : 0; } },
+    { id: 'rl10', d: 'e', t: 'Spiele 10 Roulette-Drehs', n: 10, ev: 'rl:spin', f: one },
+    { id: 'lk3', d: 'e', t: 'Spiele 3 Runden Pop the Lock', n: 3, ev: 'lock:round', f: one },
+    { id: 'tom3', d: 'e', t: 'Wirf 3 Tomaten', n: 3, ev: 'tomato', f: one },
+    { id: 'gm3', d: 'e', t: 'Spiele heute 3 verschiedene Spiele', n: 3, ev: Object.keys(GAMEEV), f: function (d, q, name) {
+      var g = q.g || (q.g = []), k = GAMEEV[name];
+      if (k && g.indexOf(k) < 0) { g.push(k); return 1; }
+      return 0;
+    } },
+    { id: 'time15', d: 'e', t: 'Spiele 15 Minuten', n: 15, unit: 'Min.', tick: true },
+    { id: 'gift1', d: 'e', t: 'Schicke einem Freund Chips', n: 1, ev: 'gift', f: one, fr: true },
+    /* mittel */
+    { id: 'pkw5', d: 'm', t: 'Gewinne 5 Pokerhände', n: 5, ev: 'poker:hand', f: function (d) { return d.won ? 1 : 0; } },
+    { id: 'pknsd', d: 'm', t: 'Gewinne eine Pokerhand, ohne dass es zum Showdown kommt', n: 1, ev: 'poker:hand', f: function (d) { return d.won && !d.showdown ? 1 : 0; } },
+    { id: 'pkpot', d: 'm', t: 'Gewinne einen Pot mit mindestens 20 Big Blinds', n: 1, ev: 'poker:hand', f: function (d) { return d.won && d.bigBlind > 0 && d.pot >= 20 * d.bigBlind ? 1 : 0; } },
+    { id: 'bj20', d: 'm', t: 'Spiele 20 Runden Blackjack', n: 20, ev: 'bj:round', f: one },
+    { id: 'bjdbl', d: 'm', t: 'Gewinne beim Blackjack nach dem Verdoppeln', n: 1, ev: 'bj:round', f: function (d) { return d.doubled && d.net > 0 ? 1 : 0; } },
+    { id: 'slxs', d: 'm', t: 'Hol dir Extra Spins an den Slots', n: 1, ev: 'slots:spin', f: function (d) { return d.extraSpins ? 1 : 0; } },
+    { id: 'rlrb', d: 'm', t: 'Gewinne beim Roulette 3 Mal in Folge auf Rot oder Schwarz', n: 3, ev: 'rl:spin', f: function (d, q) {
+      /* Drehs ohne Chip auf Rot/Schwarz unterbrechen die Serie nicht */
+      if (!d.colorBet) return 0;
+      q.c = d.colorWon ? (q.c | 0) + 1 : 0;
+      q.prog = q.c;
+      return 0;
+    } },
+    { id: 'rlw5', d: 'm', t: 'Gewinne 5 Roulette-Drehs', n: 5, ev: 'rl:spin', f: function (d) { return d.win > d.bet ? 1 : 0; } },
+    { id: 'lk25', d: 'm', t: 'Schaffe 25 Treffer in Pop the Lock', n: 25, ev: 'lock:round', f: function (d) { return Math.max(0, d.hits | 0); } },
+    { id: 'bet10k', d: 'm', t: 'Setze heute insgesamt 10.000 Chips', n: 10000, ev: 'bet', f: function (d) { return Math.max(0, d.amount | 0); } },
+    { id: 'on1', d: 'm', t: 'Spiele eine Runde mit einem Freund online', n: 1, ev: 'online:round', f: one, fr: true },
+    /* schwer */
+    { id: 'pkfl', d: 'h', t: 'Gewinne eine Pokerhand mit Flush oder besser', n: 1, ev: 'poker:hand', f: function (d) { return d.won && d.cat >= 5 ? 1 : 0; } },
+    { id: 'pkai', d: 'h', t: 'Gewinne ein All-in beim Poker', n: 1, ev: 'poker:hand', f: function (d) { return d.won && d.allin ? 1 : 0; } },
+    { id: 'bjbj2', d: 'h', t: 'Hol dir 2 Blackjacks', n: 2, ev: 'bj:round', f: function (d) { return d.result === 'bj' ? 1 : 0; } },
+    { id: 'bjspl', d: 'h', t: 'Gewinne beim Blackjack mit geteilten Karten', n: 1, ev: 'bj:round', f: function (d) { return d.split && d.net > 0 ? 1 : 0; } },
+    { id: 'slx20', d: 'h', t: 'Gewinne an den Slots 20× deinen Einsatz', n: 1, ev: 'slots:spin', f: function (d) { return d.mult >= 20 ? 1 : 0; } },
+    { id: 'rlstr', d: 'h', t: 'Triff beim Roulette eine Zahl direkt', n: 1, ev: 'rl:spin', f: function (d) { return d.straightHit ? 1 : 0; } },
+    { id: 'net5k', d: 'h', t: 'Gewinne heute insgesamt 5.000 Chips netto', n: 5000, ev: Object.keys(GAMEEV), f: function (d, q, name) { return netOf(d, name); } },
+    { id: 'lkjp', d: 'h', t: 'Knacke das Schloss in Pop the Lock', n: 1, ev: 'lock:round', f: function (d) { return d.jackpot ? 1 : 0; } }
+  ];
+  var DEF = {}, HOOK = {};
+  function hook(name) {
+    if (HOOK[name]) return;
+    HOOK[name] = true;
+    PR.on(name, function (d) { onEvent(name, d || {}); });
+  }
+  function addQuest(def) {
+    if (!def || !def.id || DEF[def.id] || !REW[def.d] || !(def.n > 0) || !def.t) return false;
+    if (def.fr && def.d === 'h') def.d = 'm';   // Online-Aufgaben nie schwer
+    POOL.push(def); DEF[def.id] = def;
+    [].concat(def.ev || []).forEach(hook);
+    return true;
+  }
+  POOL.splice(0).forEach(addQuest);
+
+  /* ---------- Datum in Berlin (Fallback: lokale Zeit) ---------- */
+  var BF = null;
+  try { BF = new Intl.DateTimeFormat('de-DE', { timeZone: 'Europe/Berlin', year: 'numeric', month: '2-digit', day: '2-digit', hour: '2-digit', minute: '2-digit', second: '2-digit', hourCycle: 'h23' }); } catch (e) { BF = null; }
+  function berlin() {
+    var d = new Date();
+    if (BF && BF.formatToParts) {
+      try {
+        var o = {};
+        BF.formatToParts(d).forEach(function (p) { o[p.type] = p.value; });
+        if (o.year && o.month && o.day) return { key: (+o.year) + '-' + (+o.month) + '-' + (+o.day), sec: (+o.hour % 24) * 3600 + (+o.minute) * 60 + (+o.second) };
+      } catch (e) {}
+    }
+    return { key: d.getFullYear() + '-' + (d.getMonth() + 1) + '-' + d.getDate(), sec: d.getHours() * 3600 + d.getMinutes() * 60 + d.getSeconds() };
+  }
+
+  /* ---------- Auswahl per Zufall mit dem Datum als Startwert ---------- */
+  function hash(str) { var h = 2166136261; for (var i = 0; i < str.length; i++) { h ^= str.charCodeAt(i); h = Math.imul(h, 16777619); } return h >>> 0; }
+  function rng(seed) {
+    var a = hash(seed);
+    return function () { a = (a + 0x6D2B79F5) | 0; var t = Math.imul(a ^ (a >>> 15), 1 | a); t = (t + Math.imul(t ^ (t >>> 7), 61 | t)) ^ t; return ((t ^ (t >>> 14)) >>> 0) / 4294967296; };
+  }
+  function hasFriends() {
+    if (window.PRF && window.PRF.count) { try { return window.PRF.count() > 0; } catch (e) {} }
+    try { var a = JSON.parse(localStorage.getItem('pr-friends') || '[]'); return Array.isArray(a) && a.some(function (f) { return f && !f.pending; }); } catch (e) { return false; }
+  }
+  /* aus allen Aufgaben einer Stufe ziehen (so haben alle dieselben); passt eine nicht (Freunde, schon gewaehlt), weiterziehen */
+  function pick(r, diff, skip) {
+    var c = POOL.filter(function (q) { return q.d === diff; }), fr = hasFriends();
+    for (var i = 0; i < 60; i++) {
+      var q = c[Math.floor(r() * c.length)];
+      if (q && skip.indexOf(q.id) < 0 && (!q.fr || fr)) return q;
+    }
+    var rest = c.filter(function (q) { return skip.indexOf(q.id) < 0 && (!q.fr || fr); });
+    return rest[0] || c[0];
+  }
+  function secs() { return window.PRT ? window.PRT.secs() : 0; }
+  function newQ(def) { var q = { id: def.id, prog: 0, done: false, claimed: false }; if (def.tick) q.b = secs(); return q; }
+  function fresh(key) {
+    var r = rng('pr-quests|' + key), list = [];
+    ['e', 'm', 'h'].forEach(function (d) { list.push(newQ(pick(r, d, list.map(function (q) { return q.id; })))); });
+    return { day: key, list: list, reroll: false, chest: false, seen: false, owed: 0 };
+  }
+
+  /* ---------- Speichern ---------- */
+  var S = null;
+  function save() { try { localStorage.setItem(KEY, JSON.stringify(S)); } catch (e) {} }
+  function load() {
+    try {
+      var o = JSON.parse(localStorage.getItem(KEY) || 'null');
+      if (o && typeof o.day === 'string' && Array.isArray(o.list) && o.list.length === 3) {
+        return {
+          day: o.day, reroll: !!o.reroll, chest: !!o.chest, seen: !!o.seen, owed: Math.max(0, Math.min(1e7, o.owed | 0)),
+          /* unbekannte Kennungen bleiben stehen (die Aufgabe kommt evtl. aus einem spaeteren Skript) */
+          list: o.list.map(function (q) {
+            q = q && typeof q === 'object' ? q : {};
+            var r = { id: String(q.id || ''), prog: isFinite(+q.prog) ? Math.round(+q.prog) : 0, done: !!q.done, claimed: !!q.claimed && !!q.done };
+            if (isFinite(+q.b)) r.b = +q.b;
+            if (isFinite(+q.c)) r.c = q.c | 0;
+            if (Array.isArray(q.g)) r.g = q.g.filter(function (x) { return typeof x === 'string'; }).slice(0, 10);
+            return r;
+          })
+        };
+      }
+    } catch (e) {}
+    return null;
+  }
+  function rewOf(q) { var d = DEF[q.id]; return d ? REW[d.d].chips : 0; }
+  function allDone() { return S.list.every(function (q) { return q.done; }); }
+  /* neuer Tag: nicht Abgeholtes merken (wird im Menue gutgeschrieben), dann neue Aufgaben */
+  function ensureDay() {
+    var k = berlin().key;
+    if (S && S.day === k) return false;
+    var owed = 0;
+    if (S) {
+      owed = S.owed | 0;
+      S.list.forEach(function (q) { if (q.done && !q.claimed) owed += rewOf(q); });
+      if (allDone() && !S.chest) owed += CHEST;
+    }
+    S = fresh(k); S.owed = Math.min(1e7, owed);
+    save();
+    return true;
+  }
+
+  /* ---------- Fortschritt ---------- */
+  var notes = [];
+  function finish(q) {
+    var def = DEF[q.id];
+    q.done = true;
+    notes.push(def.t);
+    PR.emit('quest', { id: q.id, diff: def.d, chips: REW[def.d].chips });
+  }
+  function bump(q, def, a) {
+    if (a) q.prog = Math.min(1e12, q.prog + a);
+    if (!q.done && q.prog >= def.n) { finish(q); return true; }
+    return !!a;
+  }
+  function onEvent(name, d) {
+    if (!S) return;
+    if (ensureDay()) renderAll();
+    var ch = false;
+    S.list.forEach(function (q) {
+      var def = DEF[q.id];
+      if (!def || q.done || !def.f || [].concat(def.ev || []).indexOf(name) < 0) return;
+      var before = q.prog, a = 0;
+      try { a = +def.f(d, q, name) || 0; } catch (e) { a = 0; }
+      if (bump(q, def, a) || q.prog !== before) ch = true;
+    });
+    if (ch) { save(); renderAll(); }
+  }
+  /* Spielzeit-Aufgaben: alle 5 Sekunden nachsehen */
+  function tick() {
+    if (!S) return;
+    var nd = ensureDay(), ch = false;
+    S.list.forEach(function (q) {
+      var def = DEF[q.id];
+      if (!def || !def.tick || q.done) return;
+      if (!isFinite(q.b)) { q.b = secs(); ch = true; }
+      var m = Math.max(0, Math.floor((secs() - q.b) / 60));
+      if (m > q.prog) { q.prog = m; ch = true; bump(q, def, 0); }
+    });
+    if (ch) save();
+    if (ch || nd) renderAll();
+  }
+  function progress(id, n) {
+    if (!S) return false;
+    ensureDay();
+    var q = S.list.filter(function (x) { return x.id === id; })[0], def = DEF[id];
+    if (!q || !def || q.done) return false;
+    bump(q, def, Math.round(+n) || 1); save(); renderAll();
+    return true;
+  }
+
+  /* ---------- Menue: Knopf mit rotem Punkt, Meldungen ---------- */
+  var qBtn = $('#qBtn'), qDot = $('#qDot');
+  function claimable() { return S.list.filter(function (q) { return q.done && !q.claimed && DEF[q.id]; }).length + (allDone() && !S.chest ? 1 : 0); }
+  function renderBtn() {
+    if (!S) return;
+    var n = claimable(), open = S.list.some(function (q) { return !q.done; });
+    qDot.hidden = !(n > 0 || (!S.seen && open));
+    qDot.className = 'qdot' + (n > 0 ? '' : ' dot');
+    qDot.textContent = n > 0 ? String(n) : '';
+    var dn = S.list.filter(function (q) { return q.done; }).length;
+    qBtn.setAttribute('aria-label', 'Tägliche Aufgaben öffnen – ' + dn + ' von 3 geschafft' + (n > 0 ? ', ' + n + ' zum Abholen' : ''));
+  }
+  var tEl = document.createElement('div'), tT = 0;
+  tEl.id = 'qToast'; tEl.setAttribute('role', 'status'); $('#app').appendChild(tEl);
+  function toast(t) { tEl.textContent = t; tEl.classList.add('on'); clearTimeout(tT); tT = setTimeout(function () { tEl.classList.remove('on'); }, 3200); }
+  function pulse() { qBtn.classList.remove('pulse'); void qBtn.offsetWidth; qBtn.classList.add('pulse'); }
+  function menuFree() {
+    if ($('#menu').hidden || !$('#splash').hidden) return false;
+    if (window.prIdle && !window.prIdle()) return false;
+    return ['#daily', '#friends', '#bjf', '#profile', '#pview', '#chipdlg', '#invBan', '#askBan', '#shop', '#giftDlg', '#xpView', '#lvUp', '#chestDlg']
+      .every(function (s) { var e = $(s); return !e || e.hidden; });
+  }
+  function credit(chips) { var P = PR.prof(); P.bank = Math.round((P.bank || 0) + chips); PR.saveProf(); PR.renderBank(); }
+  var lastNote = 0;
+  setInterval(function () {
+    if (!S || !menuFree() || Date.now() - lastNote < 3600) return;
+    if (S.owed > 0) {
+      var o = S.owed; S.owed = 0; save(); credit(o);
+      lastNote = Date.now();
+      toast('Aufgaben von gestern: +' + fmt(o) + ' Chips gutgeschrieben');
+      try { Snd.chip(3, 0, true); } catch (e) {}
+      return;
+    }
+    if (!notes.length || !$('#quests').hidden) { if ($('#quests').hidden === false) notes = []; return; }
+    var t = notes.shift();
+    lastNote = Date.now();
+    toast('✓ Aufgabe geschafft: ' + t);
+    pulse();
+    try { Snd.ping(); } catch (e) {}
+  }, 700);
+
+  /* ---------- Ansicht ---------- */
+  function renderList() {
+    var box = $('#qList'), h = '';
+    S.list.forEach(function (q, i) {
+      var def = DEF[q.id];
+      if (!def) { h += '<div class="qcard"><div class="qt">Diese Aufgabe kennt diese App-Version nicht</div></div>'; return; }
+      var r = REW[def.d], p = Math.max(0, Math.min(def.n, q.done ? def.n : q.prog)), f = Math.round(p / def.n * 100);
+      var right = q.claimed ? '<span class="qok">✓ Abgeholt</span>'
+        : q.done ? '<button class="btn primary" type="button" data-claim="' + i + '">Abholen</button>'
+        : S.reroll ? '' : '<button class="qroll" type="button" data-roll="' + i + '" aria-label="Aufgabe neu würfeln (einmal am Tag)">🎲</button>';
+      h += '<div class="qcard' + (q.done ? ' done' : '') + (q.claimed ? ' claimed' : '') + '">' +
+        '<div class="qtop"><span class="qtag ' + def.d + '">' + r.name + '</span><span class="qrew"><b>+' + fmt(r.chips) + '</b> Chips</span></div>' +
+        '<div class="qt">' + def.t + '</div>' +
+        '<div class="qrow"><span class="xpt"><i style="width:' + f + '%"></i></span><span class="qn">' + fmt(p) + ' / ' + fmt(def.n) + (def.unit ? ' ' + def.unit : '') + '</span>' + right + '</div></div>';
+    });
+    if (box._h !== h) { box.innerHTML = h; box._h = h; }   // nur neu bauen, wenn sich etwas aendert (sonst geht ein Tippen verloren)
+    var dn = S.list.filter(function (q) { return q.done; }).length, ready = allDone() && !S.chest;
+    $('#qChest').classList.toggle('ready', ready);
+    $('#qChestGo').hidden = !ready;
+    $('#qChestTxt').textContent = S.chest ? 'Geöffnet – morgen gibt es eine neue' : ready ? fmt(CHEST) + ' Chips warten auf dich' : 'Schaffe alle drei Aufgaben (' + dn + '/3) · ' + fmt(CHEST) + ' Chips';
+  }
+  function renderTime() {
+    var left = Math.max(0, 86400 - berlin().sec), h = Math.floor(left / 3600), m = Math.floor(left % 3600 / 60);
+    $('#qTime').textContent = 'Neue Aufgaben in ' + (h > 0 ? h + ' Std. ' + m + ' Min.' : m > 0 ? m + ' Min.' : 'unter einer Minute');
+  }
+  function renderAll() { if (!S) return; renderBtn(); if (!$('#quests').hidden) { renderList(); renderTime(); } }
+  function openView() {
+    if (!S) return;
+    ensureDay();
+    Snd.unlock();
+    if (!S.seen) { S.seen = true; save(); }
+    notes = [];
+    $('#quests').hidden = false;
+    renderAll();
+  }
+  qBtn.addEventListener('click', openView);
+  $('#qClose').addEventListener('click', function () { $('#quests').hidden = true; renderBtn(); });
+  $('#quests').addEventListener('click', function (e) { if (e.target === this) { this.hidden = true; renderBtn(); } });
+  $('#qList').addEventListener('click', function (e) {
+    var b = e.target.closest('[data-claim], [data-roll]');
+    if (!b || !S || (window.prIdle && !window.prIdle())) return;
+    if (ensureDay()) { renderAll(); return; }
+    var i = +(b.dataset.claim || b.dataset.roll), q = S.list[i], def = q && DEF[q.id];
+    if (!def) return;
+    if (b.dataset.claim != null) {
+      if (!q.done || q.claimed) return;
+      q.claimed = true; save();
+      credit(REW[def.d].chips);
+      PR.emit('quest:claim', { id: q.id, diff: def.d, chips: REW[def.d].chips });
+      try { Snd.chip(4, 0, true); setTimeout(function () { Snd.pot(); }, 220); } catch (x) {}
+    } else {
+      if (q.done || S.reroll) return;
+      /* gleicher Startwert fuer alle, die dieselbe Aufgabe neu wuerfeln */
+      var nq = pick(rng('pr-quests|' + S.day + '|' + q.id), def.d, S.list.map(function (x) { return x.id; }));
+      if (!nq || nq.id === q.id) return;
+      S.list[i] = newQ(nq); S.reroll = true; save();
+      try { Snd.flip(); } catch (x) {}
+    }
+    renderAll();
+  });
+  var chestFns = [];
+  $('#qChestGo').addEventListener('click', function () {
+    if (!S || !allDone() || S.chest || !window.PRChest || (window.prIdle && !window.prIdle())) return;
+    var day = S.day;
+    window.PRChest.open({
+      kick: 'Tägliche Aufgaben', title: 'Bonus-Truhe', text: 'Alle drei Aufgaben geschafft!',
+      onOpen: function (add) {
+        if (!S || S.day !== day || S.chest) return;
+        S.chest = true; save();
+        credit(CHEST);
+        add('🪙', '+' + fmt(CHEST) + ' Chips');
+        /* Haken fuer spaetere Boni (z. B. Rubbellos): jeder darf hier gutschreiben und eine Zeile anzeigen */
+        var info = { day: day, chips: CHEST, add: add };
+        chestFns.forEach(function (fn) { try { fn(info); } catch (e) { try { console.error('PRQ.onChest', e); } catch (x) {} } });
+        PR.emit('quests:chest', { day: day, chips: CHEST });
+      },
+      onClose: renderAll
+    });
+  });
+  setInterval(function () { if (!$('#quests').hidden) { if (ensureDay()) $('#qList')._h = ''; renderAll(); } }, 1000);
+  setInterval(tick, 5000);
+
+  window.PRQ = {
+    list: function () {
+      if (!S) return [];
+      return S.list.map(function (q) { var d = DEF[q.id] || {}; return { id: q.id, diff: d.d || '', text: d.t || '', n: d.n || 0, prog: q.prog, done: q.done, claimed: q.claimed }; });
+    },
+    progress: progress,
+    done: function () { return S ? S.list.filter(function (q) { return q.done; }).length : 0; },
+    onChest: function (fn) { if (typeof fn === 'function') chestFns.push(fn); },
+    addQuest: addQuest, REWARDS: REW, CHEST: CHEST
+  };
+  /* erst nach dem Laden aller Skripte starten, damit spaeter angemeldete Aufgaben schon im Pool sind */
+  function init() { S = load(); ensureDay(); renderBtn(); }
+  if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', init); else init();
 })();
 </script>
 
