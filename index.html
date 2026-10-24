@@ -1798,6 +1798,14 @@ input.bprange[type=range]::-moz-range-thumb { width: 20px; height: 20px; border-
 #pfCos .pstart b { font-size: 16px; font-family: var(--ui); }
 #achToast { position: absolute; left: 50%; bottom: max(76px, calc(env(safe-area-inset-bottom) + 64px)); z-index: 98; transform: translate(-50%, 12px); padding: 10px 18px; border-radius: 999px; background: linear-gradient(180deg, #2a2418, #1b1710); border: 1.5px solid #e0aa4a; color: #f4d67f; font: 800 14px var(--ui); opacity: 0; pointer-events: none; transition: opacity .3s, transform .3s; white-space: nowrap; max-width: calc(100% - 20px); overflow: hidden; text-overflow: ellipsis; box-shadow: 0 8px 22px rgba(0,0,0,.55), 0 0 18px rgba(224,170,74,.35); }
 #achToast.on { opacity: 1; transform: translate(-50%, 0); }
+/* ---------- Siegesanimationen und Gewinn-Sounds (Shop-Reiter „Effekte“) ---------- */
+#fxLayer { position: fixed; left: 0; top: 0; width: 100vw; height: 100vh; z-index: 99; pointer-events: none; }
+.cprev.fxtap { cursor: pointer; border-radius: 12px; background: radial-gradient(circle at 50% 45%, rgba(224,170,74,.16), transparent 70%); -webkit-tap-highlight-color: transparent; }
+.cprev .fxpv { font-size: 34px; line-height: 1; filter: drop-shadow(0 3px 5px rgba(0,0,0,.45)); }
+.cprev .fxplay { position: absolute; right: 6px; bottom: 4px; width: 20px; height: 20px; border-radius: 50%; display: grid; place-items: center; font: 800 9px/1 var(--ui); font-style: normal; color: #1d140a; background: #e0aa4a; box-shadow: 0 2px 5px rgba(0,0,0,.4); }
+.cprev.fxbump .fxpv { animation: fxbump .5s ease-out; }
+@keyframes fxbump { 0% { transform: scale(1); } 35% { transform: scale(1.25) rotate(-8deg); } 70% { transform: scale(.95) rotate(4deg); } 100% { transform: scale(1); } }
+@media (prefers-reduced-motion: reduce) { .cprev.fxbump .fxpv { animation: none; } }
 </style>
 
 <div id="app">
@@ -2556,6 +2564,7 @@ input.bprange[type=range]::-moz-range-thumb { width: 20px; height: 20px; border-
         <div style="display:flex;flex-direction:column;gap:8px">
           <div class="prow vrow"><span>Lautstärke</span><input type="range" id="volProf" min="0" max="100" step="1" aria-label="Lautstärke"><output id="volProfN">100%</output></div>
           <div class="prow"><span>Vibration bei Gewinn</span><button class="sw" id="vibSw" type="button" role="switch" aria-checked="true" aria-label="Vibration bei Gewinn"></button></div>
+          <div class="prow"><span>Effekte anderer anzeigen<small class="prsub">Siegesanimationen deiner Mitspieler an ihrem Platz</small></span><button class="sw" id="fxOthSw" type="button" role="switch" aria-checked="true" aria-label="Effekte anderer anzeigen"></button></div>
           <div class="prow"><span>Auswertung nach der Hand (Poker)<small class="prsub">Gewinnchance und Pot-Odds nach jeder Hand, beim Blackjack Abweichungen von der Grundstrategie</small></span><button class="sw" id="coachSw" type="button" role="switch" aria-checked="false" aria-label="Auswertung nach der Hand (Poker)"></button></div>
           <details class="prow guide" id="guide">
             <summary>Anleitung: Pre-Move beim Poker</summary>
@@ -2761,6 +2770,8 @@ input.bprange[type=range]::-moz-range-thumb { width: 20px; height: 20px; border-
      'poker:show'   { cards: [{ r, s }], bluff }   eigene Karten nach der Hand gezeigt (cards: die jetzt gezeigten;
                                            bluff: beide offen und ohne Showdown mit weniger als einem Paar gewonnen)
      'coach'        { score }                      Auswertung einer Pokerhand fertig (score 0-100 = Anteil guter Entscheidungen)
+     'bigwin'       { game, fx }                   grosser Gewinn sichtbar geworden (Poker-Pot ab 10 BB, Blackjack, Slots ab 20x,
+                                           Roulette-Zahl direkt); fx = angelegte Siegesanimation ('std' = keine)
    game: 'poker' | 'bj' | 'slots' | 'rl' | 'lock'. Mit window.PR_DEBUG = true steht jedes Ereignis in der Konsole. */
 (function () {
   'use strict';
@@ -4189,15 +4200,22 @@ input.bprange[type=range]::-moz-range-thumb { width: 20px; height: 20px; border-
           tone(a, 1700 + Math.random() * 600, 0.03, v * 0.35, 'triangle');
         }
       }),
-      card0: function (t, vol) { try { noise(t, 0.07, 'bandpass', 2600, 0.9, vol, 0.004); noise(t + 0.012, 0.05, 'highpass', 5200, 0.5, vol * 0.3, 0.003); } catch (e) {} }
+      card0: function (t, vol) { try { noise(t, 0.07, 'bandpass', 2600, 0.9, vol, 0.004); noise(t + 0.012, 0.05, 'highpass', 5200, 0.5, vol * 0.3, 0.003); } catch (e) {} },
+      /* fuer eigene Klaenge anderer Skripte (Gewinn-Sounds, Wurfgegenstaende): fn({ tone, noise, t }) mit
+         tone(t, freq, dur, vol, type, slideTo) und noise(t, dur, filterTyp, freq, q, vol, attack); t = jetzt in Sekunden.
+         Laeuft nur, wenn Ton an ist, und ueber dieselbe Lautstaerke wie alles andere */
+      fx: guard(function (fn) { fn({ tone: tone, noise: noise, t: now(0) }); })
     };
   })();
   /* Vibration nur beim Gewinnen (abschaltbar im Profil). Snd.win wird von allen Spielen benutzt. */
   (function () {
     var w = Snd.win;
     Snd.vibOn = function () { try { return localStorage.getItem('pr-vib') !== '0'; } catch (e) { return true; } };
+    Snd.vib = function () { try { if (Snd.vibOn() && navigator.vibrate) navigator.vibrate([70, 50, 140]); } catch (e) {} };
+    Snd.winStd = w;   // der bisherige Gewinn-Klang (ohne Vibration); den angelegten Gewinn-Sound waehlt PRFx
     Snd.win = function () {
-      try { if (Snd.vibOn() && navigator.vibrate) navigator.vibrate([70, 50, 140]); } catch (e) {}
+      Snd.vib();
+      if (Snd.winHook) { try { if (Snd.winHook()) return; } catch (e) {} }
       w.apply(null, arguments);
     };
   })();
@@ -4272,6 +4290,7 @@ input.bprange[type=range]::-moz-range-thumb { width: 20px; height: 20px; border-
         if (dealt) logHand();
         if (dealt) pkHandEvents();
         if (S.players[0].win > 0) Snd.win(); else Snd.pot();
+        bigFx();
       }
       if (turn && !snap.turn) Snd.ping();
     }
@@ -4282,6 +4301,16 @@ input.bprange[type=range]::-moz-range-thumb { width: 20px; height: 20px; border-
     snap.label = S.players.map(function (p) { return p.label; });
   }
 
+  /* Siegesanimation (PRFx): eigener Pot ab 10 Big Blinds; am Online-Tisch auch die der Mitspieler klein an ihrem Platz */
+  function bigFx() {
+    if (!window.PRFx || !(S.bb > 0)) return;
+    S.players.forEach(function (p, i) {
+      if (!(p.win >= 10 * S.bb) || !seats[i]) return;
+      var av = seats[i].el.querySelector('.avatar');
+      if (i === 0) window.PRFx.big('poker', av);
+      else { var c = seatCos(p, i); if (c) window.PRFx.other(c, av); }
+    });
+  }
   /* ---------- Ereignisse an die Ereignis-Zentrale (nur fuer den eigenen Platz 0, auch als Online-Mitspieler) ---------- */
   /* pkPaid: so viel habe ich in Hand hn schon in den Pot gelegt (Blinds, Mitgehen, Erhoehen, All-in) */
   var pkPaid = { hn: -1, paid: 0 };
@@ -5527,8 +5556,9 @@ input.bprange[type=range]::-moz-range-thumb { width: 20px; height: 20px; border-
      aeltere bekommen { t: 'old' } und den Hinweis, die App neu zu oeffnen. 6: Sterne (st) statt Level (lv) im oeffentlichen Profil,
      7: Schnellsaetze { t: 'chat', q } und Karten zeigen { t: 'show', c } (Feld sh/sb im Stand),
      8: Profilrahmen und Titel cos { frame, title } im oeffentlichen Profil und im Stand (siehe PRLook; spaetere Felder
-        darin werden von aelteren Apps einfach ignoriert) */
-  var PK_V = 8;
+        darin werden von aelteren Apps einfach ignoriert),
+     9: cos.win (Siegesanimation), cos.av (Profilbild), cos.um (Regenschirm) und Wurfgegenstaende { t: 'tom', k } */
+  var PK_V = 9;
   var MSG_NOLIB = 'Online-Tische gehen nur über den Link zum Spiel (kortjannis-web.github.io/Pokerrunde), nicht in dieser Vorschau.';
   function peerOpts() { return window.PR_PEER_OPTS || {}; }
   function netAvail() { return typeof window.Peer === 'function'; }
@@ -7008,7 +7038,7 @@ input.bprange[type=range]::-moz-range-thumb { width: 20px; height: 20px; border-
   var GIFT = 50;   // so viele Chips gibt es, wenn man pleite ist und auch im Guthaben nichts mehr hat
   var MIN_OPTS = [10, 25, 50], SEAT_OPTS = [2, 3, 4, 5];
   var PEER_PREFIX = 'pokerrunde-bj-';
-  var BJ_V = 8;   // Version des Tisch-Protokolls: Ersteller und Mitspieler muessen gleich sein (6: Sterne st statt Level lv im Profil, 7: Schnellsaetze t 'chat', 8: Rahmen und Titel cos im Profil)
+  var BJ_V = 9;   // Version des Tisch-Protokolls: Ersteller und Mitspieler muessen gleich sein (6: Sterne st statt Level lv im Profil, 7: Schnellsaetze t 'chat', 8: Rahmen und Titel cos im Profil, 9: cos.win/av/um und Wurfgegenstaende t 'tom' mit k)
 
   /* ---------- Karten und Werte ---------- */
   function randInt(n) {
@@ -7450,6 +7480,15 @@ input.bprange[type=range]::-moz-range-thumb { width: 20px; height: 20px; border-
         bjEvents(t, my, net);
         showDevs(t.round);
       }
+    }
+    /* Siegesanimation (PRFx) bei Blackjack: eigene gross, die der Mitspieler klein an ihrem Platz */
+    if (t.phase === 'done' && V.fxKey !== String(t.round)) {
+      V.fxKey = String(t.round);
+      if (!V.quiet && window.PRFx) t.seats.forEach(function (s) {
+        if (!s.inR || !s.hands.some(function (h) { return h.res === 'bj'; })) return;
+        if (s.id === me) { window.PRFx.big('bj', $('#bjMe .bjhands')); return; }
+        [].forEach.call(document.querySelectorAll('#bjOthers .bjo'), function (el) { if (el._sid === s.id) window.PRFx.other(s.cos, el.querySelector('.pav')); });
+      });
     }
     Object.keys(CEL).forEach(function (id) { if (!CEL[id].isConnected) delete CEL[id]; });
     V.phase = t.phase; V.round = t.round; V.quiet = false;
@@ -9031,6 +9070,7 @@ input.bprange[type=range]::-moz-range-thumb { width: 20px; height: 20px; border-
         big(s.jpWin ? 'Jackpot' : s.wheel !== null ? 'Glücksrad ×' + WHEEL[s.wheel].m : x >= 40 ? 'Riesengewinn' : x >= 20 ? 'Großer Gewinn' : giant ? 'Riese ×' + M2.gb : s.mult > 1 ? 'Gewinn ×' + s.mult : 'Gewinn', '+' + fmt(s.win));
         Snd.win(); if (x >= 20) setTimeout(function () { Snd.pot(); }, 450); if (s.jpWin) setTimeout(function () { Snd.win(); }, 900);
         coins(s.jpWin ? 60 : x >= 20 ? 30 : 14);
+        if ((x >= 20 || s.jpWin) && window.PRFx) window.PRFx.big('slots', mach);   // Siegesanimation ab 20x
       } else Snd.chip(Math.min(4, Math.max(1, Math.round(x))), 0, true);
     } else if (k === 0) showBank(c.base);
     if (s.sc) {
@@ -9930,7 +9970,7 @@ input.bprange[type=range]::-moz-range-thumb { width: 20px; height: 20px; border-
   function $(s) { return document.querySelector(s); }
   function all(s) { return [].slice.call(document.querySelectorAll(s)); }
 
-  var RL_V = 5;   // Version des Tisch-Protokolls: Ersteller und Mitspieler muessen gleich sein (3: Sterne st statt Level lv im Profil, 4: Reaktionen und Schnellsaetze, 5: Rahmen und Titel cos im Profil)
+  var RL_V = 6;   // Version des Tisch-Protokolls: Ersteller und Mitspieler muessen gleich sein (3: Sterne st statt Level lv im Profil, 4: Reaktionen und Schnellsaetze, 5: Rahmen und Titel cos im Profil, 6: cos.win/av/um und Wuerfe t 'tom')
   var PEER_PREFIX = 'pokerrunde-rl-', MAX_PL = 6, SPIN_MS = 6500, HOLD_MS = 2600, BET_MS = 15000, GIFT = 50;
   var CHIPS = [10, 50, 100, 500, 1000, 5000];
   var WHEEL = [0, 32, 15, 19, 4, 21, 2, 25, 17, 34, 6, 27, 13, 36, 11, 30, 8, 23, 10, 5, 24, 16, 33, 1, 20, 14, 31, 9, 22, 18, 29, 7, 28, 12, 35, 3, 26];
@@ -10210,6 +10250,9 @@ input.bprange[type=range]::-moz-range-thumb { width: 20px; height: 20px; border-
     V.spun = R.rd; V.rdy = false;
     var stake = sum(myB), res = R.res, win = stake ? payout(myB, res) : 0;
     V.lock = { b: myB, res: res, stake: stake, win: win };
+    /* Siegesanimation (PRFx): wer hat die Zahl direkt getroffen? (eigene und die der Mitspieler, gezeigt nach dem Landen) */
+    function str(b) { return Object.keys(b || {}).some(function (k) { var ns = numsOf(k); return !!ns && ns.length === 1 && ns[0] === res; }); }
+    V.lock.fx = str(myB); V.lock.fxo = R.pl.filter(function (p) { return p.id !== ME && str(p.b); }).map(function (p) { return p.id; });
     if (stake) {
       var P = PR.prof(); P.bank = Math.max(0, (P.bank | 0) - stake + win); PR.saveProf(); PR.renderBank();
       rlStat(stake, win);
@@ -10274,11 +10317,16 @@ input.bprange[type=range]::-moz-range-thumb { width: 20px; height: 20px; border-
       Snd.win(); setTimeout(function () { Snd.pot(); }, 300);
       if (L.win > L.stake && window.JAR) window.JAR.add(L.win - L.stake);
       if (L.win >= 30 * L.stake && L.win >= 1000 && window.PRF) window.PRF.brag('big', L.win, 'Roulette');
+      if (L.fx && window.PRFx) window.PRFx.big('rl', rs);
     } else {
       m.innerHTML = resName(L.res) + (L.stake ? '<small>Diesmal nichts</small>' : '');
       m.className = 'rlwmsg on lose';
       if (L.stake) Snd.knock();
     }
+    if (window.PRFx && L.fxo) L.fxo.forEach(function (id) {
+      var p = plOf(id); if (!p) return;
+      all('#rlFr .rlfa').forEach(function (el) { if (el._sid === id) window.PRFx.other(p.cos, el.querySelector('.pav')); });
+    });
     broke();
     view();
   }
@@ -12950,7 +12998,7 @@ input.bprange[type=range]::-moz-range-thumb { width: 20px; height: 20px; border-
     if (it.stars && window.PRStars) window.PRStars.addUnlock({ stars: it.stars, kind: it.kind, id: it.id, label: KIND_NAME[it.kind] ? KIND_NAME[it.kind] + ' „' + it.name + '“' : it.name, icon: it.icon || '🎁' });
     return it;
   }
-  var KIND_NAME = { back: 'Kartenrücken', felt: 'Tischfilz', chip: 'Chips', frame: 'Profilrahmen', title: 'Titel' };
+  var KIND_NAME = { back: 'Kartenrücken', felt: 'Tischfilz', chip: 'Chips', frame: 'Profilrahmen', title: 'Titel', winfx: 'Siegesanimation', winsnd: 'Gewinn-Sound', avbg: 'Profilbild-Muster', avemo: 'Profilbild-Emoji' };
   function gotIt(it) { var k = k2(it.kind, it.id); return S.got.hasOwnProperty(k) && (S.got[k] === 0 || S.got[k] > Date.now()); }
   function owned(id, kind) {
     var it = item(id, kind); if (!it) return false;
@@ -13068,7 +13116,7 @@ input.bprange[type=range]::-moz-range-thumb { width: 20px; height: 20px; border-
       note: 'Kartenrücken, Filz und Chips siehst nur du auf deinem Handy.' },
     { id: 'profil', label: 'Profil', secs: [{ kind: 'frame', title: 'Rahmen', sub: 'Um dein Profilbild – sehen auch die anderen am Tisch und deine Freunde' },
                                            { kind: 'title', title: 'Titel', sub: 'Klein unter deinem Namen, verdient durch Erfolge' }] },
-    { id: 'fx', label: 'Effekte', secs: [], empty: 'Bald gibt es hier Siegesanimationen und Gewinn-Sounds.' }
+    { id: 'fx', label: 'Effekte', secs: [], empty: 'Bald gibt es hier Siegesanimationen und Gewinn-Sounds.', note: 'Deine Siegesanimation sehen online auch die anderen an deinem Platz.' }
   ];
   var tab = 'art', sure = null, sureT = 0, cosKey = '';
   function tabOf(id) { return TABS.filter(function (t) { return t.id === id; })[0]; }
@@ -13278,6 +13326,299 @@ input.bprange[type=range]::-moz-range-thumb { width: 20px; height: 20px; border-
   buildTabs(); markTabs();
   apply();
   render(false);
+})();
+</script>
+
+<script>
+/* Siegesanimationen und Gewinn-Sounds (Shop-Reiter „Effekte“). Alles live gezeichnet (Canvas) und erzeugt (WebAudio).
+   Grosse Gewinne: Poker-Pot ab 10 Big Blinds, Blackjack mit Blackjack, Slots ab 20x (und Jackpot), Roulette-Zahl direkt.
+   „Standard“ = wie bisher (keine Extra-Animation, bisheriger Gewinn-Klang). Animationen dauern hoechstens 2 Sekunden;
+   bei „Bewegung reduzieren“ am Handy gibt es nur ein ruhiges Leuchten ohne Bewegung.
+   Online sehen die anderen meine Animation klein an meinem Platz (Feld win im oeffentlichen Profil, PRLook.field),
+   abschaltbar mit „Effekte anderer anzeigen“ (Profil, pr-fxoth = '0' heisst aus).
+   Schnittstelle window.PRFx:
+     play(id, opts)   Animation abspielen ('konfetti' | 'gold' | 'feuerwerk' | 'chips' | 'blitze');
+                      opts { el: Element als Mittelpunkt, small: true = klein um el herum (Mitspieler) }
+     big(game, el)    eigener grosser Gewinn: angelegte Animation (Standard: nichts extra), meldet 'bigwin' { game, fx }
+     other(cos, el)   grosser Gewinn eines Mitspielers: seine Animation (cos.win) klein an seinem Platz
+     sound(id)        Gewinn-Sound abspielen (Vorschau; 'std' = bisheriger Klang)
+     reduced()        „Bewegung reduzieren“ an?        othersOn()  Effekte anderer anzeigen?
+     FX, SND          Ids der Animationen und Sounds */
+(function () {
+  'use strict';
+  var PR = window.PR;
+  if (!PR || !window.PRCos) return;
+  var Snd = PR.Snd, C = window.PRCos;
+  function $(s) { return document.querySelector(s); }
+  function rnd(a, b) { return a + Math.random() * (b - a); }
+  var FX = ['konfetti', 'gold', 'feuerwerk', 'chips', 'blitze'], SND = ['kaching', 'retro', 'fanfare', 'jubel'];
+  var RM = window.matchMedia ? window.matchMedia('(prefers-reduced-motion: reduce)') : null;
+  function reduced() { return !!(RM && RM.matches); }
+  function othersOn() { try { return localStorage.getItem('pr-fxoth') !== '0'; } catch (e) { return true; } }
+
+  /* ---------- Zeichenflaeche ueber allem (nur waehrend einer Animation sichtbar) ---------- */
+  var cv = document.createElement('canvas'); cv.id = 'fxLayer'; cv.setAttribute('aria-hidden', 'true'); cv.hidden = true;
+  document.body.appendChild(cv);
+  var cx = cv.getContext('2d'), parts = [], flashes = [], raf = 0, W = 0, H = 0, DPR = 1, endAt = 0;
+  function fit() {
+    DPR = Math.min(2, window.devicePixelRatio || 1); W = window.innerWidth; H = window.innerHeight;
+    cv.width = Math.round(W * DPR); cv.height = Math.round(H * DPR);
+  }
+  function center(el) {
+    if (el && el.getBoundingClientRect) { var r = el.getBoundingClientRect(); if (r.width || r.height) return { x: r.left + r.width / 2, y: r.top + r.height / 2 }; }
+    return { x: window.innerWidth / 2, y: window.innerHeight * 0.45 };
+  }
+  var COLS = ['#ffd35c', '#ff6b6b', '#5ec8ff', '#7ee08a', '#c58bff', '#ffffff', '#ff9f43'];
+  function pick(a) { return a[Math.floor(Math.random() * a.length)]; }
+
+  /* ---------- Teilchen ---------- */
+  function P(o) { o.t0 = o.t0 || 0; o.vx = o.vx || 0; o.vy = o.vy || 0; o.g = o.g || 0; o.dr = o.dr == null ? 1 : o.dr; o.rot = o.rot || 0; o.vr = o.vr || 0; parts.push(o); return o; }
+  function konfetti(o, small) {
+    var n = small ? 34 : 150, s = small ? 0.55 : Math.max(0.8, H / 800);
+    for (var i = 0; i < n; i++) {
+      var a = -Math.PI / 2 + rnd(-1.15, 1.15), v = rnd(small ? 2.6 : 7, small ? 5.2 : 15) * s;
+      P({ k: 'conf', x: o.x, y: o.y, vx: Math.cos(a) * v, vy: Math.sin(a) * v, g: 0.24 * s, dr: 0.985, w: rnd(5, 9) * (small ? 0.75 : 1), h: rnd(3, 5) * (small ? 0.75 : 1),
+          c: pick(COLS), rot: rnd(0, 6.3), vr: rnd(-0.25, 0.25), ph: rnd(0, 6.3), life: rnd(1400, 1850), t0: rnd(0, 120) });
+    }
+  }
+  function gold(o, small) {
+    var n = small ? 16 : 90, k;
+    for (k = 0; k < n; k++) {
+      var x = small ? o.x + rnd(-55, 55) : rnd(10, W - 10), y = small ? o.y - rnd(70, 120) : rnd(-260, -20);
+      P({ k: 'coin', x: x, y: y, vx: rnd(-0.4, 0.4), vy: rnd(small ? 1.6 : 4.5, small ? 2.6 : 8), g: small ? 0.03 : 0.09, r: small ? rnd(4, 6) : rnd(7, 12), ph: rnd(0, 6.3), sp: rnd(0.12, 0.25),
+          life: 1500, t0: rnd(0, small ? 300 : 450), yEnd: small ? o.y + 60 : H + 30 });
+    }
+    for (k = 0; k < (small ? 8 : 30); k++) P({ k: 'spark', x: small ? o.x + rnd(-60, 60) : rnd(0, W), y: small ? o.y + rnd(-60, 50) : rnd(0, H * 0.9), r: rnd(2, 4.5), life: rnd(500, 900), t0: rnd(150, 1100), c: '#fff6c8' });
+  }
+  function burst(x, y, n, sp, col, t0, small) {
+    for (var i = 0; i < n; i++) {
+      var a = i / n * Math.PI * 2 + rnd(-0.08, 0.08), v = sp * rnd(0.55, 1);
+      P({ k: 'fw', x: x, y: y, vx: Math.cos(a) * v, vy: Math.sin(a) * v, g: small ? 0.025 : 0.05, dr: 0.965, r: small ? 1.8 : 3, c: Math.random() < 0.2 ? '#ffffff' : col, life: rnd(700, 950), t0: t0 });
+    }
+  }
+  function feuerwerk(o, small) {
+    if (small) { burst(o.x - 18, o.y - 22, 28, 2.4, pick(COLS), 0, true); burst(o.x + 20, o.y - 8, 28, 2.2, pick(COLS), 380, true); return; }
+    var xs = [0.22, 0.72, 0.45, 0.82, 0.3];
+    xs.slice(0, 4).forEach(function (fx, i) {
+      var x = W * fx + rnd(-20, 20), top = H * rnd(0.18, 0.4), t0 = i * 170, col = COLS[(i * 2) % COLS.length];
+      P({ k: 'rocket', x: x, y: H + 10, x1: x + rnd(-30, 30), y1: top, life: 420, t0: t0, c: col });
+      burst(x, top, 56, Math.max(3, H / 190), col, t0 + 420, false);
+    });
+  }
+  var CHC = [['#c0392b', '#fff'], ['#2e6fd0', '#fff'], ['#1f8a4c', '#fff'], ['#1b1b1b', '#e0aa4a'], ['#7a3fb0', '#fff']];
+  function chips(o, small) {
+    var n = small ? 12 : 60;
+    for (var i = 0; i < n; i++) {
+      var cc = pick(CHC);
+      if (small) {
+        var a = -Math.PI / 2 + rnd(-0.9, 0.9), v = rnd(2.4, 4);
+        P({ k: 'chip', x: o.x, y: o.y, vx: Math.cos(a) * v, vy: Math.sin(a) * v, g: 0.16, r: rnd(5, 7), c: cc[0], c2: cc[1], ph: rnd(0, 6.3), sp: rnd(0.15, 0.3), life: 1400, t0: rnd(0, 200) });
+      } else P({ k: 'chip', x: rnd(10, W - 10), y: rnd(-300, -20), vx: rnd(-0.6, 0.6), vy: rnd(4, 8), g: 0.1, r: rnd(10, 15), c: cc[0], c2: cc[1], ph: rnd(0, 6.3), sp: rnd(0.08, 0.2), life: 1550, t0: rnd(0, 400) });
+    }
+  }
+  /* Blitz: gezackte Linie von oben zum Ziel, kurz hell, dazu ein sanftes Aufhellen (nie grell) */
+  function bolt(x0, y0, x1, y1, seg, jit) {
+    var pts = [[x0, y0]], i;
+    for (i = 1; i < seg; i++) { var f = i / seg; pts.push([x0 + (x1 - x0) * f + rnd(-jit, jit), y0 + (y1 - y0) * f + rnd(-jit * 0.3, jit * 0.3)]); }
+    pts.push([x1, y1]); return pts;
+  }
+  function blitze(o, small) {
+    var k;
+    if (small) {
+      for (k = 0; k < 2; k++) P({ k: 'bolt', pts: bolt(o.x + rnd(-40, 40), o.y - 110, o.x + rnd(-8, 8), o.y - 6, 7, 12), w: 2.2, life: 320, t0: k * 420 });
+      flashes.push({ x: o.x, y: o.y, r: 70, t0: 0, life: 260 }, { x: o.x, y: o.y, r: 70, t0: 420, life: 260 });
+      for (k = 0; k < 14; k++) P({ k: 'spark', x: o.x + rnd(-30, 30), y: o.y + rnd(-20, 20), r: rnd(1.5, 3), life: rnd(300, 600), t0: rnd(0, 800), c: '#d9ecff' });
+      return;
+    }
+    for (k = 0; k < 3; k++) {
+      var x = W * [0.3, 0.7, 0.5][k] + rnd(-40, 40), y1 = H * rnd(0.55, 0.78), t0 = k * 380;
+      P({ k: 'bolt', pts: bolt(x + rnd(-60, 60), -10, x, y1, 12, 26), w: 3.5, life: 360, t0: t0 });
+      flashes.push({ full: true, t0: t0, life: 220 });
+      for (var j = 0; j < 16; j++) { var a = rnd(-Math.PI, 0), v = rnd(1.5, 4.5); P({ k: 'fw', x: x, y: y1, vx: Math.cos(a) * v, vy: Math.sin(a) * v, g: 0.12, dr: 0.97, r: 2, c: '#d9ecff', life: rnd(400, 700), t0: t0 + 60 }); }
+    }
+  }
+  /* „Bewegung reduzieren“: nur ein ruhiges Leuchten mit Symbol, nichts fliegt */
+  var CALM = { konfetti: ['🎊', '#ffd35c'], gold: ['💰', '#f4c542'], feuerwerk: ['🎆', '#c58bff'], chips: ['🪙', '#e0aa4a'], blitze: ['⚡', '#9fd0ff'] };
+  function calm(id, o, small) { var c = CALM[id] || CALM.konfetti; P({ k: 'calm', x: o.x, y: o.y, r: small ? 46 : 120, ic: c[0], c: c[1], life: 1300 }); }
+
+  /* ---------- Zeichnen ---------- */
+  var t0 = 0, last = 0;
+  function draw(now) {
+    var el = now - t0, dt = Math.min(3, Math.max(0.5, (now - last) / 16.7)); last = now;
+    cx.setTransform(DPR, 0, 0, DPR, 0, 0); cx.clearRect(0, 0, W, H);
+    flashes = flashes.filter(function (f) {
+      var a = el - f.t0; if (a < 0) return true; if (a > f.life) return false;
+      var o = (1 - a / f.life);
+      if (f.full) { cx.fillStyle = 'rgba(210,228,255,' + (0.16 * o).toFixed(3) + ')'; cx.fillRect(0, 0, W, H); }
+      else { var g = cx.createRadialGradient(f.x, f.y, 0, f.x, f.y, f.r); g.addColorStop(0, 'rgba(220,236,255,' + (0.55 * o).toFixed(3) + ')'); g.addColorStop(1, 'rgba(220,236,255,0)'); cx.fillStyle = g; cx.fillRect(f.x - f.r, f.y - f.r, f.r * 2, f.r * 2); }
+      return true;
+    });
+    parts = parts.filter(function (p) {
+      var a = el - p.t0; if (a < 0) return true; if (a > p.life) return false;
+      var fade = Math.min(1, (p.life - a) / 380);
+      if (p.k !== 'rocket' && p.k !== 'bolt' && p.k !== 'calm') {
+        p.vx *= Math.pow(p.dr, dt); p.vy = p.vy * Math.pow(p.dr, dt) + p.g * dt; p.x += p.vx * dt; p.y += p.vy * dt; p.rot += p.vr * dt;
+        if (p.yEnd && p.y > p.yEnd) return false;
+      }
+      cx.globalAlpha = Math.max(0, fade);
+      if (p.k === 'conf') {
+        var fl = Math.cos(p.ph + a / 110); cx.save(); cx.translate(p.x, p.y); cx.rotate(p.rot); cx.scale(1, Math.abs(fl) * 0.85 + 0.15);
+        cx.fillStyle = p.c; cx.fillRect(-p.w / 2, -p.h / 2, p.w, p.h); cx.restore();
+      } else if (p.k === 'coin' || p.k === 'chip') {
+        var sx = Math.abs(Math.cos(p.ph + a * p.sp / 16)) * 0.85 + 0.15; cx.save(); cx.translate(p.x, p.y); cx.scale(sx, 1);
+        if (p.k === 'coin') {
+          cx.beginPath(); cx.arc(0, 0, p.r, 0, 6.2832); cx.fillStyle = '#f4c542'; cx.fill(); cx.lineWidth = Math.max(1, p.r * 0.18); cx.strokeStyle = '#a87a1c'; cx.stroke();
+          cx.beginPath(); cx.arc(-p.r * 0.25, -p.r * 0.25, p.r * 0.35, 0, 6.2832); cx.fillStyle = 'rgba(255,248,210,.8)'; cx.fill();
+        } else {
+          cx.beginPath(); cx.arc(0, 0, p.r, 0, 6.2832); cx.fillStyle = p.c; cx.fill();
+          cx.strokeStyle = p.c2; cx.lineWidth = p.r * 0.28; cx.setLineDash([p.r * 0.5, p.r * 0.55]); cx.beginPath(); cx.arc(0, 0, p.r * 0.84, 0, 6.2832); cx.stroke(); cx.setLineDash([]);
+          cx.beginPath(); cx.arc(0, 0, p.r * 0.5, 0, 6.2832); cx.lineWidth = Math.max(1, p.r * 0.1); cx.stroke();
+        }
+        cx.restore();
+      } else if (p.k === 'spark') {
+        var tw = Math.sin(a / p.life * Math.PI); cx.globalAlpha = tw; cx.fillStyle = p.c; cx.beginPath();
+        var r = p.r * (0.6 + tw * 0.6); cx.moveTo(p.x, p.y - r * 2); cx.lineTo(p.x + r * 0.5, p.y - r * 0.5); cx.lineTo(p.x + r * 2, p.y); cx.lineTo(p.x + r * 0.5, p.y + r * 0.5);
+        cx.lineTo(p.x, p.y + r * 2); cx.lineTo(p.x - r * 0.5, p.y + r * 0.5); cx.lineTo(p.x - r * 2, p.y); cx.lineTo(p.x - r * 0.5, p.y - r * 0.5); cx.closePath(); cx.fill();
+      } else if (p.k === 'fw') {
+        cx.fillStyle = p.c; cx.beginPath(); cx.arc(p.x, p.y, p.r * (0.5 + fade * 0.5), 0, 6.2832); cx.fill();
+      } else if (p.k === 'rocket') {
+        var f = a / p.life, e = 1 - (1 - f) * (1 - f), x = p.x + (p.x1 - p.x) * e, y = p.y + (p.y1 - p.y) * e;
+        cx.globalAlpha = 1; cx.strokeStyle = p.c; cx.lineWidth = 2.5; cx.lineCap = 'round'; cx.beginPath(); cx.moveTo(x, y); cx.lineTo(x - (p.x1 - p.x) * 0.06, y + 26); cx.stroke();
+        cx.fillStyle = '#fff'; cx.beginPath(); cx.arc(x, y, 2.6, 0, 6.2832); cx.fill();
+      } else if (p.k === 'bolt') {
+        var q2 = a / p.life, o2 = q2 < 0.3 ? 1 : q2 < 0.42 ? 0.25 : q2 < 0.6 ? 1 : (1 - q2) / 0.4;   // flackert einmal
+        cx.globalAlpha = o2; cx.lineJoin = 'round'; cx.lineCap = 'round';
+        [[p.w * 3.2, 'rgba(140,190,255,.35)'], [p.w, '#ffffff']].forEach(function (s) {
+          cx.strokeStyle = s[1]; cx.lineWidth = s[0]; cx.beginPath(); cx.moveTo(p.pts[0][0], p.pts[0][1]);
+          for (var i = 1; i < p.pts.length; i++) cx.lineTo(p.pts[i][0], p.pts[i][1]); cx.stroke();
+        });
+      } else if (p.k === 'calm') {
+        var q = a / p.life, al = q < 0.25 ? q / 0.25 : q > 0.7 ? (1 - q) / 0.3 : 1;
+        cx.globalAlpha = al * 0.9; var g = cx.createRadialGradient(p.x, p.y, 0, p.x, p.y, p.r);
+        g.addColorStop(0, p.c); g.addColorStop(1, 'rgba(0,0,0,0)'); cx.fillStyle = g; cx.fillRect(p.x - p.r, p.y - p.r, p.r * 2, p.r * 2);
+        cx.globalAlpha = al; cx.font = Math.round(p.r * 0.6) + 'px system-ui, sans-serif'; cx.textAlign = 'center'; cx.textBaseline = 'middle'; cx.fillText(p.ic, p.x, p.y);
+      }
+      cx.globalAlpha = 1;
+      return true;
+    });
+    if ((parts.length || flashes.length) && el < endAt + 400) raf = requestAnimationFrame(draw);
+    else stop();
+  }
+  function stop() { cancelAnimationFrame(raf); raf = 0; parts = []; flashes = []; cx.setTransform(1, 0, 0, 1, 0, 0); cx.clearRect(0, 0, cv.width, cv.height); cv.hidden = true; }
+  var MAKE = { konfetti: konfetti, gold: gold, feuerwerk: feuerwerk, chips: chips, blitze: blitze };
+  function play(id, opts) {
+    opts = opts || {};
+    if (!MAKE[id]) return false;
+    if (document.hidden) return false;
+    if (!raf) { fit(); parts = []; flashes = []; t0 = performance.now(); last = t0; endAt = 0; }
+    /* weitere Animation waehrend einer laufenden: Zeiten auf die laufende Uhr umrechnen */
+    var base = performance.now() - t0, n0 = parts.length, f0 = flashes.length, o = center(opts.el), small = !!opts.small;
+    if (small && opts.el && !opts.el.getBoundingClientRect().width) return false;   // Platz gerade nicht zu sehen
+    if (reduced()) calm(id, o, small); else MAKE[id](o, small);
+    parts.slice(n0).forEach(function (p) { p.t0 += base; });
+    flashes.slice(f0).forEach(function (f) { f.t0 += base; });
+    endAt = Math.max(endAt, base + 2000);
+    cv.hidden = false;
+    if (!raf) raf = requestAnimationFrame(draw);
+    return true;
+  }
+
+  /* ---------- Gewinn-Sounds ---------- */
+  var SOUNDS = {
+    /* Kasse: kurzes Klacken, dann eine helle Glocke und ein paar Muenzen */
+    kaching: function (a) {
+      var t = a.t, k;
+      a.noise(t, 0.03, 'highpass', 3800, 0.7, 0.28, 0.001); a.tone(t, 1900, 0.05, 0.1, 'square', 1500);
+      a.noise(t + 0.06, 0.025, 'bandpass', 3000, 2, 0.2, 0.001);
+      a.tone(t + 0.1, 2637, 0.95, 0.16, 'sine'); a.tone(t + 0.1, 3951, 0.7, 0.07, 'sine'); a.tone(t + 0.1, 5274, 0.4, 0.035, 'sine');
+      for (k = 0; k < 6; k++) a.noise(t + 0.16 + k * 0.045 + Math.random() * 0.02, 0.03, 'bandpass', 4800 + Math.random() * 1200, 3, 0.07, 0.002);
+    },
+    /* Fanfare: ta-ta-ta-taaa mit Schlussakkord */
+    fanfare: function (a) {
+      var t = a.t, N = [[0, 523, 0.11], [0.13, 523, 0.11], [0.26, 523, 0.11], [0.39, 659, 0.2], [0.62, 784, 0.7]];
+      N.forEach(function (n) { a.tone(t + n[0], n[1], n[2], 0.07, 'square'); a.tone(t + n[0], n[1] / 2, n[2], 0.1, 'triangle'); });
+      a.tone(t + 0.62, 659, 0.7, 0.05, 'square'); a.tone(t + 0.62, 1047, 0.7, 0.04, 'triangle');
+    },
+    /* Jubel: rauschende Menge, Klatschen und ein Pfiff */
+    jubel: function (a) {
+      var t = a.t, k;
+      for (k = 0; k < 16; k++) a.noise(t + k * 0.065, 0.3, 'bandpass', 700 + Math.random() * 1100, 0.9, 0.05 + 0.04 * Math.sin(k / 15 * Math.PI), 0.08);
+      for (k = 0; k < 12; k++) a.noise(t + 0.08 + k * 0.085 + Math.random() * 0.03, 0.025, 'bandpass', 1400 + Math.random() * 600, 1.2, 0.14, 0.002);
+      a.tone(t + 0.18, 1900, 0.32, 0.05, 'sine', 2800); a.tone(t + 0.56, 2700, 0.38, 0.045, 'sine', 1700);
+    },
+    /* Retro 8-Bit: schnelles Rechteck-Arpeggio wie bei alten Spielkonsolen */
+    retro: function (a) {
+      var t = a.t, N = [523, 659, 784, 1047, 784, 1047, 1319, 1568];
+      N.forEach(function (f, i) { a.tone(t + i * 0.06, f, 0.07, 0.07, 'square'); });
+      a.tone(t + 0.5, 2093, 0.3, 0.06, 'square'); a.tone(t + 0.5, 1047, 0.3, 0.05, 'square');
+    }
+  };
+  function sound(id) {
+    Snd.unlock();
+    if (id === 'std' || !SOUNDS[id]) { Snd.winStd(); return; }
+    Snd.fx(SOUNDS[id]);
+  }
+  /* Snd.win (alle Spiele) spielt den angelegten Gewinn-Sound statt des bisherigen Klangs */
+  Snd.winHook = function () { var id = C.current('winsnd'); if (!SOUNDS[id]) return false; Snd.fx(SOUNDS[id]); return true; };
+
+  /* ---------- Shop ---------- */
+  var FXN = { std: ['Standard', '✨'], konfetti: ['Konfetti', '🎊'], gold: ['Goldregen', '💰'], chips: ['Chip-Regen', '🪙'], blitze: ['Blitze', '⚡'], feuerwerk: ['Feuerwerk', '🎆'] };
+  var SNN = { std: ['Standard', '🔔'], kaching: ['Ka-ching', '💵'], retro: ['Retro 8-Bit', '👾'], fanfare: ['Fanfare', '🎺'], jubel: ['Jubel', '🙌'] };
+  function pvFx(id) {
+    return function (el) {
+      el.innerHTML = '<span class="fxpv">' + FXN[id][1] + '</span>' + (id === 'std' ? '' : '<i class="fxplay">▶</i>');
+      el.classList.add('fxtap');
+      el.onclick = function () { Snd.unlock(); if (id === 'std') { sound(C.current('winsnd')); bump(el); } else { play(id, { el: el }); } };
+    };
+  }
+  function pvSnd(id) {
+    return function (el) {
+      el.innerHTML = '<span class="fxpv">' + SNN[id][1] + '</span><i class="fxplay">♪</i>';
+      el.classList.add('fxtap');
+      el.onclick = function () { sound(id); bump(el); };
+    };
+  }
+  function bump(el) { el.classList.remove('fxbump'); void el.offsetWidth; el.classList.add('fxbump'); }
+  C.addSection('fx', { kind: 'winfx', title: 'Siegesanimation', sub: 'Bei großen Gewinnen: Poker-Pot ab 10 Big Blinds, Blackjack, Slots ab 20×, Roulette-Zahl direkt. Bild antippen für eine Vorschau.' });
+  C.addSection('fx', { kind: 'winsnd', title: 'Gewinn-Sound', sub: 'Bei jedem Gewinn in allen Spielen. Bild antippen zum Anhören.' });
+  [
+    { id: 'std', std: true }, { id: 'konfetti', price: 3000 }, { id: 'gold', price: 10000 }, { id: 'chips', price: 15000 },
+    { id: 'blitze', price: 30000 }, { id: 'feuerwerk', stars: 100, icon: '🎆' }
+  ].forEach(function (d) { d.kind = 'winfx'; d.name = FXN[d.id][0]; d.preview = pvFx(d.id); C.addItem(d); });
+  [
+    { id: 'std', std: true }, { id: 'kaching', price: 3000 }, { id: 'retro', price: 5000 }, { id: 'fanfare', price: 8000 }, { id: 'jubel', price: 12000 }
+  ].forEach(function (d) { d.kind = 'winsnd'; d.name = SNN[d.id][0]; d.preview = pvSnd(d.id); C.addItem(d); });
+
+  /* ---------- Online: meine Animation steht im oeffentlichen Profil (cos.win) ---------- */
+  window.PRLook.field('win', function (v) { return typeof v === 'string' && FX.indexOf(v) >= 0 ? v : ''; },
+    function () { var id = C.current('winfx'); return FX.indexOf(id) >= 0 ? id : ''; });
+
+  function big(game, el) {
+    var id = C.current('winfx');
+    PR.emit('bigwin', { game: game, fx: FX.indexOf(id) >= 0 ? id : 'std' });
+    if (FX.indexOf(id) < 0) return false;
+    return play(id, { el: el });
+  }
+  function other(cos, el) {
+    if (!othersOn() || !cos || !el) return false;
+    var id = cos.win;
+    if (FX.indexOf(id) < 0) return false;
+    return play(id, { el: el, small: true });
+  }
+
+  /* ---------- Einstellung im Profil ---------- */
+  var sw = $('#fxOthSw');
+  function renderSw() { if (sw) sw.setAttribute('aria-checked', othersOn() ? 'true' : 'false'); }
+  if (sw) sw.addEventListener('click', function () {
+    var on = !othersOn();
+    try { localStorage.setItem('pr-fxoth', on ? '1' : '0'); } catch (e) {}
+    renderSw(); Snd.unlock(); Snd.chip(1, 0, true);
+  });
+  renderSw();
+
+  if (window.PRAch) window.PRAch.add({ id: 'grosser-auftritt', icon: '🎆', name: 'Großer Auftritt', desc: 'Feiere einen großen Gewinn mit eigener Siegesanimation', ev: 'bigwin', f: function (d) { return d.fx !== 'std'; } });
+
+  window.PRFx = { play: play, big: big, other: other, sound: sound, reduced: reduced, othersOn: othersOn, FX: FX, SND: SND };
 })();
 </script>
 

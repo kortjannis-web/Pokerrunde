@@ -28,10 +28,13 @@ Immer den bisherigen Weg als Rückfall im Code behalten.
 
 Ersteller und Mitspieler müssen dieselbe App-Version haben, sonst rechnen sie verschieden. Wer die Nachrichten
 zwischen den Handys ändert (neue Felder/Nachrichtentypen, andere Bedeutung), erhöht die Versionsnummer:
-Poker `hello`-Feld `v` = Konstante `PK_V` (aktuell 8; der Ersteller nimmt nur Mitspieler ab `PK_V` und schickt
-älteren `{ t: 'old' }`; 8 bringt Profilrahmen und Titel `cos { frame, title }` im öffentlichen Profil und im Stand, 7 Schnellsätze `{ t: 'chat', q }` und Karten zeigen `{ t: 'show', c }` mit den Feldern
-`sh`/`sb` im Stand, 6 ersetzt das Level `lv` durch die Sternzahl `st` im öffentlichen Profil, 5 brachte `lv`,
-4 das Feld `rid` zum Wiederverbinden), Blackjack `BJ_V` (aktuell 8: `cos` im Profil, 7 Schnellsätze), Roulette `RL_V` (aktuell 5: `cos` im Profil,
+Poker `hello`-Feld `v` = Konstante `PK_V` (aktuell 9; der Ersteller nimmt nur Mitspieler ab `PK_V` und schickt
+älteren `{ t: 'old' }`; 9 bringt im `cos` die Siegesanimation `win`, das Profilbild `av` und den Regenschirm `um` sowie
+Wurfgegenstände `{ t: 'tom', k }` (k fehlt = Tomate, `k: 'schirm'` = Abprall-Meldung mit `n`), 8 Profilrahmen und Titel
+`cos { frame, title }` im öffentlichen Profil und im Stand, 7 Schnellsätze `{ t: 'chat', q }` und Karten zeigen `{ t: 'show', c }`
+mit den Feldern `sh`/`sb` im Stand, 6 ersetzt das Level `lv` durch die Sternzahl `st` im öffentlichen Profil, 5 brachte `lv`,
+4 das Feld `rid` zum Wiederverbinden), Blackjack `BJ_V` (aktuell 9: `cos.win/av/um` und Würfe mit `k`, 8 `cos` im Profil,
+7 Schnellsätze), Roulette `RL_V` (aktuell 6: `cos.win/av/um` und Würfe `{ t: 'tom' }`, 5 `cos` im Profil,
 4 Reaktionen und Schnellsätze); bei Blackjack
 und Roulette müssen beide Seiten genau gleich sein. Alte Versionen werden dann mit einer Meldung „App einmal ganz schließen und neu öffnen“ abgewiesen.
 Das Feld `cos` (siehe `window.PRLook` in index.html) ist erweiterbar: neue Unterfelder mit `PRLook.field(name, clean, mine)`
