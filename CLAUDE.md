@@ -39,7 +39,9 @@ mit den Feldern `sh`/`sb` im Stand, 6 ersetzt das Level `lv` durch die Sternzahl
 7 Schnellsätze), Roulette `RL_V` (aktuell 6: `cos.win/av/um` und Würfe `{ t: 'tom' }`, 5 `cos` im Profil,
 4 Reaktionen und Schnellsätze), Crash `CR_V` (eigenes Raum-Protokoll, aktuell 1: `snap { s: { ph, rd, el, k, dl, crash,
 hist, pl } }`, `bet { a, au }`, `out { m, h }`, Reaktionen/Sätze/Würfe wie beim Roulette; den Absturzpunkt `crash` schickt der
-Ersteller erst beim Absturz); bei Blackjack, Roulette und Crash müssen beide Seiten genau gleich sein. Alte Versionen werden dann mit einer Meldung „App einmal ganz schließen und neu öffnen“ abgewiesen.
+Ersteller erst beim Absturz), Reaktion `RX_V` (eigenes Raum-Protokoll, aktuell 1: `st { s: { ph, dn, bet, pl, ids, sc, rd, dec, act, win } }`,
+`go { rd, w, f, act }` (nur Wartezeit und Falle, jedes Handy misst selbst), `res { rd, ms, k }`, `rr { rd, res, win, sc }`, `can { ok }`,
+Reaktionen/Sätze; Herausforderung in der Freundesliste `{ t: 'duel', code, b }` mit Antwort `duelok`/`duelno`); bei Blackjack, Roulette, Crash und Reaktion müssen beide Seiten genau gleich sein. Alte Versionen werden dann mit einer Meldung „App einmal ganz schließen und neu öffnen“ abgewiesen.
 Das Feld `cos` (siehe `window.PRLook` in index.html) ist erweiterbar: neue Unterfelder mit `PRLook.field(name, clean, mine)`
 anmelden; ältere Apps ignorieren unbekannte Unterfelder. Wer `cos` neu belegt (z. B. Siegesanimation `win`), erhöht trotzdem
 die Versionen, damit alle am Tisch dasselbe sehen. Die Freundesliste (`myPub`) hat keine Version und schickt `cos` einfach mit.

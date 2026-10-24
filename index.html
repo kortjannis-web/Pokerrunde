@@ -452,7 +452,7 @@ input[type=range]::-moz-range-thumb {
 .casign { position: relative; padding: 22px 18px 18px; border-radius: 26px; background: linear-gradient(180deg, #3a0a14, #1a0409); border: 7px dotted #ffe08a; box-shadow: 0 0 0 3px #b07d22, 0 0 0 9px #1a0409, 0 0 0 11px rgba(224,170,74,.55), 0 0 40px 8px rgba(224,170,74,.35), inset 0 0 24px rgba(0,0,0,.6); animation: casin .7s cubic-bezier(.2,.9,.3,1.3) both, cabulb .45s steps(2) .7s infinite; }
 .casign small { display: block; font: 800 11px var(--ui); letter-spacing: .3em; text-transform: uppercase; color: #f4d67f; opacity: .9; }
 #splash .casign h1 { margin: 4px 0 2px; font: 800 min(54px, 12.5vw)/1.05 var(--display); letter-spacing: .08em; padding-left: .08em; white-space: nowrap; background: linear-gradient(180deg, #fff6d0, #f4d67f 45%, #c48a2c 55%, #ffe9a8); -webkit-background-clip: text; background-clip: text; color: transparent; filter: drop-shadow(0 3px 0 #5a3008) drop-shadow(0 0 14px rgba(244,214,127,.55)); animation: suit .7s .25s ease both; }
-.casign p { margin: 0; font: 700 min(12px, 3.4vw) var(--ui); letter-spacing: .14em; white-space: nowrap; text-transform: uppercase; color: #ecd9b0; }
+.casign p { margin: 0; font: 700 min(12px, 3.4vw)/1.6 var(--ui); letter-spacing: .14em; white-space: nowrap; text-transform: uppercase; color: #ecd9b0; }
 .casuits { display: flex; justify-content: center; gap: 14px; margin-top: 10px; font-size: 18px; color: #f4d67f; }
 .casuits i { font-style: normal; } .casuits i.r { color: #ff6b5e; }
 .cachips { display: flex; justify-content: center; gap: 14px; height: 52px; margin-top: 26px; }
@@ -671,7 +671,7 @@ input.bprange[type=range]::-moz-range-thumb { width: 20px; height: 20px; border-
 #menu.drag .mbg { transition: none; }
 .mbg-bj { --mbg: var(--bj2); }
 #menu .menucard { position: relative; z-index: 1; }
-.mswipe { overflow: hidden; margin: -10px -24px 0; padding-top: 10px; cursor: grab; }   /* oben Luft, sonst schneidet der Rand die schraege Ass-Karte ab */
+.mswipe { overflow: hidden; margin: -34px -24px 0; padding-top: 34px; cursor: grab; }   /* oben Luft, sonst schneidet der Rand die schraege Ass-Karte ab */
 .mtrack { display: flex; transition: transform .42s cubic-bezier(.2,.9,.3,1); }
 .mpage { flex: 0 0 100%; padding: 0 24px; display: flex; flex-direction: column; gap: 12px; }
 .mpage .menusub { margin-bottom: 0; }
@@ -1425,9 +1425,8 @@ input.bprange[type=range]::-moz-range-thumb { width: 20px; height: 20px; border-
 .rlpay div { display: flex; justify-content: space-between; gap: 10px; padding: 7px 10px; border-radius: 9px; background: var(--bg); font: 600 13px var(--ui); }
 .rlpay b { color: var(--brass); white-space: nowrap; font-variant-numeric: tabular-nums; }
 #rlHelp p { margin: 10px 0 0; text-align: left; font-size: 13px; line-height: 1.5; }
-#stGame { grid-template-columns: repeat(5, 1fr); }
-#stGame button { padding: 0 1px; font-size: 11.5px; letter-spacing: -.02em; }
-@container (max-width: 340px) { #stGame button { font-size: 10.5px; } }
+#stGame { grid-template-columns: repeat(3, 1fr); }
+#stGame button { padding: 0 4px; font-size: 13px; }
 
 /* ---------- Sterne (1 Stern pro 1.000 gewonnene Chips) ---------- */
 /* Anzeige im Hauptmenue: rechts neben dem runden Shop-Knopf, unter der Profil-Pille */
@@ -1987,7 +1986,7 @@ input.bprange[type=range]::-moz-range-thumb { width: 20px; height: 20px; border-
   radial-gradient(1px 1px at 70% 52%, rgba(255,255,255,.35), transparent), radial-gradient(1.2px 1.2px at 19% 60%, rgba(220,210,255,.35), transparent),
   radial-gradient(ellipse at 50% 30%, var(--cr2), var(--bg) 70%); }
 .crlogo { display: flex; justify-content: center; height: 41px; align-items: flex-end; }
-.crlogo svg { width: 68px; height: 51px; display: block; overflow: visible; filter: drop-shadow(0 4px 8px rgba(0,0,0,.5)); }
+.crlogo svg { width: 92px; height: 69px; display: block; overflow: visible; margin-bottom: -6px; filter: drop-shadow(0 4px 8px rgba(0,0,0,.5)) drop-shadow(0 0 14px rgba(255,95,168,.22)); }
 
 /* ---------- Crash (Spiel) ---------- */
 #cr { position: absolute; inset: 0; z-index: 58; display: flex; flex-direction: column; background: radial-gradient(120% 70% at 50% 25%, #221c52, var(--bg) 72%); background-color: var(--bg); }
@@ -2085,6 +2084,80 @@ input.bprange[type=range]::-moz-range-thumb { width: 20px; height: 20px; border-
   .crhist { height: 24px; }
 }
 @media (prefers-reduced-motion: reduce) { #crGo.cash { animation: none; } .crmult.boom b { animation: none; } }
+/* ---------- Reaktion: siebte Menueseite (rechts neben Crash), Blau mit gruenem Schimmer ---------- */
+.mbg-rx { background: radial-gradient(ellipse 60% 40% at 78% 70%, rgba(40,200,120,.16), transparent 70%), radial-gradient(ellipse at 50% 30%, #1d3a92, var(--bg) 70%); }
+.rxlogo { display: flex; justify-content: center; height: 41px; align-items: flex-end; }
+.rxlogo svg { width: 62px; height: 62px; display: block; overflow: visible; margin-bottom: -4px; filter: drop-shadow(0 4px 9px rgba(0,0,0,.5)) drop-shadow(0 0 12px rgba(80,170,255,.25)); }
+
+/* ---------- Reaktion (Spiel) ---------- */
+#rx { position: absolute; inset: 0; z-index: 58; display: flex; flex-direction: column; background: radial-gradient(120% 70% at 50% 30%, #183170, var(--bg) 72%); background-color: var(--bg); }
+#rxStage { position: relative; flex: 1 1 auto; min-height: 0; display: flex; flex-direction: column; gap: 10px; padding-bottom: 14px; }
+.rxpl { flex: none; display: grid; grid-template-columns: repeat(var(--n, 2), minmax(0, 1fr)); gap: 6px; padding-top: 4px; }
+.rxp { position: relative; min-width: 0; display: flex; flex-direction: column; align-items: center; gap: 4px; padding: 8px 3px 7px; border-radius: 14px; background: rgba(10,16,36,.62); border: 1px solid rgba(140,170,255,.16); transition: background-color .3s, box-shadow .3s, opacity .3s; }
+.rxp .pav { width: 40px; height: 40px; font-size: 18px; }
+.rxp .nm { max-width: 100%; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; font: 700 12px var(--ui); color: var(--ink); }
+.rxp .nm em { font: 800 8px var(--ui); font-style: normal; letter-spacing: .06em; padding: 1px 4px; border-radius: 4px; background: rgba(120,160,255,.28); color: #cfe0ff; margin-left: 3px; vertical-align: 1px; }
+.rxp.me .nm { color: var(--brass); }
+.rxdots { display: flex; gap: 3px; }
+.rxdots i { width: 8px; height: 8px; border-radius: 50%; background: rgba(236,231,218,.2); }
+.rxdots i.on { background: #4fd884; box-shadow: 0 0 6px rgba(79,216,132,.7); }
+.rxt { min-height: 16px; font: 800 13px var(--ui); color: var(--muted); font-variant-numeric: tabular-nums; white-space: nowrap; }
+.rxp.win { background: rgba(28,120,68,.55); border-color: rgba(120,240,160,.6); box-shadow: 0 0 0 2px rgba(120,240,160,.25), 0 0 18px rgba(60,200,110,.35); }
+.rxp.win .rxt { color: #b6ffcb; }
+.rxp.foul .rxt { color: #ff8f8f; }
+.rxp.out { opacity: .45; }
+.rxp.gone { opacity: .35; }
+.rxp.pressed::after { content: '✓'; position: absolute; top: 5px; right: 7px; font: 800 12px var(--ui); color: #8fe6a0; }
+.rxinfo { flex: none; min-height: 18px; text-align: center; font: 700 12px var(--ui); letter-spacing: .14em; text-transform: uppercase; color: rgba(236,231,218,.72); }
+#rxPlayV, #rxLobV { flex: 1 1 auto; min-height: 0; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 14px; }
+#rxPlayV[hidden], #rxLobV[hidden] { display: none; }
+#rxLobV { justify-content: flex-start; align-items: stretch; padding-top: 6px; }
+#rxLobV .psec { margin: 0; }
+#rxBets.seg { grid-template-columns: repeat(4, 1fr); margin-top: 0; }
+#rxBets.seg button { padding: 0 2px; font-size: 14px; }
+.rxnote { margin: 0; min-height: 18px; text-align: center; color: var(--muted); font: 500 13px/1.45 var(--ui); }
+.rxnote b { color: var(--ink); }
+.rxbtn { position: relative; width: min(70vw, 270px, 46vh); aspect-ratio: 1; border-radius: 50%; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 4px;
+  touch-action: none; -webkit-user-select: none; user-select: none; -webkit-tap-highlight-color: transparent; cursor: pointer; color: #fff; text-align: center;
+  background: radial-gradient(circle at 36% 28%, rgba(255,255,255,.38), transparent 46%), var(--rxc, #2f62d8);
+  box-shadow: 0 0 0 7px rgba(255,255,255,.07), 0 0 0 9px var(--rxr, rgba(90,140,255,.45)), 0 18px 40px rgba(0,0,0,.55), inset 0 -10px 24px rgba(0,0,0,.25); }
+.rxbtn b { font: 800 clamp(26px, 9vw, 38px)/1.05 var(--display); text-shadow: 0 2px 10px rgba(0,0,0,.35); font-variant-numeric: tabular-nums; }
+.rxbtn small { min-height: 16px; font: 700 13px var(--ui); opacity: .9; }
+.rxbtn.wait { --rxc: #2f62d8; --rxr: rgba(90,140,255,.45); }
+.rxbtn.trap { --rxc: #f2c230; --rxr: rgba(255,220,90,.6); color: #3a2a00; }
+.rxbtn.go { --rxc: #22b85e; --rxr: rgba(120,255,170,.7); }
+.rxbtn.foul { --rxc: #c93b3b; --rxr: rgba(255,120,120,.55); }
+.rxbtn.done { --rxc: #24427e; --rxr: rgba(120,160,255,.35); }
+.rxbtn.idle, .rxbtn.off { --rxc: #2a3550; --rxr: rgba(140,160,200,.25); color: rgba(236,231,218,.75); }
+.rxbtn.foul b { animation: crshake .45s; }
+.rxstatus { min-height: 38px; max-width: 320px; text-align: center; font: 600 14px/1.4 var(--ui); color: var(--muted); }
+.rxstatus b { color: var(--ink); }
+.rxstatus b.g { color: #8fe6a0; }
+#rxMe { position: absolute; left: 50%; bottom: 40px; width: 1px; height: 1px; }
+#rxReact { position: absolute; left: 8px; bottom: 10px; z-index: 9; width: 40px; height: 40px; border-radius: 50%; border: 1px solid var(--line); background: rgba(16,18,19,.85); color: var(--ink); padding: 0; display: grid; place-items: center; }
+#rxReact[hidden] { display: none; }
+#rxReact svg { width: 24px; height: 24px; }
+#rxRPanel { bottom: 56px; }
+#rxToast { white-space: normal; width: max-content; max-width: 92%; text-align: center; border-radius: 16px; top: auto; bottom: 60px; }
+#rxInvBtn[hidden] { display: none; }
+.rxtro { font-size: 46px; line-height: 1; margin-bottom: 6px; }
+#rxEnd.won .rxtro { animation: rxjub 1s cubic-bezier(.2,.9,.3,1.4) both, tncrown 1.6s 1s ease-in-out infinite; }
+#rxEnd.won .endcard { box-shadow: 0 24px 60px rgba(0,0,0,.6), 0 0 0 2px rgba(120,240,160,.5), 0 0 40px rgba(60,200,110,.3); }
+@keyframes rxjub { from { transform: scale(.2) rotate(-20deg); opacity: 0; } }
+#rxEnd p { margin-bottom: 12px; }
+.rxendl { display: flex; flex-direction: column; gap: 5px; margin-bottom: 16px; }
+.rxendl div { display: flex; align-items: center; gap: 8px; padding: 6px 10px; border-radius: 10px; background: var(--bg); font: 600 13px var(--ui); text-align: left; }
+.rxendl .pav { width: 24px; height: 24px; font-size: 11px; flex: none; }
+.rxendl span { flex: 1 1 auto; min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.rxendl b { color: var(--brass); font-variant-numeric: tabular-nums; white-space: nowrap; }
+.rxendl .w { box-shadow: inset 0 0 0 1px rgba(120,240,160,.5); }
+#rxPause .endcard, #rxInvDlg .endcard { max-height: 100%; overflow-y: auto; }
+#rxInvDlg .psettings { text-align: left; }
+#rxInvDlg .finv .fl { background: var(--bg); }
+#rxInvDlg .finv > .psec { display: none; }
+#rxHelp p { margin: 10px 0 0; text-align: left; font-size: 13px; line-height: 1.5; }
+.fl .fduel { flex: none; height: 34px; padding: 0 10px; font-size: 13px; }
+@media (prefers-reduced-motion: reduce) { #rxEnd.won .rxtro, .rxbtn.foul b { animation: none; } }
 </style>
 
 <div id="app">
@@ -2199,7 +2272,7 @@ input.bprange[type=range]::-moz-range-thumb { width: 20px; height: 20px; border-
       <div class="casign">
         <small>★ Willkommen im ★</small>
         <h1>CASINO</h1>
-        <p>Poker · Blackjack · Slots · Roulette</p>
+        <p>Poker · Blackjack · Slots · Roulette<br>Crash · Reaktion · Pop the Lock</p>
         <div class="casuits" aria-hidden="true"><i>♠</i><i class="r">♥</i><i>♣</i><i class="r">♦</i></div>
       </div>
       <div class="cachips" aria-hidden="true"><i></i><i></i><i></i></div>
@@ -2252,6 +2325,11 @@ input.bprange[type=range]::-moz-range-thumb { width: 20px; height: 20px; border-
             <h1>Crash</h1>
             <p class="menusub">Rakete steigt · rechtzeitig auszahlen</p>
           </div>
+          <div class="mpage" data-g="rx" aria-label="Reaktion">
+            <div class="rxlogo" aria-hidden="true"><svg viewBox="0 0 64 64" aria-hidden="true"><defs><linearGradient id="rxL1" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#4f8dff"/><stop offset=".5" stop-color="#2f62d8"/><stop offset=".5" stop-color="#2fc46f"/><stop offset="1" stop-color="#14894a"/></linearGradient><radialGradient id="rxL2" cx="38%" cy="28%" r="70%"><stop offset="0" stop-color="#fff" stop-opacity=".55"/><stop offset=".55" stop-color="#fff" stop-opacity="0"/></radialGradient><linearGradient id="rxL3" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#fff6c2"/><stop offset="1" stop-color="#ffc83d"/></linearGradient></defs><circle cx="32" cy="34" r="29" fill="#0b1630" opacity=".55"/><circle cx="32" cy="32" r="28" fill="#13224a" stroke="#8fb4ff" stroke-opacity=".5" stroke-width="1.4"/><circle cx="32" cy="32" r="23.5" fill="url(#rxL1)"/><circle cx="32" cy="32" r="23.5" fill="url(#rxL2)"/><circle cx="32" cy="32" r="23.5" fill="none" stroke="#fff" stroke-opacity=".35" stroke-width="1"/><path d="M35.5 13L21 35h9.5l-3.5 16L43 28h-9.8z" fill="url(#rxL3)" stroke="#7a4a00" stroke-width="1.4" stroke-linejoin="round"/></svg></div>
+            <h1>Reaktion</h1>
+            <p class="menusub">Wer drückt zuerst? · 2 bis 5 Spieler</p>
+          </div>
         </div>
       </div>
       <div class="mdots" id="mDots" role="tablist" aria-label="Spiel wählen"></div>
@@ -2276,6 +2354,10 @@ input.bprange[type=range]::-moz-range-thumb { width: 20px; height: 20px; border-
         </div>
         <div data-g="crash" class="mgrp off" id="mCr">
           <button class="btn primary wide" id="crPlay" type="button">Spielen</button>
+        </div>
+        <div data-g="rx" class="mgrp off" id="mRx">
+          <button class="btn primary wide" id="rxPlay" type="button">Gegen Bot spielen</button>
+          <button class="btn wide" id="rxFriends" type="button">Mit Freunden spielen<i class="odot" hidden aria-hidden="true"></i></button>
         </div>
       </div>
     </div>
@@ -2680,6 +2762,75 @@ input.bprange[type=range]::-moz-range-thumb { width: 20px; height: 20px; border-
           <p>Die Leiste oben zeigt die letzten 20 Absturzpunkte. Auf lange Sicht kommen etwa 97 % der Einsätze zurück. Mit Freunden spielt jeder mit seinem eigenen Guthaben; Bots erkennst du am Schild „Bot“.</p>
         </div>
         <button class="btn wide" id="crMenu" type="button" style="margin-top:10px">Zum Hauptmenü</button>
+      </div>
+    </div>
+  </div>
+
+  <div id="rx" hidden>
+    <header class="bjbar">
+      <span class="brand">Reaktion</span>
+      <div class="right">
+        <div class="bank bjbank" role="status" aria-label="Dein Guthaben"><i class="bchip" aria-hidden="true"></i><span id="rxBank">0</span></div>
+        <button class="iconbtn" id="rxInvBtn" type="button" hidden aria-label="Freund herausfordern"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="9" cy="8" r="3.4"/><path d="M2.8 19.5c.6-3.4 3.1-5.4 6.2-5.4s5.6 2 6.2 5.4"/><path d="M19 8v6M16 11h6"/></svg></button>
+        <button class="iconbtn" id="rxPauseBtn" type="button" aria-label="Pause"><svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><rect x="6" y="5" width="4" height="14" rx="1.2"/><rect x="14" y="5" width="4" height="14" rx="1.2"/></svg></button>
+      </div>
+    </header>
+    <main id="rxStage">
+      <div class="rxpl" id="rxPl" aria-label="Spieler im Duell"></div>
+      <div class="rxinfo" id="rxInfo"></div>
+      <section id="rxPlayV">
+        <div class="rxbtn wait" id="rxBtn" role="button" aria-label="Reaktionsknopf"><b id="rxBtnB">Warten…</b><small id="rxBtnS"></small></div>
+        <div class="rxstatus" id="rxStatus" aria-live="polite"></div>
+      </section>
+      <section id="rxLobV" hidden>
+        <div class="psec">Einsatz für alle</div>
+        <div class="seg rxbets" id="rxBets" role="group" aria-label="Einsatz wählen">
+          <button type="button" data-v="10">10</button><button type="button" data-v="100">100</button><button type="button" data-v="1000">1.000</button><button type="button" data-v="10000">10.000</button>
+        </div>
+        <p class="rxnote" id="rxNote"></p>
+        <button class="btn primary wide" id="rxStart" type="button">Duell starten</button>
+        <button class="btn wide" id="rxInv2" type="button" hidden>⚡ Freund herausfordern</button>
+      </section>
+      <div class="bjtoast" id="rxToast"></div>
+      <div id="rxMe"></div>
+      <button id="rxReact" type="button" hidden aria-label="Reaktion oder Satz senden"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path d="M8.2 14.2c1 1.5 2.3 2.2 3.8 2.2s2.8-.7 3.8-2.2"/><circle cx="9" cy="9.7" r=".6" fill="currentColor"/><circle cx="15" cy="9.7" r=".6" fill="currentColor"/></svg></button>
+      <div class="bjrpanel" id="rxRPanel" hidden>
+        <button type="button" data-e="😂">😂</button><button type="button" data-e="😱">😱</button><button type="button" data-e="🐢">🐢</button><button type="button" data-e="⚡">⚡</button><button type="button" data-e="😤">😤</button><button type="button" data-e="🔥">🔥</button>
+      </div>
+    </main>
+    <div id="rxEnd" class="overlay" hidden>
+      <div class="endcard">
+        <div class="rxtro" id="rxTro" aria-hidden="true">🏆</div>
+        <h2 id="rxEndT">Gewonnen!</h2>
+        <p id="rxEndP"></p>
+        <div class="rxendl" id="rxEndL"></div>
+        <button class="btn primary wide" id="rxRev" type="button">Revanche!</button>
+        <button class="btn wide" id="rxBack" type="button" style="margin-top:10px">Zurück</button>
+      </div>
+    </div>
+    <div id="rxInvDlg" class="overlay" hidden>
+      <div class="endcard">
+        <h2>Freund herausfordern</h2>
+        <div class="psettings">
+          <div class="fnote" id="rxInvTxt"></div>
+          <div class="finv" data-fi></div>
+        </div>
+        <button class="btn primary wide" id="rxInvX" type="button" style="margin-top:12px">Schließen</button>
+      </div>
+    </div>
+    <div id="rxPause" class="overlay" hidden>
+      <div class="endcard">
+        <h2>Pause</h2>
+        <p id="rxPauseTxt"></p>
+        <button class="btn primary wide" id="rxResume" type="button" style="margin-top:12px">Weiterspielen</button>
+        <button class="btn wide" id="rxHelpBtn" type="button" style="margin-top:10px" aria-expanded="false">Spielanleitung</button>
+        <div id="rxHelp" hidden>
+          <p>Der große Knopf ist erst <b>blau</b> („Warten…“). Nach 1,5 bis 6 Sekunden wird er <b>grün</b> – dann so schnell wie möglich tippen. Wer am schnellsten ist, gewinnt die Runde.</p>
+          <p>Wer bei Blau tippt, hat einen <b>Fehlstart</b> und verliert die Runde. Vorsicht: Manchmal wird der Knopf kurz <b>gelb</b> – das ist eine Falle. Zeiten unter 100 ms zählen auch als Fehlstart.</p>
+          <p>Ein Duell geht über 5 Runden, wer die meisten gewinnt, bekommt alle Einsätze. Bei Gleichstand gibt es eine Entscheidungsrunde. Jedes Handy misst die Zeit selbst ab dem Moment, in dem Grün wirklich zu sehen ist – die Internetverbindung spielt keine Rolle.</p>
+          <p>Der Bot passt sich deinem Tempo an.</p>
+        </div>
+        <button class="btn wide" id="rxMenu" type="button" style="margin-top:10px">Zum Hauptmenü</button>
       </div>
     </div>
   </div>
@@ -3441,7 +3592,7 @@ input.bprange[type=range]::-moz-range-thumb { width: 20px; height: 20px; border-
 <script>
 /* Schnellsaetze und Stummschalten (Poker, Blackjack, Roulette): gemeinsame Bausteine.
    window.PRChat:
-     list(game)                 feste Saetze des Spiels ('poker' | 'bj' | 'rl' | 'cr'). Uebers Netz geht nur der Index q,
+     list(game)                 feste Saetze des Spiels ('poker' | 'bj' | 'rl' | 'cr' | 'rx'). Uebers Netz geht nur der Index q,
                                 angezeigt wird nur, was in der Liste steht (kein freier Text von anderen Handys).
      text(game, q)              Satz zu Index q oder '' bei ungueltigem Index
      tabs(panel, game, onSay)   macht aus einem Emoji-Feld eins mit zwei Reitern (Emojis / Saetze); onSay(q, text)
@@ -3467,7 +3618,9 @@ input.bprange[type=range]::-moz-range-thumb { width: 20px; height: 20px; border-
       'Was war das denn?', 'GG', 'Ich bin raus']),
     cr: COMMON_A.concat(['Ich bleib drin! 🚀', 'Raus, raus, raus!', 'Zum Mond! 🌙', 'Gleich knallt’s 💥', 'Nur noch kurz …',
       'Glück gehabt 🙄', 'Ich hab’s gewusst', 'Nicht schon wieder…', 'Gut gespielt', 'Revanche!', 'Autsch', 'Na warte…',
-      'Was war das denn?', 'GG', 'Ich bin raus'])
+      'Was war das denn?', 'GG', 'Ich bin raus']),
+    rx: COMMON_A.concat(['Revanche!', 'Zu langsam! 🐢', 'Blitzschnell ⚡', 'Reingefallen 😏', 'Fast! 😤', 'Glück gehabt 🙄',
+      'Nochmal!', 'Gut gespielt', 'Ich war zu früh 🙈', 'Na warte…', 'GG', 'Ich bin raus'])
   };
   function list(game) { return LISTS[game] || LISTS.poker; }
   function text(game, q) { var l = list(game); return (q === (q | 0) && q >= 0 && q < l.length) ? l[q] : ''; }
@@ -5852,7 +6005,7 @@ input.bprange[type=range]::-moz-range-thumb { width: 20px; height: 20px; border-
     if (PROF.log.length > LOG_MAX) { var L = PROF.log; PROF.log = L.filter(function (e, i) { return i % 2 === 0 || i === L.length - 1; }); }
     saveProf();
   }
-  var STG = [{ k: 'poker', name: 'Poker' }, { k: 'bj', name: 'Blackjack' }, { k: 'slots', name: 'Slots' }, { k: 'rl', name: 'Roulette' }, { k: 'crash', name: 'Crash' }];
+  var STG = [{ k: 'poker', name: 'Poker' }, { k: 'bj', name: 'Blackjack' }, { k: 'slots', name: 'Slots' }, { k: 'rl', name: 'Roulette' }, { k: 'crash', name: 'Crash' }, { k: 'rx', name: 'Reaktion' }];
   var stGame = 'poker', stPts = null, stUnit = '';
   function readJ(k) { try { return JSON.parse(localStorage.getItem(k) || 'null'); } catch (e) { return null; } }
   function signed(v) { v = Math.round(v); return (v > 0 ? '+' : v < 0 ? '−' : '±') + fmt(Math.abs(v)); }
@@ -5886,6 +6039,13 @@ input.bprange[type=range]::-moz-range-thumb { width: 20px; height: 20px; border-
         note: cn ? 'Netto ' + signed(+c.net || 0) + ' · ' + fmt(c.w | 0) + ' mit Gewinn' + (c.half ? ' · ' + fmt(c.half | 0) + '× halb ausgezahlt' : '') : 'Noch nicht Crash gespielt.',
         pts: (readJ('pr-crlog') || []).map(function (e) { return { x: e[0], y: e[1] }; }),
         empty: 'Spiel ein paar Runden Crash, dann siehst du hier, wie viel du gewonnen oder verloren hast.' };
+    }
+    if (g === 'rx') {
+      var x = readJ('pr-rxstats') || {}, xn = x.n | 0, xc = x.cnt | 0;
+      return { unit: 'Duell', tiles: [[fmt(xn), 'Duelle'], [pct(x.w | 0, xn), 'Siege'], [x.best > 0 ? Math.round(x.best) + ' ms' : '–', 'Bestzeit']],
+        note: xn || xc ? 'Durchschnitt ' + (xc ? Math.round(x.sum / xc) + ' ms' : '–') + ' · ' + fmt(x.w | 0) + ' gewonnen · Netto ' + signed(+x.net || 0) : 'Noch kein Reaktionsduell gespielt.',
+        pts: (readJ('pr-rxlog') || []).map(function (e) { return { x: e[0], y: e[1] }; }),
+        empty: 'Spiel ein paar Reaktionsduelle, dann siehst du hier, wie viel du gewonnen oder verloren hast.' };
     }
     var pts = (PROF.log || []).filter(function (e) { return e.length > 3; }).map(function (e) { return { x: e[0], y: e[3] }; });
     /* dazu: gezeigte Bluffs (Karten zeigen) und Entscheidungsqualitaet (Auswertung nach der Hand) */
@@ -11982,6 +12142,8 @@ input.bprange[type=range]::-moz-range-thumb { width: 20px; height: 20px; border-
     if (r.on) return { g: 'rl', code: r.code || '', ask: r.free ? 1 : 0 };
     var c = window.CR ? window.CR.state() : {};
     if (c.on) return { g: 'cr', code: c.code || '', ask: c.free ? 1 : 0 };
+    var x = window.RX ? window.RX.state() : {};
+    if (x.on) return { g: 'rx', code: x.code || '', ask: x.free ? 1 : 0 };
     if (window.SL && window.SL.on()) return { g: 'slots', code: '' };
     if (n.role) return { g: 'poker', code: n.code || '', ask: n.free ? 1 : 0 };
     if (n.playing) return { g: 'poker', code: '', ask: n.free ? 1 : 0 };
@@ -11989,8 +12151,8 @@ input.bprange[type=range]::-moz-range-thumb { width: 20px; height: 20px; border-
   }
   function cleanSt(s) {
     s = (s && typeof s === 'object') ? s : {};
-    var g = s.g === 'poker' || s.g === 'bj' || s.g === 'slots' || s.g === 'rl' || s.g === 'cr' ? s.g : 'menu';
-    return { g: g, code: typeof s.code === 'string' && /^[A-Z2-9]{5}$/.test(s.code) ? s.code : '', ask: s.ask && (g === 'poker' || g === 'bj' || g === 'rl' || g === 'cr') ? 1 : 0 };
+    var g = s.g === 'poker' || s.g === 'bj' || s.g === 'slots' || s.g === 'rl' || s.g === 'cr' || s.g === 'rx' ? s.g : 'menu';
+    return { g: g, code: typeof s.code === 'string' && /^[A-Z2-9]{5}$/.test(s.code) ? s.code : '', ask: s.ask && (g === 'poker' || g === 'bj' || g === 'rl' || g === 'cr' || g === 'rx') ? 1 : 0 };
   }
   function stText(st) {
     if (!st) return 'Online';
@@ -11999,6 +12161,7 @@ input.bprange[type=range]::-moz-range-thumb { width: 20px; height: 20px; border-
     if (st.g === 'slots') return 'Spielt Slots';
     if (st.g === 'rl') return (st.code ? 'Am Roulette-Tisch' : 'Spielt Roulette') + fr;
     if (st.g === 'cr') return (st.code ? 'Im Crash-Raum' : 'Spielt Crash') + fr;
+    if (st.g === 'rx') return (st.code ? 'Im Reaktionsduell' : 'Spielt Reaktion') + fr;
     if (st.g === 'poker') return (st.code ? 'Am Pokertisch' : 'Spielt Poker gegen Bots') + fr;
     return 'Online';
   }
@@ -12134,14 +12297,24 @@ input.bprange[type=range]::-moz-range-thumb { width: 20px; height: 20px; border-
       var st = cleanSt({ g: d.g, code: d.code });
       if (st.code && st.g !== 'menu') showInvite(f, st);
     } else if (d.t === 'ask') {
-      gotAsk(f, d.g === 'bj' ? 'bj' : d.g === 'rl' ? 'rl' : d.g === 'cr' ? 'cr' : 'poker');
+      gotAsk(f, d.g === 'bj' ? 'bj' : d.g === 'rl' ? 'rl' : d.g === 'cr' ? 'cr' : d.g === 'rx' ? 'rx' : 'poker');
     } else if (d.t === 'askok') {
       var ok = cleanSt({ g: d.g, code: d.code });
       delete asked[code]; render(true);
-      if (!ok.code || (ok.g !== 'poker' && ok.g !== 'bj' && ok.g !== 'rl' && ok.g !== 'cr')) return;
+      if (!ok.code || (ok.g !== 'poker' && ok.g !== 'bj' && ok.g !== 'rl' && ok.g !== 'cr' && ok.g !== 'rx')) return;
       if (!window.prIdle()) { toast((f.name || code) + ' hat angenommen – verlass erst dein laufendes Spiel'); return; }
       toast((f.name || code) + ' hat angenommen, du kommst an den Tisch'); Snd.ping();
       joinTable(ok, true);
+    } else if (d.t === 'duel') {
+      /* Herausforderung zum Reaktionsduell: code = Raum des Herausforderers, b = Einsatz */
+      var dc = typeof d.code === 'string' && /^[A-Z2-9]{5}$/.test(d.code) ? d.code : '';
+      if (dc) gotDuel(f, dc, d.b);
+    } else if (d.t === 'duelno') {
+      delete duelled[code]; render(true);
+      toast(d.r === 'busy' ? (f.name || code) + ' spielt gerade – versuch es gleich nochmal' : (f.name || code) + ' hat die Herausforderung abgelehnt');
+    } else if (d.t === 'duelok') {
+      delete duelled[code]; render(true);
+      toast((f.name || code) + ' nimmt die Herausforderung an ⚡'); Snd.ping();
     } else if (d.t === 'askno') {
       delete asked[code]; render(true);
       toast(d.r === 'full' ? 'Bei ' + (f.name || code) + ' ist gerade kein Platz frei' : (f.name || code) + ' hat deine Anfrage abgelehnt');
@@ -12276,6 +12449,14 @@ input.bprange[type=range]::-moz-range-thumb { width: 20px; height: 20px; border-
     var more = document.createElement('button'); more.type = 'button'; more.className = 'flm'; more.setAttribute('aria-label', 'Mehr zu ' + (f.name || f.code));
     more.innerHTML = '<svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><circle cx="5" cy="12" r="1.8"/><circle cx="12" cy="12" r="1.8"/><circle cx="19" cy="12" r="1.8"/></svg>';
     more.addEventListener('click', function () { openRow = openRow === f.code ? '' : f.code; render(true); });
+    /* Reaktionsduell: Herausforderung an online Freunde (Anfrage, die der Freund annehmen muss) */
+    if (on && !f.pending && window.RX && !(st && st.code && st.code === me.code && me.g === 'rx')) {
+      var dw = duelled[f.code] > Date.now(), du = document.createElement('button'); du.type = 'button';
+      du.className = 'btn fduel' + (dw ? '' : ' primary'); du.textContent = dw ? 'Gefordert …' : '⚡ Duell'; du.disabled = dw;
+      du.setAttribute('aria-label', 'Reaktionsduell mit ' + (f.name || f.code));
+      du.addEventListener('click', function () { duelAsk(f); });
+      r.appendChild(du);
+    }
     r.appendChild(more);
     el.appendChild(r);
     var x = document.createElement('div'); x.className = 'flx';
@@ -12289,10 +12470,10 @@ input.bprange[type=range]::-moz-range-thumb { width: 20px; height: 20px; border-
       x.appendChild(gb);
     }
     /* mitspielen geht immer nur ueber eine Anfrage, die der Freund annehmen muss (auch an einem Online-Tisch) */
-    if (on && !f.pending && st && (st.g === 'poker' || st.g === 'bj' || st.g === 'rl' || st.g === 'cr') && (st.ask || st.code) && (!st.code || st.code !== me.code)) {
+    if (on && !f.pending && st && (st.g === 'poker' || st.g === 'bj' || st.g === 'rl' || st.g === 'cr' || st.g === 'rx') && (st.ask || st.code) && (!st.code || st.code !== me.code)) {
       var wait = asked[f.code] > Date.now();
       var ak = document.createElement('button'); ak.type = 'button'; ak.className = 'btn' + (wait ? '' : ' primary');
-      ak.textContent = wait ? 'Angefragt …' : st.g === 'cr' ? 'Anfrage zum Mitspielen bei Crash' : st.g === 'rl' ? 'Anfrage für den Roulette-Tisch' : st.g === 'bj' ? 'Anfrage für den Blackjack-Tisch' : 'Anfrage für den Pokertisch'; ak.disabled = wait;
+      ak.textContent = wait ? 'Angefragt …' : st.g === 'rx' ? 'Anfrage zum Mitmachen beim Duell' : st.g === 'cr' ? 'Anfrage zum Mitspielen bei Crash' : st.g === 'rl' ? 'Anfrage für den Roulette-Tisch' : st.g === 'bj' ? 'Anfrage für den Blackjack-Tisch' : 'Anfrage für den Pokertisch'; ak.disabled = wait;
       ak.addEventListener('click', function () { askJoin(f, st); });
       x.appendChild(ak);
     }
@@ -12324,13 +12505,14 @@ input.bprange[type=range]::-moz-range-thumb { width: 20px; height: 20px; border-
     r.appendChild(avatar(f));
     var n = document.createElement('div'); n.className = 'fln';
     var b = document.createElement('b'); b.textContent = f.name || f.code;
-    var sm = document.createElement('small'); sm.textContent = st && st.code === me.code ? 'Sitzt schon an deinem Tisch' : stText(st);
+    var sm = document.createElement('small'); sm.textContent = st && st.code === me.code ? (me.g === 'rx' ? 'Ist schon im Duell' : 'Sitzt schon an deinem Tisch') : stText(st);
     n.appendChild(b); n.appendChild(sm); r.appendChild(n);
     if (!(st && st.code === me.code)) {
-      var done = invited[f.code + ':' + me.code] > Date.now();
+      var done = me.g === 'rx' ? duelled[f.code] > Date.now() : invited[f.code + ':' + me.code] > Date.now();
       var go = document.createElement('button'); go.type = 'button'; go.className = 'btn' + (done ? '' : ' primary');
-      go.textContent = done ? 'Eingeladen' : 'Einladen'; go.disabled = done;
+      go.textContent = me.g === 'rx' ? (done ? 'Gefordert …' : '⚡ Duell') : done ? 'Eingeladen' : 'Einladen'; go.disabled = done;
       go.addEventListener('click', function () {
+        if (me.g === 'rx') { duelAsk(f); return; }
         var L = LIVE[f.code]; if (!L || !L.on) return;
         send(L.conn, { t: 'inv', g: me.g, code: me.code });
         invited[f.code + ':' + me.code] = Date.now() + 30000;
@@ -12532,7 +12714,8 @@ input.bprange[type=range]::-moz-range-thumb { width: 20px; height: 20px; border-
   /* ---------- an einen Tisch gehen (aus der Liste oder einer Einladung) ---------- */
   function joinTable(st, auto) {
     $('#invBan').hidden = true;
-    if (!window.prIdle()) { toast('Verlass erst dein laufendes Spiel'); return; }
+    if (!window.prIdle() && !(st.g === 'rx' && rxAlone())) { toast('Verlass erst dein laufendes Spiel'); return; }
+    if (st.g === 'rx') { $('#friends').hidden = true; window.RX.join(st.code); return; }
     if (st.g === 'rl') { $('#friends').hidden = true; window.RL.join(st.code); }
     else if (st.g === 'cr') { $('#friends').hidden = true; window.CR.join(st.code); }
     else if (st.g === 'bj') { $('#friends').hidden = true; window.BJ.join(st.code, auto); }
@@ -12621,6 +12804,36 @@ input.bprange[type=range]::-moz-range-thumb { width: 20px; height: 20px; border-
     render(true);
     setTimeout(function () { if (asked[f.code] && asked[f.code] <= Date.now()) { delete asked[f.code]; toast((f.name || f.code) + ' hat nicht geantwortet'); render(true); } }, 40100);
   }
+  /* ---------- Reaktionsduell: Freund herausfordern ----------
+     { t: 'duel', code, b } an den Freund (code = eigener Duell-Raum, b = Einsatz); Antwort { t: 'duelok' } oder
+     { t: 'duelno', r: 'busy'? }. Aeltere Apps kennen 'duel' nicht und antworten nicht (nach 40 s „nicht geantwortet“). */
+  var duelled = {};
+  function rxAlone() { var s = window.RX ? window.RX.state() : {}; return !!(s.on && s.alone && s.role !== 'guest'); }
+  function duelAsk(f) {
+    var L = LIVE[f.code]; if (!L || !L.on || !window.RX) return;
+    var s = window.RX.state(), nm = f.name || f.code;
+    if (s.on && (s.role === 'guest' || !s.lobby)) { toast(s.role === 'guest' ? 'Du bist gerade im Duell eines Freundes' : 'Erst das laufende Duell beenden'); return; }
+    if (!s.on && !window.prIdle()) { toast('Verlass erst dein laufendes Spiel'); return; }
+    $('#friends').hidden = true;
+    window.RX.friends(function (code) {
+      var L2 = LIVE[f.code];
+      if (!code) { toast(PR.netAvail() ? 'Das Duell ließ sich nicht öffnen – keine Verbindung' : PR.MSG_NOLIB); return; }
+      if (!L2 || !L2.on) { toast(nm + ' ist gerade nicht online'); return; }
+      send(L2.conn, { t: 'duel', code: code, b: window.RX.state().bet });
+      duelled[f.code] = Date.now() + 40000;
+      toast('Herausforderung an ' + nm + ' geschickt ⚡');
+      render(true);
+      setTimeout(function () { if (duelled[f.code] && duelled[f.code] <= Date.now()) { delete duelled[f.code]; toast(nm + ' hat nicht geantwortet'); render(true); } }, 40100);
+    });
+  }
+  function gotDuel(f, code, b) {
+    if (!(window.prIdle() || rxAlone())) { askReply(f.code, { t: 'duelno', r: 'busy' }); return; }
+    if (ask && ask.code !== f.code && ask.g !== 'fr') askReply(ask.code, ask.room ? { t: 'duelno' } : { t: 'askno' });
+    b = Math.round(+b);
+    showAsk(f, 'rx', 'fordert dich zum Reaktionsduell heraus' + ([10, 100, 1000, 10000].indexOf(b) >= 0 ? ' · Einsatz ' + fmt(b) : ''));
+    ask.room = code;
+    Snd.ping();
+  }
   var ask = null, askT = 0;   // was gerade im Banner oben steht: { code, g } (g 'fr' = Freundschaftsanfrage)
   function askHide() { $('#askBan').hidden = true; ask = null; clearTimeout(askT); }
   function askReply(code, m) { var L = LIVE[code]; if (L && L.on) send(L.conn, m); }
@@ -12634,27 +12847,28 @@ input.bprange[type=range]::-moz-range-thumb { width: 20px; height: 20px; border-
     clearTimeout(askT); askT = setTimeout(function () { if (ask && ask.code === f.code && ask.g === g) askHide(); }, 35000);
   }
   /* der Tisch, an dem ich gerade sitze (role: '' allein bzw. gegen Bots, 'host' Ersteller, 'guest' Mitspieler) */
-  function tableOf(g) { return (g === 'bj' ? window.BJ && window.BJ.state() : g === 'rl' ? window.RL && window.RL.state() : g === 'cr' ? window.CR && window.CR.state() : PR.poker()) || {}; }
+  function tableOf(g) { return (g === 'bj' ? window.BJ && window.BJ.state() : g === 'rl' ? window.RL && window.RL.state() : g === 'cr' ? window.CR && window.CR.state() : g === 'rx' ? window.RX && window.RX.state() : PR.poker()) || {}; }
   function gotAsk(f, g) {
     var me = myStatus(), t = tableOf(g);
     if (me.g !== g || !(me.ask || (t.role === 'guest' && t.code))) { askReply(f.code, { t: 'askno', r: 'full' }); return; }
     if (ask && ask.code !== f.code && ask.g !== 'fr') askReply(ask.code, { t: 'askno' });
-    showAsk(f, g, g === 'bj' ? 'möchte an deinen Blackjack-Tisch' : g === 'rl' ? 'möchte an deinen Roulette-Tisch' : g === 'cr' ? 'möchte bei dir Crash mitspielen'
+    showAsk(f, g, g === 'bj' ? 'möchte an deinen Blackjack-Tisch' : g === 'rl' ? 'möchte an deinen Roulette-Tisch' : g === 'cr' ? 'möchte bei dir Crash mitspielen' : g === 'rx' ? 'möchte bei deinem Reaktionsduell mitmachen'
       : t.code ? 'möchte an deinen Pokertisch' : 'möchte an deinen Pokertisch (auf den Platz eines Bots ohne Chips)');
     Snd.ping();
   }
   $('#abNo').addEventListener('click', function () {
-    if (ask) { if (ask.g === 'fr') declineReq(ask.code); else askReply(ask.code, { t: 'askno' }); }
+    if (ask) { if (ask.g === 'fr') declineReq(ask.code); else askReply(ask.code, ask.room ? { t: 'duelno' } : { t: 'askno' }); }
     askHide();
   });
   $('#abYes').addEventListener('click', function () {
     if (!ask) return;
     var a = ask; clearTimeout(askT);
     if (a.g === 'fr') { askHide(); acceptReq(a.code); return; }
+    if (a.room) { askHide(); askReply(a.code, { t: 'duelok' }); joinTable({ g: 'rx', code: a.room }, true); return; }
     $('#abYes').disabled = true; $('#abNo').disabled = true; $('#abYes').textContent = 'Öffne Tisch …';
     var t = tableOf(a.g);
     /* sitze ich selbst nur als Mitspieler an einem Online-Tisch, bekommt der Freund dessen Code */
-    var open = t.role === 'guest' ? function (cb) { cb(t.code || ''); } : a.g === 'bj' ? window.BJ.host : a.g === 'rl' ? window.RL.host : a.g === 'cr' ? window.CR.host : PR.pokerHost;
+    var open = t.role === 'guest' ? function (cb) { cb(t.code || ''); } : a.g === 'bj' ? window.BJ.host : a.g === 'rl' ? window.RL.host : a.g === 'cr' ? window.CR.host : a.g === 'rx' ? window.RX.host : PR.pokerHost;
     open(function (code) {
       if (ask !== a) return;
       askHide();
@@ -12671,7 +12885,7 @@ input.bprange[type=range]::-moz-range-thumb { width: 20px; height: 20px; border-
     invSt = st;
     window.PRAv.paint($('#ibAv'), f.name, f.color, f.cos && f.cos.av);
     $('#ibName').textContent = f.name || f.code;
-    $('#ibText').textContent = (st.g === 'bj' ? 'lädt dich an den Blackjack-Tisch ein' : st.g === 'rl' ? 'lädt dich zum Roulette ein' : st.g === 'cr' ? 'lädt dich zu Crash ein' : 'lädt dich an den Pokertisch ein') +
+    $('#ibText').textContent = (st.g === 'bj' ? 'lädt dich an den Blackjack-Tisch ein' : st.g === 'rl' ? 'lädt dich zum Roulette ein' : st.g === 'cr' ? 'lädt dich zu Crash ein' : st.g === 'rx' ? 'fordert dich zum Reaktionsduell heraus' : 'lädt dich an den Pokertisch ein') +
       (window.prIdle() ? '' : ' (erst nach deinem Spiel)');
     $('#ibGo').hidden = !window.prIdle();
     $('#invBan').hidden = false;
@@ -13203,7 +13417,7 @@ input.bprange[type=range]::-moz-range-thumb { width: 20px; height: 20px; border-
   }
   function inGame() {
     var n = PR.poker(), b = window.BJ ? window.BJ.state() : {};
-    return !!(n.playing || b.on || (window.SL && window.SL.on()) || (window.LK && window.LK.on()) || (window.RL && window.RL.on()) || (window.CR && window.CR.on()));
+    return !!(n.playing || b.on || (window.SL && window.SL.on()) || (window.LK && window.LK.on()) || (window.RL && window.RL.on()) || (window.CR && window.CR.on()) || (window.RX && window.RX.on()));
   }
   function fmtT(s) {
     var m = Math.floor(s / 60), h = Math.floor(m / 60);
@@ -13213,7 +13427,7 @@ input.bprange[type=range]::-moz-range-thumb { width: 20px; height: 20px; border-
   }
   function render() {
     $('#ptVal').textContent = fmtT(T.s);
-    $('#ptNote').textContent = 'insgesamt in Poker, Blackjack, Slots, Roulette und Crash' + (T.est >= 60 ? ' (davon ca. ' + fmtT(T.est) + ' geschätzt von vorher)' : '');
+    $('#ptNote').textContent = 'insgesamt in Poker, Blackjack, Slots, Roulette, Crash und Reaktion' + (T.est >= 60 ? ' (davon ca. ' + fmtT(T.est) + ' geschätzt von vorher)' : '');
   }
   var last = Date.now();
   setInterval(function () {
@@ -13259,7 +13473,7 @@ input.bprange[type=range]::-moz-range-thumb { width: 20px; height: 20px; border-
   var CHEST = 1500;
 
   /* ---------- Aufgaben-Pool ---------- */
-  var GAMEEV = { 'poker:hand': 'poker', 'bj:round': 'bj', 'slots:spin': 'slots', 'rl:spin': 'rl', 'lock:round': 'lock', 'crash:round': 'crash' };
+  var GAMEEV = { 'poker:hand': 'poker', 'bj:round': 'bj', 'slots:spin': 'slots', 'rl:spin': 'rl', 'lock:round': 'lock', 'crash:round': 'crash', 'rx:duel': 'reaction' };
   function one() { return 1; }
   function netOf(d, name) {
     if (name === 'slots:spin' || name === 'rl:spin') return (d.win | 0) - (d.bet | 0);
@@ -16717,6 +16931,767 @@ input.bprange[type=range]::-moz-range-thumb { width: 20px; height: 20px; border-
     join: join
   };
   if (window.PR_TESTHOOKS) window.CR._dbg = { R: function () { return R; }, H: function () { return H; }, V: V, force: function (c) { if (H && R && R.ph === 'fly') { H.crash = c; } else if (H) H.next = c; }, fly: function () { if (H && R && R.ph === 'bet') hFly(); }, send: function (m) { if (NB.conn) NB.conn.send(m); } };
+})();
+</script>
+
+<script>
+/* Reaktionsduell: grosser runder Knopf, blau „Warten…“, nach 1,5 bis 6 s gruen „JETZT!“ – wer am schnellsten tippt, gewinnt die Runde.
+   In ca. 20 % der Runden wird er vorher kurz gelb (Falle). Tippen bei Blau oder Gelb = Fehlstart, Zeiten unter 100 ms auch.
+   Best of 5: nach 5 Runden (oder wenn keiner mehr aufholen kann) gewinnt, wer die meisten Runden hat; bei Gleichstand
+   Entscheidungsrunden nur zwischen den Gleichstehenden. Der Sieger bekommt alle Einsaetze (Einsatz x Spielerzahl).
+   Gegen den Bot: normaler Spielmodus mit Einsatz 10 / 100 / 1.000 / 10.000. Der Bot passt sich dem Tempo an:
+   m = Median der letzten 20 eigenen gueltigen Zeiten (ohne Zeiten 300 ms), Bot = m * f, f ~ N(mu, 0,07),
+   mu = 1,03 (m < 230), 1,00 (230-320), 0,97 (m > 320), nie unter 150 ms, 3 % Fehlstart.
+   Mit Freunden (2-5): der Ersteller (Raum „pokerrunde-rx-<code>“) waehlt den Einsatz, startet und rechnet.
+   Messen: der Ersteller schickt pro Runde nur Wartezeit w und Falle f (ms nach Empfang, 0 = keine). Jedes Handy startet beim
+   Empfang seinen eigenen Countdown, merkt sich, wann Gruen wirklich gezeichnet wurde (zwei requestAnimationFrame nach dem
+   Umfaerben) und misst bis pointerdown (Ereigniszeit, performance.now-Zeitbasis). Ergebnisse zeigt der Ersteller erst,
+   wenn alle gedrueckt haben oder die Zeit um ist (3 s nach Gruen, plus Netz-Reserve).
+   Einsatz: jeder zahlt seinen eigenen beim Start (pr-rxrun merkt ihn: App mitten im Duell zu = Duell verloren),
+   der Ersteller bestimmt den Sieger, jeder bucht seinen Gewinn selbst.
+   Protokoll (Version RX_V, Ersteller und Mitspieler muessen gleich sein, sonst { t: 'old' }):
+     Mitspieler -> Ersteller: hello { g: 'rx', v, p }, can { ok } (genug Chips fuer den Einsatz), res { rd, ms, k },
+                              react { e }, chat { q }, bye
+     Ersteller -> alle: st { v, s: { ph, dn, bet, pl, ids, sc, rd, dec, act, win } }, go { rd, w, f, act },
+                        rr { rd, res: { id: [ms, k] }, win: [ids], sc }, react/chat mit id, closed, full, old
+     k: '' gueltig, 'early' bei Blau, 'trap' bei Gelb, 'fast' unter 100 ms, 'slow' keine Reaktion.
+   Speicher: pr-rxstats { n, w, net, best, sum, cnt, trap }, pr-rxlog [[Duell, Saldo]], pr-rxlast [ms] (letzte 20),
+   pr-rxbet (Einsatz), pr-rxrun { b, on } (laufendes Duell).
+   Ereignisse: 'bet' { game: 'reaction', amount }, 'win' { game: 'reaction', amount, net } (einmal pro Duell bei Gewinn),
+   'rx:round' { ms, foul, won, trap, k } (eigene Runde), 'rx:duel' { won, players, bet, online, best },
+   'game:open' { game: 'reaction' }, 'online:round' { game: 'reaction' } (Duell mit echten Mitspielern).
+   Schnittstelle window.RX: on(), state() { on, role, code, free, lobby, alone, bet }, host(done), join(code),
+   friends(done) (Lobby fuer Freunde oeffnen, done(code)). */
+(function () {
+  'use strict';
+  var PR = window.PR;
+  if (!PR) return;
+  var Snd = PR.Snd, fmt = PR.fmt;
+  function $(s) { return document.querySelector(s); }
+  function all(s) { return [].slice.call(document.querySelectorAll(s)); }
+  var rx = $('#rx');
+  if (!rx) return;
+
+  var RX_V = 1;   // Version des Raum-Protokolls: Ersteller und Mitspieler muessen gleich sein
+  var PEER_PREFIX = 'pokerrunde-rx-', MAX_PL = 5, ROUNDS = 5, BETS = [10, 100, 1000, 10000];
+  var SLOW_MS = 3000, NET_MS = 1800, TRAP_MS = 450, NEXT_MS = 3200;
+  var BOTS = [
+    { name: 'Flash', color: '#4a86a8', e: 'roboter' }, { name: 'Turbo-Tina', color: '#b0689a', e: 'blitz' }, { name: 'Max Speed', color: '#c8873a', e: 'fuchs' },
+    { name: 'Rocky', color: '#6f9a5a', e: 'tiger' }, { name: 'Lina', color: '#8a68b0', e: 'katze' }, { name: 'Kalle', color: '#5a6fb0', e: 'hai' }
+  ];
+
+  /* ---------- Rechnen ---------- */
+  function readJ(k) { try { return JSON.parse(localStorage.getItem(k) || 'null'); } catch (e) { return null; } }
+  function writeJ(k, v) { try { if (v == null) localStorage.removeItem(k); else localStorage.setItem(k, JSON.stringify(v)); } catch (e) {} }
+  function rand() {
+    try { var a = new Uint32Array(1); window.crypto.getRandomValues(a); return a[0] / 4294967296; } catch (e) { return Math.random(); }
+  }
+  function gauss() { var u = 1 - rand(), v = rand(); return Math.sqrt(-2 * Math.log(u)) * Math.cos(2 * Math.PI * v); }
+  function ms1(v) { return Math.round(v * 10) / 10; }
+  function msTxt(v) { return Math.round(v) + ' ms'; }
+  function lastTimes() { var l = readJ('pr-rxlast'); return Array.isArray(l) ? l.filter(function (x) { return typeof x === 'number' && x >= 100 && x < 5000; }).slice(-20) : []; }
+  function median(l) { if (!l.length) return 300; var s = l.slice().sort(function (a, b) { return a - b; }), h = s.length >> 1; return s.length % 2 ? s[h] : (s[h - 1] + s[h]) / 2; }
+  /* Bot-Zeit fuer eine Runde aus dem eigenen Tempo m; null = Fehlstart */
+  function botTime(m) {
+    if (rand() < 0.03) return null;
+    var mu = m < 230 ? 1.03 : m > 320 ? 0.97 : 1.00;
+    return Math.max(150, m * (mu + 0.07 * gauss()));
+  }
+
+  /* ---------- Statistik (Profil → Statistik → Reaktion) ---------- */
+  function stats() {
+    var st = { n: 0, w: 0, net: 0, best: 0, sum: 0, cnt: 0, trap: 0 }, o = readJ('pr-rxstats');
+    if (o && typeof o === 'object') Object.keys(st).forEach(function (k) { if (typeof o[k] === 'number' && isFinite(o[k])) st[k] = o[k]; });
+    return st;
+  }
+  function addTime(ms, trapOk) {
+    var st = stats();
+    if (ms) { st.sum += ms; st.cnt++; st.best = st.best ? Math.min(st.best, ms) : ms; var l = lastTimes(); l.push(Math.round(ms)); writeJ('pr-rxlast', l.slice(-20)); }
+    if (trapOk) st.trap++;
+    writeJ('pr-rxstats', st);
+  }
+  function addDuel(b, w) {
+    var st = stats(), log = readJ('pr-rxlog'); if (!Array.isArray(log)) log = [];
+    if (!log.length) log.push([st.n, st.net]);
+    st.n++; if (w > 0) st.w++; st.net += w - b;
+    log.push([st.n, st.net]);
+    if (log.length > 1000) log = log.filter(function (e, i) { return i % 2 === 0 || i === log.length - 1; });
+    writeJ('pr-rxstats', st); writeJ('pr-rxlog', log);
+  }
+  /* App mitten im Duell geschlossen: Einsatz ist weg, das Duell zaehlt als verloren */
+  (function () {
+    var o = readJ('pr-rxrun');
+    if (!o || typeof o !== 'object') return;
+    writeJ('pr-rxrun', null);
+    var b = Math.max(0, Math.min(1e9, o.b | 0)); if (b) addDuel(b, 0);
+  })();
+
+  /* ---------- Zustand ----------
+     R (alle): ph 'lobby' | 'duel' | 'end', dn Duell-Nummer, bet, pl [{ id, name, color, st, cos, bot, av, ok }], ids (Spieler des
+     laufenden Duells), sc { id: Rundensiege }, rd Runde, dec Entscheidungsrunde, act (wer in dieser Runde drueckt), win Sieger.
+     H (nur Ersteller, auch gegen den Bot): Ergebnisse der Runde, Zeitgeber. V: eigene Runde und Anzeige. */
+  var R = null, H = null, ME = 'me', mode = '';   // mode 'bot' | 'fr'
+  var NB = { peer: null, role: '', code: '', conns: [], conn: null, gen: 0 };
+  var V = { rd: -1, st: 'idle', t0: 0, gAt: 0, my: null, tm: [], paidDn: -1, booked: -1, res: null, win: [], lastOk: null, fin: false };
+  var bet = 100;
+  (function () { var a = +(readJ('pr-rxbet') || 0); if (BETS.indexOf(a) >= 0) bet = a; })();
+  function bank() { return Math.max(0, PR.prof().bank | 0); }
+  function myStars() { return window.PRStars ? Math.min(1e9, window.PRStars.count()) : 0; }
+  function meEntry() { var P = PR.prof(); return { id: ME, name: PR.profName(), color: P.color, st: myStars(), cos: window.PRLook.mine(), bot: 0, ok: bank() >= (R ? R.bet : bet) ? 1 : 0 }; }
+  function plOf(id) { if (!R) return null; for (var i = 0; i < R.pl.length; i++) if (R.pl[i].id === id) return R.pl[i]; return null; }
+  function humans() { return R ? R.pl.filter(function (p) { return !p.bot; }) : []; }
+  function others() { return humans().length > 1; }
+  function inDuel() { return !!(R && R.ph === 'duel' && R.ids.indexOf(ME) >= 0 && V.paidDn === R.dn); }
+  function send(c, m) { try { if (c && c.open !== false) c.send(m); } catch (e) {} }
+  function bcast(m) { NB.conns.forEach(function (c) { if (c._rx) send(c, m); }); }
+
+  /* ---------- Ersteller (auch gegen den Bot) ---------- */
+  function clearH() { if (H) { H.tm.forEach(clearTimeout); H.tm = []; } }
+  function hostStart(m) {
+    clearH(); H = { tm: [], res: {}, rd: 0, w: 0, f: 0 };
+    ME = 'me'; mode = m;
+    R = { ph: 'lobby', dn: 0, bet: bet, pl: [meEntry()], ids: [], sc: {}, rd: 0, dec: 0, act: [], win: '' };
+    if (m === 'bot') {
+      var b = BOTS[Math.floor(rand() * BOTS.length)];
+      R.pl.push({ id: 'bot', name: b.name, color: b.color, st: 0, cos: null, bot: 1, av: { e: b.e }, ok: 1 });
+    }
+    push();
+  }
+  function snap() { return { ph: R.ph, dn: R.dn, bet: R.bet, pl: R.pl, ids: R.ids, sc: R.sc, rd: R.rd, dec: R.dec, act: R.act, win: R.win }; }
+  function push() { if (!R) return; var me = plOf(ME); if (me) me.ok = bank() >= R.bet ? 1 : 0; bcast({ t: 'st', v: RX_V, s: snap() }); got(); }
+  function allOk() { return R.pl.every(function (p) { return p.bot || p.ok; }); }
+  function hStart() {
+    if (!R || !H || R.ph === 'duel' || R.pl.length < 2 || !allOk()) return false;
+    clearH();
+    R.ph = 'duel'; R.dn++; R.ids = R.pl.map(function (p) { return p.id; }); R.sc = {}; R.ids.forEach(function (id) { R.sc[id] = 0; });
+    R.rd = 0; R.dec = 0; R.act = R.ids.slice(); R.win = ''; R.n = R.ids.length;
+    push();
+    var h = H; H.tm.push(setTimeout(function () { if (H === h) hGo(); }, 1600));
+    return true;
+  }
+  function present() { return R.ids.filter(function (id) { return !!plOf(id); }); }
+  function hGo() {
+    if (!R || R.ph !== 'duel') return;
+    R.rd++; H.res = {}; H.rd = R.rd; H.done = false;
+    var w = Math.round(1500 + rand() * 4500), f = 0;
+    if (rand() < 0.2) f = Math.round(700 + rand() * Math.max(0, w - 700 - TRAP_MS - 500));
+    H.w = w; H.f = f;
+    R.act = R.act.filter(function (id) { return !!plOf(id); });
+    var m = { t: 'go', rd: R.rd, w: w, f: f, act: R.act };
+    push(); bcast(m);
+    startRound(m);
+    var h = H;
+    /* Bot: drueckt nach seiner Zeit ab seinem Gruen (oder vorher = Fehlstart) */
+    if (R.act.indexOf('bot') >= 0) {
+      var bt = botTime(median(lastTimes()));
+      var at = bt == null ? Math.round(w * (0.45 + rand() * 0.4)) : w + bt;
+      H.tm.push(setTimeout(function () { if (H === h && R.rd === m.rd) hRes('bot', bt == null ? -1 : ms1(bt), bt == null ? (f && at > f && at < f + TRAP_MS ? 'trap' : 'early') : ''); }, at));
+    }
+    H.tm.push(setTimeout(function () { if (H === h && R.rd === m.rd) hReveal(); }, w + SLOW_MS + NET_MS));
+  }
+  function cleanRes(ms, k) {
+    k = k === 'early' || k === 'trap' || k === 'fast' || k === 'slow' ? k : '';
+    ms = +ms;
+    if (!k && !(isFinite(ms) && ms >= 100 && ms <= SLOW_MS + 50)) k = isFinite(ms) && ms > 0 && ms < 100 ? 'fast' : 'slow';
+    return [k ? 0 : ms1(ms), k];
+  }
+  function hRes(id, ms, k) {
+    if (!R || !H || R.ph !== 'duel' || H.done || R.act.indexOf(id) < 0 || H.res[id]) return;
+    H.res[id] = cleanRes(ms, k);
+    if (R.act.every(function (a) { return H.res[a] || !plOf(a); })) { var h = H; H.tm.push(setTimeout(function () { if (H === h) hReveal(); }, 300)); }
+  }
+  function hReveal() {
+    if (!R || !H || R.ph !== 'duel' || H.done) return;
+    H.done = true;
+    var res = {}, best = 0, win = [];
+    R.act.forEach(function (id) { res[id] = H.res[id] || [0, 'slow']; });
+    R.act.forEach(function (id) { var r = res[id]; if (!r[1] && plOf(id) && (!best || r[0] < best)) best = r[0]; });
+    if (best) R.act.forEach(function (id) { if (!res[id][1] && res[id][0] === best && plOf(id)) win.push(id); });
+    win.forEach(function (id) { R.sc[id] = (R.sc[id] | 0) + 1; });
+    var m = { t: 'rr', rd: R.rd, res: res, win: win, sc: R.sc };
+    bcast(m); gotRes(m);
+    var h = H; H.tm.push(setTimeout(function () { if (H === h) hNext(win); }, NEXT_MS));
+  }
+  function hNext(lastWin) {
+    if (!R || R.ph !== 'duel') return;
+    var pr = present();
+    if (pr.length <= 1) { hEnd(pr[0] || ''); return; }
+    if (R.dec) {
+      var lw = lastWin.filter(function (id) { return pr.indexOf(id) >= 0; });
+      if (lw.length === 1) { hEnd(lw[0]); return; }
+      if (lw.length > 1) R.act = lw;
+      R.act = R.act.filter(function (id) { return pr.indexOf(id) >= 0; });
+      if (R.act.length <= 1) { hEnd(R.act[0] || ''); return; }
+      hGo(); return;
+    }
+    var s = pr.map(function (id) { return R.sc[id] | 0; }).sort(function (a, b) { return b - a; });
+    var rem = ROUNDS - R.rd, top = s[0];
+    if (R.rd >= ROUNDS) {
+      var tied = pr.filter(function (id) { return (R.sc[id] | 0) === top; });
+      if (tied.length === 1) { hEnd(tied[0]); return; }
+      R.dec = 1; R.act = tied; hGo(); return;
+    }
+    if (top > s[1] + rem) { hEnd(pr.filter(function (id) { return (R.sc[id] | 0) === top; })[0]); return; }
+    R.act = pr; hGo();
+  }
+  function hEnd(win) {
+    clearH();
+    R.ph = 'end'; R.win = win || ''; R.act = [];
+    push();
+  }
+  /* Mitspieler kommt dazu, geht, meldet sich */
+  function hCan(id, ok) { var p = plOf(id); if (!p || p.bot) return; ok = ok ? 1 : 0; if (p.ok !== ok) { p.ok = ok; push(); } }
+  function hGone(id) {
+    var p = plOf(id); if (!R || !p) return;
+    R.pl.splice(R.pl.indexOf(p), 1);
+    toast(p.name + ' ist gegangen');
+    if (R.ph === 'duel' && H && !H.done && R.act.every(function (a) { return H.res[a] || !plOf(a); })) hReveal();
+    if (R.ph === 'duel' && present().length <= 1 && H && H.done) { /* hNext entscheidet */ }
+    push();
+  }
+
+  /* ---------- Eigene Runde: Countdown, Gruen, Messen ---------- */
+  function clearV() { V.tm.forEach(clearTimeout); V.tm = []; }
+  function setBtn(cls, b, s) {
+    var el = $('#rxBtn');
+    if (el._c !== cls) { el.className = 'rxbtn ' + cls; el._c = cls; }
+    $('#rxBtnB').textContent = b; $('#rxBtnS').textContent = s || '';
+  }
+  function startRound(m) {
+    clearV();
+    V.rd = m.rd; V.my = null; V.t0 = 0; V.gAt = 0; V.res = null; V.win = []; V.trap = !!m.f; V.pressed = {};
+    var act = Array.isArray(m.act) ? m.act : [];
+    V.act = act;
+    if (act.indexOf(ME) < 0 || !inDuel()) { V.st = 'off'; setBtn('off', 'Zuschauen', R && R.dec ? 'Entscheidungsrunde' : 'Diese Runde spielen die anderen'); view(); return; }
+    V.st = 'wait'; setBtn('wait', 'Warten…', 'Erst bei Grün tippen');
+    Snd.fx(function (a) { a.tone(a.t, 520, 0.08, 0.04, 'sine'); });
+    if (m.f) {
+      V.tm.push(setTimeout(function () { if (V.st === 'wait') { V.st = 'trap'; setBtn('trap', 'Falle!', 'Nicht tippen'); } }, m.f));
+      V.tm.push(setTimeout(function () { if (V.st === 'trap') { V.st = 'wait'; setBtn('wait', 'Warten…', 'Erst bei Grün tippen'); } }, m.f + TRAP_MS));
+    }
+    V.tm.push(setTimeout(green, m.w));
+    view();
+  }
+  function green() {
+    if (V.st !== 'wait') return;
+    V.st = 'go'; V.gAt = performance.now(); V.t0 = 0;
+    setBtn('go', 'JETZT!', '');
+    var rd = V.rd;
+    /* Gruen ist erst sichtbar, wenn der Frame mit der neuen Farbe gezeichnet ist: zweiter requestAnimationFrame */
+    requestAnimationFrame(function () { requestAnimationFrame(function () { if (V.rd === rd && V.st === 'go' && !V.t0) V.t0 = performance.now(); }); });
+    V.tm.push(setTimeout(function () { if (V.rd === rd && V.st === 'go') done(0, 'slow'); }, SLOW_MS));
+  }
+  function press(e) {
+    if (!R || R.ph !== 'duel') return;
+    var now = performance.now(), ts = e && e.timeStamp > 0 && Math.abs(e.timeStamp - now) < 1000 ? e.timeStamp : now;
+    if (V.st === 'wait') { done(0, 'early'); return; }
+    if (V.st === 'trap') { done(0, 'trap'); return; }
+    if (V.st !== 'go') return;
+    if (!V.t0 || ts < V.t0) { done(0, 'fast'); return; }
+    var ms = ts - V.t0;
+    if (ms < 100) done(0, 'fast'); else done(ms, '');
+  }
+  function done(ms, k) {
+    clearV();
+    V.my = [k ? 0 : ms1(ms), k]; V.st = k ? 'foul' : 'done';
+    if (k === 'slow') setBtn('done', 'Zu langsam', 'Keine Reaktion');
+    else if (k) { setBtn('foul', k === 'trap' ? 'Reingefallen!' : 'Fehlstart!', k === 'fast' ? 'Unter 100 ms – zu früh' : k === 'trap' ? 'Gelb war die Falle' : 'Du warst zu früh'); Snd.knock(); }
+    else { setBtn('done', msTxt(ms), 'Warte auf die anderen …'); Snd.chip(1, 0); }
+    if (H) hRes(ME, V.my[0], k); else if (NB.conn) send(NB.conn, { t: 'res', rd: V.rd, ms: V.my[0], k: k });
+    view();
+  }
+  var btnEl = $('#rxBtn');
+  btnEl.addEventListener('pointerdown', function (e) { e.preventDefault(); press(e); });
+  btnEl.addEventListener('contextmenu', function (e) { e.preventDefault(); });
+  document.addEventListener('keydown', function (e) {
+    if (rx.hidden || e.repeat || (e.key !== ' ' && e.key !== 'Enter') || !$('#rxPause').hidden || !$('#rxEnd').hidden) return;
+    if (e.target && /INPUT|BUTTON/.test(e.target.tagName)) return;
+    e.preventDefault(); press(e);
+  });
+
+  /* Ergebnis der Runde (vom Ersteller): Zeiten zeigen, Sieger hervorheben, eigene Werte zaehlen */
+  function gotRes(m) {
+    if (!R || m.rd < (R.rd | 0)) return;
+    clearV();
+    V.res = m.res || {}; V.win = Array.isArray(m.win) ? m.win : [];
+    if (m.sc && typeof m.sc === 'object') R.sc = m.sc;
+    var mine = V.res[ME];
+    if (mine && inDuel() && V.rd === m.rd && V.counted !== m.rd) {
+      V.counted = m.rd;
+      var won = V.win.indexOf(ME) >= 0, valid = !mine[1];
+      addTime(valid ? mine[0] : 0, V.trap && mine[1] !== 'trap');
+      PR.emit('rx:round', { ms: valid ? mine[0] : 0, foul: !!mine[1] && mine[1] !== 'slow', won: won, trap: V.trap, k: mine[1] });
+      if (won) Snd.ping();
+    }
+    if (V.st === 'wait' || V.st === 'go' || V.st === 'trap') { V.st = 'done'; }
+    var w = V.win.map(function (id) { var p = plOf(id); return p ? (id === ME ? 'Du' : p.name) : ''; }).filter(Boolean);
+    if (inDuel() || V.st === 'off') {
+      var r = V.res[ME];
+      if (V.win.indexOf(ME) >= 0) setBtn('go', r ? msTxt(r[0]) : '', 'Runde gewonnen!');
+      else if (r) setBtn(r[1] && r[1] !== 'slow' ? 'foul' : 'done', r[1] ? kTxt(r[1]) : msTxt(r[0]), w.length ? 'Runde an ' + w.join(' & ') : 'Keiner hat’s geschafft');
+      else setBtn('off', 'Zuschauen', w.length ? 'Runde an ' + w.join(' & ') : '');
+    }
+    setStatus(w.length ? '<b class="g">' + esc(w.join(' & ')) + '</b> ' + (w.length > 1 || w[0] === 'Du' ? 'gewinnt' : 'gewinnt') + ' die Runde' + (V.res[V.win[0]] ? ' · ' + msTxt(V.res[V.win[0]][0]) : '') : 'Keiner hat die Runde gewonnen');
+    view();
+  }
+  function kTxt(k) { return k === 'trap' ? 'Falle!' : k === 'slow' ? 'zu langsam' : k === 'fast' ? '< 100 ms' : 'Fehlstart'; }
+  function esc(t) { return String(t).replace(/[&<>"]/g, function (c) { return { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]; }); }
+
+  /* ---------- neuer Stand (vom Ersteller oder selbst) ---------- */
+  function got() {
+    if (!R) return;
+    if (R.ph === 'duel' && R.ids.indexOf(ME) >= 0 && V.paidDn !== R.dn) pay();
+    if (R.ph === 'end' && V.booked !== R.dn && V.paidDn === R.dn) finish();
+    if (R.ph !== 'end' && !$('#rxEnd').hidden && R.ph === 'duel') $('#rxEnd').hidden = true;
+    if (NB.role === 'guest') {
+      var ok = bank() >= R.bet ? 1 : 0;
+      if (V.lastOk !== ok) { V.lastOk = ok; send(NB.conn, { t: 'can', ok: ok }); }
+    }
+    view();
+  }
+  function pay() {
+    V.paidDn = R.dn;
+    var b = R.bet, P = PR.prof();
+    if (bank() < b) {
+      V.paidDn = -1;
+      if (NB.role === 'guest') { toast('Zu wenig Chips für den Einsatz'); leave(); }
+      return;
+    }
+    P.bank = (P.bank | 0) - b; PR.saveProf(); PR.renderBank();
+    writeJ('pr-rxrun', { b: b, on: others() ? 1 : 0 });
+    PR.emit('bet', { game: 'reaction', amount: b });
+    Snd.chip(3, 0, true);
+    V.best = 0; V.counted = -1; V.rd = -1; V.st = 'idle';
+    setBtn('idle', 'Gleich geht’s los', 'Erst bei Grün tippen');
+    setStatus('Duell um <b>' + fmt(b * R.ids.length) + '</b> Chips · Best of 5');
+  }
+  function finish() {
+    V.booked = R.dn;
+    writeJ('pr-rxrun', null);
+    var b = R.bet, n = R.n || R.ids.length, won = R.win === ME, w = won ? b * n : 0;
+    if (w > 0) { var P = PR.prof(); P.bank = (P.bank | 0) + w; PR.saveProf(); PR.renderBank(); }
+    addDuel(b, w);
+    var online = R.ids.some(function (id) { var p = plOf(id); return id !== ME && (!p || !p.bot); }) && mode !== 'bot';
+    var best = 0; try { best = stats().best || 0; } catch (e) {}
+    if (w > 0) PR.emit('win', { game: 'reaction', amount: w, net: w - b });
+    PR.emit('rx:duel', { won: won, players: n, bet: b, online: online, best: best });
+    if (online) PR.emit('online:round', { game: 'reaction' });
+    showEnd(won, w);
+  }
+  function showEnd(won, w) {
+    var wp = plOf(R.win);
+    $('#rxEnd').classList.toggle('won', won);
+    $('#rxTro').textContent = won ? '🏆' : wp ? '⚡' : '🤝';
+    $('#rxEndT').textContent = won ? 'Gewonnen!' : wp ? wp.name + ' gewinnt' : 'Duell vorbei';
+    $('#rxEndP').textContent = won ? 'Du bekommst ' + fmt(w) + ' Chips (' + fmt(w - R.bet) + ' Gewinn).' : 'Dein Einsatz von ' + fmt(R.bet) + ' Chips ist weg.' + (wp ? ' Revanche?' : '');
+    var l = $('#rxEndL'); l.innerHTML = '';
+    R.ids.slice().sort(function (a, b) { return (R.sc[b] | 0) - (R.sc[a] | 0); }).forEach(function (id) {
+      var p = plOf(id); if (!p) return;
+      var d = document.createElement('div'); if (id === R.win) d.className = 'w';
+      var a = document.createElement('span'); a.className = 'pav'; paintAv(a, p);
+      var nm = document.createElement('span'); nm.textContent = (id === ME ? p.name + ' (du)' : p.name) + (p.bot ? ' · Bot' : '');
+      var sc = document.createElement('b'); sc.textContent = (R.sc[id] | 0) + (R.sc[id] === 1 ? ' Runde' : ' Runden');
+      d.appendChild(a); d.appendChild(nm); d.appendChild(sc); l.appendChild(d);
+    });
+    var guest = NB.role === 'guest';
+    $('#rxRev').textContent = 'Revanche!';
+    $('#rxBack').textContent = guest ? 'Weiter zuschauen' : mode === 'bot' ? 'Einsatz ändern' : 'Zur Lobby';
+    $('#rxEnd').hidden = false;
+    if (won) {
+      Snd.win();
+      setTimeout(function () { if (window.PRFx) window.PRFx.big('reaction', $('#rxTro')); }, 200);
+      if (window.PRF && w >= 1000 && others()) window.PRF.brag('big', w, 'Reaktionsduell');
+    } else if (wp && wp.cos && window.PRFx && window.PRFx.other) { window.PRFx.other(wp.cos, $('#rxTro')); Snd.knock(); }
+    else Snd.knock();
+  }
+  $('#rxRev').addEventListener('click', function () {
+    if (NB.role === 'guest') { sendTalk('', REV_Q); $('#rxEnd').hidden = true; toast('Revanche gewünscht – der Ersteller startet'); return; }
+    $('#rxEnd').hidden = true;
+    if (mode === 'fr' && others()) sendTalk('', REV_Q);
+    if (bank() < R.bet) { R.ph = 'lobby'; push(); toast('Zu wenig Chips für diesen Einsatz'); return; }
+    R.ph = 'lobby'; R.pl.forEach(function (p) { if (p.id === ME) p.ok = 1; });
+    if (!hStart()) { push(); toast(R.pl.length < 2 ? 'Keiner mehr da – fordere einen Freund heraus' : 'Noch nicht alle haben genug Chips'); }
+  });
+  $('#rxBack').addEventListener('click', function () {
+    $('#rxEnd').hidden = true;
+    if (NB.role !== 'guest' && R && R.ph === 'end') { R.ph = 'lobby'; push(); }
+  });
+
+  /* ---------- Anzeige ---------- */
+  var toastT = 0;
+  function toast(t) { var el = $('#rxToast'); el.textContent = t; el.classList.add('on'); clearTimeout(toastT); toastT = setTimeout(function () { el.classList.remove('on'); }, 2800); }
+  function setStatus(h) { var el = $('#rxStatus'); if (el._h !== h) { el._h = h; el.innerHTML = h; } }
+  function paintAv(el, p) { window.PRAv.paint(el, p.name, p.color, p.id === ME ? window.PRAv.get() : p.bot ? p.av : p.cos && p.cos.av); }
+  var plKey = '';
+  function renderPl() {
+    var host = $('#rxPl');
+    var list = R.ph === 'lobby' ? R.pl.slice() : R.ids.map(plOf).filter(Boolean).concat(R.pl.filter(function (p) { return R.ids.indexOf(p.id) < 0; }));
+    var showRes = !!V.res && R.ph === 'duel';
+    var k = JSON.stringify([R.ph, R.dec, list.map(function (p) { return [p.id, p.name, p.color, p.ok, p.cos && p.cos.av, R.sc[p.id] | 0]; }), R.act, showRes && V.res, V.win, V.my && 1, R.win]);
+    if (k === plKey) return;
+    plKey = k;
+    host.innerHTML = '';
+    host.style.setProperty('--n', Math.max(2, list.length));
+    list.forEach(function (p) {
+      var el = document.createElement('div'), inD = R.ids.indexOf(p.id) >= 0;
+      var cls = 'rxp' + (p.id === ME ? ' me' : '');
+      if (R.ph === 'duel' && (!inD || R.act.indexOf(p.id) < 0)) cls += ' out';
+      var r = showRes ? V.res[p.id] : null;
+      if (showRes && V.win.indexOf(p.id) >= 0) cls += ' win';
+      else if (r && r[1] && r[1] !== 'slow') cls += ' foul';
+      if (R.ph === 'end' && p.id === R.win) cls += ' win';
+      el.className = cls; el._sid = p.id;
+      var a = document.createElement('span'); a.className = 'pav'; paintAv(a, p);
+      var nm = document.createElement('div'); nm.className = 'nm'; nm.textContent = p.id === ME ? 'Du' : p.name;
+      if (p.bot) { var em = document.createElement('em'); em.textContent = 'BOT'; nm.appendChild(em); }
+      var dots = document.createElement('div'); dots.className = 'rxdots';
+      for (var i = 0; i < ROUNDS; i++) { var d = document.createElement('i'); if (i < (R.sc[p.id] | 0)) d.className = 'on'; dots.appendChild(d); }
+      var t = document.createElement('div'); t.className = 'rxt';
+      if (R.ph === 'lobby') t.textContent = p.bot ? 'bereit' : p.ok ? 'bereit' : 'zu wenig Chips';
+      else if (r) t.textContent = r[1] ? kTxt(r[1]) : msTxt(r[0]);
+      else if (p.id === ME && V.my && R.ph === 'duel') t.textContent = V.my[1] ? kTxt(V.my[1]) : msTxt(V.my[0]);
+      else if (!inD) t.textContent = 'schaut zu';
+      el.appendChild(a); el.appendChild(nm); if (R.ph !== 'lobby') el.appendChild(dots); el.appendChild(t);
+      if (p.id !== ME && !p.bot) window.PRChat.hold(el, function () { return p.name; }, a);
+      host.appendChild(el);
+    });
+  }
+  function view() {
+    if (!R) return;
+    $('#rxBank').textContent = fmt(bank());
+    var lob = R.ph === 'lobby';
+    $('#rxLobV').hidden = !lob; $('#rxPlayV').hidden = lob;
+    var host = NB.role !== 'guest';
+    $('#rxInvBtn').hidden = mode !== 'fr' || !host;
+    $('#rxInv2').hidden = mode !== 'fr' || !host;
+    $('#rxReact').hidden = !(NB.role && others());
+    if (lob) {
+      all('#rxBets button').forEach(function (b) {
+        var v = +b.dataset.v, on = v === R.bet;
+        b.classList.toggle('on', on); b.disabled = !host || (!on && v > bank());
+      });
+      var n = R.pl.length, st = $('#rxStart'), note = $('#rxNote');
+      st.hidden = !host;
+      var miss = R.pl.filter(function (p) { return !p.bot && !p.ok; });
+      st.disabled = n < 2 || !!miss.length;
+      st.textContent = n < 2 ? 'Warte auf Mitspieler …' : 'Duell starten · ' + fmt(R.bet * n) + ' im Topf';
+      if (!host) note.innerHTML = 'Der Ersteller wählt den Einsatz und startet das Duell.' + (bank() < R.bet ? ' <b>Du hast zu wenig Chips.</b>' : '');
+      else if (mode === 'bot') note.innerHTML = 'Best of 5 gegen den Bot · Gewinner bekommt <b>' + fmt(R.bet * 2) + '</b>';
+      else if (miss.length) note.innerHTML = '<b>' + esc(miss.map(function (p) { return p.id === ME ? 'Du' : p.name; }).join(', ')) + '</b> ' + (miss.length > 1 || miss[0].id === ME ? 'haben' : 'hat') + ' zu wenig Chips';
+      else if (n < 2) note.innerHTML = NB.code ? 'Fordere Freunde heraus (2 bis 5 Spieler). Jeder zahlt den Einsatz, der Sieger bekommt alles.' : (NB.opening ? 'Öffne das Duell …' : 'Keine Verbindung zum Vermittlungsserver – versuch es gleich nochmal.');
+      else note.innerHTML = n + ' Spieler · jeder zahlt ' + fmt(R.bet) + ', der Sieger bekommt alles';
+      $('#rxInfo').textContent = mode === 'bot' ? 'Gegen Bot' : 'Duell mit Freunden';
+    } else if (R.ph === 'duel') {
+      $('#rxInfo').textContent = !R.rd ? 'Gleich geht’s los' : R.dec ? 'Entscheidungsrunde' : 'Runde ' + Math.min(R.rd, ROUNDS) + ' von ' + ROUNDS;
+      if (!inDuel() && V.st !== 'off' && !V.res) { setBtn('off', 'Zuschauen', 'Nächstes Duell bist du dabei'); }
+    } else if (R.ph === 'end') {
+      $('#rxInfo').textContent = 'Duell vorbei';
+      if (NB.role === 'guest' && $('#rxEnd').hidden) { setBtn('idle', 'Vorbei', 'Warte auf die Revanche'); setStatus('Der Ersteller kann gleich eine Revanche starten.'); }
+    }
+    renderPl();
+  }
+  all('#rxBets button').forEach(function (b) {
+    b.addEventListener('click', function () {
+      if (!R || NB.role === 'guest' || R.ph === 'duel') return;
+      var v = +b.dataset.v; if (v > bank()) return;
+      bet = v; R.bet = v; writeJ('pr-rxbet', v); Snd.chip(1, 0); push();
+    });
+  });
+  $('#rxStart').addEventListener('click', function () {
+    if (!R || NB.role === 'guest') return;
+    if (bank() < R.bet) { toast('Zu wenig Chips für diesen Einsatz'); return; }
+    if (!hStart()) toast('Noch nicht alle bereit');
+  });
+  setInterval(function () { if (!rx.hidden && R) { if (NB.role !== 'guest' && R.ph !== 'duel') { var me = plOf(ME), ok = bank() >= R.bet ? 1 : 0; if (me && me.ok !== ok) push(); } view(); } }, 1000);
+
+  /* ---------- Oeffnen und Verlassen ---------- */
+  function open() {
+    Snd.unlock();
+    ['#menu', '#profile', '#pview', '#friends', '#bjf'].forEach(function (s) { var el = $(s); if (el) el.hidden = true; });
+    var was = rx.hidden;
+    rx.hidden = false; $('#rxPause').hidden = true; $('#rxInvDlg').hidden = true; $('#rxEnd').hidden = true; $('#rxToast').classList.remove('on');
+    if (was) PR.emit('game:open', { game: 'reaction' });
+    clearV(); V.rd = -1; V.st = 'idle'; V.res = null; V.my = null; V.paidDn = -1; V.booked = -1; V.lastOk = null; plKey = '';
+    if (bet > bank()) { for (var i = BETS.length - 1; i >= 0; i--) if (BETS[i] <= bank() || i === 0) { bet = BETS[i]; break; } }
+  }
+  function wipe(bye) {
+    var peer = NB.peer, conns = NB.conns.slice(), host = NB.role === 'host', conn = NB.conn;
+    NB.gen++; NB.peer = null; NB.role = ''; NB.code = ''; NB.conns = []; NB.conn = null; NB.opening = false;
+    if (!peer) return;
+    if (bye) { if (host) conns.forEach(function (c) { send(c, { t: 'closed' }); }); else if (conn) send(conn, { t: 'bye' }); }
+    setTimeout(function () { try { peer.destroy(); } catch (e) {} }, bye ? 250 : 0);
+  }
+  /* mitten im Duell gehen: Einsatz ist weg, das Duell zaehlt als verloren */
+  function forfeit() { if (R && V.paidDn === R.dn && V.booked !== R.dn) { V.booked = R.dn; writeJ('pr-rxrun', null); addDuel(R.bet, 0); PR.emit('rx:duel', { won: false, players: R.ids.length, bet: R.bet, online: mode !== 'bot', best: stats().best || 0 }); } }
+  function leave() {
+    forfeit();
+    wipe(true);
+    clearH(); clearV(); H = null; R = null; mode = '';
+    rx.hidden = true; $('#rxPause').hidden = true; $('#rxInvDlg').hidden = true; $('#rxEnd').hidden = true; $('#menu').hidden = false;
+    PR.renderBank();
+  }
+  function startBot() { open(); wipe(false); hostStart('bot'); }
+  /* Lobby fuer Freunde: sofort als Ersteller online gehen, damit Freunde herausgefordert werden koennen */
+  function startFr(done) {
+    if (!rx.hidden && R && mode === 'fr' && NB.role === 'host' && NB.code) { if (done) done(free() ? NB.code : ''); return; }
+    if (!rx.hidden && R && mode === 'fr' && NB.opening) { (NB.wait || (NB.wait = [])).push(done); return; }
+    open(); wipe(false); hostStart('fr');
+    hostNow(function (code) { view(); if (done) done(code); });
+  }
+  $('#rxPlay').addEventListener('click', startBot);
+  $('#rxFriends').addEventListener('click', function () { startFr(null); });
+  function openPause() {
+    var guest = NB.role === 'guest', n = humans().length - 1;
+    $('#rxPauseTxt').textContent = (inDuel() ? 'Das Duell läuft: gehst du jetzt, ist dein Einsatz verloren. ' : '') +
+      (guest ? 'Die anderen spielen ohne dich weiter. ' : NB.role === 'host' && n > 0 ? 'Wenn du gehst, ist das Duell für alle vorbei. ' : '') + 'Deine Chips sind in deinem Guthaben gespeichert.';
+    help(false);
+    $('#rxPause').hidden = false;
+  }
+  function help(on) { $('#rxHelp').hidden = !on; $('#rxHelpBtn').setAttribute('aria-expanded', on ? 'true' : 'false'); $('#rxHelpBtn').textContent = on ? 'Anleitung schließen' : 'Spielanleitung'; }
+  $('#rxHelpBtn').addEventListener('click', function () { help($('#rxHelp').hidden); });
+  $('#rxPauseBtn').addEventListener('click', openPause);
+  $('#rxResume').addEventListener('click', function () { $('#rxPause').hidden = true; });
+  $('#rxMenu').addEventListener('click', leave);
+  function openInv() {
+    if (NB.role === 'guest' || mode !== 'fr') return;
+    var t = $('#rxInvTxt'), nf = window.PRF && window.PRF.count ? window.PRF.count() : 1;
+    $('#rxInvDlg').hidden = false;
+    if (!nf) { t.textContent = 'Du hast noch keine Freunde. Trag im Hauptmenü unter Poker → „Mit Freunden spielen“ den Spielercode eines Freundes ein.'; return; }
+    t.textContent = NB.code ? 'Fordere Freunde heraus, die gerade online sind – sie zahlen den Einsatz mit ihrem eigenen Guthaben.' : !PR.netAvail() ? PR.MSG_NOLIB : 'Öffne das Duell …';
+    if (!NB.code && !NB.opening && PR.netAvail()) hostNow(function (code) { t.textContent = code ? 'Fordere Freunde heraus, die gerade online sind.' : 'Keine Verbindung – versuch es gleich nochmal.'; view(); });
+  }
+  $('#rxInvBtn').addEventListener('click', openInv);
+  $('#rxInv2').addEventListener('click', openInv);
+  $('#rxInvX').addEventListener('click', function () { $('#rxInvDlg').hidden = true; });
+
+  /* ---------- Reaktionen und Schnellsaetze mit Freunden: hoechstens 3 in 9 Sekunden pro Spieler ---------- */
+  var RX_EMOS = ['😂', '😱', '🐢', '⚡', '😤', '🔥'], talkLog = {}, REV_Q = Math.max(0, window.PRChat.list('rx').indexOf('Revanche!'));
+  function talkOk(id) {
+    var now = Date.now(), l = (talkLog[id] || []).filter(function (x) { return now - x < 9000; });
+    talkLog[id] = l; if (l.length >= 3) return false; l.push(now); return true;
+  }
+  function frEl(id) { var hit = null; all('#rxPl .rxp').forEach(function (el) { if (el._sid === id) hit = el; }); return hit; }
+  function showTalk(id, emo, q) {
+    var txt = q === undefined ? emo : window.PRChat.text('rx', q);
+    if (q === undefined ? RX_EMOS.indexOf(emo) < 0 : !txt) return;
+    var p = plOf(id); if (!p || p.bot) return;
+    if (id !== ME && window.PRChat.muted(p.name)) return;
+    var host = frEl(id) || $('#rxMe');
+    if (host) window.PRChat.bubble(host, txt, q !== undefined, 'down');
+    if (id !== ME && q === REV_Q && R && R.ph !== 'duel') toast(p.name + ' will eine Revanche!');
+  }
+  function hTalk(id, emo, q) {
+    if (!R || !plOf(id)) return false;
+    if (q === undefined ? RX_EMOS.indexOf(emo) < 0 : !window.PRChat.text('rx', q)) return false;
+    if (!talkOk(id)) return false;
+    bcast(q === undefined ? { t: 'react', id: id, e: emo } : { t: 'chat', id: id, q: q });
+    showTalk(id, emo, q);
+    return true;
+  }
+  function sendTalk(emo, q) {
+    $('#rxRPanel').hidden = true;
+    if (!R || !NB.role || !others()) return;
+    if (NB.role === 'guest') {
+      if (!talkOk('me')) { toast('Kurz warten …'); return; }
+      send(NB.conn, q === undefined ? { t: 'react', e: emo } : { t: 'chat', q: q });
+    } else if (!hTalk(ME, emo, q)) { toast('Kurz warten …'); return; }
+    if (q !== undefined) PR.emit('chat', { game: 'reaction', text: window.PRChat.text('rx', q) });
+  }
+  $('#rxReact').addEventListener('click', function () { $('#rxRPanel').hidden = !$('#rxRPanel').hidden; });
+  all('#rxRPanel button[data-e]').forEach(function (b) { b.addEventListener('click', function () { sendTalk(b.dataset.e); }); });
+  window.PRChat.tabs($('#rxRPanel'), 'rx', function (q) { sendTalk('', q); });
+  document.addEventListener('pointerdown', function (e) { if (!$('#rxRPanel').hidden && !e.target.closest('#rxRPanel, #rxReact')) $('#rxRPanel').hidden = true; });
+
+  /* ---------- Online ---------- */
+  function cleanProf(p) {
+    p = (p && typeof p === 'object') ? p : {};
+    var nm = String(p.name == null ? '' : p.name).slice(0, 14).trim();
+    return { name: nm || 'Spieler', color: (typeof p.color === 'string' && /^#[0-9a-f]{6}$/i.test(p.color)) ? p.color : PR.AV[0], st: Math.min(1e9, Math.max(0, p.st | 0)), cos: window.PRLook.clean(p.cos) };
+  }
+  function free() { return !!R && mode === 'fr' && R.pl.length < MAX_PL; }
+  function hostNow(done) {
+    if (NB.role === 'host' && NB.code) { done(free() ? NB.code : ''); return; }
+    if (NB.role || NB.peer || !R || !H || rx.hidden || mode !== 'fr' || !PR.netAvail() || !free()) { done(''); return; }
+    var g = ++NB.gen, code = PR.newCode(), tries = 0;
+    NB.opening = true;
+    function fin(c) { NB.opening = false; var w = NB.wait || []; NB.wait = null; done(c); w.forEach(function (f) { if (f) f(c); }); }
+    (function attempt() {
+      var over = false, peer;
+      try { peer = new window.Peer(PEER_PREFIX + code.toLowerCase(), PR.peerOpts()); } catch (e) { fin(''); return; }
+      var to = setTimeout(function () { if (over) return; over = true; try { peer.destroy(); } catch (e) {} fin(''); }, 12000);
+      peer.on('open', function () {
+        if (over) return; over = true; clearTimeout(to);
+        if (g !== NB.gen || NB.role || !R || !H || rx.hidden) { try { peer.destroy(); } catch (e) {} fin(''); return; }
+        NB.peer = peer; NB.role = 'host'; NB.code = code; NB.conns = [];
+        peer.on('connection', function (c) { hostAccept(c, g); });
+        peer.on('disconnected', function () { if (g === NB.gen) { try { peer.reconnect(); } catch (e) {} } });
+        push();
+        fin(code);
+      });
+      peer.on('error', function (err) {
+        if (over || g !== NB.gen) return;
+        over = true; clearTimeout(to); try { peer.destroy(); } catch (e) {}
+        if (err && err.type === 'unavailable-id' && tries < 4) { tries++; code = PR.newCode(); over = false; attempt(); return; }
+        fin('');
+      });
+    })();
+  }
+  function hostAccept(conn, g) {
+    conn.on('data', function (d) {
+      if (g !== NB.gen || !R || !H || !d || typeof d !== 'object') return;
+      if (conn._rx) {
+        if (d.t === 'res') { if ((d.rd | 0) === R.rd) hRes(conn.peer, d.ms, String(d.k || '')); }
+        else if (d.t === 'can') hCan(conn.peer, d.ok);
+        else if (d.t === 'react') hTalk(conn.peer, String(d.e));
+        else if (d.t === 'chat') hTalk(conn.peer, '', +d.q);
+        else if (d.t === 'bye') gone();
+        return;
+      }
+      if (d.t !== 'hello' || d.g !== 'rx') return;
+      /* andere App-Version: nicht ins Duell lassen, sonst rechnen beide verschieden */
+      if ((d.v | 0) !== RX_V) {
+        send(conn, { t: 'old', v: RX_V }); setTimeout(function () { try { conn.close(); } catch (e) {} }, 400);
+        toast('Jemand mit einer anderen App-Version wollte mitspielen');
+        return;
+      }
+      if (!free()) { send(conn, { t: 'full', n: MAX_PL }); setTimeout(function () { try { conn.close(); } catch (e) {} }, 400); return; }
+      var old = plOf(conn.peer); if (old) R.pl.splice(R.pl.indexOf(old), 1);
+      var p = cleanProf(d.p);
+      conn._rx = true; NB.conns.push(conn);
+      R.pl.push({ id: conn.peer, name: p.name, color: p.color, st: p.st, cos: p.cos, bot: 0, ok: d.ok ? 1 : 0 });
+      toast(p.name + ' ist dabei'); Snd.ping();
+      push();
+    });
+    function gone() {
+      if (g !== NB.gen || !conn._rx) return;
+      conn._rx = false;
+      NB.conns = NB.conns.filter(function (c) { return c !== conn; });
+      hGone(conn.peer);
+    }
+    conn.on('close', gone); conn.on('error', gone);
+  }
+  function cleanSnap(s) {
+    if (!s || typeof s !== 'object' || !Array.isArray(s.pl) || !Array.isArray(s.ids)) return null;
+    var ids = function (l) { return Array.isArray(l) ? l.filter(function (x) { return typeof x === 'string'; }).map(function (x) { return x.slice(0, 64); }).slice(0, 12) : []; };
+    var sc = {};
+    if (s.sc && typeof s.sc === 'object') Object.keys(s.sc).slice(0, 12).forEach(function (k) { sc[k.slice(0, 64)] = Math.max(0, Math.min(99, s.sc[k] | 0)); });
+    var b = +s.bet;
+    return {
+      ph: s.ph === 'duel' ? 'duel' : s.ph === 'end' ? 'end' : 'lobby', dn: Math.max(0, s.dn | 0), bet: BETS.indexOf(b) >= 0 ? b : 10,
+      pl: s.pl.slice(0, MAX_PL + 2).filter(function (p) { return p && typeof p.id === 'string'; }).map(function (p) {
+        var c = cleanProf(p);
+        return { id: p.id.slice(0, 64), name: c.name, color: c.color, st: c.st, cos: c.cos, bot: 0, ok: p.ok ? 1 : 0 };
+      }),
+      ids: ids(s.ids), sc: sc, rd: Math.max(0, Math.min(99, s.rd | 0)), dec: s.dec ? 1 : 0, act: ids(s.act), win: typeof s.win === 'string' ? s.win.slice(0, 64) : ''
+    };
+  }
+  function cleanRR(m) {
+    var res = {};
+    if (m.res && typeof m.res === 'object') Object.keys(m.res).slice(0, 12).forEach(function (k) { var r = m.res[k]; if (Array.isArray(r)) res[k.slice(0, 64)] = cleanRes(r[0], r[1]); });
+    var sc = {}; if (m.sc && typeof m.sc === 'object') Object.keys(m.sc).slice(0, 12).forEach(function (k) { sc[k.slice(0, 64)] = Math.max(0, Math.min(99, m.sc[k] | 0)); });
+    return { rd: m.rd | 0, res: res, win: Array.isArray(m.win) ? m.win.filter(function (x) { return typeof x === 'string'; }).slice(0, 12) : [], sc: sc };
+  }
+  /* Mitspieler: ins Duell eines Freundes. Klappt es nicht, geht es zurueck ins Menue. */
+  function join(code) {
+    code = PR.cleanCode(code || '');
+    forfeit();
+    wipe(false); clearH(); H = null;
+    open(); mode = 'fr'; R = null;
+    setBtn('idle', 'Verbinde …', ''); setStatus('Verbinde mit dem Duell …');
+    $('#rxLobV').hidden = true; $('#rxPlayV').hidden = false; $('#rxPl').innerHTML = ''; $('#rxInfo').textContent = 'Duell mit Freunden';
+    function back(m) { leave(); if (m) { var ft = $('#fToast'); if (ft) { ft.textContent = m; ft.classList.add('on'); setTimeout(function () { ft.classList.remove('on'); }, 3600); } } }
+    if (code.length !== 5) { back('Das Duell gibt es nicht mehr'); return; }
+    if (!PR.netAvail()) { back(PR.MSG_NOLIB); return; }
+    var g = ++NB.gen, peer, ok = false;
+    function fail(m) {
+      if (ok || g !== NB.gen) return; ok = true; clearTimeout(to);
+      try { peer.destroy(); } catch (e) {}
+      NB.gen++;
+      back(m || 'Das Duell ist gerade nicht erreichbar');
+    }
+    var to = setTimeout(function () { fail(); }, 15000);
+    try { peer = new window.Peer(undefined, PR.peerOpts()); } catch (e) { fail(); return; }
+    peer.on('error', function (err) { fail(err && err.type === 'peer-unavailable' ? 'Das Duell gibt es nicht mehr' : ''); });
+    peer.on('open', function () {
+      if (ok || g !== NB.gen) return;
+      var conn = peer.connect(PEER_PREFIX + code.toLowerCase(), { serialization: 'json', reliable: true });
+      conn.on('open', function () {
+        var P = PR.prof();
+        send(conn, { t: 'hello', g: 'rx', v: RX_V, ok: 1, p: { name: PR.profName(), color: P.color, st: myStars(), cos: window.PRLook.mine() } });
+      });
+      conn.on('data', function (d) {
+        if (g !== NB.gen || !d || typeof d !== 'object') return;
+        if (d.t === 'full') { fail('Das Duell ist voll (höchstens 5 Spieler)'); return; }
+        if (d.t === 'old') {
+          fail((d.v | 0) > RX_V ? 'Deine App ist nicht aktuell. Schließ sie einmal ganz und öffne sie neu.'
+                                : 'Dein Freund hat eine ältere App-Version. Er sollte die App einmal ganz schließen und neu öffnen.');
+          return;
+        }
+        if (d.t === 'closed') { if (!ok) fail('Das Duell wurde beendet'); else lost('Der Ersteller hat das Duell beendet'); return; }
+        if (!ok && d.t !== 'st') return;
+        if (d.t === 'react') { showTalk(String(d.id), String(d.e)); return; }
+        if (d.t === 'chat') { showTalk(String(d.id), '', +d.q); return; }
+        if (d.t === 'go') {
+          if (!R || R.ph !== 'duel') return;
+          var w = Math.max(500, Math.min(8000, +d.w || 0)), f = Math.max(0, Math.min(w - 100, +d.f || 0));
+          R.rd = Math.max(0, d.rd | 0); R.act = Array.isArray(d.act) ? d.act.filter(function (x) { return typeof x === 'string'; }) : [];
+          startRound({ rd: R.rd, w: w, f: f, act: R.act }); return;
+        }
+        if (d.t === 'rr') { if (R) gotRes(cleanRR(d)); return; }
+        if (d.t !== 'st') return;
+        if ((d.v | 0) !== RX_V) { fail('Ihr habt verschiedene App-Versionen. Schließt beide die App einmal ganz und öffnet sie neu.'); return; }
+        var s = cleanSnap(d.s); if (!s) return;
+        if (!ok) {
+          ok = true; clearTimeout(to);
+          NB.peer = peer; NB.role = 'guest'; NB.code = code; NB.conn = conn; ME = peer.id;
+          /* laufendes Duell: nur zuschauen (kein Abbuchen) */
+          V.paidDn = s.ph === 'duel' || s.ph === 'end' ? s.dn : -1; V.booked = s.ph === 'end' ? s.dn : -1;
+          toast('Du bist im Duell deines Freundes'); Snd.ping();
+          if (s.ph === 'duel') { setBtn('off', 'Zuschauen', 'Nächstes Duell bist du dabei'); setStatus('Das Duell läuft schon – beim nächsten bist du dabei.'); }
+        }
+        var prevPh = R && R.ph;
+        R = s; R.n = s.ids.length;
+        if (prevPh === 'end' && s.ph !== 'end') $('#rxEnd').hidden = true;
+        got();
+      });
+      function closed() { if (g !== NB.gen) return; if (!ok) fail(); else lost('Verbindung zum Duell weg'); }
+      conn.on('close', closed); conn.on('error', closed);
+    });
+  }
+  function lost(msg) {
+    if (NB.role !== 'guest') return;
+    forfeit(); leave();
+    var ft = $('#fToast'); if (ft) { ft.textContent = msg; ft.classList.add('on'); setTimeout(function () { ft.classList.remove('on'); }, 3600); }
+  }
+  window.addEventListener('pagehide', function () { if (NB.peer) { try { NB.peer.destroy(); } catch (e) {} } });
+
+  /* Update-Pruefung: nicht neu laden, solange Reaktion offen ist */
+  var idle = window.prIdle;
+  window.prIdle = function () { return (!idle || idle()) && rx.hidden && !NB.peer; };
+
+  /* ---------- Erfolge und Aufgaben ---------- */
+  if (window.PRAch) [
+    { id: 'blitzfinger', icon: '⚡', name: 'Blitzfinger', desc: 'Reagiere im Reaktionsduell in unter 180 ms', title: 'Blitzfinger', ev: 'rx:round', f: function (d) { return !d.foul && d.ms >= 100 && d.ms < 180; } },
+    { id: 'rx-falle', icon: '🟡', name: 'Nicht reingefallen', desc: 'Übersteh im Reaktionsduell 10 gelbe Fallen', goal: 10, ev: 'rx:round', f: function (d) { return d.trap && d.k !== 'trap' && d.k !== 'early' ? 1 : 0; } },
+    { id: 'rx-duellant', icon: '🤺', name: 'Duellant', desc: 'Gewinne 10 Reaktionsduelle', goal: 10, ev: 'rx:duel', f: function (d) { return d.won ? 1 : 0; } }
+  ].forEach(function (d) { window.PRAch.add(d); });
+  if (window.PRQ && window.PRQ.addQuest) {
+    window.PRQ.addQuest({ id: 'rxwin', d: 'm', t: 'Gewinne ein Reaktionsduell', n: 1, ev: 'rx:duel', f: function (d) { return d.won ? 1 : 0; } });
+    window.PRQ.addQuest({ id: 'rx250', d: 'e', t: 'Reagiere im Reaktionsduell unter 250 ms', n: 1, ev: 'rx:round', f: function (d) { return !d.foul && d.ms >= 100 && d.ms < 250 ? 1 : 0; } });
+  }
+
+  /* fuer die Freundesliste: wo bin ich, darf man dazukommen; Tests: _dbg */
+  window.RX = {
+    on: function () { return !rx.hidden; },
+    state: function () {
+      var lob = !!R && R.ph !== 'duel';
+      return { on: !rx.hidden, role: NB.role, code: NB.code, free: !rx.hidden && NB.role === 'host' && lob && free(), lobby: lob, alone: !!R && humans().length < 2 && !inDuel(), bet: R ? R.bet : bet };
+    },
+    host: function (done) { if (mode === 'fr' && R && R.ph !== 'duel') hostNow(done); else done(''); },
+    join: join,
+    friends: startFr
+  };
+  if (window.PR_TESTHOOKS) window.RX._dbg = { R: function () { return R; }, H: function () { return H; }, V: V, botTime: botTime, median: median, start: hStart };
 })();
 </script>
 
