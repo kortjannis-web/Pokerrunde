@@ -52,9 +52,12 @@ Alles ist live auf `main`. Die Schritte beziehen sich auf `docs/plan-neue-featur
      trage ich sie ein und wir testen live“.
 4. Abschluss: Gesamttest, Plan-Doku aktualisieren, Bericht an den Nutzer.
 
-## Hinweise zur Arbeitsweise (bewährt in Sitzung 1)
+## Hinweise zur Arbeitsweise
 
-- **Arbeitsanweisung für Helfer:** `dev/ARBEITSANWEISUNG.md`. Sie enthält Regeln, eine Karte von
+- **Ohne Helfer (Agents) arbeiten:** selbst einbauen, Schritt für Schritt. Helfer müssen sich jedes Mal neu
+  einarbeiten (ein Helfer für Video-Poker brauchte rund 290.000 Tokens und 22 Minuten) und sparen keine Zeit,
+  weil alles in derselben Datei steckt. Höchstens für echte Nebenarbeit außerhalb von `index.html`.
+- **Arbeitsanweisung als Nachschlagewerk:** `dev/ARBEITSANWEISUNG.md`. Sie enthält Regeln, eine Karte von
   `index.html`, alle gebauten Schnittstellen (PRBus, PRStars, PRQ, PRDaily, PRChest, PRChat, PRCoach, PRCos,
   PRLook, PRAch, PRFx, PRAv, TOM, PR.tn/PRTn, PRMenu, CR, RX …) und die aktuellen Online-Versionen.
   Nach jedem Schritt um die neuen Schnittstellen ergänzen.
@@ -62,7 +65,8 @@ Alles ist live auf `main`. Die Schritte beziehen sich auf `docs/plan-neue-featur
   (Rauchtest auf Handybreite mit Screenshots aller Menüseiten), `dev/test/fakepeer.js` plus
   `dev/test/online-vorlage.js` (Online-Tests mit zwei Browsern ohne echtes PeerJS).
 - Schritte nacheinander bauen, weil alle in dieselbe Datei schreiben. Der Nutzer möchte **zügiges Tempo**:
-  nur das Wichtigste testen (Syntax, Rauchtest, ein echter Durchlauf pro Feature, kurzer Online-Test).
+  nur das Wichtigste testen (Syntax, Rauchtest, ein echter Durchlauf pro Feature, kurzer Online-Test),
+  höchstens ein bis zwei Screenshots pro Feature (Bilder kosten viele Tokens).
 - Jeder Schritt wird sofort committet und nach `main` gepusht (CLAUDE.md).
 
 ## Prompt für den neuen Chat
@@ -73,8 +77,8 @@ CLAUDE.md und in docs/plan-neue-features.md die Schritte 6–13, 24 und 25.
 
 Baue dann alles aus „Was in Sitzung 2 drankommt“ in docs/sitzung-2.md vollständig und voll integriert ein:
 Video-Poker (eigene Wisch-Seite zwischen Roulette und Crash), Rubbellose und Supabase blind vorgebaut mit
-leeren Platzhaltern (ohne Schlüssel läuft alles wie bisher). Arbeite Schritt für Schritt (gern mit Helfern
-nacheinander, die dev/ARBEITSANWEISUNG.md bekommen), teste zügig nur das Wichtigste, committe und pushe
+leeren Platzhaltern (ohne Schlüssel läuft alles wie bisher). Arbeite Schritt für Schritt selbst, ohne Helfer
+(dev/ARBEITSANWEISUNG.md dient als Nachschlagewerk), teste zügig nur das Wichtigste, committe und pushe
 jeden Schritt sofort nach main.
 
 Wenn Fragen da sind, stell sie ganz am Anfang. Falls sich an meinen Supabase-Schritten
