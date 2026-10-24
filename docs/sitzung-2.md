@@ -24,7 +24,7 @@ Alles ist live auf `main`. Die Schritte beziehen sich auf `docs/plan-neue-featur
 | 22 | Sit & Go | fertig |
 | 23 | Spin & Go | fertig |
 | 26 | Crash (eigene Menüseite) | fertig |
-| 27 | Reaktionsduell (eigene Menüseite, gegen Bot und mit Freunden) | fertig |
+| 27 | Reaktionsduell (eigene Menüseite, gegen Bot und mit Freunden, ⚡ Duell in der Freundesliste) | fertig |
 
 ## Was in Sitzung 2 drankommt
 
