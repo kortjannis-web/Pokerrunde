@@ -12809,20 +12809,34 @@ input.bprange[type=range]::-moz-range-thumb { width: 20px; height: 20px; border-
     return ['#daily', '#friends', '#bjf', '#profile', '#pview', '#chipdlg', '#invBan', '#askBan', '#shop', '#giftDlg', '#starView', '#starUp', '#quests', '#chestDlg', '#achView', '#end']
       .every(function (s) { var e = $(s); return !e || e.hidden; });
   }
-  function show(t) {
+  /* auch jedes andere offene Fenster (.overlay) zaehlt, damit die Meldung nie durch ein Fenster scheint */
+  function free2() { return menuFree() && !document.querySelector('#app .overlay:not([hidden])'); }
+  var curT = null;   // gerade gezeigte Meldung: { retro } oder { id }
+  function show(t, what) {
     tEl.textContent = t; tEl.classList.remove('on'); void tEl.offsetWidth; tEl.classList.add('on');
-    clearTimeout(tT); tT = setTimeout(function () { tEl.classList.remove('on'); }, 3200);
-    lastT = Date.now();
+    clearTimeout(tT); tT = setTimeout(function () { tEl.classList.remove('on'); curT = null; }, 3200);
+    lastT = Date.now(); curT = what || null;
     try { if (!navigator.userActivation || navigator.userActivation.hasBeenActive) PR.Snd.ping(); } catch (e) {}
   }
+  /* geht waehrend der Meldung ein Fenster auf (Shop, Profil ...): sofort weg; war sie erst kurz zu sehen,
+     kommt sie spaeter noch einmal */
   setInterval(function () {
-    if (Date.now() - lastT < 3700 || !menuFree()) return;
+    if (!tEl.classList.contains('on') || free2()) return;
+    clearTimeout(tT); tEl.classList.remove('on');
+    if (curT && Date.now() - lastT < 1800) {
+      if (curT.retro) retro += curT.retro;
+      else if (curT.id && S.q.indexOf(curT.id) < 0) { S.q.unshift(curT.id); save(); }
+    }
+    curT = null; lastT = 0;
+  }, 150);
+  setInterval(function () {
+    if (Date.now() - lastT < 3700 || !free2()) return;
     checks();
-    if (retro > 0) { var n = retro; retro = 0; show('🏆 ' + (n === 1 ? '1 Erfolg' : fmt(n) + ' Erfolge') + ' schon geschafft – sieh im Profil nach'); return; }
+    if (retro > 0) { var n = retro; retro = 0; show('🏆 ' + (n === 1 ? '1 Erfolg' : fmt(n) + ' Erfolge') + ' schon geschafft – sieh im Profil nach', { retro: n }); return; }
     if (!S.q.length) return;
     var id = S.q.shift(); save();
     var def = BY[id]; if (!def) return;
-    show('🏆 Erfolg: ' + def.name + (def.title ? ' · neuer Titel' : ''));
+    show('🏆 Erfolg: ' + def.name + (def.title ? ' · neuer Titel' : ''), { id: id });
   }, 900);
 
   /* ---------- Liste (Profil → Erfolge) ---------- */
