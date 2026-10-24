@@ -23,6 +23,7 @@ Alles ist live auf `main`. Die Schritte beziehen sich auf `docs/plan-neue-featur
 | 21 | Profilbild selbst gestalten | fertig |
 | 22 | Sit & Go | fertig |
 | 23 | Spin & Go | fertig |
+| 24 | **Video-Poker** „Jacks or Better“ (eigene Menüseite zwischen Roulette und Crash, Doppeln, 💡 Tipp, Statistik) | fertig (Sitzung 2) |
 | 26 | Crash (eigene Menüseite) | fertig |
 | 27 | Reaktionsduell (eigene Menüseite, gegen Bot und mit Freunden, ⚡ Duell in der Freundesliste) | fertig |
 

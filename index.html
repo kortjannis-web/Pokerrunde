@@ -1425,8 +1425,8 @@ input.bprange[type=range]::-moz-range-thumb { width: 20px; height: 20px; border-
 .rlpay div { display: flex; justify-content: space-between; gap: 10px; padding: 7px 10px; border-radius: 9px; background: var(--bg); font: 600 13px var(--ui); }
 .rlpay b { color: var(--brass); white-space: nowrap; font-variant-numeric: tabular-nums; }
 #rlHelp p { margin: 10px 0 0; text-align: left; font-size: 13px; line-height: 1.5; }
-#stGame { grid-template-columns: repeat(3, 1fr); }
-#stGame button { padding: 0 4px; font-size: 13px; }
+#stGame { grid-template-columns: repeat(4, 1fr); }
+#stGame button { padding: 0 3px; font-size: 12.5px; }
 
 /* ---------- Sterne (1 Stern pro 1.000 gewonnene Chips) ---------- */
 /* Anzeige im Hauptmenue: rechts neben dem runden Shop-Knopf, unter der Profil-Pille */
@@ -2158,6 +2158,67 @@ input.bprange[type=range]::-moz-range-thumb { width: 20px; height: 20px; border-
 #rxHelp p { margin: 10px 0 0; text-align: left; font-size: 13px; line-height: 1.5; }
 .fl .fduel { flex: none; height: 34px; padding: 0 10px; font-size: 13px; }
 @media (prefers-reduced-motion: reduce) { #rxEnd.won .rxtro, .rxbtn.foul b { animation: none; } }
+/* ---------- Video-Poker: Menueseite zwischen Roulette und Crash, klassischer blauer Automat mit gelber LED-Schrift ---------- */
+:root { --vp1: #2c3fb5; --vp2: #18237a; --vp3: #0a0f3e; --vpled: #ffd84a; }
+.mbg-vp { background: radial-gradient(ellipse 70% 30% at 50% 6%, rgba(255,216,74,.12), transparent 70%), radial-gradient(ellipse at 50% 30%, #1b2a8c, var(--bg) 70%); }
+.vplogo { display: flex; justify-content: center; height: 41px; align-items: flex-end; }
+.vplogo svg { width: 96px; height: 60px; display: block; overflow: visible; margin-bottom: -6px; filter: drop-shadow(0 4px 9px rgba(0,0,0,.5)) drop-shadow(0 0 12px rgba(255,216,74,.22)); }
+
+/* ---------- Video-Poker (Spiel) ---------- */
+#vp { position: absolute; inset: 0; z-index: 58; display: flex; flex-direction: column; background: radial-gradient(120% 70% at 50% 30%, #1a2575, var(--bg) 72%); background-color: var(--bg); }
+#vpStage { position: relative; flex: 1 1 auto; min-height: 0; overflow: hidden; display: flex; flex-direction: column; align-items: center; justify-content: center; --cw: min(calc((100cqw - 78px) / 5), 72px, 9.6vh); }
+.vpm { position: relative; width: min(100%, 400px); padding: 8px 9px 10px; border-radius: 22px; background: linear-gradient(180deg, var(--vp1), var(--vp2) 55%, var(--vp3)); border: 2px solid rgba(224,170,74,.65); box-shadow: 0 22px 44px rgba(0,0,0,.55), inset 0 2px 0 rgba(255,255,255,.18), inset 0 -6px 14px rgba(0,0,0,.4); display: flex; flex-direction: column; gap: 7px; }
+.vpmarq { position: relative; height: 32px; flex: none; border-radius: 12px; display: grid; place-items: center; background: linear-gradient(180deg, #8c1f2a, #4f0d16); box-shadow: inset 0 0 0 2px rgba(224,170,74,.8), 0 4px 10px rgba(0,0,0,.4); overflow: hidden; }
+.vpmarq span { position: relative; font: 800 16px var(--display); letter-spacing: .08em; color: #f4d67f; text-shadow: 0 2px 0 #6b3d08, 0 0 12px rgba(244,214,127,.55); }
+.vpmarq::before, .vpmarq::after { content: ''; position: absolute; left: 8px; right: 8px; height: 4px; background: radial-gradient(circle, #ffe9a8 0 1.5px, transparent 2.2px) 0 0 / 11px 4px repeat-x; opacity: .85; }
+.vpmarq::before { top: 3px; } .vpmarq::after { bottom: 3px; }
+.vpm.won .vpmarq::before, .vpm.won .vpmarq::after { animation: bulbs .25s steps(2) infinite; }
+/* Auszahltabelle in Muenzen: aktuelle Spalte rot, Treffer blinkt */
+.vppay { display: flex; flex-direction: column; gap: 1px; padding: 5px 5px; border-radius: 10px; background: #0a1150; box-shadow: inset 0 2px 8px rgba(0,0,0,.7), 0 0 0 1px rgba(224,170,74,.3); }
+.vppr { display: grid; grid-template-columns: minmax(0, 1fr) repeat(5, 12.5%); align-items: center; height: 15px; border-radius: 4px; font: 700 11px/15px var(--ui); color: var(--vpled); text-transform: uppercase; letter-spacing: .01em; }
+.vppr span { overflow: hidden; white-space: nowrap; text-overflow: ellipsis; padding-left: 4px; }
+.vppr b { text-align: right; padding-right: 4px; font-weight: 800; font-variant-numeric: tabular-nums; }
+.vppr b.on { background: rgba(205,38,38,.6); color: #fff; }
+.vppr.hit { background: rgba(255,216,74,.24); color: #fff; animation: vpblink .5s steps(2) 6; }
+@keyframes vpblink { 50% { background: transparent; } }
+/* Bildschirm mit den fuenf Karten, darueber die Schilder HALTEN / DEALER / DU */
+.vpscr { position: relative; padding: 4px 4px 8px; border-radius: 12px; background: radial-gradient(120% 90% at 50% 20%, #1d2fa8, #0b136a 70%); box-shadow: inset 0 2px 10px rgba(0,0,0,.6), 0 0 0 1px rgba(224,170,74,.3); }
+.vpmsg { height: 20px; text-align: center; font: 800 13px/20px var(--ui); color: var(--vpled); text-shadow: 0 0 8px rgba(255,216,74,.45); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; padding: 0 4px; }
+.vpmsg b { color: #fff; }
+.vpcards { display: flex; justify-content: center; gap: 6px; margin-top: 3px; }
+.vpc { position: relative; flex: none; padding: 0; border: 0; background: none; display: flex; flex-direction: column; align-items: center; gap: 4px; -webkit-tap-highlight-color: transparent; touch-action: manipulation; }
+.vphold { height: 15px; padding: 0 5px; border-radius: 4px; font: 800 9.5px/15px var(--ui); letter-spacing: .08em; font-style: normal; color: #1a1004; background: var(--vpled); box-shadow: 0 0 8px rgba(255,216,74,.6); visibility: hidden; white-space: nowrap; }
+.vphold.on { visibility: visible; }
+.vphold.dl { background: #e9eefc; color: #0b136a; box-shadow: none; }
+.vpc .card { --w: var(--cw); transition: transform .15s; }
+.vpc.held .card { transform: translateY(-3px); }
+.vpc.tip .card .face { box-shadow: 0 0 0 2.5px #7fd0ff, 0 0 14px 3px rgba(127,208,255,.8); }
+.vpc .card.hl .face { box-shadow: 0 0 0 2.5px var(--brass), 0 0 16px 4px rgba(224,170,74,.85); }
+.vpc .card.dim { opacity: .45; }
+.vplcd { margin-top: 0; }
+.vplcd b.on { color: #ffe08a; text-shadow: 0 0 10px rgba(255,224,138,.7); }
+#vpToast { white-space: normal; width: max-content; max-width: 92%; text-align: center; border-radius: 16px; }
+/* Bedienung: Muenzen und Muenzwert, darunter zwei grosse Knoepfe */
+#vpCtl { flex: 0 0 auto; padding: 8px 2px 14px; display: flex; flex-direction: column; gap: 8px; }
+.vpsets { display: grid; grid-template-columns: 5fr 4fr; gap: 10px; }
+.vpsel small { display: block; font: 700 10px var(--ui); letter-spacing: .14em; text-transform: uppercase; color: var(--muted); padding-left: 2px; }
+.vpsel .seg { margin-top: 4px; gap: 4px; }
+.vpsel .seg button { height: 38px; padding: 0; border-radius: 10px; font-size: 14px; }
+.vpbtns { display: grid; grid-template-columns: 1fr 1.6fr; gap: 8px; }
+.vpbtns .btn { height: 60px; padding: 0 6px; min-width: 0; }
+.vpbtns .btn small { white-space: nowrap; overflow: hidden; text-overflow: ellipsis; max-width: 100%; }
+.vpbtns .btn span { font: 800 17px var(--ui); white-space: nowrap; }
+.vpbtns .btn:disabled { opacity: .45; }
+#vpGo.take { background: linear-gradient(180deg, #55d680, #22914b); color: #05200e; }
+#vpPause .endcard { max-height: 100%; overflow-y: auto; }
+#vpHelp p { margin: 10px 0 0; text-align: left; font-size: 13px; line-height: 1.5; }
+@media (max-height: 660px) {
+  .vpm { gap: 5px; padding-top: 6px; }
+  .vpmarq { height: 26px; } .vpmarq span { font-size: 14px; }
+  .vppr { height: 13px; line-height: 13px; font-size: 10px; }
+  .vpbtns .btn { height: 52px; }
+}
+@media (prefers-reduced-motion: reduce) { .vppr.hit, .vpm.won .vpmarq::before, .vpm.won .vpmarq::after { animation: none; } }
 </style>
 
 <div id="app">
@@ -2272,7 +2333,7 @@ input.bprange[type=range]::-moz-range-thumb { width: 20px; height: 20px; border-
       <div class="casign">
         <small>★ Willkommen im ★</small>
         <h1>CASINO</h1>
-        <p>Poker · Blackjack · Slots · Roulette<br>Crash · Reaktion · Pop the Lock</p>
+        <p>Poker · Blackjack · Roulette<br>Slots · Video-Poker · Crash<br>Reaktion · Pop the Lock</p>
         <div class="casuits" aria-hidden="true"><i>♠</i><i class="r">♥</i><i>♣</i><i class="r">♦</i></div>
       </div>
       <div class="cachips" aria-hidden="true"><i></i><i></i><i></i></div>
@@ -2320,6 +2381,11 @@ input.bprange[type=range]::-moz-range-thumb { width: 20px; height: 20px; border-
             <h1>Roulette</h1>
             <p class="menusub">Europäisch · Freunde können mitspielen</p>
           </div>
+          <div class="mpage" data-g="vp" aria-label="Video-Poker">
+            <div class="vplogo" aria-hidden="true"><svg viewBox="0 0 80 50" aria-hidden="true"><defs><linearGradient id="vpL1" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#f4d67f"/><stop offset="1" stop-color="#a2742a"/></linearGradient><linearGradient id="vpL2" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#2c48d0"/><stop offset="1" stop-color="#0b136a"/></linearGradient></defs><rect x="1" y="1" width="78" height="48" rx="8" fill="url(#vpL1)"/><rect x="3.5" y="3.5" width="73" height="43" rx="6" fill="url(#vpL2)"/><g fill="#ffd84a"><rect x="6" y="10" width="12" height="4" rx="1"/><rect x="20" y="10" width="12" height="4" rx="1"/><rect x="34" y="10" width="12" height="4" rx="1"/><rect x="48" y="10" width="12" height="4" rx="1"/><rect x="62" y="10" width="12" height="4" rx="1"/></g><g fill="#f7f2e6" stroke="rgba(0,0,0,.25)" stroke-width=".5"><rect x="6" y="17" width="12" height="17" rx="1.8"/><rect x="20" y="17" width="12" height="17" rx="1.8"/><rect x="34" y="17" width="12" height="17" rx="1.8"/><rect x="48" y="17" width="12" height="17" rx="1.8"/><rect x="62" y="17" width="12" height="17" rx="1.8"/></g><g fill="#c0352c" text-anchor="middle" style="font: 800 7px var(--display)"><text x="12" y="25">10</text><text x="26" y="25">J</text><text x="40" y="25">Q</text><text x="54" y="25">K</text><text x="68" y="25">A</text><text x="12" y="32" style="font-size:6px">♥</text><text x="26" y="32" style="font-size:6px">♥</text><text x="40" y="32" style="font-size:6px">♥</text><text x="54" y="32" style="font-size:6px">♥</text><text x="68" y="32" style="font-size:6px">♥</text></g><g fill="#ffd84a" opacity=".9"><circle cx="10" cy="41" r="1.3"/><circle cx="16" cy="41" r="1.3"/><circle cx="22" cy="41" r="1.3"/><circle cx="58" cy="41" r="1.3"/><circle cx="64" cy="41" r="1.3"/><circle cx="70" cy="41" r="1.3"/></g><rect x="29" y="38.5" width="22" height="5" rx="2.5" fill="#c0352c" stroke="#ffd84a" stroke-width=".6"/></svg></div>
+            <h1>Video-Poker</h1>
+            <p class="menusub" id="vpSub">Jacks or Better · halten und ziehen</p>
+          </div>
           <div class="mpage" data-g="crash" aria-label="Crash">
             <div class="crlogo" aria-hidden="true"><svg viewBox="0 0 64 48" aria-hidden="true"><defs><linearGradient id="crL1" x1="0" y1="1" x2="1" y2="0"><stop offset="0" stop-color="#7d6bff"/><stop offset=".55" stop-color="#ff5fa8"/><stop offset="1" stop-color="#ffd36b"/></linearGradient><linearGradient id="crL2" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#ff5fa8" stop-opacity=".45"/><stop offset="1" stop-color="#7d6bff" stop-opacity="0"/></linearGradient><linearGradient id="crL3" x1="0" y1="0" x2="1" y2="0"><stop offset="0" stop-color="#cfd6e6"/><stop offset=".45" stop-color="#ffffff"/><stop offset="1" stop-color="#9aa3b8"/></linearGradient><linearGradient id="crL4" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#fff3b0"/><stop offset=".45" stop-color="#ffb347"/><stop offset="1" stop-color="#ff5a3c" stop-opacity="0"/></linearGradient></defs><g fill="#fff"><circle cx="7" cy="8" r=".9" opacity=".8"/><circle cx="20" cy="4" r=".7" opacity=".6"/><circle cx="31" cy="12" r="1" opacity=".75"/><circle cx="14" cy="20" r=".6" opacity=".5"/><circle cx="58" cy="30" r=".8" opacity=".6"/><circle cx="60" cy="6" r=".7" opacity=".55"/><circle cx="25" cy="26" r=".5" opacity=".45"/></g><path d="M3 44.5C20 44 33 38 44 17L44 46.5L3 46.5Z" fill="url(#crL2)"/><path d="M3 44.5C20 44 33 38 44 17" fill="none" stroke="url(#crL1)" stroke-width="2.8" stroke-linecap="round"/><path d="M3 44.5C20 44 33 38 44 17" fill="none" stroke="#ffd9f0" stroke-width=".8" stroke-linecap="round" opacity=".7"/><g transform="translate(47.5 11.5) rotate(28)"><path d="M-2.3 7.2Q0 17 2.3 7.2Z" fill="url(#crL4)"/><path d="M-1.1 7Q0 12.5 1.1 7Z" fill="#fffbe6"/><path d="M-3.4 3.2L-6.6 8.6L-3.1 7.2Z" fill="#ff5a4a"/><path d="M3.4 3.2L6.6 8.6L3.1 7.2Z" fill="#ff5a4a"/><path d="M0 -10.5C4.4 -6.4 4.6 2.2 3.3 7.4L-3.3 7.4C-4.6 2.2 -4.4 -6.4 0 -10.5Z" fill="url(#crL3)" stroke="#5b6478" stroke-width=".6"/><path d="M0 -10.5C1.9 -8.8 3 -7 3.6 -5.2L-3.6 -5.2C-3 -7 -1.9 -8.8 0 -10.5Z" fill="#ff5a4a"/><circle cy="-1" r="2.1" fill="#59c3ff" stroke="#1d2b4f" stroke-width=".9"/><circle cx="-.7" cy="-1.7" r=".6" fill="#e6f7ff"/><rect x="-.7" y="7.4" width="1.4" height="1" fill="#5b6478"/></g></svg></div>
             <h1>Crash</h1>
@@ -2351,6 +2417,9 @@ input.bprange[type=range]::-moz-range-thumb { width: 20px; height: 20px; border-
         </div>
         <div data-g="rl" class="mgrp off" id="mRl">
           <button class="btn primary wide" id="rlPlay" type="button">Spielen</button>
+        </div>
+        <div data-g="vp" class="mgrp off" id="mVp">
+          <button class="btn primary wide" id="vpPlay" type="button">Spielen</button>
         </div>
         <div data-g="crash" class="mgrp off" id="mCr">
           <button class="btn primary wide" id="crPlay" type="button">Spielen</button>
@@ -2762,6 +2831,57 @@ input.bprange[type=range]::-moz-range-thumb { width: 20px; height: 20px; border-
           <p>Die Leiste oben zeigt die letzten 20 Absturzpunkte. Auf lange Sicht kommen etwa 97 % der Einsätze zurück. Mit Freunden spielt jeder mit seinem eigenen Guthaben; Bots erkennst du am Schild „Bot“.</p>
         </div>
         <button class="btn wide" id="crMenu" type="button" style="margin-top:10px">Zum Hauptmenü</button>
+      </div>
+    </div>
+  </div>
+
+  <div id="vp" hidden>
+    <header class="bjbar">
+      <span class="brand">Video-Poker</span>
+      <div class="right">
+        <div class="bank bjbank" role="status" aria-label="Dein Guthaben"><i class="bchip" aria-hidden="true"></i><span id="vpBank">0</span></div>
+        <button class="iconbtn" id="vpPauseBtn" type="button" aria-label="Pause"><svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><rect x="6" y="5" width="4" height="14" rx="1.2"/><rect x="14" y="5" width="4" height="14" rx="1.2"/></svg></button>
+      </div>
+    </header>
+    <main id="vpStage">
+      <div class="vpm" id="vpMachine">
+        <div class="vpmarq"><span>JACKS OR BETTER</span></div>
+        <div class="vppay" id="vpPay" aria-label="Auszahltabelle in Münzen"></div>
+        <div class="vpscr">
+          <div class="vpmsg" id="vpMsg" aria-live="polite"></div>
+          <div class="vpcards" id="vpCards"></div>
+        </div>
+        <div class="sllcd vplcd">
+          <div><small>Einsatz</small><b id="vpBetL">0</b></div>
+          <div><small>Gewinn</small><b id="vpWinL">0</b></div>
+        </div>
+      </div>
+      <div class="bjtoast" id="vpToast"></div>
+    </main>
+    <footer id="vpCtl">
+      <div class="vpsets">
+        <div class="vpsel"><small>Münzen</small><div class="seg" id="vpCoins" role="radiogroup" aria-label="Münzen pro Spiel"></div></div>
+        <div class="vpsel"><small>Chips pro Münze</small><div class="seg" id="vpVal" role="radiogroup" aria-label="Chips pro Münze"></div></div>
+      </div>
+      <div class="vpbtns">
+        <button class="btn" id="vpAlt" type="button"><span></span><small></small></button>
+        <button class="btn primary" id="vpGo" type="button"><span>Geben</span><small></small></button>
+      </div>
+    </footer>
+    <div id="vpPause" class="overlay" hidden>
+      <div class="endcard">
+        <h2>Pause</h2>
+        <p id="vpPauseTxt"></p>
+        <button class="btn primary wide" id="vpResume" type="button" style="margin-top:12px">Weiterspielen</button>
+        <button class="btn wide" id="vpHelpBtn" type="button" style="margin-top:10px" aria-expanded="false">Spielerklärung</button>
+        <div id="vpHelp" hidden>
+          <p>Wähle <b>Münzen</b> (1 bis 5) und <b>Chips pro Münze</b> und tippe auf <b>Geben</b>: Du bekommst 5 Karten, der Einsatz wird abgebucht.</p>
+          <p>Tippe die Karten an, die du <b>halten</b> willst (Schild „HALTEN“), dann auf <b>Ziehen</b>: Alle anderen werden einmal ausgetauscht. Ab einem Paar Buben gibt es Geld nach der Tabelle oben (pro Münze): Paar Buben oder besser 1, Zwei Paare 2, Drilling 3, Straße 4, Flush 6, Full House 9, Vierling 25, Straight Flush 50, Royal Flush 250 – mit 5 Münzen sogar 800.</p>
+          <p><b>💡 Tipp</b> zeigt dir, welche Karten man nach der besten Strategie hält. Wer immer richtig hält, bekommt auf lange Sicht etwa 99,5 % der Einsätze zurück.</p>
+          <p><b>Doppeln</b> nach einem Gewinn: Eine Karte des Dealers liegt offen, du wählst eine von vier verdeckten. Höher = Gewinn doppelt, gleich = bleibt, tiefer = weg (Ass ist am höchsten). Höchstens 5 Mal, „Gewinn nehmen“ geht jederzeit.</p>
+          <p>Schließt du die App mitten in einer Hand, liegt sie beim nächsten Öffnen genau so wieder da.</p>
+        </div>
+        <button class="btn wide" id="vpMenu" type="button" style="margin-top:10px">Zum Hauptmenü</button>
       </div>
     </div>
   </div>
@@ -6005,7 +6125,7 @@ input.bprange[type=range]::-moz-range-thumb { width: 20px; height: 20px; border-
     if (PROF.log.length > LOG_MAX) { var L = PROF.log; PROF.log = L.filter(function (e, i) { return i % 2 === 0 || i === L.length - 1; }); }
     saveProf();
   }
-  var STG = [{ k: 'poker', name: 'Poker' }, { k: 'bj', name: 'Blackjack' }, { k: 'slots', name: 'Slots' }, { k: 'rl', name: 'Roulette' }, { k: 'crash', name: 'Crash' }, { k: 'rx', name: 'Reaktion' }];
+  var STG = [{ k: 'poker', name: 'Poker' }, { k: 'bj', name: 'Blackjack' }, { k: 'slots', name: 'Slots' }, { k: 'rl', name: 'Roulette' }, { k: 'vp', name: 'Video-Poker' }, { k: 'crash', name: 'Crash' }, { k: 'rx', name: 'Reaktion' }];
   var stGame = 'poker', stPts = null, stUnit = '';
   function readJ(k) { try { return JSON.parse(localStorage.getItem(k) || 'null'); } catch (e) { return null; } }
   function signed(v) { v = Math.round(v); return (v > 0 ? '+' : v < 0 ? '−' : '±') + fmt(Math.abs(v)); }
@@ -6032,6 +6152,13 @@ input.bprange[type=range]::-moz-range-thumb { width: 20px; height: 20px; border-
         note: m ? fmt(q.w | 0) + ' Treffer · Saldo ' + signed(+q.net || 0) : 'Noch nicht Roulette gespielt.',
         pts: (readJ('pr-rllog') || []).map(function (e) { return { x: e[0], y: e[1] }; }),
         empty: 'Spiel ein paar Runden Roulette, dann siehst du hier, wie viel du gewonnen oder verloren hast.' };
+    }
+    if (g === 'vp') {
+      var v = readJ('pr-vpstats') || {}, vn = v.n | 0, vs = window.VP ? window.VP.SHORT : [];
+      return { unit: 'Spiel', tiles: [[fmt(vn), 'Spiele'], [pct(v.w | 0, vn), 'Gewinnquote'], [v.best > 0 && vs[v.best] ? vs[v.best] : '–', 'beste Hand']],
+        note: vn ? 'Saldo ' + signed(+v.net || 0) + ' · ' + fmt(v.rf | 0) + (v.rf === 1 ? ' Royal Flush' : ' Royal Flushes') + (v.bw > 0 ? ' · bester Gewinn ' + fmt(v.bw) : '') + (v.dn ? ' · ' + fmt(v.dw | 0) + ' von ' + fmt(v.dn) + ' Mal gedoppelt' : '') : 'Noch kein Video-Poker gespielt.',
+        pts: (readJ('pr-vplog') || []).map(function (e) { return { x: e[0], y: e[1] }; }),
+        empty: 'Spiel ein paar Hände Video-Poker, dann siehst du hier, wie viel du gewonnen oder verloren hast.' };
     }
     if (g === 'crash') {
       var c = readJ('pr-crstats') || {}, cn = c.n | 0, hi = +c.hi || 0;
@@ -9483,7 +9610,7 @@ input.bprange[type=range]::-moz-range-thumb { width: 20px; height: 20px; border-
   /* ---------- Hauptmenue: Wisch-Seiten, eine pro Spiel ----------
      Die Seiten stehen im HTML (#mTrack > .mpage[data-g]), dazu je eine Knopfgruppe .mgrp[data-g] und eine
      Hintergrund-Ebene .mbg-<spiel> im CSS. Reihenfolge = Reihenfolge im HTML (jetzt: Pop the Lock · Slots · Poker ·
-     Blackjack · Roulette · Crash); eine neue Seite braucht nur diese drei Teile, Punkte und Ebenen entstehen von selbst.
+     Blackjack · Roulette · Video-Poker · Crash · Reaktion); eine neue Seite braucht nur diese drei Teile, Punkte und Ebenen entstehen von selbst.
      Nach dem Ladebildschirm immer zuerst der Pokertisch, nicht das zuletzt gewaehlte Spiel.
      Fuer andere Skripte: window.PRMenu = { games: ['lock', ...], page(): Index, go(spiel, anim), idx(spiel) } */
   var menu = $('#menu'), track = $('#mTrack');
@@ -12145,13 +12272,14 @@ input.bprange[type=range]::-moz-range-thumb { width: 20px; height: 20px; border-
     var x = window.RX ? window.RX.state() : {};
     if (x.on) return { g: 'rx', code: x.code || '', ask: x.free ? 1 : 0 };
     if (window.SL && window.SL.on()) return { g: 'slots', code: '' };
+    if (window.VP && window.VP.on()) return { g: 'vp', code: '' };
     if (n.role) return { g: 'poker', code: n.code || '', ask: n.free ? 1 : 0 };
     if (n.playing) return { g: 'poker', code: '', ask: n.free ? 1 : 0 };
     return { g: 'menu', code: '' };
   }
   function cleanSt(s) {
     s = (s && typeof s === 'object') ? s : {};
-    var g = s.g === 'poker' || s.g === 'bj' || s.g === 'slots' || s.g === 'rl' || s.g === 'cr' || s.g === 'rx' ? s.g : 'menu';
+    var g = s.g === 'poker' || s.g === 'bj' || s.g === 'slots' || s.g === 'rl' || s.g === 'cr' || s.g === 'rx' || s.g === 'vp' ? s.g : 'menu';
     return { g: g, code: typeof s.code === 'string' && /^[A-Z2-9]{5}$/.test(s.code) ? s.code : '', ask: s.ask && (g === 'poker' || g === 'bj' || g === 'rl' || g === 'cr' || g === 'rx') ? 1 : 0 };
   }
   function stText(st) {
@@ -12159,6 +12287,7 @@ input.bprange[type=range]::-moz-range-thumb { width: 20px; height: 20px; border-
     var fr = st.ask && !st.code ? ' · Platz frei' : '';
     if (st.g === 'bj') return (st.code ? 'Am Blackjack-Tisch' : 'Spielt Blackjack') + fr;
     if (st.g === 'slots') return 'Spielt Slots';
+    if (st.g === 'vp') return 'Spielt Video-Poker';
     if (st.g === 'rl') return (st.code ? 'Am Roulette-Tisch' : 'Spielt Roulette') + fr;
     if (st.g === 'cr') return (st.code ? 'Im Crash-Raum' : 'Spielt Crash') + fr;
     if (st.g === 'rx') return (st.code ? 'Im Reaktionsduell' : 'Spielt Reaktion') + fr;
@@ -13045,7 +13174,7 @@ input.bprange[type=range]::-moz-range-thumb { width: 20px; height: 20px; border-
   function menuFree() {
     if ($('#menu').hidden || !$('#splash').hidden || !$('#daily').hidden) return false;
     if (window.prIdle && !window.prIdle()) return false;
-    return ['#friends', '#bjf', '#profile', '#pview', '#chipdlg', '#invBan', '#askBan', '#shop', '#giftDlg', '#starView', '#starUp', '#quests', '#chestDlg', '#achView', '#avEdit', '#tnPick', '#tnEnd'].every(function (s) { var e = $(s); return !e || e.hidden; });
+    return ['#friends', '#bjf', '#profile', '#pview', '#chipdlg', '#invBan', '#askBan', '#shop', '#giftDlg', '#starView', '#starUp', '#quests', '#chestDlg', '#achView', '#avEdit', '#tnPick', '#tnEnd', '#vpPause'].every(function (s) { var e = $(s); return !e || e.hidden; });
   }
   function showDaily() {
     var d = loadDaily(); if (d.day === today()) return;
@@ -13292,7 +13421,7 @@ input.bprange[type=range]::-moz-range-thumb { width: 20px; height: 20px; border-
   function free() {
     if ($('#menu').hidden || !$('#splash').hidden) return false;
     if (window.prIdle && !window.prIdle()) return false;
-    return ['#daily', '#friends', '#bjf', '#profile', '#pview', '#chipdlg', '#invBan', '#askBan', '#shop', '#giftDlg', '#starView', '#starUp', '#end', '#quests', '#chestDlg', '#achView', '#avEdit', '#tnPick', '#tnEnd']
+    return ['#daily', '#friends', '#bjf', '#profile', '#pview', '#chipdlg', '#invBan', '#askBan', '#shop', '#giftDlg', '#starView', '#starUp', '#end', '#quests', '#chestDlg', '#achView', '#avEdit', '#tnPick', '#tnEnd', '#vpPause']
       .every(function (s) { var e = $(s); return !e || e.hidden; });
   }
   function pendingMile() {
@@ -13417,7 +13546,7 @@ input.bprange[type=range]::-moz-range-thumb { width: 20px; height: 20px; border-
   }
   function inGame() {
     var n = PR.poker(), b = window.BJ ? window.BJ.state() : {};
-    return !!(n.playing || b.on || (window.SL && window.SL.on()) || (window.LK && window.LK.on()) || (window.RL && window.RL.on()) || (window.CR && window.CR.on()) || (window.RX && window.RX.on()));
+    return !!(n.playing || b.on || (window.SL && window.SL.on()) || (window.LK && window.LK.on()) || (window.RL && window.RL.on()) || (window.CR && window.CR.on()) || (window.RX && window.RX.on()) || (window.VP && window.VP.on()));
   }
   function fmtT(s) {
     var m = Math.floor(s / 60), h = Math.floor(m / 60);
@@ -13427,7 +13556,7 @@ input.bprange[type=range]::-moz-range-thumb { width: 20px; height: 20px; border-
   }
   function render() {
     $('#ptVal').textContent = fmtT(T.s);
-    $('#ptNote').textContent = 'insgesamt in Poker, Blackjack, Slots, Roulette, Crash und Reaktion' + (T.est >= 60 ? ' (davon ca. ' + fmtT(T.est) + ' geschätzt von vorher)' : '');
+    $('#ptNote').textContent = 'insgesamt in Poker, Blackjack, Slots, Roulette, Video-Poker, Crash und Reaktion' + (T.est >= 60 ? ' (davon ca. ' + fmtT(T.est) + ' geschätzt von vorher)' : '');
   }
   var last = Date.now();
   setInterval(function () {
@@ -13473,7 +13602,7 @@ input.bprange[type=range]::-moz-range-thumb { width: 20px; height: 20px; border-
   var CHEST = 1500;
 
   /* ---------- Aufgaben-Pool ---------- */
-  var GAMEEV = { 'poker:hand': 'poker', 'bj:round': 'bj', 'slots:spin': 'slots', 'rl:spin': 'rl', 'lock:round': 'lock', 'crash:round': 'crash', 'rx:duel': 'reaction' };
+  var GAMEEV = { 'poker:hand': 'poker', 'bj:round': 'bj', 'slots:spin': 'slots', 'rl:spin': 'rl', 'lock:round': 'lock', 'crash:round': 'crash', 'rx:duel': 'reaction', 'vp:hand': 'vp' };
   function one() { return 1; }
   function netOf(d, name) {
     if (name === 'slots:spin' || name === 'rl:spin') return (d.win | 0) - (d.bet | 0);
@@ -13692,7 +13821,7 @@ input.bprange[type=range]::-moz-range-thumb { width: 20px; height: 20px; border-
   function menuFree() {
     if ($('#menu').hidden || !$('#splash').hidden) return false;
     if (window.prIdle && !window.prIdle()) return false;
-    return ['#daily', '#friends', '#bjf', '#profile', '#pview', '#chipdlg', '#invBan', '#askBan', '#shop', '#giftDlg', '#starView', '#starUp', '#chestDlg', '#achView', '#avEdit', '#tnPick', '#tnEnd']
+    return ['#daily', '#friends', '#bjf', '#profile', '#pview', '#chipdlg', '#invBan', '#askBan', '#shop', '#giftDlg', '#starView', '#starUp', '#chestDlg', '#achView', '#avEdit', '#tnPick', '#tnEnd', '#vpPause']
       .every(function (s) { var e = $(s); return !e || e.hidden; });
   }
   function credit(chips) { var P = PR.prof(); P.bank = Math.round((P.bank || 0) + chips); PR.saveProf(); PR.renderBank(); }
@@ -14451,7 +14580,7 @@ input.bprange[type=range]::-moz-range-thumb { width: 20px; height: 20px; border-
   function menuFree() {
     if ($('#menu').hidden || !$('#splash').hidden) return false;
     if (window.prIdle && !window.prIdle()) return false;
-    return ['#daily', '#friends', '#bjf', '#profile', '#pview', '#chipdlg', '#invBan', '#askBan', '#shop', '#giftDlg', '#starView', '#starUp', '#quests', '#chestDlg', '#achView', '#avEdit', '#tnPick', '#tnEnd', '#end']
+    return ['#daily', '#friends', '#bjf', '#profile', '#pview', '#chipdlg', '#invBan', '#askBan', '#shop', '#giftDlg', '#starView', '#starUp', '#quests', '#chestDlg', '#achView', '#avEdit', '#tnPick', '#tnEnd', '#end', '#vpPause']
       .every(function (s) { var e = $(s); return !e || e.hidden; });
   }
   /* auch jedes andere offene Fenster (.overlay) zaehlt, damit die Meldung nie durch ein Fenster scheint */
@@ -17695,5 +17824,501 @@ input.bprange[type=range]::-moz-range-thumb { width: 20px; height: 20px; border-
 })();
 </script>
 
+<script>
+/* Video-Poker „Jacks or Better“ (9/6): allein am Automaten, ohne Online-Protokoll (keine Version noetig).
+   Ablauf: Geben (Einsatz = Muenzen x Chips pro Muenze, wird sofort abgebucht) -> Karten antippen = HALTEN -> Ziehen ->
+   Auszahlung nach Tabelle, pro Muenze: Royal Flush 250 (mit 5 Muenzen 800), Straight Flush 50, Vierling 25, Full House 9,
+   Flush 6, Strasse 4, Drilling 3, Zwei Paare 2, Paar Buben oder besser 1 (perfekt gespielt ca. 99,5 % Rueckfluss).
+   Doppeln nach einem Gewinn: Dealer-Karte offen, vier verdeckt, man waehlt eine; hoeher = doppelt, gleich = bleibt,
+   tiefer = weg (Ass hoch). Hoechstens 5 Versuche pro Hand, „Gewinn nehmen“ jederzeit.
+   Zufall: crypto.getRandomValues (Mischen beim Geben; Ersatzkarten erst beim Ziehen aus den 47 uebrigen; Dealer- und
+   Wahlkarte beim Doppeln). Handbewertung ueber window.Poker (eval5, catOf, made).
+   Guthaben: Einsatz beim Geben weg, Gewinn beim Nehmen gutgeschrieben (auch beim naechsten Geben oder beim Verlassen).
+   Neuladen: der Stand der Hand steht in pr-vprun und wird VOR jeder Animation geschrieben (Karten, gehaltene Karten,
+   offener Gewinn, Dealer-Karte beim Doppeln). Nach dem Neuladen liegt die Hand beim naechsten Oeffnen genau so wieder da
+   und wird zu Ende gespielt: es entstehen und verschwinden keine Chips, und durch Neuladen neu mischen geht nicht.
+   Verlassen ueber das Menue: ein offener Gewinn wird genommen, eine Hand vor dem Ziehen bleibt liegen.
+   Speicher: pr-vpstats { n, w, net, best, rf, bw, dw, dn }, pr-vplog [[Spiel, Saldo]], pr-vpset { co, cv }, pr-vprun.
+   Ereignisse: 'bet' { game: 'vp', amount }, 'win' { game: 'vp', amount, net } (genau einmal pro Spiel, nur mit Gewinn),
+   'vp:hand' { bet, win, net, cat (0 nichts, 1 Buben oder besser, 2 Zwei Paare … 8 Straight Flush, 9 Royal Flush), hand,
+   dbl (geschaffte Doppel), dblLost }, 'game:open' { game: 'vp' }; grosse Gewinne (ab Vierling) ueber PRFx.big('vp', el).
+   Schnittstelle window.VP: on(), state() { on, ph, open }, rate(karten) -> { k, v }, tip(karten) -> { h: [5 x bool], say }
+   (vereinfachte optimale 9/6-Strategie), PAY, NAMES. */
+(function () {
+  'use strict';
+  var PR = window.PR, P = window.Poker;
+  if (!PR || !P) return;
+  function $(s) { return document.querySelector(s); }
+  var vp = $('#vp');
+  if (!vp) return;
+  var Snd = PR.Snd, fmt = PR.fmt;
+  var PAY = [0, 1, 2, 3, 4, 6, 9, 25, 50, 250], ROYAL5 = 800, MAXD = 5, GIFT = 50, MINB = 5;
+  var NAMES = ['', 'Buben oder besser', 'Zwei Paare', 'Drilling', 'Straße', 'Flush', 'Full House', 'Vierling', 'Straight Flush', 'Royal Flush'];
+  var SHORT = ['–', 'Buben+', 'Zwei Paare', 'Drilling', 'Straße', 'Flush', 'Full House', 'Vierling', 'Str. Flush', 'Royal'];
+  var VALS = [1, 5, 25, 100];
+
+  function readJ(k) { try { return JSON.parse(localStorage.getItem(k) || 'null'); } catch (e) { return null; } }
+  function writeJ(k, v) { try { if (v == null) localStorage.removeItem(k); else localStorage.setItem(k, JSON.stringify(v)); } catch (e) {} }
+  function bank() { return Math.max(0, PR.prof().bank | 0); }
+
+  /* ---------- Karten und Bewertung ---------- */
+  function rnd(n) {
+    try { var a = new Uint32Array(1); window.crypto.getRandomValues(a); return a[0] % n; }
+    catch (e) { return Math.floor(Math.random() * n); }
+  }
+  /* gemischter Stapel ohne die Karten in ex */
+  function deck(ex) {
+    var d = [], k = {};
+    (ex || []).forEach(function (c) { if (c) k[c.r + '-' + c.s] = 1; });
+    for (var s = 0; s < 4; s++) for (var r = 2; r <= 14; r++) if (!k[r + '-' + s]) d.push({ r: r, s: s });
+    for (var i = d.length - 1; i > 0; i--) { var j = rnd(i + 1), t = d[i]; d[i] = d[j]; d[j] = t; }
+    return d;
+  }
+  function okCard(c) { return !!c && typeof c === 'object' && c.r === (c.r | 0) && c.r >= 2 && c.r <= 14 && c.s === (c.s | 0) && c.s >= 0 && c.s <= 3; }
+  function cc(c) { return { r: c.r, s: c.s }; }
+  /* k: Zeile der Tabelle (0 nichts … 9 Royal Flush), v: Wert aus Poker.eval5 */
+  function rate(cards) {
+    var v = P.eval5(cards), cat = P.catOf(v), top = Math.floor(v / 50625) % 15, k;
+    if (cat === 8) k = top === 14 ? 9 : 8;
+    else if (cat >= 2) k = cat;
+    else if (cat === 1) k = top >= 11 ? 1 : 0;
+    else k = 0;
+    return { k: k, v: v, cat: cat };
+  }
+  function payOf(k, co, cv) { return (k === 9 && co === 5 ? ROYAL5 : PAY[k]) * co * cv; }
+  /* welche Karten machen den Gewinn (bei Paar, Zwei Paaren, Drilling, Vierling nicht alle fuenf) */
+  function winIdx(cards, r) {
+    if (!r.k) return [];
+    if (r.k === 1 || r.k === 2 || r.k === 3 || r.k === 7) {
+      var m = P.made(cards, r.v);
+      return [0, 1, 2, 3, 4].filter(function (i) { return m.indexOf(cards[i]) >= 0; });
+    }
+    return [0, 1, 2, 3, 4];
+  }
+
+  /* ---------- Tipp: vereinfachte optimale Strategie fuer 9/6 Jacks or Better (erste passende Regel gilt) ---------- */
+  function combos(n) {
+    var out = [];
+    (function rec(st, acc) {
+      if (acc.length === n) { out.push(acc.slice()); return; }
+      for (var i = st; i < 5; i++) { acc.push(i); rec(i + 1, acc); acc.pop(); }
+    })(0, []);
+    return out;
+  }
+  var CMB = { 2: combos(2), 3: combos(3), 4: combos(4) };
+  function tip(c) {
+    if (!c || c.length !== 5 || !c.every(okCard)) return null;
+    var r = rate(c), I = [0, 1, 2, 3, 4], x;
+    function res(l, say) { var h = [false, false, false, false, false]; l.forEach(function (i) { h[i] = true; }); return { h: h, say: say }; }
+    function suited(l) { return l.every(function (i) { return c[i].s === c[l[0]].s; }); }
+    function distinct(l) { var s = {}; return l.every(function (i) { if (s[c[i].r]) return false; s[c[i].r] = 1; return true; }); }
+    function spanOk(l) {
+      if (!distinct(l)) return false;
+      var a = l.map(function (i) { return c[i].r; }), lo = a.map(function (v) { return v === 14 ? 1 : v; });
+      function sp(z) { return Math.max.apply(null, z) - Math.min.apply(null, z) <= 4; }
+      return sp(a) || sp(lo);
+    }
+    function find(n, pred) { var l = CMB[n]; for (var i = 0; i < l.length; i++) if (pred(l[i])) return l[i]; return null; }
+    function hi(i) { return c[i].r >= 11; }
+    function royalPart(l) { return suited(l) && l.every(function (i) { return c[i].r >= 10; }); }
+    var m = r.k ? winIdx(c, r) : null;
+    if (r.k >= 8) return res(I, NAMES[r.k] + ' – alles halten!');
+    if (r.k === 7) return res(m, 'Vierling halten');
+    if ((x = find(4, royalPart))) return res(x, '4 Karten zum Royal Flush halten');
+    if (r.k >= 4) return res(I, NAMES[r.k] + ' – alles halten');
+    if (r.k === 3) return res(m, 'Drilling halten');
+    if ((x = find(4, function (l) { return suited(l) && spanOk(l); }))) return res(x, '4 Karten zum Straight Flush halten');
+    if (r.k === 2) return res(m, 'Zwei Paare halten');
+    if (r.k === 1) return res(m, 'Hohes Paar halten');
+    if ((x = find(3, royalPart))) return res(x, '3 Karten zum Royal Flush halten');
+    if ((x = find(4, suited))) return res(x, '4 Karten zum Flush halten');
+    if (r.cat === 1) { var pr = P.made(c, r.v); return res(I.filter(function (i) { return pr.indexOf(c[i]) >= 0; }), 'Kleines Paar halten'); }
+    if ((x = find(4, function (l) {
+      if (!distinct(l)) return false;
+      var a = l.map(function (i) { return c[i].r; }).sort(function (p, q) { return p - q; });
+      return a[3] - a[0] === 3 && a[3] <= 13;          // offen an beiden Enden (nicht A-2-3-4, nicht B-D-K-A)
+    }))) return res(x, '4 Karten zur offenen Straße halten');
+    if ((x = find(2, function (l) { return suited(l) && hi(l[0]) && hi(l[1]); }))) return res(x, '2 hohe Karten in einer Farbe halten');
+    if ((x = find(3, function (l) { return suited(l) && spanOk(l); }))) return res(x, '3 Karten zum Straight Flush halten');
+    var H = I.filter(hi).sort(function (p, q) { return c[p].r - c[q].r; });
+    if (H.length >= 2) return res(H.slice(0, 2), H.length > 2 ? 'Die 2 niedrigsten Bildkarten/Asse halten' : '2 hohe Karten halten');
+    if ((x = find(2, function (l) {
+      var a = c[l[0]].r, b = c[l[1]].r;
+      return suited(l) && ((a === 10 && b >= 11 && b <= 13) || (b === 10 && a >= 11 && a <= 13));
+    }))) return res(x, 'Die 10 mit der Bildkarte gleicher Farbe halten');
+    if (H.length === 1) return res(H, 'Die hohe Karte halten');
+    return res([], 'Alle fünf tauschen');
+  }
+
+  /* ---------- Statistik (Profil → Statistik → Video-Poker) ---------- */
+  function addStats(s, w) {
+    var st = { n: 0, w: 0, net: 0, best: 0, rf: 0, bw: 0, dw: 0, dn: 0 }, o = readJ('pr-vpstats');
+    if (o && typeof o === 'object') Object.keys(st).forEach(function (k) { if (typeof o[k] === 'number' && isFinite(o[k])) st[k] = o[k]; });
+    var log = readJ('pr-vplog'); if (!Array.isArray(log)) log = [];
+    if (!log.length) log.push([st.n, st.net]);
+    st.n++; if (w > 0) st.w++; st.net += w - s.b; st.best = Math.max(st.best, s.k); if (s.k === 9) st.rf++;
+    st.bw = Math.max(st.bw, w - s.b); st.dw += s.dw; st.dn += s.n;
+    log.push([st.n, st.net]);
+    if (log.length > 1000) log = log.filter(function (e, i) { return i % 2 === 0 || i === log.length - 1; });
+    writeJ('pr-vpstats', st); writeJ('pr-vplog', log);
+  }
+
+  /* ---------- Zustand ----------
+     S: laufende oder zuletzt gespielte Hand { ph: 'hold' | 'win' | 'dbl' | 'idle', c: 5 Karten, h: gehalten, b: Einsatz,
+     co: Muenzen, cv: Chips pro Muenze, k: Tabellenzeile, w: offener Gewinn, n: Doppel-Versuche, dw: geschaffte Doppel,
+     d: Dealer-Karte beim Doppeln, fw: ausgezahlt (nur 'idle') }. Nur 'hold', 'win' und 'dbl' stehen in pr-vprun. */
+  var S = null, co = 5, cv = 5, busy = false, gen = 0, tipOn = null, labs = ['', '', '', '', ''], labCls = [];
+  var force = null;   // nur fuer Tests (PR_TESTHOOKS): feste Karten
+  (function () {
+    var o = readJ('pr-vpset');
+    if (o && typeof o === 'object') { if ([1, 2, 3, 4, 5].indexOf(o.co) >= 0) co = o.co; if (VALS.indexOf(o.cv) >= 0) cv = o.cv; }
+  })();
+  function saveSet() { writeJ('pr-vpset', { co: co, cv: cv }); }
+  function saveRun() {
+    if (!S || S.ph === 'idle') { writeJ('pr-vprun', null); return; }
+    writeJ('pr-vprun', { ph: S.ph, c: S.c, h: S.h, b: S.b, co: S.co, cv: S.cv, k: S.k, w: S.w, n: S.n, dw: S.dw, d: S.d, at: Date.now() });
+  }
+  function loadRun() {
+    var o = readJ('pr-vprun');
+    if (!o || typeof o !== 'object' || ['hold', 'win', 'dbl'].indexOf(o.ph) < 0 || !Array.isArray(o.c) || o.c.length !== 5 || !o.c.every(okCard)) return null;
+    var b = Math.round(+o.b || 0);
+    if (!(b > 0)) return null;
+    var s = {
+      ph: o.ph, c: o.c.map(cc), h: [0, 1, 2, 3, 4].map(function (i) { return !!(Array.isArray(o.h) && o.h[i]); }), b: b,
+      co: [1, 2, 3, 4, 5].indexOf(o.co) >= 0 ? o.co : 1, cv: VALS.indexOf(o.cv) >= 0 ? o.cv : 1,
+      k: 0, w: Math.max(0, Math.round(+o.w || 0)), n: Math.max(0, o.n | 0), dw: Math.max(0, o.dw | 0), d: okCard(o.d) ? cc(o.d) : null
+    };
+    s.k = s.ph === 'hold' ? 0 : rate(s.c).k;
+    if (s.ph === 'dbl' && !s.d) s.ph = 'win';
+    if (s.ph !== 'hold' && !(s.w > 0)) return null;
+    return s;
+  }
+  S = loadRun();
+
+  /* Hand fertig: Gewinn gutschreiben, Statistik, Glas und Ereignisse (genau einmal pro Spiel) */
+  function finish(w) {
+    var s = S;
+    if (!s || s.ph === 'idle') return;
+    w = Math.max(0, Math.round(w || 0));
+    if (w > 0) { var Pf = PR.prof(); Pf.bank = (Pf.bank | 0) + w; PR.saveProf(); PR.renderBank(); }
+    s.ph = 'idle'; s.fw = w; s.w = 0;
+    writeJ('pr-vprun', null);
+    var net = w - s.b;
+    addStats(s, w);
+    if (net > 0 && window.JAR) window.JAR.add(net);
+    if (w > 0) PR.emit('win', { game: 'vp', amount: w, net: net });
+    PR.emit('vp:hand', { bet: s.b, win: w, net: net, cat: s.k, hand: NAMES[s.k], dbl: s.dw, dblLost: s.k > 0 && w === 0 });
+    sub();
+  }
+  function broke() {
+    var Pf = PR.prof();
+    if ((Pf.bank | 0) < MINB && (!S || S.ph === 'idle')) { Pf.bank = GIFT; PR.saveProf(); PR.renderBank(); toast('Pleite – du bekommst ' + GIFT + ' Chips zum Weiterspielen'); }
+  }
+
+  /* ---------- Oberflaeche ---------- */
+  var toastT = 0;
+  function toast(t) { var el = $('#vpToast'); el.textContent = t; el.classList.add('on'); clearTimeout(toastT); toastT = setTimeout(function () { el.classList.remove('on'); }, 2600); }
+  function msg(h) { $('#vpMsg').innerHTML = h || ''; }
+  function later(g, ms, fn) { setTimeout(function () { if (g === gen) fn(); }, ms); }
+  function sub() { var el = $('#vpSub'); if (el) el.textContent = S && S.ph !== 'idle' ? 'Deine offene Hand wartet auf dich' : 'Jacks or Better · halten und ziehen'; }
+  /* Auszahltabelle: Zeilen Royal Flush bis Buben oder besser, Spalten 1 bis 5 Muenzen */
+  var payRows = [];
+  (function () {
+    var host = $('#vpPay');
+    for (var k = 9; k >= 1; k--) {
+      var row = document.createElement('div'); row.className = 'vppr';
+      var nm = document.createElement('span'); nm.textContent = NAMES[k]; row.appendChild(nm);
+      for (var c = 1; c <= 5; c++) { var b = document.createElement('b'); b.textContent = String((k === 9 && c === 5 ? ROYAL5 : PAY[k]) * c); row.appendChild(b); }
+      host.appendChild(row); payRows[k] = row;
+    }
+  })();
+  function hitRow(k) {
+    payRows.forEach(function (r, i) { if (r) r.classList.remove('hit'); });
+    if (k && payRows[k]) { void payRows[k].offsetWidth; payRows[k].classList.add('hit'); }
+  }
+  /* fuenf Kartenplaetze: Knopf mit Schild und Karte */
+  var slots = [];
+  (function () {
+    var host = $('#vpCards');
+    for (var i = 0; i < 5; i++) {
+      var b = document.createElement('button'); b.type = 'button'; b.className = 'vpc'; b.setAttribute('aria-label', 'Karte ' + (i + 1));
+      var lab = document.createElement('em'); lab.className = 'vphold'; lab.textContent = 'HALTEN';
+      var card = PR.cardEl('down');
+      b.appendChild(lab); b.appendChild(card); host.appendChild(b);
+      b.addEventListener('click', onCard.bind(null, i));
+      slots.push({ b: b, lab: lab, card: card });
+    }
+  })();
+  function setLabs(l, cls) { labs = l.slice(); labCls = (cls || []).slice(); }
+  function drawLabs() {
+    var hold = S && S.ph === 'hold';
+    slots.forEach(function (s, i) {
+      var t = hold ? (S.h[i] ? 'HALTEN' : '') : labs[i];
+      s.lab.textContent = t || 'HALTEN';
+      s.lab.classList.toggle('on', !!t);
+      s.lab.classList.toggle('dl', !hold && labCls[i] === 'dl');
+      s.b.classList.toggle('held', !!(hold && S.h[i]));
+      s.b.classList.toggle('tip', !!(hold && tipOn && tipOn.h[i]));
+      s.b.setAttribute('aria-pressed', hold && S.h[i] ? 'true' : 'false');
+    });
+  }
+  function setBtn(el, a, b, dis, cls) {
+    el.querySelector('span').textContent = a; el.querySelector('small').textContent = b || '';
+    el.disabled = !!dis; el.className = 'btn' + (cls ? ' ' + cls : '');
+  }
+  function view() {
+    var ph = S ? S.ph : 'idle', idle = ph === 'idle';
+    $('#vpBank').textContent = fmt(bank());
+    var col = idle ? co : S.co;
+    payRows.forEach(function (r) { if (!r) return; [].forEach.call(r.querySelectorAll('b'), function (b, i) { b.classList.toggle('on', i === col - 1); }); });
+    $('#vpBetL').textContent = fmt(idle ? co * cv : S.b);
+    var wl = $('#vpWinL'), wv = idle ? (S && S.fw) || 0 : S.w;
+    wl.textContent = fmt(wv); wl.classList.toggle('on', !idle && S.w > 0);
+    var dis = !idle || busy;
+    PR.seg($('#vpCoins'), [1, 2, 3, 4, 5], co, String, function (v) { if (dis) return; co = v; saveSet(); Snd.chip(1, 0, true); view(); }, function () { return dis; });
+    PR.seg($('#vpVal'), VALS, cv, function (v) { return fmt(v); }, function (v) { if (dis) return; cv = v; saveSet(); Snd.chip(1, 0, true); view(); }, function () { return dis; });
+    var alt = $('#vpAlt'), go = $('#vpGo');
+    if (ph === 'hold') {
+      var nh = S.h.filter(Boolean).length;
+      setBtn(alt, '💡 Tipp', 'beste Karten zeigen', busy);
+      setBtn(go, 'Ziehen', nh ? nh + (nh === 1 ? ' Karte' : ' Karten') + ' gehalten' : 'alle fünf tauschen', busy, 'primary');
+    } else if (ph === 'win') {
+      setBtn(alt, 'Doppeln', S.n >= MAXD ? 'schon ' + MAXD + ' Mal' : (S.n ? S.n + '/' + MAXD + ' · ' : '') + 'höher gewinnt', busy || S.n >= MAXD);
+      setBtn(go, 'Gewinn nehmen', '+' + fmt(S.w), busy, 'primary take');
+    } else if (ph === 'dbl') {
+      setBtn(alt, 'Nehmen', '+' + fmt(S.w) + ' sichern', busy);
+      setBtn(go, 'Karte wählen', 'höher als der Dealer?', true, 'primary');
+    } else {
+      setBtn(alt, 'Max. Einsatz', '5 Münzen · ' + fmt(5 * cv), busy || bank() < 5 * cv);
+      setBtn(go, 'Geben', 'Einsatz ' + fmt(co * cv), busy || bank() < co * cv, 'primary');
+    }
+    drawLabs();
+  }
+  /* Karten so zeigen, wie die Hand gerade steht (Oeffnen, Neuladen) */
+  function showHand() {
+    slots.forEach(function (s) { s.card.classList.remove('hl', 'dim'); });
+    if (!S) { slots.forEach(function (s) { s.card.classList.add('down'); }); setLabs(['', '', '', '', '']); return; }
+    if (S.ph === 'dbl') {
+      PR.setFace(slots[0].card, S.d); slots[0].card.classList.remove('down');
+      for (var i = 1; i < 5; i++) slots[i].card.classList.add('down');
+      setLabs(['DEALER', '', '', '', ''], ['dl']);
+      return;
+    }
+    S.c.forEach(function (c, i) { PR.setFace(slots[i].card, c); slots[i].card.classList.remove('down'); });
+    setLabs(['', '', '', '', '']);
+    if (S.ph === 'win') { var r = rate(S.c), ix = winIdx(S.c, r); slots.forEach(function (s, i) { s.card.classList.toggle('hl', ix.indexOf(i) >= 0); s.card.classList.toggle('dim', ix.indexOf(i) < 0); }); }
+  }
+  function beep(on) { Snd.fx(function (a) { a.tone(a.t, on ? 990 : 660, 0.06, 0.045, 'square'); }); }
+  function machineWon() { var m = $('#vpMachine'); m.classList.add('won'); later(gen, 2200, function () { m.classList.remove('won'); }); }
+
+  /* ---------- Spielzuege ---------- */
+  function deal(max) {
+    if (busy) return;
+    if (S && (S.ph === 'win' || S.ph === 'dbl')) take(true);
+    if (S && S.ph !== 'idle') return;
+    if (max && co !== 5) { co = 5; saveSet(); }
+    var b = co * cv;
+    if (bank() < b) { toast('Zu wenig Chips für ' + fmt(b) + ' Einsatz'); broke(); view(); return; }
+    var cards = force && force.deal ? force.deal.map(cc) : deck().slice(0, 5);
+    if (force) force.deal = null;
+    var Pf = PR.prof(); Pf.bank = (Pf.bank | 0) - b; PR.saveProf(); PR.renderBank();
+    S = { ph: 'hold', c: cards, h: [false, false, false, false, false], b: b, co: co, cv: cv, k: 0, w: 0, n: 0, dw: 0, d: null };
+    saveRun();
+    PR.emit('bet', { game: 'vp', amount: b });
+    tipOn = null; sub();
+    Snd.chip(2, 0);
+    busy = true; var g = ++gen;
+    slots.forEach(function (s) { s.card.classList.add('down'); s.card.classList.remove('hl', 'dim'); });
+    setLabs(['', '', '', '', '']); hitRow(0); msg('');
+    view();
+    later(g, 260, function () {
+      S.c.forEach(function (c, i) { PR.setFace(slots[i].card, c); later(g, i * 90, function () { slots[i].card.classList.remove('down'); Snd.card(0); }); });
+      later(g, 4 * 90 + 430, function () {
+        busy = false;
+        var r = rate(S.c);
+        msg(r.k ? '<b>' + NAMES[r.k] + '</b> auf der Hand – halten!' : 'Karten antippen zum Halten, dann ziehen');
+        view();
+      });
+    });
+  }
+  function onCard(i) {
+    if (busy || !S) return;
+    if (S.ph === 'hold') { S.h[i] = !S.h[i]; saveRun(); beep(S.h[i]); view(); }
+    else if (S.ph === 'dbl' && i > 0) pick(i);
+  }
+  function showTip() {
+    if (busy || !S || S.ph !== 'hold') return;
+    var t = tip(S.c);
+    if (!t) return;
+    tipOn = t;
+    var same = t.h.every(function (h, i) { return h === S.h[i]; });
+    msg('💡 ' + t.say + (same ? ' – passt so!' : ''));
+    Snd.fx(function (a) { a.tone(a.t, 1320, 0.08, 0.04, 'sine'); a.tone(a.t + 0.08, 1760, 0.12, 0.035, 'sine'); });
+    view();
+  }
+  function draw() {
+    if (busy || !S || S.ph !== 'hold') return;
+    var rest = deck(S.c), j = 0, ch = [];
+    for (var i = 0; i < 5; i++) {
+      if (S.h[i]) continue;
+      S.c[i] = force && force.draw && force.draw.length ? cc(force.draw.shift()) : rest[j++];
+      ch.push(i);
+    }
+    var r = rate(S.c);
+    S.k = r.k; S.w = payOf(r.k, S.co, S.cv);
+    var w = S.w;
+    if (w > 0) { S.ph = 'win'; S.n = 0; saveRun(); } else finish(0);
+    tipOn = null;
+    busy = true; var g = ++gen;
+    ch.forEach(function (i) { slots[i].card.classList.add('down'); });
+    view();
+    later(g, ch.length ? 280 : 60, function () {
+      ch.forEach(function (i, n) { PR.setFace(slots[i].card, S.c[i]); later(g, n * 90, function () { slots[i].card.classList.remove('down'); Snd.card(0); }); });
+      later(g, ch.length ? (ch.length - 1) * 90 + 460 : 0, function () {
+        busy = false;
+        var ix = winIdx(S.c, r);
+        setLabs(['', '', '', '', '']);
+        slots.forEach(function (s, i) { s.card.classList.toggle('hl', ix.indexOf(i) >= 0); s.card.classList.toggle('dim', r.k > 0 && ix.indexOf(i) < 0); });
+        if (r.k) {
+          hitRow(r.k); machineWon();
+          msg(NAMES[r.k] + '! <b>+' + fmt(w) + '</b>');
+          if (r.k === 1) Snd.chip(3, 0); else Snd.win();
+          if (r.k >= 7) {
+            if (window.PRFx) window.PRFx.big('vp', $('#vpCards'));
+            if (window.PRF && w >= 100) window.PRF.brag('big', w, NAMES[r.k]);
+          }
+        } else msg('Leider nichts – nochmal?');
+        if (S.ph === 'idle') broke();
+        view();
+      });
+    });
+  }
+  function take(quiet) {
+    if (!S || (S.ph !== 'win' && S.ph !== 'dbl')) return;
+    var w = S.w;
+    finish(w);
+    if (!quiet) { Snd.chip(3, 0); msg('Gewinn genommen: <b>+' + fmt(w) + '</b>'); setLabs(labs, labCls); view(); }
+  }
+  function dblStart() {
+    if (busy || !S || S.ph !== 'win' || S.n >= MAXD) return;
+    S.d = force && force.d ? cc(force.d) : deck()[0];
+    if (force) force.d = null;
+    S.ph = 'dbl'; saveRun();
+    busy = true; var g = ++gen;
+    hitRow(0);
+    slots.forEach(function (s) { s.card.classList.add('down'); s.card.classList.remove('hl', 'dim'); });
+    setLabs(['DEALER', '', '', '', ''], ['dl']); msg('Doppeln: <b>' + fmt(S.w) + '</b> stehen auf dem Spiel');
+    view();
+    later(g, 420, function () {
+      PR.setFace(slots[0].card, S.d); slots[0].card.classList.remove('down'); Snd.flip(0);
+      later(g, 480, function () { busy = false; msg('Höher als der Dealer? Wähle eine Karte'); view(); });
+    });
+  }
+  function pick(i) {
+    if (busy || !S || S.ph !== 'dbl' || i < 1 || i > 4) return;
+    var dd = S.d, rest = deck([dd]), pc = force && force.pick ? cc(force.pick) : rest[0];
+    if (force) force.pick = null;
+    var others = rest.filter(function (c) { return c.r !== pc.r || c.s !== pc.s; }).slice(0, 3);
+    var res = pc.r > dd.r ? 1 : pc.r === dd.r ? 0 : -1;
+    S.n++;
+    if (res > 0) { S.w *= 2; S.dw++; }
+    if (res < 0) finish(0); else { S.ph = 'win'; S.d = null; saveRun(); }
+    var w = S.ph === 'win' ? S.w : 0;
+    busy = true; var g = ++gen;
+    PR.setFace(slots[i].card, pc); slots[i].card.classList.remove('down'); Snd.flip(0);
+    var L = ['DEALER', '', '', '', '']; L[i] = 'DU'; setLabs(L, ['dl']);
+    view();
+    later(g, 650, function () {
+      var o = 0;
+      for (var j = 1; j < 5; j++) if (j !== i) { PR.setFace(slots[j].card, others[o++]); slots[j].card.classList.add('dim'); slots[j].card.classList.remove('down'); }
+      if (res > 0) {
+        slots[i].card.classList.add('hl'); machineWon(); Snd.win();
+        msg('Höher! Gewinn verdoppelt: <b>' + fmt(w) + '</b>' + (S.n >= MAXD ? ' – jetzt nehmen' : ''));
+      } else if (res === 0) {
+        Snd.chip(1, 0, true);
+        msg('Gleich hoch – dein Gewinn bleibt: <b>' + fmt(w) + '</b>');
+      } else {
+        slots[0].card.classList.add('hl'); Snd.knock();
+        msg('Tiefer – der Gewinn ist weg');
+        broke();
+      }
+      later(g, 300, function () { busy = false; view(); });
+    });
+  }
+
+  $('#vpGo').addEventListener('click', function () {
+    Snd.unlock();
+    if (busy) return;
+    var ph = S ? S.ph : 'idle';
+    if (ph === 'hold') draw(); else if (ph === 'win') take(false); else if (ph === 'idle') deal(false);
+  });
+  $('#vpAlt').addEventListener('click', function () {
+    Snd.unlock();
+    if (busy) return;
+    var ph = S ? S.ph : 'idle';
+    if (ph === 'idle') deal(true); else if (ph === 'hold') showTip(); else if (ph === 'win') dblStart(); else if (ph === 'dbl') take(false);
+  });
+
+  /* ---------- Oeffnen und Verlassen ---------- */
+  function open() {
+    Snd.unlock();
+    ['#menu', '#profile', '#pview', '#friends', '#bjf'].forEach(function (s) { var el = $(s); if (el) el.hidden = true; });
+    var was = vp.hidden;
+    vp.hidden = false; $('#vpPause').hidden = true; $('#vpToast').classList.remove('on');
+    if (was) PR.emit('game:open', { game: 'vp' });
+    gen++; busy = false; tipOn = null;
+    if (!S || S.ph === 'idle') { var r = loadRun(); if (r) S = r; }
+    if (S && S.ph !== 'idle') {
+      showHand(); hitRow(0);
+      msg(S.ph === 'hold' ? 'Deine Hand von vorhin – halten und ziehen' : S.ph === 'dbl' ? 'Höher als der Dealer? Wähle eine Karte' : NAMES[S.k] + '! <b>+' + fmt(S.w) + '</b> warten auf dich');
+    } else if (!S) { showHand(); msg('Einsatz wählen und Geben drücken'); }
+    broke();
+    view();
+  }
+  function leave() {
+    gen++; busy = false;
+    if (S && (S.ph === 'win' || S.ph === 'dbl')) take(true);
+    vp.hidden = true; $('#vpPause').hidden = true; $('#menu').hidden = false;
+    PR.renderBank(); sub();
+  }
+  $('#vpPlay').addEventListener('click', open);
+  function help(on) { $('#vpHelp').hidden = !on; $('#vpHelpBtn').setAttribute('aria-expanded', on ? 'true' : 'false'); $('#vpHelpBtn').textContent = on ? 'Erklärung schließen' : 'Spielerklärung'; }
+  $('#vpHelpBtn').addEventListener('click', function () { help($('#vpHelp').hidden); });
+  $('#vpPauseBtn').addEventListener('click', function () {
+    var ph = S ? S.ph : 'idle';
+    $('#vpPauseTxt').textContent = ph === 'hold' ? 'Deine Hand bleibt liegen, bis du wiederkommst – der Einsatz ist schon bezahlt.'
+      : ph === 'win' || ph === 'dbl' ? 'Gehst du jetzt, wird dein Gewinn von ' + fmt(S.w) + ' Chips gutgeschrieben.'
+      : 'Deine Chips sind in deinem Guthaben gespeichert.';
+    help(false);
+    $('#vpPause').hidden = false;
+  });
+  $('#vpResume').addEventListener('click', function () { $('#vpPause').hidden = true; });
+  $('#vpMenu').addEventListener('click', leave);
+  if (window.PRCos && window.PRCos.scope) window.PRCos.scope(vp);   // Kartenruecken aus dem Shop
+  sub();
+
+  /* Update-Pruefung: nicht neu laden, solange Video-Poker offen ist */
+  var idle = window.prIdle;
+  window.prIdle = function () { return (!idle || idle()) && vp.hidden; };
+
+  /* ---------- Erfolge und Aufgaben ---------- */
+  if (window.PRAch) [
+    { id: 'vp-royal', icon: '👑', name: 'Royal!', desc: 'Hol dir beim Video-Poker einen Royal Flush', ev: 'vp:hand', f: function (d) { return d.cat === 9; } },
+    { id: 'vp-dbl5', icon: '⏫', name: 'Doppelt gemoppelt', desc: 'Doppele beim Video-Poker 5 Mal in einer Hand erfolgreich', ev: 'vp:hand', f: function (d) { return d.dbl >= 5; } },
+    { id: 'vp-500', icon: '🕹️', name: 'Automatenkönig', desc: 'Spiele 500 Hände Video-Poker', goal: 500, title: 'Automatenkönig', ev: 'vp:hand', f: function () { return 1; } }
+  ].forEach(function (d) { window.PRAch.add(d); });
+  if (window.PRQ && window.PRQ.addQuest) {
+    window.PRQ.addQuest({ id: 'vp10', d: 'e', t: 'Spiele 10 Hände Video-Poker', n: 10, ev: 'vp:hand', f: function () { return 1; } });
+    window.PRQ.addQuest({ id: 'vp3k', d: 'm', t: 'Hol dir beim Video-Poker einen Drilling oder besser', n: 1, ev: 'vp:hand', f: function (d) { return d.cat >= 3 ? 1 : 0; } });
+  }
+
+  window.VP = {
+    on: function () { return !vp.hidden; },
+    state: function () { return { on: !vp.hidden, ph: S ? S.ph : 'idle', open: !!(S && S.ph !== 'idle') }; },
+    rate: rate, tip: tip, PAY: PAY, NAMES: NAMES, SHORT: SHORT
+  };
+  if (window.PR_TESTHOOKS) window.VP._dbg = { S: function () { return S; }, force: function (o) { force = o; }, busy: function () { return busy; } };
+})();
+</script>
 <script>if('serviceWorker' in navigator&&location.protocol.startsWith('http')){addEventListener('load',function(){navigator.serviceWorker.register('sw.js',{updateViaCache:'none'}).catch(function(){})})}</script>
 </body></html>
