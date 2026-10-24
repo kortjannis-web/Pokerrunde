@@ -664,8 +664,12 @@ input.bprange[type=range]::-moz-range-thumb { width: 20px; height: 20px; border-
 
 /* ---------- Hauptmenue: zur Seite wischen = Poker <-> Blackjack ---------- */
 #menu { touch-action: pan-y; grid-template-columns: minmax(0, 1fr); }
-#menu::before { content: ''; position: absolute; inset: 0; z-index: 0; pointer-events: none; background: radial-gradient(ellipse at 50% 30%, var(--bj2), var(--bg) 70%); opacity: var(--mix, 0); transition: opacity .4s ease; }
-#menu.drag::before { transition: none; }
+/* Hintergrund je Seite: eigene Ebene (.mbg.mbg-<spiel>, von JS aus den Seiten erzeugt), Deckkraft folgt dem Wischen.
+   Poker (Mitte) ist der Grund von #menu selbst; je weiter weg eine Seite, desto weiter oben liegt ihre Ebene. */
+.mbgs { position: absolute; inset: 0; z-index: 0; pointer-events: none; }
+.mbg { position: absolute; inset: 0; opacity: 0; transition: opacity .4s ease; background: radial-gradient(ellipse at 50% 30%, var(--mbg, var(--felt2)), var(--bg) 70%); }
+#menu.drag .mbg { transition: none; }
+.mbg-bj { --mbg: var(--bj2); }
 #menu .menucard { position: relative; z-index: 1; }
 .mswipe { overflow: hidden; margin: -10px -24px 0; padding-top: 10px; cursor: grab; }   /* oben Luft, sonst schneidet der Rand die schraege Ass-Karte ab */
 .mtrack { display: flex; transition: transform .42s cubic-bezier(.2,.9,.3,1); }
@@ -933,8 +937,7 @@ input.bprange[type=range]::-moz-range-thumb { width: 20px; height: 20px; border-
 #bjf { position: absolute; inset: 0; z-index: 70; overflow-y: auto; padding: 16px 20px 28px; background: radial-gradient(ellipse at 50% 0%, var(--bj2), var(--bg) 60%); }
 
 /* ---------- Hauptmenue: dritte Seite Slots ---------- */
-#menu::after { content: ''; position: absolute; inset: 0; z-index: 0; pointer-events: none; background: radial-gradient(ellipse at 50% 30%, var(--sl2), var(--bg) 70%); opacity: var(--mix2, 0); transition: opacity .4s ease; }
-#menu.drag::after { transition: none; }
+.mbg-slots { --mbg: var(--sl2); }
 .sllogo { display: flex; justify-content: center; gap: 5px; height: 41px; align-items: flex-end; }
 .sllogo i { width: 28px; height: 38px; border-radius: 5px; background: linear-gradient(180deg, #cfc6b0, #f7f2e6 30%, #f7f2e6 70%, #cfc6b0); color: #d8322f; font: 800 26px/38px var(--display); font-style: normal; text-align: center; box-shadow: 0 4px 10px rgba(0,0,0,.45), inset 0 0 0 1.5px rgba(224,170,74,.7); }
 .sllogo i:nth-child(2) { transform: translateY(-3px); }
@@ -1228,8 +1231,7 @@ input.bprange[type=range]::-moz-range-thumb { width: 20px; height: 20px; border-
 
 /* ---------- Pop the Lock: vierte Menueseite (links neben Slots), blau ---------- */
 :root { --lk1: #2b5fae; --lk2: #173466; --lk3: #0a1631; }
-.mbg3 { position: absolute; inset: 0; z-index: 1; pointer-events: none; background: radial-gradient(ellipse at 50% 30%, var(--lk2), var(--bg) 70%); opacity: var(--mix3, 0); transition: opacity .4s ease; }
-#menu.drag .mbg3 { transition: none; }
+.mbg-lock { --mbg: var(--lk2); }
 #menu .menucard { z-index: 1; }
 .lklogo { display: flex; justify-content: center; height: 41px; align-items: flex-end; }
 .lklogo svg { width: 36px; height: 44px; display: block; filter: drop-shadow(0 4px 6px rgba(0,0,0,.45)); }
@@ -1338,8 +1340,7 @@ input.bprange[type=range]::-moz-range-thumb { width: 20px; height: 20px; border-
 #lkHelp p { text-align: left; font-size: 14px; margin-bottom: 12px; }
 /* ---------- Hauptmenue: fuenfte Seite Roulette (rechts neben Blackjack), petrolblau ---------- */
 :root { --rl1: #23637d; --rl2: #15435a; --rl3: #0a2533; --rlred: #b8322a; --rlblk: #1b1d20; --rlgrn: #2f8a4e; }
-.mbgrl { position: absolute; inset: 0; z-index: 1; pointer-events: none; background: radial-gradient(ellipse at 50% 30%, var(--rl2), var(--bg) 70%); opacity: var(--mix4, 0); transition: opacity .4s ease; }
-#menu.drag .mbgrl { transition: none; }
+.mbg-rl { --mbg: var(--rl2); }
 .rllogo { display: flex; justify-content: center; height: 41px; align-items: flex-end; }
 /* Kessel von oben: Holzrand, 37 Taschen in Rad-Reihenfolge mit Goldstegen, goldenes Drehkreuz, Kugel in einer Tasche */
 .rllogo svg { width: 46px; height: 46px; display: block; filter: drop-shadow(0 4px 7px rgba(0,0,0,.5)); }
@@ -2107,62 +2108,55 @@ input.bprange[type=range]::-moz-range-thumb { width: 20px; height: 20px; border-
     <button class="qbtn" id="qBtn" type="button" aria-label="Tägliche Aufgaben öffnen"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M9 4h6v3H9z"/><path d="M15 5.5h2.5A1.5 1.5 0 0 1 19 7v12.5a1.5 1.5 0 0 1-1.5 1.5h-11A1.5 1.5 0 0 1 5 19.5V7a1.5 1.5 0 0 1 1.5-1.5H9"/><path d="M8.5 13.5l2.3 2.3 4.7-4.8"/></svg><i class="qdot" id="qDot" hidden></i></button>
     <div class="tomchip" id="tomChip" role="status" aria-label="Deine Tomaten"><i aria-hidden="true">🍅</i><span id="tomVal">0</span></div>
     <button class="starbar" id="starBar" type="button" aria-label="Sterne ansehen"><b id="starN">⭐ 0</b><span class="xpt"><i id="starFill"></i></span></button>
-    <div class="mbg3" aria-hidden="true"></div>
-    <div class="mbgrl" aria-hidden="true"></div>
+    <div class="mbgs" id="mBgs" aria-hidden="true"></div>
     <div class="menucard">
       <div class="mswipe" id="mSwipe">
         <div class="mtrack" id="mTrack">
-          <div class="mpage" aria-label="Pop the Lock">
+          <div class="mpage" data-g="lock" aria-label="Pop the Lock">
             <div class="lklogo" aria-hidden="true"><svg viewBox="0 0 40 48" aria-hidden="true"><path d="M10 21V14a10 10 0 0 1 20 0v7" fill="none" stroke="#39b6ff" stroke-width="3.5"/><path d="M10 21V14a10 10 0 0 1 20 0v7" fill="none" stroke="#c8f0ff" stroke-width="1.2"/><rect x="2" y="20" width="36" height="26" rx="8" fill="#0b1630" stroke="#39b6ff" stroke-width="2.4"/><circle cx="20" cy="33" r="8" fill="none" stroke="#1f4f94" stroke-width="3.5"/><circle cx="20" cy="25" r="2.2" fill="#ffe08a"/><rect x="25.4" y="25.2" width="2.6" height="6" rx="1.3" fill="#ff5a4a" transform="rotate(45 26.7 28.2)"/></svg></div>
             <h1>Pop the Lock</h1>
             <p class="menusub" id="lkSub">Im richtigen Moment drücken · kostenlos</p>
           </div>
-          <div class="mpage" aria-label="Slots">
+          <div class="mpage" data-g="slots" aria-label="Slots">
             <div class="sllogo" aria-hidden="true"><i>7</i><i>7</i><i>7</i></div>
             <h1>Slots</h1>
             <p class="menusub">Einarmiger Bandit · Spielgeld</p>
           </div>
-          <div class="mpage" aria-label="Poker">
+          <div class="mpage" data-g="poker" aria-label="Poker">
             <div class="menulogo" aria-hidden="true"><i>♠</i><i class="r">♥</i><i>♣</i><i class="r">♦</i></div>
             <h1>Pokertisch</h1>
             <p class="menusub">Texas Hold’em · bis zu 5 Spieler</p>
           </div>
-          <div class="mpage" aria-label="Blackjack">
+          <div class="mpage" data-g="bj" aria-label="Blackjack">
             <div class="bjlogo" aria-hidden="true"><i>A<span>♠</span></i><i class="r">K<span>♦</span></i><b>21</b></div>
             <h1>Blackjack</h1>
             <p class="menusub">Gegen den Dealer · bis zu 5 Spieler</p>
           </div>
-          <div class="mpage" aria-label="Roulette">
+          <div class="mpage" data-g="rl" aria-label="Roulette">
             <div class="rllogo" aria-hidden="true"><svg viewBox="-50 -50 100 100" aria-hidden="true"><defs><radialGradient id="rlW1" cx="40%" cy="30%" r="75%"><stop offset="0" stop-color="#e0b878"/><stop offset=".55" stop-color="#9a6a37"/><stop offset="1" stop-color="#4a3018"/></radialGradient><radialGradient id="rlW2" cx="42%" cy="35%" r="70%"><stop offset="0" stop-color="#d9b06f"/><stop offset=".6" stop-color="#8c5f30"/><stop offset="1" stop-color="#3f2814"/></radialGradient><radialGradient id="rlG" cx="35%" cy="30%" r="80%"><stop offset="0" stop-color="#fff2b8"/><stop offset=".5" stop-color="#e2b04a"/><stop offset="1" stop-color="#8a6420"/></radialGradient><radialGradient id="rlB" cx="35%" cy="30%" r="75%"><stop offset="0" stop-color="#fff"/><stop offset=".6" stop-color="#e6e2da"/><stop offset="1" stop-color="#9c978e"/></radialGradient><linearGradient id="rlS" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#fff" stop-opacity=".32"/><stop offset=".5" stop-color="#fff" stop-opacity="0"/></linearGradient></defs><circle r="49" fill="url(#rlW1)" stroke="#2c1c0e" stroke-width="1.5"/><circle r="44.5" fill="#24170c"/><circle r="43" fill="url(#rlW2)"/><circle r="40.6" fill="#1a120a"/><path fill="#2f8a4e" d="M-2.29 -26.90L-3.39 -39.86A40 40 0 0 1 3.39 -39.86L2.29 -26.90A27 27 0 0 0 -2.29 -26.90Z"/><path fill="#c0352c" d="M2.29 -26.90L3.39 -39.86A40 40 0 0 1 10.08 -38.71L6.80 -26.13A27 27 0 0 0 2.29 -26.90ZM11.12 -24.60L16.48 -36.45A40 40 0 0 1 22.40 -33.14L15.12 -22.37A27 27 0 0 0 11.12 -24.60ZM18.68 -19.49L27.68 -28.88A40 40 0 0 1 32.16 -23.79L21.71 -16.06A27 27 0 0 0 18.68 -19.49ZM24.11 -12.16L35.72 -18.01A40 40 0 0 1 38.25 -11.71L25.82 -7.91A27 27 0 0 0 24.11 -12.16ZM26.78 -3.43L39.68 -5.08A40 40 0 0 1 39.96 1.70L26.98 1.15A27 27 0 0 0 26.78 -3.43ZM26.39 5.69L39.10 8.43A40 40 0 0 1 37.12 14.91L25.05 10.07A27 27 0 0 0 26.39 5.69ZM22.99 14.16L34.06 20.97A40 40 0 0 1 30.03 26.43L20.27 17.84A27 27 0 0 0 22.99 14.16ZM16.96 21.01L25.13 31.12A40 40 0 0 1 19.51 34.92L13.17 23.57A27 27 0 0 0 16.96 21.01ZM8.99 25.46L13.33 37.72A40 40 0 0 1 6.76 39.42L4.56 26.61A27 27 0 0 0 8.99 25.46ZM0.00 27.00L0.00 40.00A40 40 0 0 1 -6.76 39.42L-4.56 26.61A27 27 0 0 0 0.00 27.00ZM-8.99 25.46L-13.33 37.72A40 40 0 0 1 -19.51 34.92L-13.17 23.57A27 27 0 0 0 -8.99 25.46ZM-16.96 21.01L-25.13 31.12A40 40 0 0 1 -30.03 26.43L-20.27 17.84A27 27 0 0 0 -16.96 21.01ZM-22.99 14.16L-34.06 20.97A40 40 0 0 1 -37.12 14.91L-25.05 10.07A27 27 0 0 0 -22.99 14.16ZM-26.39 5.69L-39.10 8.43A40 40 0 0 1 -39.96 1.70L-26.98 1.15A27 27 0 0 0 -26.39 5.69ZM-26.78 -3.43L-39.68 -5.08A40 40 0 0 1 -38.25 -11.71L-25.82 -7.91A27 27 0 0 0 -26.78 -3.43ZM-24.11 -12.16L-35.72 -18.01A40 40 0 0 1 -32.16 -23.79L-21.71 -16.06A27 27 0 0 0 -24.11 -12.16ZM-18.68 -19.49L-27.68 -28.88A40 40 0 0 1 -22.40 -33.14L-15.12 -22.37A27 27 0 0 0 -18.68 -19.49ZM-11.12 -24.60L-16.48 -36.45A40 40 0 0 1 -10.08 -38.71L-6.80 -26.13A27 27 0 0 0 -11.12 -24.60Z"/><path fill="#17191c" d="M6.80 -26.13L10.08 -38.71A40 40 0 0 1 16.48 -36.45L11.12 -24.60A27 27 0 0 0 6.80 -26.13ZM15.12 -22.37L22.40 -33.14A40 40 0 0 1 27.68 -28.88L18.68 -19.49A27 27 0 0 0 15.12 -22.37ZM21.71 -16.06L32.16 -23.79A40 40 0 0 1 35.72 -18.01L24.11 -12.16A27 27 0 0 0 21.71 -16.06ZM25.82 -7.91L38.25 -11.71A40 40 0 0 1 39.68 -5.08L26.78 -3.43A27 27 0 0 0 25.82 -7.91ZM26.98 1.15L39.96 1.70A40 40 0 0 1 39.10 8.43L26.39 5.69A27 27 0 0 0 26.98 1.15ZM25.05 10.07L37.12 14.91A40 40 0 0 1 34.06 20.97L22.99 14.16A27 27 0 0 0 25.05 10.07ZM20.27 17.84L30.03 26.43A40 40 0 0 1 25.13 31.12L16.96 21.01A27 27 0 0 0 20.27 17.84ZM13.17 23.57L19.51 34.92A40 40 0 0 1 13.33 37.72L8.99 25.46A27 27 0 0 0 13.17 23.57ZM4.56 26.61L6.76 39.42A40 40 0 0 1 0.00 40.00L0.00 27.00A27 27 0 0 0 4.56 26.61ZM-4.56 26.61L-6.76 39.42A40 40 0 0 1 -13.33 37.72L-8.99 25.46A27 27 0 0 0 -4.56 26.61ZM-13.17 23.57L-19.51 34.92A40 40 0 0 1 -25.13 31.12L-16.96 21.01A27 27 0 0 0 -13.17 23.57ZM-20.27 17.84L-30.03 26.43A40 40 0 0 1 -34.06 20.97L-22.99 14.16A27 27 0 0 0 -20.27 17.84ZM-25.05 10.07L-37.12 14.91A40 40 0 0 1 -39.10 8.43L-26.39 5.69A27 27 0 0 0 -25.05 10.07ZM-26.98 1.15L-39.96 1.70A40 40 0 0 1 -39.68 -5.08L-26.78 -3.43A27 27 0 0 0 -26.98 1.15ZM-25.82 -7.91L-38.25 -11.71A40 40 0 0 1 -35.72 -18.01L-24.11 -12.16A27 27 0 0 0 -25.82 -7.91ZM-21.71 -16.06L-32.16 -23.79A40 40 0 0 1 -27.68 -28.88L-18.68 -19.49A27 27 0 0 0 -21.71 -16.06ZM-15.12 -22.37L-22.40 -33.14A40 40 0 0 1 -16.48 -36.45L-11.12 -24.60A27 27 0 0 0 -15.12 -22.37ZM-6.80 -26.13L-10.08 -38.71A40 40 0 0 1 -3.39 -39.86L-2.29 -26.90A27 27 0 0 0 -6.80 -26.13Z"/><path d="M-2.29 -26.90L-3.39 -39.86M2.29 -26.90L3.39 -39.86M6.80 -26.13L10.08 -38.71M11.12 -24.60L16.48 -36.45M15.12 -22.37L22.40 -33.14M18.68 -19.49L27.68 -28.88M21.71 -16.06L32.16 -23.79M24.11 -12.16L35.72 -18.01M25.82 -7.91L38.25 -11.71M26.78 -3.43L39.68 -5.08M26.98 1.15L39.96 1.70M26.39 5.69L39.10 8.43M25.05 10.07L37.12 14.91M22.99 14.16L34.06 20.97M20.27 17.84L30.03 26.43M16.96 21.01L25.13 31.12M13.17 23.57L19.51 34.92M8.99 25.46L13.33 37.72M4.56 26.61L6.76 39.42M0.00 27.00L0.00 40.00M-4.56 26.61L-6.76 39.42M-8.99 25.46L-13.33 37.72M-13.17 23.57L-19.51 34.92M-16.96 21.01L-25.13 31.12M-20.27 17.84L-30.03 26.43M-22.99 14.16L-34.06 20.97M-25.05 10.07L-37.12 14.91M-26.39 5.69L-39.10 8.43M-26.98 1.15L-39.96 1.70M-26.78 -3.43L-39.68 -5.08M-25.82 -7.91L-38.25 -11.71M-24.11 -12.16L-35.72 -18.01M-21.71 -16.06L-32.16 -23.79M-18.68 -19.49L-27.68 -28.88M-15.12 -22.37L-22.40 -33.14M-11.12 -24.60L-16.48 -36.45M-6.80 -26.13L-10.08 -38.71" stroke="#e8c26a" stroke-width=".9"/><circle r="40" fill="none" stroke="#e8c26a" stroke-width="1"/><circle r="27" fill="url(#rlW2)" stroke="#e8c26a" stroke-width="1.4"/><circle r="22" fill="none" stroke="#3f2814" stroke-opacity=".5" stroke-width="1"/><path d="M4.95 -4.95L13.44 -13.44M4.95 4.95L13.44 13.44M-4.95 4.95L-13.44 13.44M-4.95 -4.95L-13.44 -13.44" stroke="url(#rlG)" stroke-width="3.2" stroke-linecap="round"/><g fill="url(#rlG)"><circle cx="13.44" cy="-13.44" r="2.3"/><circle cx="13.44" cy="13.44" r="2.3"/><circle cx="-13.44" cy="13.44" r="2.3"/><circle cx="-13.44" cy="-13.44" r="2.3"/></g><circle r="7.5" fill="url(#rlG)" stroke="#7a5518" stroke-width=".8"/><circle r="2.6" fill="#fff6d0" opacity=".85"/><circle cx="12.41" cy="-31.65" r="4" fill="url(#rlB)" stroke="#6b665e" stroke-width=".5"/><ellipse cx="-6" cy="-30" rx="34" ry="17" fill="url(#rlS)"/></svg></div>
             <h1>Roulette</h1>
             <p class="menusub">Europäisch · Freunde können mitspielen</p>
           </div>
         </div>
       </div>
-      <div class="mdots" role="tablist" aria-label="Spiel wählen">
-        <button type="button" data-p="0" role="tab" aria-label="Pop the Lock"></button>
-        <button type="button" data-p="1" role="tab" aria-label="Slots"></button>
-        <button type="button" data-p="2" role="tab" aria-label="Poker"></button>
-        <button type="button" data-p="3" role="tab" aria-label="Blackjack"></button>
-        <button type="button" data-p="4" role="tab" aria-label="Roulette"></button>
-      </div>
+      <div class="mdots" id="mDots" role="tablist" aria-label="Spiel wählen"></div>
       <div class="mbtns">
-        <div class="mgrp" id="mPoker">
+        <div data-g="poker" class="mgrp" id="mPoker">
           <button class="btn primary wide" id="bPlay" type="button">Gegen Bots spielen</button>
           <button class="btn wide" id="bFriends" type="button">Mit Freunden spielen<i class="odot" hidden aria-hidden="true"></i></button>
           <button class="btn wide tnbtn" id="bTourney" type="button"><span aria-hidden="true">🏆</span> Turnier <small>Sit &amp; Go · Spin &amp; Go</small></button>
         </div>
-        <div class="mgrp off" id="mBj">
+        <div data-g="bj" class="mgrp off" id="mBj">
           <button class="btn primary wide" id="bjPlay" type="button">Gegen den Dealer spielen</button>
           <button class="btn wide" id="bjFriends" type="button">Mit Freunden spielen<i class="odot" hidden aria-hidden="true"></i></button>
         </div>
-        <div class="mgrp off" id="mSl">
+        <div data-g="slots" class="mgrp off" id="mSl">
           <button class="btn primary wide" id="slPlay" type="button">Spielen</button>
         </div>
-        <div class="mgrp off" id="mLk">
+        <div data-g="lock" class="mgrp off" id="mLk">
           <button class="btn primary wide" id="lkPlay" type="button">Spielen</button>
         </div>
-        <div class="mgrp off" id="mRl">
+        <div data-g="rl" class="mgrp off" id="mRl">
           <button class="btn primary wide" id="rlPlay" type="button">Spielen</button>
         </div>
       </div>
@@ -9122,26 +9116,60 @@ input.bprange[type=range]::-moz-range-thumb { width: 20px; height: 20px; border-
     })();
   }
 
-  /* ---------- Hauptmenue: nach rechts wischen = Blackjack und dahinter Roulette, nach links = Slots und dahinter Pop the Lock ---------- */
-  var GAMES = ['lock', 'slots', 'poker', 'bj', 'rl'], NP = GAMES.length, PK = 2, BJP = 3, RLP = 4;
-  var menu = $('#menu'), track = $('#mTrack'), page = PK, sw = null, swallowUntil = 0;
-  /* nach dem Ladebildschirm immer zuerst der Pokertisch, nicht das zuletzt gewaehlte Spiel */
-  /* Hintergrund: blau (Pop the Lock) <- lila (Slots) <- gruen (Poker) -> weinrot (Blackjack) -> petrol (Roulette), beim Wischen fliessend */
+  /* ---------- Hauptmenue: Wisch-Seiten, eine pro Spiel ----------
+     Die Seiten stehen im HTML (#mTrack > .mpage[data-g]), dazu je eine Knopfgruppe .mgrp[data-g] und eine
+     Hintergrund-Ebene .mbg-<spiel> im CSS. Reihenfolge = Reihenfolge im HTML (jetzt: Pop the Lock · Slots · Poker ·
+     Blackjack · Roulette · Crash); eine neue Seite braucht nur diese drei Teile, Punkte und Ebenen entstehen von selbst.
+     Nach dem Ladebildschirm immer zuerst der Pokertisch, nicht das zuletzt gewaehlte Spiel.
+     Fuer andere Skripte: window.PRMenu = { games: ['lock', ...], page(): Index, go(spiel, anim), idx(spiel) } */
+  var menu = $('#menu'), track = $('#mTrack');
+  var GAMES = [].map.call(track.querySelectorAll('.mpage'), function (el) { return el.dataset.g; });
+  var NP = GAMES.length, PK = Math.max(0, GAMES.indexOf('poker')), BJP = GAMES.indexOf('bj');
+  var page = PK, sw = null, swallowUntil = 0;
+  /* Punkte unter den Seiten */
+  (function () {
+    var dots = $('#mDots');
+    [].forEach.call(track.querySelectorAll('.mpage'), function (el, i) {
+      var b = document.createElement('button'); b.type = 'button'; b.dataset.p = String(i); b.setAttribute('role', 'tab');
+      b.setAttribute('aria-label', el.getAttribute('aria-label') || el.dataset.g);
+      b.addEventListener('click', function () { setPage(+b.dataset.p, true); });
+      dots.appendChild(b);
+    });
+  })();
+  /* Hintergrund: Poker gruen in der Mitte, jede andere Seite hat ihre Ebene. Eine Ebene ist voll da, sobald man auf
+     ihrer Seite oder weiter aussen ist, und blendet beim Wischen zur Nachbarseite fliessend aus; die aeusseren liegen oben. */
+  var LAYERS = [];
+  (function () {
+    var host = $('#mBgs'), order = GAMES.map(function (g, i) { return i; }).filter(function (i) { return i !== PK; });
+    order.sort(function (a, b) { return Math.abs(a - PK) - Math.abs(b - PK); });
+    order.forEach(function (i) {
+      var el = document.createElement('div'); el.className = 'mbg mbg-' + GAMES[i]; host.appendChild(el);
+      LAYERS.push({ i: i, el: el });
+    });
+  })();
   function mixes(pos) {
-    menu.style.setProperty('--mix', Math.max(0, Math.min(1, 1 - Math.abs(pos - BJP))));
-    menu.style.setProperty('--mix4', Math.max(0, Math.min(1, pos - BJP)));
-    menu.style.setProperty('--mix2', Math.max(0, Math.min(1, PK - pos)));
-    menu.style.setProperty('--mix3', Math.max(0, Math.min(1, PK - 1 - pos)));
+    LAYERS.forEach(function (L) {
+      var o = L.i > PK ? pos - (L.i - 1) : (L.i + 1) - pos;
+      o = Math.max(0, Math.min(1, o));
+      var v = o.toFixed(3); if (L.el.style.opacity !== v) L.el.style.opacity = v;
+    });
   }
   function setPage(p, anim) {
+    p = Math.max(0, Math.min(NP - 1, p | 0));
     page = p;
     track.style.transition = anim ? '' : 'none';
     track.style.transform = 'translateX(' + (-p * 100) + '%)';
     menu.classList.remove('drag'); mixes(p);
     [].forEach.call(document.querySelectorAll('.mdots button'), function (b) { var on = +b.dataset.p === p; b.classList.toggle('on', on); b.setAttribute('aria-selected', on ? 'true' : 'false'); });
-    $('#mLk').classList.toggle('off', p !== 0); $('#mSl').classList.toggle('off', p !== 1); $('#mPoker').classList.toggle('off', p !== PK); $('#mBj').classList.toggle('off', p !== BJP); $('#mRl').classList.toggle('off', p !== RLP);
+    [].forEach.call(document.querySelectorAll('#menu .mgrp[data-g]'), function (g) { g.classList.toggle('off', g.dataset.g !== GAMES[p]); });
     try { localStorage.setItem('pr-game', GAMES[p]); } catch (e) {}
   }
+  window.PRMenu = {
+    games: GAMES.slice(),
+    page: function () { return page; },
+    idx: function (g) { return GAMES.indexOf(g); },
+    go: function (g, anim) { var i = GAMES.indexOf(g); if (i >= 0) setPage(i, !!anim); }
+  };
   setPage(page, false);
   /* einmalig zeigen, dass man wischen kann */
   try {
@@ -9150,7 +9178,6 @@ input.bprange[type=range]::-moz-range-thumb { width: 20px; height: 20px; border-
       setTimeout(function () { if (!sw && page === PK) { track.classList.add('hint'); setTimeout(function () { track.classList.remove('hint'); }, 2200); } }, 1800);
     }
   } catch (e) {}
-  [].forEach.call(document.querySelectorAll('.mdots button'), function (b) { b.addEventListener('click', function () { setPage(+b.dataset.p, true); }); });
   menu.addEventListener('pointerdown', function (e) {
     if (e.target.closest('.profchip, .bank, .shopbtn, .qbtn, .tomchip, .starbar') || (e.pointerType === 'mouse' && e.button !== 0)) return;
     sw = { x: e.clientX, y: e.clientY, id: e.pointerId, on: false, dx: 0, w: $('#mSwipe').offsetWidth || 300 };
