@@ -1638,6 +1638,24 @@ input.bprange[type=range]::-moz-range-thumb { width: 20px; height: 20px; border-
 #bShow i { position: absolute; left: 0; bottom: 0; height: 4px; width: 100%; background: rgba(29,19,7,.45); transform-origin: left; animation: shbar var(--ms, 4000ms) linear forwards; }
 @keyframes shbar { from { transform: scaleX(1); } to { transform: scaleX(0); } }
 
+/* ---------- Auswertung nach der Hand (Poker) ---------- */
+.prsub { display: block; margin-top: 3px; font: 500 12px/1.35 var(--ui); color: var(--muted); }
+#coach { position: absolute; left: 8px; right: 8px; bottom: 4px; z-index: 15; max-width: 420px; margin: 0 auto; padding: 8px 11px 9px; border-radius: 16px; background: rgba(22,24,26,.97); border: 1px solid rgba(224,170,74,.45); box-shadow: 0 14px 34px rgba(0,0,0,.6); cursor: pointer; animation: coachin .38s cubic-bezier(.2,.9,.3,1.1) both; }
+#coach[hidden] { display: none; }
+#coach.out { animation: coachout .3s ease-in both; }
+@keyframes coachin { from { transform: translateY(70px); opacity: 0; } to { transform: none; opacity: 1; } }
+@keyframes coachout { to { transform: translateY(60px); opacity: 0; } }
+.cchead { display: flex; align-items: baseline; justify-content: space-between; gap: 8px; margin-bottom: 5px; }
+.cchead em { font-style: normal; margin-left: 8px; color: var(--muted); font-size: 13px; }
+.cchead b { font: 800 11px var(--ui); letter-spacing: .16em; text-transform: uppercase; color: var(--brass); }
+.cchead span { font: 700 12px var(--ui); color: var(--muted); font-variant-numeric: tabular-nums; }
+#coach ul { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; gap: 4px; }
+#coach li { display: flex; gap: 7px; align-items: flex-start; font: 500 12.5px/1.3 var(--ui); color: var(--ink); }
+#coach li i { flex: none; width: 18px; font-style: normal; font-size: 14px; line-height: 16px; text-align: center; }
+#coach li b { font-weight: 700; }
+#coach li.rb { color: #e9dcc0; border-top: 1px solid var(--line); padding-top: 4px; }
+#coach .cbar { position: absolute; left: 14px; right: 14px; bottom: 0; height: 2px; border-radius: 2px; background: rgba(224,170,74,.6); transform-origin: left; animation: shbar 7s linear forwards; }
+
 </style>
 
 <div id="app">
@@ -2383,6 +2401,7 @@ input.bprange[type=range]::-moz-range-thumb { width: 20px; height: 20px; border-
         <div style="display:flex;flex-direction:column;gap:8px">
           <div class="prow vrow"><span>Lautstärke</span><input type="range" id="volProf" min="0" max="100" step="1" aria-label="Lautstärke"><output id="volProfN">100%</output></div>
           <div class="prow"><span>Vibration bei Gewinn</span><button class="sw" id="vibSw" type="button" role="switch" aria-checked="true" aria-label="Vibration bei Gewinn"></button></div>
+          <div class="prow"><span>Auswertung nach der Hand (Poker)<small class="prsub">Gewinnchance und Pot-Odds nach jeder Hand, beim Blackjack Abweichungen von der Grundstrategie</small></span><button class="sw" id="coachSw" type="button" role="switch" aria-checked="false" aria-label="Auswertung nach der Hand (Poker)"></button></div>
           <details class="prow guide" id="guide">
             <summary>Anleitung: Pre-Move beim Poker</summary>
             <ol>
@@ -2753,6 +2772,77 @@ input.bprange[type=range]::-moz-range-thumb { width: 20px; height: 20px; border-
     el.addEventListener('click', function (e) { if (fired) { fired = false; e.stopPropagation(); e.preventDefault(); } }, true);
   }
   window.PRChat = { list: list, text: text, tabs: tabs, bubble: bubble, muted: muted, setMuted: setMuted, hold: hold, badge: badge, close: closeDlg };
+})();
+</script>
+
+<script>
+/* Auswertung nach der Hand (Poker; Blackjack: Abweichung von der Grundstrategie). Standard: aus.
+   window.PRCoach:
+     on(), set(on)        Schalter (Profil -> Einstellungen „Auswertung nach der Hand (Poker)“), gespeichert in
+                          pr-coach { on: 0|1, q: [Punkte der letzten 100 Entscheidungen: 1 gut, 0.5 knapp, 0 teuer] }
+     add(punkte[])        Punkte einer ausgewerteten Hand anhaengen
+     quality()            { pct, n }: Entscheidungsqualitaet der letzten 100 Entscheidungen (pct null ohne Daten)
+     eqRandom(hole, board, nOpp, sims, done)   Gewinnchance gegen nOpp zufaellige Haende (Poker.equity), in kleinen
+                          Stuecken gerechnet, damit nichts ruckelt; done(0..1)
+     eqVs(hole, board, opps, sims, done)       Gewinnchance gegen bekannte Haende opps [[Karte, Karte], ...]. Nur mit
+                          offen gezeigten Karten benutzen (online nie verdeckte Karten anderer)!
+   Ist eine Pokerhand ausgewertet, meldet der Tisch 'coach' { score } an die Ereignis-Zentrale. */
+(function () {
+  'use strict';
+  var KEY = 'pr-coach';
+  function load() {
+    var o = null;
+    try { o = JSON.parse(localStorage.getItem(KEY) || 'null'); } catch (e) {}
+    if (!o || typeof o !== 'object') o = {};
+    var q = Array.isArray(o.q) ? o.q.filter(function (x) { return x === 0 || x === 0.5 || x === 1; }).slice(-100) : [];
+    return { on: o.on ? 1 : 0, q: q };
+  }
+  function save(o) { try { localStorage.setItem(KEY, JSON.stringify(o)); } catch (e) {} }
+  function on() { return !!load().on; }
+  function set(v) { var o = load(); o.on = v ? 1 : 0; save(o); render(); }
+  function add(pts) { var o = load(); o.q = o.q.concat(pts.filter(function (x) { return x === 0 || x === 0.5 || x === 1; })).slice(-100); save(o); }
+  function quality() { var q = load().q; if (!q.length) return { pct: null, n: 0 }; return { pct: Math.round(q.reduce(function (a, x) { return a + x; }, 0) / q.length * 100), n: q.length }; }
+  /* in Stuecken zu 150 Simulationen rechnen, dazwischen kommt der Browser zum Zeichnen */
+  function chunked(total, step, done) {
+    var left = total, sum = 0, n = 0;
+    (function go() {
+      var k = Math.min(150, left);
+      try { sum += step(k) * k; n += k; } catch (e) { done(null); return; }
+      left -= k;
+      if (left > 0) setTimeout(go, 0); else done(n ? sum / n : null);
+    })();
+  }
+  function eqRandom(hole, board, nOpp, sims, done) {
+    var P = window.Poker, caps = [];
+    for (var i = 0; i < Math.max(1, nOpp); i++) caps.push(1);
+    chunked(sims, function (k) { return P.equity(hole, board, caps, k); }, done);
+  }
+  function eqVs(hole, board, opps, sims, done) {
+    var P = window.Poker, known = {}, rest = [], need = 5 - board.length;
+    hole.concat(board).forEach(function (c) { known[c.r * 4 + c.s] = 1; });
+    opps.forEach(function (h) { h.forEach(function (c) { known[c.r * 4 + c.s] = 1; }); });
+    for (var s = 0; s < 4; s++) for (var r = 2; r <= 14; r++) if (!known[r * 4 + s]) rest.push({ r: r, s: s });
+    function one() {
+      var full = board.slice();
+      for (var j = 0; j < need; j++) { var x = j + Math.floor(Math.random() * (rest.length - j)), t = rest[j]; rest[j] = rest[x]; rest[x] = t; full.push(rest[j]); }
+      var mine = P.eval7(hole.concat(full)), tied = 1;
+      for (var k = 0; k < opps.length; k++) { var v = P.eval7(opps[k].concat(full)); if (v > mine) return 0; if (v === mine) tied++; }
+      return 1 / tied;
+    }
+    if (need <= 0) { done(one()); return; }
+    chunked(sims, function (k) { var a = 0; for (var i = 0; i < k; i++) a += one(); return a / k; }, done);
+  }
+  /* Schalter im Profil */
+  function render() {
+    var sw = document.getElementById('coachSw');
+    if (sw) sw.setAttribute('aria-checked', on() ? 'true' : 'false');
+  }
+  var sw = document.getElementById('coachSw');
+  if (sw) sw.addEventListener('click', function () { set(!on()); });
+  var pb = document.getElementById('profBtn');
+  if (pb) pb.addEventListener('click', render);
+  render();
+  window.PRCoach = { on: on, set: set, add: add, quality: quality, eqRandom: eqRandom, eqVs: eqVs };
 })();
 </script>
 
@@ -4620,6 +4710,7 @@ input.bprange[type=range]::-moz-range-thumb { width: 20px; height: 20px; border-
     }
     shownBB = S.bb;
     showWindow();
+    try { coachTick(); } catch (e) {}
     S.players.forEach(renderSeat);
     renderBoard(); renderBets(); renderPot(); renderHand(); renderShow(); renderControls();
     lastHand = S.handNo;
@@ -4637,6 +4728,7 @@ input.bprange[type=range]::-moz-range-thumb { width: 20px; height: 20px; border-
   function act(a) {
     var r = humanResolve;
     if (!r) return;
+    try { coachRec(a); } catch (e) {}
     clearTimeout(turnTimer);
     humanResolve = null; raiseMode = false; preRaise = false; flashMsg = '';
     if (!(a.auto && pre && pre.type === 'fold')) pre = null;   // vorgemerktes Passen bleibt stehen, solange es nur checkt
@@ -4765,6 +4857,7 @@ input.bprange[type=range]::-moz-range-thumb { width: 20px; height: 20px; border-
     gen++;
     clearTimeout(turnTimer); clearTimeout(nextTimer); clearTimeout(tossTimer);
     humanResolve = null; nextResolve = null; raiseMode = false; preRaise = false; pre = null; flashMsg = ''; tossed = [];
+    coachPend = null; coachHide(true);
     $('#end').hidden = true; $('#pause').hidden = true; $('#menu').hidden = true;
     $('#fly').innerHTML = ''; $('#toast').classList.remove('on');
     handEl.style.transform = ''; handEl.style.opacity = ''; handEl.style.transition = '';
@@ -4790,6 +4883,7 @@ input.bprange[type=range]::-moz-range-thumb { width: 20px; height: 20px; border-
     $('#end').hidden = true; $('#pause').hidden = true;
     $('#fly').innerHTML = '';
     clearShow();
+    coachPend = null; coachHide(true);
     Snd.stopAll();
     saveBank(); playing = false; wallet = 0; renderBank(); $('#chipdlg').hidden = true; cdState = null;
     mpCleanup();
@@ -4893,8 +4987,13 @@ input.bprange[type=range]::-moz-range-thumb { width: 20px; height: 20px; border-
         empty: 'Spiel ein paar Runden Roulette, dann siehst du hier, wie viel du gewonnen oder verloren hast.' };
     }
     var pts = (PROF.log || []).filter(function (e) { return e.length > 3; }).map(function (e) { return { x: e[0], y: e[3] }; });
+    /* dazu: gezeigte Bluffs (Karten zeigen) und Entscheidungsqualitaet (Auswertung nach der Hand) */
+    var shw = readJ('pr-pkshow') || {}, cq = window.PRCoach ? window.PRCoach.quality() : { pct: null, n: 0 }, extra = [];
+    if (shw.b | 0) extra.push(fmt(shw.b | 0) + (shw.b === 1 ? ' gezeigter Bluff' : ' gezeigte Bluffs'));
+    if (cq.pct != null) extra.push('Entscheidungsqualität ' + cq.pct + ' % (letzte ' + cq.n + ')');
+    var pnote = pts.length > 1 ? 'Saldo ' + signed(pts[pts.length - 1].y) + ' Chips' : PROF.hands ? '' : 'Noch keine Hand Poker gespielt.';
     return { unit: 'Hand', tiles: [[fmt(PROF.hands), 'Hände'], [fmt(PROF.wins), 'gewonnen'], [pct(PROF.wins, PROF.hands), 'Quote']],
-      note: pts.length > 1 ? 'Saldo ' + signed(pts[pts.length - 1].y) + ' Chips' : PROF.hands ? '' : 'Noch keine Hand Poker gespielt.',
+      note: [pnote].concat(extra).filter(Boolean).join(' · '),
       pts: pts, empty: 'Spiel ein paar Hände Poker, dann siehst du hier, wie viel du gewonnen oder verloren hast.' };
   }
   function niceStep(range) {
@@ -6476,6 +6575,139 @@ input.bprange[type=range]::-moz-range-thumb { width: 20px; height: 20px; border-
   });
   $('#bShow').addEventListener('click', function () { myShow([1, 1]); });
 
+  /* ---------- Auswertung nach der Hand (Schalter im Profil, Standard aus) ----------
+     Jede eigene Entscheidung wird mit dem Stand davor gemerkt (Karten, Brett, aktive Gegner, Preis, Pot). Nach der Hand
+     rechnet PRCoach in kleinen Stuecken die Gewinnchance gegen zufaellige Haende der noch aktiven Gegner.
+     Rueckblick nur mit offen aufgedeckten (Showdown) oder freiwillig gezeigten Karten: online nie verdeckte Karten
+     anderer, auch nicht beim Ersteller, der sie kennt. Nur offline gegen Bots: „Du haettest gewonnen“ nach dem Passen. */
+  var coach = { hn: -1, d: [] }, coachDone = -1, coachPend = null, coachT = 0;
+  var STREET = { 0: 'Preflop', 3: 'Flop', 4: 'Turn', 5: 'River' };
+  function coachRec(a) {
+    if (!playing || !window.PRCoach.on()) return;
+    var me = S.players[0];
+    if (!me || me.hole.length !== 2 || !realCard(me.hole[0]) || !realCard(me.hole[1]) || !STREET.hasOwnProperty(S.board.length)) return;
+    if (coach.hn !== S.handNo) coach = { hn: S.handNo, d: [] };
+    var call = Math.max(0, Math.min(toCallNow(), me.chips)), pot = S.players.reduce(function (t, p) { return t + (p.total | 0); }, 0);
+    var ids = []; S.players.forEach(function (p, i) { if (i > 0 && p.inHand && !p.folded) ids.push(i); });
+    var type = a.type === 'call' && call === 0 ? 'check' : a.type;
+    coach.d.push({ st: S.board.length, hole: me.hole.map(function (c) { return { r: c.r, s: c.s }; }), board: S.board.map(function (c) { return { r: c.r, s: c.s }; }),
+      opp: Math.max(1, ids.length), ids: ids, call: call, pot: pot, type: type });
+  }
+  function cname(c) { return P.rname(c.r) + P.SUITS[c.s]; }
+  /* was man jetzt sicher wissen darf: offen aufgedeckte oder gezeigte Karten; offline zusaetzlich die naechsten Karten
+     aus dem Stapel und die Karten der Bots fuer „Du haettest gewonnen“ */
+  function coachFacts() {
+    var f = { known: [], fold: null };
+    S.players.forEach(function (p, i) {
+      if (i === 0) return;
+      var h = p.revealed ? p.hole : bothShown(p) ? p.shown : null;
+      if (h && realCard(h[0]) && realCard(h[1])) f.known.push({ id: i, name: p.name, hole: [h[0], h[1]] });
+    });
+    var me = S.players[0];
+    if (!MP.on && me.folded && game === realGame && Array.isArray(S.deck)) {
+      var board = S.board.slice(), dk = S.deck.slice(), opps = S.players.filter(function (p, i) { return i > 0 && p.inHand && !p.folded; });
+      while (board.length < 5 && dk.length) board.push(dk.pop());   // genau die Karten, die gekommen waeren
+      if (board.length === 5 && opps.length) f.fold = { board: board, opps: opps.map(function (p) { return p.hole.slice(); }) };
+    }
+    return f;
+  }
+  function verdict(d, eq) {
+    var price = d.call > 0 ? d.call / (d.pot + d.call) : 0, pc = Math.round(eq * 100), pp = Math.max(1, Math.round(price * 100));
+    var t = '<b>' + STREET[d.st] + ':</b> ' + pc + ' % Gewinnchance', df = eq - price;
+    function r(e, pts, txt) { return { e: e, p: pts, t: t + ' → ' + txt }; }
+    if (d.type === 'fold') {
+      if (d.call <= 0) return r('🤔', 0.5, 'Passen war unnötig, Check wäre gratis gewesen');
+      t += ', du hättest ' + pp + ' % vom Pot zahlen müssen';
+      return df < -0.03 ? r('👍', 1, 'Passen war richtig') : df > 0.08 ? r('👎', 0, 'Passen war zu früh') : r('🤔', 0.5, 'Passen war knapp');
+    }
+    if (d.type === 'call') {
+      t += ', du musstest ' + pp + ' % vom Pot zahlen';
+      return df >= 0.03 ? r('👍', 1, 'Mitgehen war richtig') : df < -0.08 ? r('👎', 0, 'Mitgehen war teuer') : r('🤔', 0.5, 'Mitgehen war knapp');
+    }
+    if (d.type === 'check') return eq >= 0.7 ? r('🤔', 0.5, 'Setzen hätte mehr gebracht') : null;   // gratis gecheckt: kein Urteil
+    var fair = 1 / (d.opp + 1), nm = d.call > 0 ? 'Erhöhen' : 'Setzen';
+    if (d.call > 0) t += ', Mitgehen hätte ' + pp + ' % vom Pot gekostet';
+    if (eq >= fair + 0.1) return r('👍', 1, nm + ' war stark');
+    if (eq >= fair - 0.08) return r('🤔', 0.5, nm + ' war knapp');
+    return d.call > 0 ? r('👎', 0, nm + ' war teuer') : r('🤔', 0.5, nm + ' war ein Bluff, kann klappen');
+  }
+  function coachRun(ds, facts, g) {
+    var res = [], i = 0;
+    (function next() {
+      if (g !== gen) return;
+      if (i < ds.length) {
+        var d = ds[i];
+        window.PRCoach.eqRandom(d.hole, d.board, d.opp, d.st === 0 ? 450 : 600, function (eq) { res.push(eq == null ? null : verdict(ds[i], eq)); i++; next(); });
+        return;
+      }
+      /* Rueckblick: letzte Entscheidung mit Preis (sonst die letzte) gegen die offen sichtbaren Karten */
+      var k = ds.length - 1;
+      for (var j = ds.length - 1; j >= 0; j--) if (ds[j].call > 0) { k = j; break; }
+      var dk = ds[k], kn = facts.known.filter(function (o) { return dk.ids.indexOf(o.id) >= 0; });
+      if (!kn.length) { finish(null); return; }
+      window.PRCoach.eqVs(dk.hole, dk.board, kn.map(function (o) { return o.hole; }), 600, function (eq) {
+        if (eq == null) { finish(null); return; }
+        var who = kn.length === 1 ? 'Gegen die Karten von ' + esc(kn[0].name) + ' (' + kn[0].hole.map(cname).join(' ') + ')' : 'Gegen die aufgedeckten Karten';
+        finish({ e: '🔎', t: '<b>Rückblick:</b> ' + who + ' hattest du ' + (dk.st ? 'am ' + STREET[dk.st] : 'preflop') + ' ' + Math.round(eq * 100) + ' %' });
+      });
+    })();
+    function finish(rb) {
+      if (g !== gen) return;
+      var lines = [], by = {}, pts = [];
+      res.forEach(function (v, j) { if (!v) return; pts.push(v.p); by[ds[j].st] = v; });
+      [0, 3, 4, 5].forEach(function (st) { if (by[st]) lines.push(by[st]); });
+      if (!lines.length) lines.push({ e: '👍', t: 'Nur gratis gecheckt, da war nichts falsch zu machen' });
+      if (rb) lines.push({ e: rb.e, t: rb.t, rb: 1 });
+      if (facts.fold) {
+        var me = P.eval7(ds[0].hole.concat(facts.fold.board)), top = 0, tie = false;
+        facts.fold.opps.forEach(function (h) { var v = P.eval7(h.concat(facts.fold.board)); if (v > top) { top = v; tie = false; } else if (v === top) tie = true; });
+        var hn = P.describe(P.best(ds[0].hole.concat(facts.fold.board)));
+        lines.push(me > top ? { e: '😬', t: '<b>Du hättest gewonnen</b> (' + hn + ')', rb: 1 } : me === top ? { e: '🤝', t: 'Du hättest den Pot geteilt (' + hn + ')', rb: 1 } : { e: '👍', t: 'Gut gepasst: du hättest verloren', rb: 1 });
+      }
+      if (pts.length) {
+        window.PRCoach.add(pts);
+        window.PRBus.emit('coach', { score: Math.round(pts.reduce(function (a, x) { return a + x; }, 0) / pts.length * 100) });
+      }
+      var q = window.PRCoach.quality();
+      coachShow({ hn: coach.hn, lines: lines, sub: q.pct == null ? '' : 'Qualität ' + q.pct + ' %' });
+    }
+  }
+  function esc(t) { var d = document.createElement('span'); d.textContent = String(t || ''); return d.innerHTML; }
+  /* beim ersten Bild der Ergebnisphase: kurz warten (gezeigte Karten kommen noch), dann rechnen */
+  function coachTick() {
+    var el = $('#coach');
+    if (humanResolve && el && !el.hidden) coachHide(true);   // nie, waehrend ich dran bin
+    if (coachPend && !humanResolve) { var c = coachPend; coachPend = null; if (S.handNo <= c.hn + 1) coachShow(c); }
+    if (S.phase !== 'result' || coachDone === S.handNo) return;
+    coachDone = S.handNo;
+    if (!window.PRCoach.on() || coach.hn !== S.handNo || !coach.d.length) return;
+    var ds = coach.d.slice(), g = gen, hn = S.handNo, f0 = coachFacts();
+    setTimeout(function () { if (g === gen) coachRun(ds, S.handNo === hn && S.phase === 'result' ? coachFacts() : f0, g); }, 1300);
+  }
+  function coachShow(c) {
+    if (humanResolve || !playing) { coachPend = c; return; }
+    var el = $('#coach');
+    el.setAttribute('aria-label', 'Auswertung der Hand, antippen schließt');
+    el.innerHTML = '<div class="cchead"><b>Auswertung</b><span>' + c.sub + '<em aria-hidden="true">✕</em></span></div><ul>' +
+      c.lines.map(function (l) { return '<li' + (l.rb ? ' class="rb"' : '') + '><i>' + l.e + '</i><span>' + l.t + '</span></li>'; }).join('') +
+      '</ul><i class="cbar"></i>';
+    el.classList.remove('out'); el.hidden = false;
+    el.style.animation = 'none'; void el.offsetWidth; el.style.animation = '';
+    clearTimeout(coachT); coachT = setTimeout(function () { coachHide(); }, 7000);
+  }
+  function coachHide(now) {
+    var el = $('#coach'); clearTimeout(coachT);
+    if (!el || el.hidden) return;
+    if (now) { el.hidden = true; el.classList.remove('out'); return; }
+    el.classList.add('out');
+    coachT = setTimeout(function () { el.hidden = true; el.classList.remove('out'); }, 300);
+  }
+  (function () {
+    var el = document.createElement('div'); el.id = 'coach'; el.hidden = true; el.setAttribute('role', 'status');
+    el.addEventListener('click', function () { coachHide(); });
+    stage.appendChild(el);
+  })();
+
   /* ---------- Spielende ---------- */
   function showEnd(win, wname) {
     saveBank();
@@ -6974,6 +7206,7 @@ input.bprange[type=range]::-moz-range-thumb { width: 20px; height: 20px; border-
         if (net > 0 && window.JAR) window.JAR.add(net);
         bjStat(net, my.hands.filter(function (h) { return h.res === 'bj'; }).length);
         bjEvents(t, my, net);
+        showDevs(t.round);
       }
     }
     Object.keys(CEL).forEach(function (id) { if (!CEL[id].isConnected) delete CEL[id]; });
@@ -7111,8 +7344,28 @@ input.bprange[type=range]::-moz-range-thumb { width: 20px; height: 20px; border-
     if (NB.role === 'guest') { try { NB.conn.send({ t: 'ready', a: myBet }); } catch (e) {} var my = seatOf(ME); if (my) { my.ready = true; my.bet = myBet; } view(T, ME); }
     else hReady(ME, myBet);
   }
+  /* Auswertung (Schalter im Profil): Zuege, die von der Grundstrategie abweichen, am Rundenende kurz zeigen */
+  var devs = { rd: -1, l: [] };
+  function noteDev(a) {
+    if (!window.PRCoach || !window.PRCoach.on()) return;
+    var my = seatOf(ME);
+    if (!T || !my || T.phase !== 'play' || T.seats[T.turn] !== my || !T.dealer[0]) return;
+    var h = my.hands[my.cur];
+    if (!h || h.cards.length < 2 || h.done) return;
+    var best = advise(my, h, T.dealer[0]);
+    if (devs.rd !== T.round) devs = { rd: T.round, l: [] };
+    if (best === a) return;
+    var v = total(h.cards), up = T.dealer[0].r === 14 ? 'Ass' : String(cval(T.dealer[0]));
+    devs.l.push((v.soft && v.t < 21 ? 'Soft ' : '') + v.t + ' gegen ' + up + ': ' + TIP_TXT[best] + ' statt ' + TIP_TXT[a]);
+  }
+  function showDevs(rd) {
+    if (!window.PRCoach || !window.PRCoach.on() || devs.rd !== rd || !devs.l.length) return;
+    var l = devs.l; devs = { rd: -1, l: [] };
+    setTimeout(function () { bjToast('Abweichung von der Grundstrategie: ' + l[0] + (l.length > 1 ? ' (+' + (l.length - 1) + ')' : '')); }, 1400);
+  }
   function sendAct(a) {
     if (!T) return;
+    try { noteDev(a); } catch (e) {}
     if (NB.role === 'guest') {
       try { NB.conn.send({ t: 'act', a: a }); } catch (e) {}
       [].forEach.call(document.querySelectorAll('#bjActUI .btn'), function (b) { b.disabled = true; });   // bis der naechste Stand kommt
