@@ -28,9 +28,12 @@ Immer den bisherigen Weg als Rückfall im Code behalten.
 
 Ersteller und Mitspieler müssen dieselbe App-Version haben, sonst rechnen sie verschieden. Wer die Nachrichten
 zwischen den Handys ändert (neue Felder/Nachrichtentypen, andere Bedeutung), erhöht die Versionsnummer:
-Poker `hello`-Feld `v` = Konstante `PK_V` (aktuell 7; der Ersteller nimmt nur Mitspieler ab `PK_V` und schickt
-älteren `{ t: 'old' }`; 7 bringt Schnellsätze `{ t: 'chat', q }` und Karten zeigen `{ t: 'show', c }` mit den Feldern
+Poker `hello`-Feld `v` = Konstante `PK_V` (aktuell 8; der Ersteller nimmt nur Mitspieler ab `PK_V` und schickt
+älteren `{ t: 'old' }`; 8 bringt Profilrahmen und Titel `cos { frame, title }` im öffentlichen Profil und im Stand, 7 Schnellsätze `{ t: 'chat', q }` und Karten zeigen `{ t: 'show', c }` mit den Feldern
 `sh`/`sb` im Stand, 6 ersetzt das Level `lv` durch die Sternzahl `st` im öffentlichen Profil, 5 brachte `lv`,
-4 das Feld `rid` zum Wiederverbinden), Blackjack `BJ_V` (aktuell 7, Schnellsätze), Roulette `RL_V` (aktuell 4,
-Reaktionen und Schnellsätze); bei Blackjack
+4 das Feld `rid` zum Wiederverbinden), Blackjack `BJ_V` (aktuell 8: `cos` im Profil, 7 Schnellsätze), Roulette `RL_V` (aktuell 5: `cos` im Profil,
+4 Reaktionen und Schnellsätze); bei Blackjack
 und Roulette müssen beide Seiten genau gleich sein. Alte Versionen werden dann mit einer Meldung „App einmal ganz schließen und neu öffnen“ abgewiesen.
+Das Feld `cos` (siehe `window.PRLook` in index.html) ist erweiterbar: neue Unterfelder mit `PRLook.field(name, clean, mine)`
+anmelden; ältere Apps ignorieren unbekannte Unterfelder. Wer `cos` neu belegt (z. B. Siegesanimation `win`), erhöht trotzdem
+die Versionen, damit alle am Tisch dasselbe sehen. Die Freundesliste (`myPub`) hat keine Version und schickt `cos` einfach mit.

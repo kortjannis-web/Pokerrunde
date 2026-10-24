@@ -1656,6 +1656,148 @@ input.bprange[type=range]::-moz-range-thumb { width: 20px; height: 20px; border-
 #coach li.rb { color: #e9dcc0; border-top: 1px solid var(--line); padding-top: 4px; }
 #coach .cbar { position: absolute; left: 14px; right: 14px; bottom: 0; height: 2px; border-radius: 2px; background: rgba(224,170,74,.6); transform-origin: left; animation: shbar 7s linear forwards; }
 
+/* ---------- Kosmetik: Kartenruecken, Tischfilz, Chip-Designs (Shop-Reiter „Tisch“) ----------
+   Die Wahl steht als data-back / data-felt / data-chip an den Spieltischen (#stage, #bj, #rl) und an den Vorschauen
+   im Shop. Standard = kein Attribut bzw. "std": dann gilt das bisherige Aussehen. */
+.felt { background: var(--tfpat, linear-gradient(transparent, transparent)), radial-gradient(ellipse at 50% 38%, var(--tf1, var(--felt1)), var(--tf2, var(--felt2)) 62%, var(--tf3, var(--felt3))); }
+.bjfelt { background: var(--tfpat, linear-gradient(transparent, transparent)), radial-gradient(ellipse at 50% 30%, var(--tf1, var(--bj1)), var(--tf2, var(--bj2)) 62%, var(--tf3, var(--bj3))); }
+.rlfelt { background: var(--tfpat, linear-gradient(transparent, transparent)), radial-gradient(ellipse at 50% 20%, var(--tf1, var(--rl1)), var(--tf2, var(--rl2)) 65%, var(--tf3, var(--rl3))); }
+[data-felt="std"] { --tf1: initial; --tf2: initial; --tf3: initial; --tfpat: initial; }
+[data-felt="gruen"] { --tf1: #37695b; --tf2: #244a40; --tf3: #16322a; }
+[data-felt="blau"] { --tf1: #2f6496; --tf2: #1c3f66; --tf3: #0e2139; }
+[data-felt="bordeaux"] { --tf1: #8b3442; --tf2: #5a1b26; --tf3: #2e0d13; }
+[data-felt="schwarz"] { --tf1: #3b3e42; --tf2: #232528; --tf3: #121315; --tfpat: radial-gradient(circle, rgba(255,255,255,.035) 0 1px, transparent 1.5px) 0 0 / 6px 6px; }
+[data-felt="lila"] { --tf1: #74469c; --tf2: #472666; --tf3: #241233; --tfpat: radial-gradient(ellipse at 30% 20%, rgba(255,255,255,.12), transparent 45%), repeating-linear-gradient(115deg, rgba(255,255,255,.035) 0 2px, transparent 2px 5px); }
+[data-felt="vegas"] { --tf1: #7c1f3b; --tf2: #4f1226; --tf3: #2a0814; --tfpat: radial-gradient(circle, rgba(244,214,127,.28) 0 2px, transparent 2.5px) 0 0 / 22px 22px, radial-gradient(circle, rgba(111,183,232,.22) 0 1.5px, transparent 2px) 11px 11px / 22px 22px, repeating-linear-gradient(45deg, rgba(244,214,127,.09) 0 1px, transparent 1px 11px), repeating-linear-gradient(-45deg, rgba(244,214,127,.09) 0 1px, transparent 1px 11px); }
+
+.back, #deck i, .cpback { border-color: var(--backbd, var(--card)); }
+.back::after, #deck i::after, .cpback::after { content: var(--backlogo, none); position: absolute; inset: 0; display: grid; place-items: center; pointer-events: none; font-family: var(--display); font-size: 1.7em; line-height: 1; color: var(--backlc, #e0aa4a); }
+#deck i::after { font-size: 15px; }
+.cpback::after { font-size: 26px; }
+[data-back="std"] { --backpat: repeating-linear-gradient(45deg, rgba(195,148,89,.34) 0 1.5px, transparent 1.5px 6px), repeating-linear-gradient(-45deg, rgba(195,148,89,.34) 0 1.5px, transparent 1.5px 6px), #2a2d30; --backbd: initial; --backlogo: initial; }
+[data-back="rot"] { --backpat: repeating-linear-gradient(45deg, rgba(255,235,220,.22) 0 1.5px, transparent 1.5px 6px), repeating-linear-gradient(-45deg, rgba(255,235,220,.22) 0 1.5px, transparent 1.5px 6px), #a3262b; }
+[data-back="blau"] { --backpat: repeating-linear-gradient(45deg, rgba(220,235,255,.22) 0 1.5px, transparent 1.5px 6px), repeating-linear-gradient(-45deg, rgba(220,235,255,.22) 0 1.5px, transparent 1.5px 6px), #22508f; }
+[data-back="holz"] { --backpat: repeating-linear-gradient(93deg, rgba(0,0,0,.13) 0 2px, rgba(255,255,255,.05) 2px 5px, transparent 5px 11px), linear-gradient(160deg, #b37b44, #7c5027 60%, #4f321a); --backbd: #ead6b2; }
+[data-back="schwarzgold"] { --backpat: radial-gradient(circle, transparent 0 36%, rgba(224,170,74,.75) 37% 40%, transparent 41%), repeating-linear-gradient(0deg, transparent 0 5px, rgba(224,170,74,.28) 5px 6px), repeating-linear-gradient(90deg, transparent 0 5px, rgba(224,170,74,.28) 5px 6px), #121212; --backbd: #e0aa4a; }
+[data-back="neon"] { --backpat: repeating-linear-gradient(45deg, rgba(57,182,255,.6) 0 1px, transparent 1px 7px), repeating-linear-gradient(-45deg, rgba(255,70,200,.55) 0 1px, transparent 1px 7px), #0b0d1a; --backbd: #39b6ff; }
+[data-back="logo"] { --backpat: radial-gradient(circle, transparent 0 30%, rgba(224,170,74,.7) 31% 34%, transparent 35%), repeating-linear-gradient(45deg, rgba(224,170,74,.14) 0 1px, transparent 1px 5px), radial-gradient(ellipse at 50% 40%, #2c6a58, #173a30); --backbd: #f1ebdd; --backlogo: '♠'; --backlc: #f4d67f; }
+[data-back="diamant"] { --backpat: repeating-linear-gradient(60deg, rgba(255,255,255,.4) 0 1px, transparent 1px 8px), repeating-linear-gradient(-60deg, rgba(255,255,255,.4) 0 1px, transparent 1px 8px), linear-gradient(160deg, #c8eeff, #4fa8dc 55%, #1d5f8f); --backbd: #f2fbff; --backlogo: '◆'; --backlc: #ffffff; }
+[data-back="glitzer"] { --backpat: radial-gradient(circle, #fff 0 .8px, transparent 1.3px) 0 0 / 7px 7px, radial-gradient(circle, rgba(255,236,170,.95) 0 .8px, transparent 1.4px) 3px 4px / 9px 9px, linear-gradient(135deg, #7b3cff, #ff4fa3 50%, #ffb347); --backbd: #fff3d6; --backlogo: '✦'; --backlc: rgba(255,255,255,.9); }
+[data-back="glitzer"] .back::before, [data-back="glitzer"] #deck i:last-child::before, [data-back="glitzer"].cpback::before, [data-back="glitzer"] .cpback::before { content: ''; position: absolute; inset: 0; pointer-events: none; background: linear-gradient(115deg, transparent 30%, rgba(255,255,255,.65) 48%, transparent 66%); background-size: 300% 100%; animation: cbshine 2.6s linear infinite; }
+@keyframes cbshine { from { background-position: 120% 0; } to { background-position: -120% 0; } }
+
+/* Chip-Designs: Pot (.pchip), Einsatz-Stapel (.ch), Blackjack- und Roulette-Chips */
+[data-chip="gold"] .pchip, [data-chip="gold"] .bjchip, [data-chip="gold"] .rlchip { background: repeating-conic-gradient(#f4d67f 0 13deg, var(--cc) 13deg 45deg); box-shadow: 0 0 0 1px #8a6420, 0 2px 4px rgba(0,0,0,.55), 0 0 7px rgba(244,214,127,.35); }
+[data-chip="gold"] .pchip::before, [data-chip="gold"] .bjchip::before, [data-chip="gold"] .rlchip::before { background: radial-gradient(circle at 35% 30%, #fff1b8, #e0aa4a 55%, #a2742a); border-color: #fff1b8; }
+[data-chip="gold"] .pchip b, [data-chip="gold"] .bjchip b, [data-chip="gold"] .rlchip b { color: #3a2608; }
+[data-chip="gold"] .ch { border-color: #f4d67f; background: linear-gradient(#e9c46a, var(--cc) 70%); box-shadow: 0 2px 0 #6e4f17; }
+[data-chip="neon"] .c1 { --cc: #b9c6d6; } [data-chip="neon"] .c5 { --cc: #c27bff; } [data-chip="neon"] .c10 { --cc: #ff5a4a; } [data-chip="neon"] .c50 { --cc: #3dff9a; }
+[data-chip="neon"] .c100 { --cc: #39b6ff; } [data-chip="neon"] .c500 { --cc: #ff4fd8; } [data-chip="neon"] .c1000 { --cc: #ffe14a; } [data-chip="neon"] .c5000 { --cc: #ff9a2e; }
+[data-chip="neon"] .pchip, [data-chip="neon"] .bjchip, [data-chip="neon"] .rlchip { background: repeating-conic-gradient(var(--cc) 0 8deg, #0c0f16 8deg 45deg); box-shadow: 0 0 6px var(--cc), 0 2px 4px rgba(0,0,0,.6); }
+[data-chip="neon"] .pchip::before, [data-chip="neon"] .bjchip::before, [data-chip="neon"] .rlchip::before { background: #0c0f16; border-color: var(--cc); box-shadow: 0 0 5px var(--cc), inset 0 0 4px var(--cc); }
+[data-chip="neon"] .pchip b, [data-chip="neon"] .bjchip b, [data-chip="neon"] .rlchip b { color: #fff; text-shadow: 0 0 4px var(--cc); }
+[data-chip="neon"] .ch { background: #0c0f16; border: 2px solid var(--cc); box-shadow: 0 0 5px var(--cc), 0 2px 0 rgba(0,0,0,.6); }
+[data-chip="retro"] .c1 { --cc: #6f6a60; } [data-chip="retro"] .c5 { --cc: #8a2f2f; } [data-chip="retro"] .c10 { --cc: #2f4f8a; } [data-chip="retro"] .c50 { --cc: #b8822c; }
+[data-chip="retro"] .c100 { --cc: #24452f; } [data-chip="retro"] .c500 { --cc: #5a3a6e; } [data-chip="retro"] .c1000 { --cc: #1c1c1c; } [data-chip="retro"] .c5000 { --cc: #8f4a1c; }
+[data-chip="retro"] .pchip, [data-chip="retro"] .bjchip, [data-chip="retro"] .rlchip { background: repeating-conic-gradient(var(--cc) 0 36deg, #efe2c4 36deg 45deg); box-shadow: 0 2px 3px rgba(0,0,0,.55), inset 0 0 0 1.5px rgba(0,0,0,.25); }
+[data-chip="retro"] .pchip::before, [data-chip="retro"] .bjchip::before, [data-chip="retro"] .rlchip::before { background: #efe2c4; border: 2px dotted var(--cc); }
+[data-chip="retro"] .pchip b, [data-chip="retro"] .bjchip b, [data-chip="retro"] .rlchip b { color: var(--cc); font-family: var(--display); }
+[data-chip="retro"] .ch { border: 2px dotted #efe2c4; }
+
+/* ---------- Profilrahmen und Titel (Shop-Reiter „Profil“, auch bei anderen am Tisch und in der Freundesliste) ---------- */
+.hascfr { position: relative; }
+.cfr { position: absolute; inset: calc(var(--cfw, 3px) * -1); border-radius: 50%; pointer-events: none; z-index: 2; font-style: normal; text-decoration: none; }
+.cfr::before { content: ''; position: absolute; inset: 0; border-radius: 50%; background: var(--cfbg, #e0aa4a);
+  -webkit-mask: radial-gradient(closest-side, transparent calc(100% - var(--cfw, 3px)), #000 calc(100% - var(--cfw, 3px) + .6px)); mask: radial-gradient(closest-side, transparent calc(100% - var(--cfw, 3px)), #000 calc(100% - var(--cfw, 3px) + .6px)); }
+.cfr::after { position: absolute; left: 50%; top: 0; transform: translate(-50%, -62%); font-size: 13px; line-height: 1; filter: drop-shadow(0 1px 2px rgba(0,0,0,.6)); }
+.profhero .pav > .cfr, #pview .pav > .cfr, .cosme .pav > .cfr { --cfw: 5px; }
+.profhero .pav > .cfr::after, #pview .pav > .cfr::after { font-size: 24px; }
+.bjwho .pav > .cfr, .rlfa .pav > .cfr, .slfa .pav > .cfr, .frr .pav > .cfr, .profchip .pav > .cfr { --cfw: 2px; }
+.bjwho .pav > .cfr::after, .rlfa .pav > .cfr::after, .profchip .pav > .cfr::after { font-size: 9px; }
+.cfr-bronze { --cfbg: conic-gradient(#f3b57d, #8c5a2b, #e8a36a, #6e4220, #f3b57d); }
+.cfr-silber { --cfbg: conic-gradient(#ffffff, #98a1ab, #e9eef2, #6f7780, #ffffff); }
+.cfr-gold { --cfbg: conic-gradient(#fff1b8, #c8932f, #ffe08a, #8a6420, #fff1b8); box-shadow: 0 0 7px rgba(255,214,110,.55); }
+.cfr-diamant { --cfbg: conic-gradient(#f2fbff, #7fd3ff, #ffffff, #3f97d0, #d9f2ff, #9be3ff, #f2fbff); box-shadow: 0 0 9px rgba(127,211,255,.7); }
+.cfr-diamant::after { content: '💎'; }
+.cfr-flammen { --cfbg: conic-gradient(#ffe066, #ff7a1a, #e63b1f, #ff9a2e, #ffe066, #ff5a1f, #ffe066); box-shadow: 0 0 9px rgba(255,120,40,.75); }
+.cfr-flammen::before { animation: cfrspin 2.2s linear infinite; }
+.cfr-flammen::after { content: '🔥'; }
+.cfr-stammgast { --cfbg: repeating-conic-gradient(#e0aa4a 0 15deg, #2f7d5b 15deg 30deg); box-shadow: 0 0 5px rgba(224,170,74,.4); }
+.cfr-krone { --cfbg: conic-gradient(#fff1b8, #e0aa4a, #fff1b8, #a2742a, #fff1b8); box-shadow: 0 0 10px rgba(255,214,110,.7); }
+.cfr-krone::after { content: '👑'; }
+.cfr-neon { --cfbg: linear-gradient(#ff5ce1, #ff5ce1); box-shadow: 0 0 8px #ff5ce1, 0 0 2px #fff; }
+.cfr-holz { --cfbg: repeating-conic-gradient(#b37b44 0 7deg, #85562a 7deg 12deg, #c99458 12deg 18deg); }
+.cfr-regenbogen { --cfbg: conic-gradient(#ff4d4d, #ffa64d, #ffe14d, #5ee05e, #4dd2ff, #6b6bff, #d66bff, #ff4d4d); box-shadow: 0 0 8px rgba(255,255,255,.35); }
+.cfr-regenbogen::before { animation: cfrspin 3s linear infinite; }
+@keyframes cfrspin { to { transform: rotate(360deg); } }
+.cttl { display: block; max-width: 100%; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; font: 800 9px/1.25 var(--ui); letter-spacing: .06em; text-transform: uppercase; color: #f4d67f; font-style: normal; }
+.pill .cttl { margin: 0 0 1px; }
+.bjo > .cttl { margin: -3px 0 0 4px; font-size: 8.5px; text-shadow: 0 1px 3px rgba(0,0,0,.85); }
+.bjside.r .bjo > .cttl { margin: -3px 4px 0 0; }
+.fln .cttl { font-size: 10px; margin: 1px 0 0; }
+@media (prefers-reduced-motion: reduce) { .cfr::before, [data-back="glitzer"] .back::before, [data-back="glitzer"] .cpback::before { animation: none !important; } }
+
+/* ---------- Shop: Reiter und Kosmetik-Kacheln ---------- */
+#shop .endcard { width: min(400px, 100%); padding: 22px 16px 18px; }
+#shopArt, #shopCos { display: flex; flex-direction: column; gap: 14px; }
+#shopArt[hidden], #shopCos[hidden] { display: none; }
+.shoptabs { grid-template-columns: repeat(4, 1fr); gap: 6px; margin-top: 0; }
+.shoptabs button { height: 40px; padding: 0 4px; font-size: 13px; }
+.cossec { display: flex; flex-direction: column; gap: 8px; text-align: left; }
+.cossec .psec { margin: 0; }
+.cosgrid { display: grid; grid-template-columns: repeat(auto-fill, minmax(98px, 1fr)); gap: 8px; }
+.costile { display: flex; flex-direction: column; align-items: center; gap: 6px; padding: 9px 6px 7px; border-radius: 14px; background: var(--bg); border: 1px solid var(--line); min-width: 0; text-align: center; }
+.costile.on { border-color: rgba(224,170,74,.75); box-shadow: inset 0 0 0 1px rgba(224,170,74,.35); }
+.costile.lock .cprev { opacity: .55; filter: saturate(.6); }
+.costile > b { font: 700 12.5px/1.2 var(--ui); color: var(--ink); max-width: 100%; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.costile .btn { width: 100%; height: auto; min-height: 34px; padding: 4px 6px; border-radius: 10px; font-size: 12px; line-height: 1.2; white-space: normal; }
+.costile .btn.isOn { background: rgba(224,170,74,.16); color: #f4d67f; border-color: rgba(224,170,74,.5); opacity: 1; }
+.costile .btn.lk { font-size: 11px; color: var(--muted); }
+.costile .btn.sure { background: #e07a5f; color: #1d0d07; border-color: transparent; }
+.cprev { position: relative; display: flex; align-items: center; justify-content: center; width: 100%; height: 62px; overflow: hidden; }
+.cpback { position: relative; display: block; width: 40px; height: 56px; border-radius: 4px; background: var(--backpat); border: 2.5px solid var(--backbd, var(--card)); box-shadow: 0 3px 8px rgba(0,0,0,.45); overflow: hidden; transform: rotate(-4deg); }
+.cpfelt { display: block; width: 78px; height: 52px; border-radius: 26px; box-shadow: 0 0 0 4px var(--oak2), 0 0 0 5px var(--oak1), 0 4px 10px rgba(0,0,0,.5);
+  background: var(--tfpat, linear-gradient(transparent, transparent)), radial-gradient(ellipse at 50% 38%, var(--tf1, var(--felt1)), var(--tf2, var(--felt2)) 62%, var(--tf3, var(--felt3))); }
+.cpfelt.std { background: linear-gradient(120deg, transparent 49.5%, rgba(0,0,0,.35) 50%, transparent 50.5%), linear-gradient(120deg, var(--felt1) 50%, var(--bj1) 50%); }
+.cprev .pchip { position: relative; flex: none; margin: 0; width: 34px; height: 34px; left: auto; top: auto; transition: none; }
+.cprev .pchip::before { inset: 5px; }
+.cprev .pchip b { font-size: 11px; }
+.cprev .pchip + .pchip { margin-left: -9px; }
+.cprev .pav { width: 46px; height: 46px; font-size: 21px; }
+.cprev .cttlp { padding: 5px 8px; border-radius: 999px; background: rgba(224,170,74,.12); border: 1px solid rgba(224,170,74,.4); font: 800 10px/1.2 var(--ui); letter-spacing: .03em; text-transform: uppercase; color: #f4d67f; max-width: 100%; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.cprev .cttlp.none { color: var(--muted); background: transparent; border-style: dashed; border-color: var(--line); }
+.cosme { display: flex; align-items: center; gap: 14px; padding: 12px 14px; border-radius: 16px; background: var(--bg); border: 1px solid var(--line); text-align: left; }
+.cosme .pav { width: 54px; height: 54px; font-size: 24px; }
+.cosme div { min-width: 0; display: flex; flex-direction: column; gap: 2px; }
+.cosme div > b { font: 800 17px var(--ui); overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.cosme .cttl { font-size: 10.5px; }
+.cosme small { font: 500 12px var(--ui); color: var(--muted); }
+#shopCos .shopown { margin: 0; }
+.cosempty { margin: 6px 0; padding: 18px 14px; border-radius: 14px; border: 1px dashed var(--line); color: var(--muted); font: 500 14px/1.45 var(--ui); text-align: center; }
+.cosach { width: 100%; }
+
+/* ---------- Erfolge ---------- */
+#achView { z-index: 77; }
+#achView .endcard { display: flex; flex-direction: column; gap: 12px; max-height: 100%; overflow-y: auto; padding: 22px 16px 18px; }
+#achView .endcard h2, #achView .endcard p { margin: 0; }
+#achView .endcard > * { flex-shrink: 0; }
+.achlist { display: flex; flex-direction: column; gap: 7px; text-align: left; }
+.achr { display: flex; align-items: center; gap: 11px; padding: 9px 11px; border-radius: 13px; background: var(--bg); border: 1px solid var(--line); }
+.achr > i { flex: none; width: 38px; height: 38px; border-radius: 50%; display: grid; place-items: center; font-size: 20px; font-style: normal; background: rgba(255,255,255,.05); filter: grayscale(1); opacity: .55; }
+.achr.done > i { filter: none; opacity: 1; background: radial-gradient(circle at 40% 35%, rgba(244,214,127,.35), rgba(224,170,74,.08)); box-shadow: 0 0 0 1.5px rgba(224,170,74,.6); }
+.achr > div { flex: 1; min-width: 0; display: flex; flex-direction: column; gap: 2px; }
+.achr b { font: 700 14px var(--ui); color: var(--ink); }
+.achr:not(.done) b { color: rgba(236,231,218,.75); }
+.achr small { font: 500 12px/1.35 var(--ui); color: var(--muted); }
+.achr em { font: 800 10px var(--ui); font-style: normal; letter-spacing: .05em; text-transform: uppercase; color: #f4d67f; }
+.achr .xpt { flex: none; height: 5px; margin-top: 3px; }
+.achr .achn { flex: none; font: 700 11px var(--ui); color: var(--muted); font-variant-numeric: tabular-nums; }
+.achr.done .achn { color: #f4d67f; }
+.achico { flex: none; width: 44px; height: 44px; border-radius: 50%; display: grid; place-items: center; font-size: 24px; background: radial-gradient(circle at 40% 35%, rgba(244,214,127,.3), rgba(224,170,74,.06)); box-shadow: 0 0 0 1.5px rgba(224,170,74,.5); }
+#pfCos .pav { width: 44px; height: 44px; font-size: 20px; }
+#pfCos .pstart b { font-size: 16px; font-family: var(--ui); }
+#achToast { position: absolute; left: 50%; bottom: max(76px, calc(env(safe-area-inset-bottom) + 64px)); z-index: 98; transform: translate(-50%, 12px); padding: 10px 18px; border-radius: 999px; background: linear-gradient(180deg, #2a2418, #1b1710); border: 1.5px solid #e0aa4a; color: #f4d67f; font: 800 14px var(--ui); opacity: 0; pointer-events: none; transition: opacity .3s, transform .3s; white-space: nowrap; max-width: calc(100% - 20px); overflow: hidden; text-overflow: ellipsis; box-shadow: 0 8px 22px rgba(0,0,0,.55), 0 0 18px rgba(224,170,74,.35); }
+#achToast.on { opacity: 1; transform: translate(-50%, 0); }
 </style>
 
 <div id="app">
@@ -2381,6 +2523,19 @@ input.bprange[type=range]::-moz-range-thumb { width: 20px; height: 20px; border-
         </div>
       </div>
       <div>
+        <div class="psec" style="margin-bottom:8px">Erfolge, Rahmen und Titel</div>
+        <button class="pstar" id="pfAch" type="button" aria-label="Erfolge ansehen">
+          <span class="achico" aria-hidden="true">🏆</span>
+          <span class="pstart"><b id="pfAchT">0 von 0 Erfolgen</b><span class="xpt"><i id="pfAchF"></i></span><small id="pfAchS"></small></span>
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M9 5l7 7-7 7"/></svg>
+        </button>
+        <button class="pstar" id="pfCos" type="button" style="margin-top:8px" aria-label="Rahmen und Titel im Shop auswählen">
+          <span class="pav" id="pfCosAv">S</span>
+          <span class="pstart"><b id="pfCosT">Rahmen und Titel</b><small id="pfCosS"></small></span>
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M9 5l7 7-7 7"/></svg>
+        </button>
+      </div>
+      <div>
         <div class="psec">Statistik</div>
         <div class="seg" id="stGame" role="radiogroup" aria-label="Statistik für welches Spiel"></div>
         <div class="pstats" id="stTiles" style="margin-top:10px">
@@ -2502,6 +2657,8 @@ input.bprange[type=range]::-moz-range-thumb { width: 20px; height: 20px; border-
     <div class="endcard">
       <div id="shopMain">
       <h2>Shop</h2>
+      <div class="seg shoptabs" id="shopTabs" role="tablist" aria-label="Bereiche im Shop"></div>
+      <div id="shopArt" role="tabpanel">
       <div class="shopitem">
         <span class="si" aria-hidden="true">🍅</span>
         <span class="sn"><b>Tomate</b><small><i class="bchip" aria-hidden="true"></i><span id="shopPrice">2</span> Chips</small></span>
@@ -2521,6 +2678,8 @@ input.bprange[type=range]::-moz-range-thumb { width: 20px; height: 20px; border-
         <svg class="go" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M9 5l7 7-7 7"/></svg>
       </button>
       <p class="shopown" id="shopOwn"></p>
+      </div>
+      <div id="shopCos" role="tabpanel" hidden></div>
       <button class="btn wide" id="shopClose" type="button">Schließen</button>
       </div>
       <div id="shopLkView" hidden>
@@ -2529,6 +2688,15 @@ input.bprange[type=range]::-moz-range-thumb { width: 20px; height: 20px; border-
         <p class="shopown" id="shopLkOwn"></p>
         <button class="btn wide" id="shopBack" type="button">Zurück</button>
       </div>
+    </div>
+  </div>
+
+  <div id="achView" class="overlay" hidden>
+    <div class="endcard">
+      <h2>Erfolge</h2>
+      <p id="achSum"></p>
+      <div class="achlist" id="achList"></div>
+      <button class="btn wide" id="achClose" type="button">Schließen</button>
     </div>
   </div>
 
@@ -2633,6 +2801,59 @@ input.bprange[type=range]::-moz-range-thumb { width: 20px; height: 20px; border-
     if (!b) { b = document.createElement('i'); b.className = 'stb'; b.setAttribute('aria-hidden', 'true'); host.appendChild(b); }
     var t = starShort(n);
     if (b.textContent !== t) b.textContent = t;
+  };
+
+  /* Profilrahmen und Titel anzeigen (eigene und die anderer Spieler; der Katalog steht in window.PRCos weiter unten).
+     window.PRLook:
+       frame(host, id)        Rahmen um ein Profilbild (host = .pav / .avatar), id = Rahmen-Id ('' / 'none' = keiner).
+                              Unbekannte Ids (z. B. von neueren Apps) werden einfach nicht gezeichnet.
+       title(after, id)       kleiner Titel direkt hinter dem Element after (meist der Name), id = Titel-Id
+       titleText(id)          Text des Titels ('' wenn unbekannt)
+       clean(cos)             Feld cos aus dem oeffentlichen Profil anderer pruefen: { frame, title } plus Felder, die
+                              spaetere Schritte mit field() anmelden. Alles Unbekannte faellt weg, nie ein Absturz.
+       mine()                 eigenes cos fuer das oeffentliche Profil (Poker, Blackjack, Roulette, Freunde)
+       field(name, clean, mine)  weiteres Feld anmelden, z. B. Siegesanimation:
+                              PRLook.field('win', function (v) { return /^[a-z0-9-]{1,24}$/.test(v) ? v : ''; },
+                                           function () { return PRCos.current('win'); });
+     Gilt am Tisch: Rahmen am Profilbild, Titel klein unter dem Namen. */
+  var cosF = {};
+  function cosId(v) { v = typeof v === 'string' ? v : ''; return /^[a-z0-9-]{1,24}$/.test(v) && v !== 'none' ? v : ''; }
+  function cosItem(kind, id) { var C = window.PRCos; return C && id ? C.item(id, kind) : null; }
+  window.PRLook = {
+    frame: function (host, id) {
+      if (!host) return;
+      id = cosId(id);
+      if (id && !cosItem('frame', id)) id = '';
+      var f = host.querySelector(':scope > .cfr');
+      if (!id) { if (f) f.remove(); host.classList.remove('hascfr'); return; }
+      if (!f) { f = document.createElement('u'); f.setAttribute('aria-hidden', 'true'); host.appendChild(f); }   // u: kein Konflikt mit .pav i (Online-Punkt)
+      host.classList.add('hascfr');
+      var cls = 'cfr cfr-' + id;
+      if (f.className !== cls) f.className = cls;
+    },
+    titleText: function (id) { var it = cosItem('title', cosId(id)); return it ? it.name : ''; },
+    title: function (after, id) {
+      if (!after || !after.parentNode) return;
+      var t = window.PRLook.titleText(id), n = after.nextElementSibling, has = n && n.classList.contains('cttl');
+      if (!t) { if (has) n.remove(); return; }
+      if (!has) { n = document.createElement('small'); n.className = 'cttl'; after.parentNode.insertBefore(n, after.nextSibling); }
+      if (n.textContent !== t) n.textContent = t;
+    },
+    clean: function (c) {
+      var o = { frame: '', title: '' };
+      if (!c || typeof c !== 'object') return o;
+      o.frame = cosId(c.frame); o.title = cosId(c.title);
+      Object.keys(cosF).forEach(function (k) { try { var v = cosF[k].clean(c[k]); if (v != null && v !== '') o[k] = v; } catch (e) {} });
+      return o;
+    },
+    mine: function () {
+      var C = window.PRCos, o = { frame: '', title: '' };
+      if (!C) return o;
+      o.frame = cosId(C.current('frame')); o.title = cosId(C.current('title'));
+      Object.keys(cosF).forEach(function (k) { try { var v = cosF[k].mine ? cosF[k].mine() : null; if (v != null && v !== '') o[k] = v; } catch (e) {} });
+      return o;
+    },
+    field: function (name, clean, mine) { if (name && typeof clean === 'function' && name !== 'frame' && name !== 'title') cosF[name] = { clean: clean, mine: mine }; }
   };
 })();
 </script>
@@ -4333,10 +4554,20 @@ input.bprange[type=range]::-moz-range-thumb { width: 20px; height: 20px; border-
     if (MP.role === 'host') { var se = MP.seats && MP.seats[i]; return se && se.kind === 'human' && !se.gone ? se.st | 0 : 0; }
     return p.st | 0;
   }
+  /* Profilrahmen und Titel am Platz: eigene immer, andere nur echte Mitspieler am Online-Tisch */
+  function seatCos(p, i) {
+    if (i === 0) return window.PRLook.mine();
+    if (!MP.on) return null;
+    if (MP.role === 'host') { var se = MP.seats && MP.seats[i]; return se && se.kind === 'human' && !se.gone ? se.cos : null; }
+    return p.cos;
+  }
   function renderSeat(p, i) {
     var r = seats[i], el = r.el;
     r.name.textContent = p.name;
     r.chips.textContent = fmt(p.chips);
+    var sc = seatCos(p, i) || {};
+    window.PRLook.frame(el.querySelector('.avatar'), sc.frame);
+    if (i > 0) window.PRLook.title(r.name, sc.title);
     if (i > 0) {
       var wc = p.color || AV[i], wi = (p.name || '?').charAt(0).toUpperCase();
       if (r.look !== wc + wi) {
@@ -4937,7 +5168,7 @@ input.bprange[type=range]::-moz-range-thumb { width: 20px; height: 20px; border-
     var sp = av.querySelector('span'); if (sp) sp.textContent = profInitial();
   }
   function renderProf() {
-    [$('#pavMenu'), $('#pavBig')].forEach(function (e) { e.style.setProperty('--av', PROF.color); e.textContent = profInitial(); });
+    [$('#pavMenu'), $('#pavBig'), $('#pfCosAv')].forEach(function (e) { e.style.setProperty('--av', PROF.color); e.textContent = profInitial(); window.PRLook.frame(e, window.PRLook.mine().frame); });
     $('#pnameMenu').textContent = profName();
     [].forEach.call(document.querySelectorAll('#swatches button[data-c], #swMore button'), function (b) { var on = b.dataset.c === PROF.color; b.classList.toggle('on', on); b.setAttribute('aria-checked', on ? 'true' : 'false'); });
     syncMute();
@@ -5294,20 +5525,23 @@ input.bprange[type=range]::-moz-range-thumb { width: 20px; height: 20px; border-
   var PEER_PREFIX = 'pokerrunde-';
   /* Version der Tisch-Nachrichten (hello-Feld v). Der Ersteller laesst nur Mitspieler ab PK_V an den Tisch,
      aeltere bekommen { t: 'old' } und den Hinweis, die App neu zu oeffnen. 6: Sterne (st) statt Level (lv) im oeffentlichen Profil,
-     7: Schnellsaetze { t: 'chat', q } und Karten zeigen { t: 'show', c } (Feld sh/sb im Stand) */
-  var PK_V = 7;
+     7: Schnellsaetze { t: 'chat', q } und Karten zeigen { t: 'show', c } (Feld sh/sb im Stand),
+     8: Profilrahmen und Titel cos { frame, title } im oeffentlichen Profil und im Stand (siehe PRLook; spaetere Felder
+        darin werden von aelteren Apps einfach ignoriert) */
+  var PK_V = 8;
   var MSG_NOLIB = 'Online-Tische gehen nur über den Link zum Spiel (kortjannis-web.github.io/Pokerrunde), nicht in dieser Vorschau.';
   function peerOpts() { return window.PR_PEER_OPTS || {}; }
   function netAvail() { return typeof window.Peer === 'function'; }
   /* st: eigene Sterne (Sterne-Skript), fuer das Abzeichen am Platz; 0 = keine */
   function myStars() { return window.PRStars ? Math.min(1e9, window.PRStars.count()) : 0; }
-  function myPublic(buyin) { return { name: profName(), color: PROF.color, hands: PROF.hands, wins: PROF.wins, buyin: buyin || 0, st: myStars() }; }
+  /* cos: Profilrahmen und Titel (PRLook.mine / PRLook.clean) */
+  function myPublic(buyin) { return { name: profName(), color: PROF.color, hands: PROF.hands, wins: PROF.wins, buyin: buyin || 0, st: myStars(), cos: window.PRLook.mine() }; }
   function cleanProf(p) {
     p = (p && typeof p === 'object') ? p : {};
     var nm = String(p.name == null ? '' : p.name).slice(0, 14).trim();
     return { name: nm || 'Spieler', color: (typeof p.color === 'string' && /^#[0-9a-f]{6}$/i.test(p.color)) ? p.color : AV[0],
              hands: Math.min(1e7, Math.max(0, p.hands | 0)), wins: Math.min(1e7, Math.max(0, p.wins | 0)),
-             buyin: Math.min(1e9, Math.max(0, Math.round(+p.buyin || 0))), st: Math.min(1e9, Math.max(0, p.st | 0)) };
+             buyin: Math.min(1e9, Math.max(0, Math.round(+p.buyin || 0))), st: Math.min(1e9, Math.max(0, p.st | 0)), cos: window.PRLook.clean(p.cos) };
   }
   function rateOf(p) { return p.hands ? Math.round(p.wins / p.hands * 100) + '%' : '–'; }
   function initialOf(p) { return p.name.charAt(0).toUpperCase(); }
@@ -5559,7 +5793,7 @@ input.bprange[type=range]::-moz-range-thumb { width: 20px; height: 20px; border-
     var seatsArr = [], used = {};
     function uniq(nm) { var k = nm, c = 1; while (used[k.toLowerCase()]) { c++; k = nm + ' ' + c; } used[k.toLowerCase()] = 1; return k; }
     hum.forEach(function (p, i) {
-      seatsArr.push({ rid: p.host ? '' : (NET.rids[p.id] || ''), name: uniq(p.name), color: p.color, peer: p.host ? '' : p.id, conn: p.host ? null : NET.conns.filter(function (c) { return c.peer === p.id; })[0], chips: buys[i], kind: 'human', gone: false, last: '', v: p.host ? PK_V : p.v | 0, st: p.host ? myStars() : p.st | 0 });
+      seatsArr.push({ rid: p.host ? '' : (NET.rids[p.id] || ''), name: uniq(p.name), color: p.color, peer: p.host ? '' : p.id, conn: p.host ? null : NET.conns.filter(function (c) { return c.peer === p.id; })[0], chips: buys[i], kind: 'human', gone: false, last: '', v: p.host ? PK_V : p.v | 0, st: p.host ? myStars() : p.st | 0, cos: p.host ? window.PRLook.mine() : p.cos });
     });
     for (var bi = 0; bi < cfg.bots; bi++) seatsArr.push({ name: uniq(BOT_NAMES[bi % BOT_NAMES.length]), color: BOT_COL, peer: '', conn: null, chips: avg, kind: 'bot', gone: false, last: '' });
     prepTable();
@@ -5592,7 +5826,7 @@ input.bprange[type=range]::-moz-range-thumb { width: 20px; height: 20px; border-
       var open = v === 0 || p.revealed;
       pl.push({
         name: v === 0 ? 'Du' : st.name, color: st.color, chips: p.chips, bet: p.bet, total: p.total, folded: p.folded, allIn: p.allIn, acted: p.acted, inHand: p.inHand,
-        label: p.label, win: p.win, revealed: p.revealed, st: st.kind === 'human' ? st.st | 0 : 0,
+        label: p.label, win: p.win, revealed: p.revealed, st: st.kind === 'human' ? st.st | 0 : 0, cos: st.kind === 'human' ? st.cos || null : null,
         hole: open ? p.hole : p.hole.map(function () { return { r: 2, s: 0 }; }),
         value: p.revealed ? p.value : undefined,
         sh: p.shown ? p.shown : null, sb: !!p.sbluff   // nur freiwillig gezeigte Karten
@@ -5808,7 +6042,7 @@ input.bprange[type=range]::-moz-range-thumb { width: 20px; height: 20px; border-
       var chips = Math.max(10, Math.min(1e9, Math.round(j.p.buyin) || P.START_CHIPS));
       var botOut = MP.seats[idx] && MP.seats[idx].kind === 'bot' ? MP.seats[idx].name : '';   // Bot ohne Chips macht Platz
       if (game.seat({ name: nm, color: j.p.color, chips: chips }, idx) !== idx) return;
-      var st = { name: nm, color: j.p.color, peer: j.p.id, conn: j.conn, chips: chips, kind: 'human', gone: false, last: '', v: j.p.v, rid: j.rid || '', st: j.p.st | 0 };
+      var st = { name: nm, color: j.p.color, peer: j.p.id, conn: j.conn, chips: chips, kind: 'human', gone: false, last: '', v: j.p.v, rid: j.rid || '', st: j.p.st | 0, cos: j.p.cos };
       MP.seats[idx] = st; MP.brokes[idx] = null; MP.n = S.players.length;
       NET.players.push(j.p);
       try { j.conn.send({ t: 'start', seat: idx, n: MP.n, chips: chips }); } catch (e) {}
@@ -5838,7 +6072,7 @@ input.bprange[type=range]::-moz-range-thumb { width: 20px; height: 20px; border-
         NET.players = [Object.assign({ id: 'host', host: true }, cleanProf(myPublic(S.players[0].chips)))];
         MP = { on: true, role: 'host', n: S.players.length, wait: null, brokes: [], joins: [], ended: false,
                seats: S.players.map(function (p, i) {
-                 return i === 0 ? { rid: '', name: profName(), color: PROF.color, peer: '', conn: null, chips: p.chips, kind: 'human', gone: false, last: '', v: PK_V, st: myStars() }
+                 return i === 0 ? { rid: '', name: profName(), color: PROF.color, peer: '', conn: null, chips: p.chips, kind: 'human', gone: false, last: '', v: PK_V, st: myStars(), cos: window.PRLook.mine() }
                                 : { name: p.name, color: p.color || AV[i], peer: '', conn: null, chips: p.chips, kind: p.kind, gone: false, last: '' };
                }) };
         peer.on('connection', hostAccept);
@@ -5921,7 +6155,7 @@ input.bprange[type=range]::-moz-range-thumb { width: 20px; height: 20px; border-
     G.players = d.pl.map(function (p, i) {
       return { id: i, name: String(p.name || '').slice(0, 14), color: p.color, chips: p.chips | 0, bet: p.bet | 0, total: p.total | 0, folded: !!p.folded, allIn: !!p.allIn, acted: !!p.acted,
                inHand: !!p.inHand, label: String(p.label || ''), win: p.win | 0, revealed: !!p.revealed, hole: Array.isArray(p.hole) ? p.hole : [], value: p.value,
-               st: Math.min(1e9, Math.max(0, p.st | 0)), shown: cleanShown(p.sh), sbluff: !!p.sb };
+               st: Math.min(1e9, Math.max(0, p.st | 0)), cos: window.PRLook.clean(p.cos), shown: cleanShown(p.sh), sbluff: !!p.sb };
     });
     G.board = Array.isArray(d.bd) ? d.bd : []; G.phase = d.ph; G.dealer = d.dl; G.sbIdx = d.sbI; G.bbIdx = d.bbI; G.glow = d.gl; G.toAct = d.ta;
     G.sb = d.sb; G.bb = d.bb; G.currentBet = d.cb; G.lastRaise = d.lr; G.handNo = d.hn; G.result = d.rs; G.humanStart = d.st;
@@ -5987,6 +6221,7 @@ input.bprange[type=range]::-moz-range-thumb { width: 20px; height: 20px; border-
       var isMe = host ? p.id === 'host' : p.id === me;
       var b = document.createElement('button'); b.type = 'button'; b.className = 'pl';
       var av = document.createElement('span'); av.className = 'pav'; av.style.setProperty('--av', p.color); av.textContent = initialOf(p);
+      window.PRLook.frame(av, isMe ? window.PRLook.mine().frame : p.cos && p.cos.frame);
       var pn = document.createElement('span'); pn.className = 'pn';
       var nm = document.createElement('b'); nm.textContent = p.name + (isMe ? ' (Du)' : '');
       var sm = document.createElement('small'); sm.textContent = (p.st ? '⭐ ' + fmt(p.st) + ' · ' : '') + (p.hands ? fmt(p.hands) + ' Hände · ' + rateOf(p) + ' Quote' : 'Noch keine Hände');
@@ -6024,6 +6259,7 @@ input.bprange[type=range]::-moz-range-thumb { width: 20px; height: 20px; border-
   function openPView(p) {
     $('#pvAv').style.setProperty('--av', p.color); $('#pvAv').textContent = initialOf(p);
     $('#pvName').textContent = p.name; $('#pvRole').textContent = p.host ? 'Ersteller' : '';
+    var pc = p.cos || {}; window.PRLook.frame($('#pvAv'), pc.frame); window.PRLook.title($('#pvName'), pc.title);
     $('#pvHands').textContent = fmt(p.hands); $('#pvWins').textContent = fmt(p.wins); $('#pvRate').textContent = rateOf(p); $('#pvBuy').textContent = p.buyin ? fmt(p.buyin) : '–';
     $('#pview').hidden = false;
   }
@@ -6631,7 +6867,7 @@ input.bprange[type=range]::-moz-range-thumb { width: 20px; height: 20px; border-
     if (eq >= fair - 0.08) return r('🤔', 0.5, nm + ' war knapp');
     return d.call > 0 ? r('👎', 0, nm + ' war teuer') : r('🤔', 0.5, nm + ' war ein Bluff, kann klappen');
   }
-  function coachRun(ds, facts, g) {
+  function coachRun(ds, facts, g, hn) {
     var res = [], i = 0;
     (function next() {
       if (g !== gen) return;
@@ -6669,7 +6905,7 @@ input.bprange[type=range]::-moz-range-thumb { width: 20px; height: 20px; border-
         window.PRBus.emit('coach', { score: Math.round(pts.reduce(function (a, x) { return a + x; }, 0) / pts.length * 100) });
       }
       var q = window.PRCoach.quality();
-      coachShow({ hn: coach.hn, lines: lines, sub: q.pct == null ? '' : 'Qualität ' + q.pct + ' %' });
+      coachShow({ hn: hn, lines: lines, sub: q.pct == null ? '' : 'Qualität ' + q.pct + ' %' });
     }
   }
   function esc(t) { var d = document.createElement('span'); d.textContent = String(t || ''); return d.innerHTML; }
@@ -6677,16 +6913,21 @@ input.bprange[type=range]::-moz-range-thumb { width: 20px; height: 20px; border-
   function coachTick() {
     var el = $('#coach');
     if (humanResolve && el && !el.hidden) coachHide(true);   // nie, waehrend ich dran bin
-    if (coachPend && !humanResolve) { var c = coachPend; coachPend = null; if (S.handNo <= c.hn + 1) coachShow(c); }
+    /* neue Hand ausgeteilt: die Karte der letzten Hand wuerde die neuen Handkarten verdecken */
+    if (el && !el.hidden && coachNewDeal(el._hn)) coachHide();
+    if (coachPend && !humanResolve) { var c = coachPend; coachPend = null; if (!coachNewDeal(c.hn)) coachShow(c); }
     if (S.phase !== 'result' || coachDone === S.handNo) return;
     coachDone = S.handNo;
     if (!window.PRCoach.on() || coach.hn !== S.handNo || !coach.d.length) return;
     var ds = coach.d.slice(), g = gen, hn = S.handNo, f0 = coachFacts();
-    setTimeout(function () { if (g === gen) coachRun(ds, S.handNo === hn && S.phase === 'result' ? coachFacts() : f0, g); }, 1300);
+    setTimeout(function () { if (g === gen) coachRun(ds, S.handNo === hn && S.phase === 'result' ? coachFacts() : f0, g, hn); }, 1300);
   }
+  /* liegen schon Karten einer neueren Hand als hn auf dem Tisch? */
+  function coachNewDeal(hn) { return hn != null && S.handNo > hn && S.phase !== 'result' && S.phase !== 'idle'; }
   function coachShow(c) {
     if (humanResolve || !playing) { coachPend = c; return; }
-    var el = $('#coach');
+    if (coachNewDeal(c.hn)) return;
+    var el = $('#coach'); el._hn = c.hn;
     el.setAttribute('aria-label', 'Auswertung der Hand, antippen schließt');
     el.innerHTML = '<div class="cchead"><b>Auswertung</b><span>' + c.sub + '<em aria-hidden="true">✕</em></span></div><ul>' +
       c.lines.map(function (l) { return '<li' + (l.rb ? ' class="rb"' : '') + '><i>' + l.e + '</i><span>' + l.t + '</span></li>'; }).join('') +
@@ -6767,7 +7008,7 @@ input.bprange[type=range]::-moz-range-thumb { width: 20px; height: 20px; border-
   var GIFT = 50;   // so viele Chips gibt es, wenn man pleite ist und auch im Guthaben nichts mehr hat
   var MIN_OPTS = [10, 25, 50], SEAT_OPTS = [2, 3, 4, 5];
   var PEER_PREFIX = 'pokerrunde-bj-';
-  var BJ_V = 7;   // Version des Tisch-Protokolls: Ersteller und Mitspieler muessen gleich sein (6: Sterne st statt Level lv im Profil, 7: Schnellsaetze t 'chat')
+  var BJ_V = 8;   // Version des Tisch-Protokolls: Ersteller und Mitspieler muessen gleich sein (6: Sterne st statt Level lv im Profil, 7: Schnellsaetze t 'chat', 8: Rahmen und Titel cos im Profil)
 
   /* ---------- Karten und Werte ---------- */
   function randInt(n) {
@@ -6818,12 +7059,12 @@ input.bprange[type=range]::-moz-range-thumb { width: 20px; height: 20px; border-
     H = { shoe: newShoe(), hole: null, cid: 0, dl: 0, tt: 0, bt: 0, busy: false, rid: {} };   // rid: Wiederkehr-Kennung -> Platz
     T = { phase: 'bet', round: 0, min: min, cap: cap || MAX_SEATS, seats: [], dealer: [], turn: -1, left: 0, shuf: 0, shoe: H.shoe.length, say: '', sayN: 0 };
     ME = me;
-    addSeat(me, { name: PR.profName(), color: PR.prof().color, chips: chips, res: BW, st: myStars() });
+    addSeat(me, { name: PR.profName(), color: PR.prof().color, chips: chips, res: BW, st: myStars(), cos: window.PRLook.mine() });
     betPhase();
   }
   function addSeat(id, p) {
     /* res: was der Spieler noch im Guthaben hat (nicht am Tisch), add: so viel hat er schon nachgeladen, st: Sterne */
-    T.seats.push({ id: id, name: p.name, color: p.color, chips: p.chips, res: p.res || 0, add: 0, bet: 0, pend: 0, last: 0, ready: false, hands: [], cur: 0, inR: false, gone: false, gift: 0, st: p.st | 0 });
+    T.seats.push({ id: id, name: p.name, color: p.color, chips: p.chips, res: p.res || 0, add: 0, bet: 0, pend: 0, last: 0, ready: false, hands: [], cur: 0, inR: false, gone: false, gift: 0, st: p.st | 0, cos: window.PRLook.clean(p.cos) });
   }
   function myStars() { return window.PRStars ? Math.min(1e9, window.PRStars.count()) : 0; }
   /* Chips aus dem Guthaben an den Tisch holen: liegen sofort bereit, auch mitten in der Runde */
@@ -7146,6 +7387,7 @@ input.bprange[type=range]::-moz-range-thumb { width: 20px; height: 20px; border-
       el.classList.toggle('many', s.hands.length > 1);
       var av = el.querySelector('.pav'); av.style.setProperty('--av', s.color); av.textContent = (s.name.charAt(0) || '?').toUpperCase();
       window.PRStarBadge(av, s.st);
+      var sc = s.cos || {}; window.PRLook.frame(av, sc.frame); window.PRLook.title(el.querySelector('.bjwho'), sc.title);
       el._nm = s.name; window.PRChat.badge(av, s.name);
       el.querySelector('.bjwho span:last-child').textContent = s.name;
       el.classList.toggle('turn', turn);
@@ -7822,7 +8064,7 @@ input.bprange[type=range]::-moz-range-thumb { width: 20px; height: 20px; border-
     var nm = String(p.name == null ? '' : p.name).slice(0, 14).trim();
     return { name: nm || 'Spieler', color: (typeof p.color === 'string' && /^#[0-9a-f]{6}$/i.test(p.color)) ? p.color : PR.AV[0],
              chips: Math.min(1e9, Math.max(0, Math.round(+p.chips || 0))), res: Math.min(1e9, Math.max(0, Math.round(+p.res || 0))),
-             st: Math.min(1e9, Math.max(0, p.st | 0)) };
+             st: Math.min(1e9, Math.max(0, p.st | 0)), cos: window.PRLook.clean(p.cos) };
   }
 
   /* --- Ersteller: der Tisch ist sofort offen, Freunde setzen sich in der naechsten Setzrunde dazu --- */
@@ -7948,7 +8190,7 @@ input.bprange[type=range]::-moz-range-thumb { width: 20px; height: 20px; border-
       conn.on('open', function () {
         var P = PR.prof(), buy = takeBuy(kJoin.get());
         NB.rid = newRid();
-        try { conn.send({ t: 'hello', g: 'bj', v: BJ_V, rid: NB.rid, p: { name: PR.profName(), color: P.color, chips: buy, res: BW, st: myStars() } }); } catch (e) {}
+        try { conn.send({ t: 'hello', g: 'bj', v: BJ_V, rid: NB.rid, p: { name: PR.profName(), color: P.color, chips: buy, res: BW, st: myStars(), cos: window.PRLook.mine() } }); } catch (e) {}
       });
       conn.on('data', function (d) {
         if (g !== NB.gen || !d || typeof d !== 'object') return;
@@ -8016,7 +8258,7 @@ input.bprange[type=range]::-moz-range-thumb { width: 20px; height: 20px; border-
         var conn = peer.connect(PEER_PREFIX + code.toLowerCase(), { serialization: 'json', reliable: true }), back = false;
         conn.on('open', function () {
           var my = seatOf(ME), P = PR.prof();
-          try { conn.send({ t: 'hello', g: 'bj', v: BJ_V, rid: NB.rid, p: { name: PR.profName(), color: P.color, chips: my ? my.chips : 0, res: BW, st: myStars() } }); } catch (e) {}
+          try { conn.send({ t: 'hello', g: 'bj', v: BJ_V, rid: NB.rid, p: { name: PR.profName(), color: P.color, chips: my ? my.chips : 0, res: BW, st: myStars(), cos: window.PRLook.mine() } }); } catch (e) {}
         });
         conn.on('data', function (d) {
           if (g !== NB.gen || !d || typeof d !== 'object') return;
@@ -9688,7 +9930,7 @@ input.bprange[type=range]::-moz-range-thumb { width: 20px; height: 20px; border-
   function $(s) { return document.querySelector(s); }
   function all(s) { return [].slice.call(document.querySelectorAll(s)); }
 
-  var RL_V = 4;   // Version des Tisch-Protokolls: Ersteller und Mitspieler muessen gleich sein (3: Sterne st statt Level lv im Profil, 4: Reaktionen und Schnellsaetze)
+  var RL_V = 5;   // Version des Tisch-Protokolls: Ersteller und Mitspieler muessen gleich sein (3: Sterne st statt Level lv im Profil, 4: Reaktionen und Schnellsaetze, 5: Rahmen und Titel cos im Profil)
   var PEER_PREFIX = 'pokerrunde-rl-', MAX_PL = 6, SPIN_MS = 6500, HOLD_MS = 2600, BET_MS = 15000, GIFT = 50;
   var CHIPS = [10, 50, 100, 500, 1000, 5000];
   var WHEEL = [0, 32, 15, 19, 4, 21, 2, 25, 17, 34, 6, 27, 13, 36, 11, 30, 8, 23, 10, 5, 24, 16, 33, 1, 20, 14, 31, 9, 22, 18, 29, 7, 28, 12, 35, 3, 26];
@@ -9902,7 +10144,7 @@ input.bprange[type=range]::-moz-range-thumb { width: 20px; height: 20px; border-
     H = { bt: 0, st: 0, dl: 0, t0: 0 };
     R = { ph: 'bet', rd: Math.max(V.spun, V.betRd) + 1, res: -1, el: 0, dl: 0, hist: hist, pl: [] };
     ME = 'me';
-    R.pl.push({ id: ME, name: PR.profName(), color: PR.prof().color, rdy: false, b: cleanBets(myB), st: myStars() });
+    R.pl.push({ id: ME, name: PR.profName(), color: PR.prof().color, rdy: false, b: cleanBets(myB), st: myStars(), cos: window.PRLook.mine() });
     push();
   }
   function push() {
@@ -10129,16 +10371,18 @@ input.bprange[type=range]::-moz-range-thumb { width: 20px; height: 20px; border-
   var plKey = '';
   function renderPl() {
     var host = $('#rlFr'), list = R && multi() ? R.pl.filter(function (p) { return p.id !== ME; }) : [];
-    var k = JSON.stringify(list.map(function (p) { return [p.id, p.name, p.color, p.rdy, p.st | 0, window.PRChat.muted(p.name)]; }));
+    var k = JSON.stringify(list.map(function (p) { return [p.id, p.name, p.color, p.rdy, p.st | 0, window.PRChat.muted(p.name), p.cos || null]; }));
     var talk = multi() && others();
     $('#rlReact').hidden = !talk; if (!talk) $('#rlRPanel').hidden = true;
     if (k === plKey) return;
     plKey = k;
     host.hidden = !list.length; host.innerHTML = '';
     list.slice(0, 5).forEach(function (p) {
-      var el = document.createElement('span'); el.className = 'slfa rlfa' + (p.rdy ? ' rdy' : ''); el.title = p.name + (p.rdy ? ' (fertig)' : '');
+      var pc = p.cos || {}, tt = window.PRLook.titleText(pc.title);
+      var el = document.createElement('span'); el.className = 'slfa rlfa' + (p.rdy ? ' rdy' : ''); el.title = p.name + (tt ? ' · ' + tt : '') + (p.rdy ? ' (fertig)' : '');
       var a = document.createElement('span'); a.className = 'pav'; a.style.setProperty('--av', p.color); a.textContent = (p.name || '?').charAt(0).toUpperCase();
       window.PRStarBadge(a, p.st);
+      window.PRLook.frame(a, pc.frame);
       window.PRChat.badge(a, p.name);
       el._sid = p.id;
       window.PRChat.hold(el, function () { return p.name; }, a);   // langes Druecken: stumm schalten
@@ -10385,7 +10629,7 @@ input.bprange[type=range]::-moz-range-thumb { width: 20px; height: 20px; border-
   function cleanProf(p) {
     p = (p && typeof p === 'object') ? p : {};
     var nm = String(p.name == null ? '' : p.name).slice(0, 14).trim();
-    return { name: nm || 'Spieler', color: (typeof p.color === 'string' && /^#[0-9a-f]{6}$/i.test(p.color)) ? p.color : PR.AV[0], st: Math.min(1e9, Math.max(0, p.st | 0)) };
+    return { name: nm || 'Spieler', color: (typeof p.color === 'string' && /^#[0-9a-f]{6}$/i.test(p.color)) ? p.color : PR.AV[0], st: Math.min(1e9, Math.max(0, p.st | 0)), cos: window.PRLook.clean(p.cos) };
   }
   function myStars() { return window.PRStars ? Math.min(1e9, window.PRStars.count()) : 0; }
   function free() { return !!R && R.pl.length < MAX_PL; }
@@ -10436,7 +10680,7 @@ input.bprange[type=range]::-moz-range-thumb { width: 20px; height: 20px; border-
       var old = plOf(conn.peer); if (old) R.pl.splice(R.pl.indexOf(old), 1);
       var p = cleanProf(d.p);
       conn._rl = true; NB.conns.push(conn);
-      R.pl.push({ id: conn.peer, name: p.name, color: p.color, rdy: false, b: {}, st: p.st });
+      R.pl.push({ id: conn.peer, name: p.name, color: p.color, rdy: false, b: {}, st: p.st, cos: p.cos });
       toast(p.name + ' spielt jetzt mit'); Snd.ping();
       push();
     });
@@ -10461,7 +10705,7 @@ input.bprange[type=range]::-moz-range-thumb { width: 20px; height: 20px; border-
       el: Math.max(0, Math.min(60000, +s.el || 0)), dl: Math.max(0, Math.min(60000, +s.dl || 0)),
       hist: s.hist.filter(function (n) { return n === (n | 0) && n >= 0 && n <= 36; }).slice(0, 14),
       pl: s.pl.slice(0, MAX_PL).filter(function (p) { return p && typeof p.id === 'string'; }).map(function (p) {
-        var c = cleanProf(p); return { id: p.id.slice(0, 64), name: c.name, color: c.color, rdy: !!p.rdy, b: cleanBets(p.b), st: c.st };
+        var c = cleanProf(p); return { id: p.id.slice(0, 64), name: c.name, color: c.color, rdy: !!p.rdy, b: cleanBets(p.b), st: c.st, cos: c.cos };
       })
     };
   }
@@ -10485,7 +10729,7 @@ input.bprange[type=range]::-moz-range-thumb { width: 20px; height: 20px; border-
       var conn = peer.connect(PEER_PREFIX + code.toLowerCase(), { serialization: 'json', reliable: true });
       conn.on('open', function () {
         var P = PR.prof();
-        try { conn.send({ t: 'hello', g: 'rl', v: RL_V, p: { name: PR.profName(), color: P.color, st: myStars() } }); } catch (e) {}
+        try { conn.send({ t: 'hello', g: 'rl', v: RL_V, p: { name: PR.profName(), color: P.color, st: myStars(), cos: window.PRLook.mine() } }); } catch (e) {}
       });
       conn.on('data', function (d) {
         if (g !== NB.gen || !d || typeof d !== 'object') return;
@@ -10575,7 +10819,8 @@ input.bprange[type=range]::-moz-range-thumb { width: 20px; height: 20px; border-
     return { code: f.code, name: nm, color: (typeof f.color === 'string' && /^#[0-9a-f]{6}$/i.test(f.color)) ? f.color : PR.AV[0], pending: !!f.pending,
              bank: isFinite(bk) && bk >= 0 ? Math.min(bk, 1e12) : null,
              sb: f.sb != null && isFinite(sb) && sb >= 0 ? Math.min(sb, 1e12) : null, sj: isFinite(sj) && sj >= 0 ? Math.min(sj, 1e6) : 0,
-             pt: f.pt != null && isFinite(+f.pt) && +f.pt >= 0 ? Math.min(Math.round(+f.pt), 1e9) : null };
+             pt: f.pt != null && isFinite(+f.pt) && +f.pt >= 0 ? Math.min(Math.round(+f.pt), 1e9) : null,
+             cos: window.PRLook.clean(f.cos) };
   }
   function friend(code) { for (var i = 0; i < FR.length; i++) if (FR[i].code === code) return FR[i]; return null; }
   var REQ = {}, NOPE = {};   // Freundschaftsanfragen an mich (Code -> { code, name, color, st, p }) und in dieser Sitzung abgelehnte
@@ -10615,7 +10860,8 @@ input.bprange[type=range]::-moz-range-thumb { width: 20px; height: 20px; border-
   function mySl() { var o = null; try { o = JSON.parse(localStorage.getItem('pr-slstats') || 'null'); } catch (e) {} o = o || {}; return [Math.round(+o.best || 0), Math.round(+o.jp || 0)]; }
   /* pt: Spielzeit in Sekunden, auf Minuten gerundet (damit der Stand nicht staendig neu verschickt wird) */
   function myPt() { var t = 0; try { t = +(JSON.parse(localStorage.getItem('pr-ptime') || 'null') || {}).s || 0; } catch (e) {} return Math.floor(t / 60) * 60; }
-  function myPub() { var P = PR.prof(); return { name: PR.profName(), color: P.color, bank: Math.round(P.bank || 0), sl: mySl(), pt: myPt() }; }
+  /* cos: Profilrahmen und Titel (PRLook); aeltere Versionen schicken es nicht und lesen es nicht, das stoert nicht */
+  function myPub() { var P = PR.prof(); return { name: PR.profName(), color: P.color, bank: Math.round(P.bank || 0), sl: mySl(), pt: myPt(), cos: window.PRLook.mine() }; }
   /* Chipstand des Freundes merken (fuer die Rangliste, auch wenn er offline ist) */
   function takeBank(f, p) {
     var b = Math.round(+(p && p.bank)); if (isFinite(b) && b >= 0) f.bank = Math.min(b, 1e12);
@@ -10625,6 +10871,7 @@ input.bprange[type=range]::-moz-range-thumb { width: 20px; height: 20px; border-
       if (isFinite(sj) && sj >= 0) f.sj = Math.min(sj, 1e6);
     }
     var pt = Math.round(+(p && p.pt)); if (p && p.pt != null && isFinite(pt) && pt >= 0) f.pt = Math.min(pt, 1e9);
+    if (p && p.cos) f.cos = window.PRLook.clean(p.cos);
   }
 
   /* ---------- Vermittlung ---------- */
@@ -10860,6 +11107,7 @@ input.bprange[type=range]::-moz-range-thumb { width: 20px; height: 20px; border-
     var a = document.createElement('span'); a.className = 'pav';
     a.style.setProperty('--av', f.color); a.textContent = (f.name || '?').charAt(0).toUpperCase();
     a.appendChild(document.createElement('i'));
+    if (f.cos) window.PRLook.frame(a, f.cos.frame);
     return a;
   }
   function sorted() {
@@ -10878,6 +11126,7 @@ input.bprange[type=range]::-moz-range-thumb { width: 20px; height: 20px; border-
     var sm = document.createElement('small');
     sm.textContent = f.pending ? 'Anfrage gesendet · wartet auf Bestätigung' : on ? stText(st) : 'Offline';
     n.appendChild(b); n.appendChild(sm); r.appendChild(n);
+    if (f.cos && !f.pending) window.PRLook.title(b, f.cos.title);
     var more = document.createElement('button'); more.type = 'button'; more.className = 'flm'; more.setAttribute('aria-label', 'Mehr zu ' + (f.name || f.code));
     more.innerHTML = '<svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><circle cx="5" cy="12" r="1.8"/><circle cx="12" cy="12" r="1.8"/><circle cx="19" cy="12" r="1.8"/></svg>';
     more.addEventListener('click', function () { openRow = openRow === f.code ? '' : f.code; render(true); });
@@ -10972,7 +11221,7 @@ input.bprange[type=range]::-moz-range-thumb { width: 20px; height: 20px; border-
   var renderKey = '';
   function render(force) {
     var me = lastSt || myStatus();
-    var k = JSON.stringify([FR, REQ, me, openRow, PR.prof().bank, PR.profName(), myPt(), Object.keys(LIVE).map(function (c) { return [c, isOn(c), LIVE[c].st]; })]);
+    var k = JSON.stringify([FR, REQ, me, openRow, PR.prof().bank, PR.profName(), myPt(), !!window.PRCos, Object.keys(LIVE).map(function (c) { return [c, isOn(c), LIVE[c].st]; })]);
     if (!force && k === renderKey) return;
     renderKey = k;
     var n = onlineCount();
@@ -11435,7 +11684,7 @@ input.bprange[type=range]::-moz-range-thumb { width: 20px; height: 20px; border-
   function menuFree() {
     if ($('#menu').hidden || !$('#splash').hidden || !$('#daily').hidden) return false;
     if (window.prIdle && !window.prIdle()) return false;
-    return ['#friends', '#bjf', '#profile', '#pview', '#chipdlg', '#invBan', '#askBan', '#shop', '#giftDlg', '#starView', '#starUp', '#quests', '#chestDlg'].every(function (s) { var e = $(s); return !e || e.hidden; });
+    return ['#friends', '#bjf', '#profile', '#pview', '#chipdlg', '#invBan', '#askBan', '#shop', '#giftDlg', '#starView', '#starUp', '#quests', '#chestDlg', '#achView'].every(function (s) { var e = $(s); return !e || e.hidden; });
   }
   function showDaily() {
     var d = loadDaily(); if (d.day === today()) return;
@@ -11682,7 +11931,7 @@ input.bprange[type=range]::-moz-range-thumb { width: 20px; height: 20px; border-
   function free() {
     if ($('#menu').hidden || !$('#splash').hidden) return false;
     if (window.prIdle && !window.prIdle()) return false;
-    return ['#daily', '#friends', '#bjf', '#profile', '#pview', '#chipdlg', '#invBan', '#askBan', '#shop', '#giftDlg', '#starView', '#starUp', '#end', '#quests', '#chestDlg']
+    return ['#daily', '#friends', '#bjf', '#profile', '#pview', '#chipdlg', '#invBan', '#askBan', '#shop', '#giftDlg', '#starView', '#starUp', '#end', '#quests', '#chestDlg', '#achView']
       .every(function (s) { var e = $(s); return !e || e.hidden; });
   }
   function pendingMile() {
@@ -12082,7 +12331,7 @@ input.bprange[type=range]::-moz-range-thumb { width: 20px; height: 20px; border-
   function menuFree() {
     if ($('#menu').hidden || !$('#splash').hidden) return false;
     if (window.prIdle && !window.prIdle()) return false;
-    return ['#daily', '#friends', '#bjf', '#profile', '#pview', '#chipdlg', '#invBan', '#askBan', '#shop', '#giftDlg', '#starView', '#starUp', '#chestDlg']
+    return ['#daily', '#friends', '#bjf', '#profile', '#pview', '#chipdlg', '#invBan', '#askBan', '#shop', '#giftDlg', '#starView', '#starUp', '#chestDlg', '#achView']
       .every(function (s) { var e = $(s); return !e || e.hidden; });
   }
   function credit(chips) { var P = PR.prof(); P.bank = Math.round((P.bank || 0) + chips); PR.saveProf(); PR.renderBank(); }
@@ -12385,14 +12634,539 @@ input.bprange[type=range]::-moz-range-thumb { width: 20px; height: 20px; border-
 </script>
 
 <script>
-/* Shop im Hauptmenue: Tomaten fuer je 2 Chips kaufen und zum selben Preis wieder verkaufen,
-   die Anzahl steht unter den Chips oben rechts */
+/* Erfolge: kleine Liste fuer alle Spiele (hoert nur an der Ereignis-Zentrale zu, nie Bots oder Mitspieler).
+   Freigeschaltet wird sofort, gemeldet wird erst im Menue („🏆 Erfolg: Bluff-König“), nie mitten im Spiel.
+   Erfolge mit title schalten einen Titel frei (Shop-Reiter „Profil“, sichtbar unter dem Namen am Tisch und bei Freunden).
+   Gespeichert in pr-ach { d: { id: Zeitpunkt }, p: { id: Fortschritt }, g: { Spiel: 1 } (Allrounder), q: [noch zu melden] }.
+   Schnittstelle window.PRAch (auch PR.ach):
+     list()            alle Erfolge [{ id, icon, name, desc, goal, p, done, at, title }] in fester Reihenfolge
+     has(id)           geschafft?          count()  { done, total }
+     unlock(id)        freischalten (z. B. von aussen: Wochenliga)
+     progress(id, n)   Fortschritt auf n setzen (es zaehlt der hoechste Wert); ab goal geschafft
+     bump(id, n)       Fortschritt um n (Standard 1) erhoehen
+     onUnlock(fn)      fn(def) bei jeder Freischaltung (zusaetzlich Ereignis 'ach' { id })
+     add(def)          weiteren Erfolg anlegen (spaetere Spiele), def = { id, icon, name, desc, goal?, title?, ev?, f?, abs? }
+                       ev/f: bei Ereignis ev wird f(daten) gerufen: Zahl/true = um so viel weiter (abs: true = Fortschritt
+                       ist der Wert selbst). Beispiel: PRAch.add({ id: 'blitzfinger', icon: '⚡', name: 'Blitzfinger',
+                       desc: 'Reagiere in unter 180 ms', title: 'Blitzfinger', ev: 'duel:react', f: function (d) { return d.ms < 180; } });
+   Erfolge spaeterer Spiele legen diese selbst mit add() an (Blitzfinger, Kartenhai, Glückspilz, Crash …). */
 (function () {
   'use strict';
   var PR = window.PR;
   if (!PR) return;
-  var Snd = PR.Snd, fmt = PR.fmt, PRICE = 2;
+  var fmt = PR.fmt;
   function $(s) { return document.querySelector(s); }
+  function readJ(k) { try { return JSON.parse(localStorage.getItem(k) || 'null'); } catch (e) { return null; } }
+  var KEY = 'pr-ach';
+  var DEFS = [], BY = {}, subs = [];
+  function one(d) { return d ? 1 : 0; }
+  function won(d) { return d && d.won; }
+  /* ---------- die Erfolge ---------- */
+  [
+    /* Poker */
+    { id: 'erster-pot', icon: '🃏', name: 'Erster Pot', desc: 'Gewinne deine erste Pokerhand', ev: 'poker:hand', f: won },
+    { id: 'pot-sammler', icon: '🪙', name: 'Pot-Sammler', desc: 'Gewinne 50 Pokerhände', goal: 50, ev: 'poker:hand', f: won },
+    { id: 'sitzfleisch', icon: '🪑', name: 'Sitzfleisch', desc: 'Spiele 500 Pokerhände', goal: 500, ev: 'poker:hand', f: function () { return 1; } },
+    { id: 'volles-haus', icon: '🏠', name: 'Volles Haus', desc: 'Gewinne eine Hand mit Full House', ev: 'poker:hand', f: function (d) { return d.won && d.cat === 6; } },
+    { id: 'vierling', icon: '🍀', name: 'Vierling', desc: 'Gewinne eine Hand mit einem Vierling', ev: 'poker:hand', f: function (d) { return d.won && d.cat === 7; } },
+    { id: 'straight-flush', icon: '🌊', name: 'Straight Flush', desc: 'Gewinne eine Hand mit einem Straight Flush', ev: 'poker:hand', f: function (d) { return d.won && d.cat === 8; } },
+    { id: 'royal', icon: '👑', name: 'Royal Flush', desc: 'Gewinne eine Hand mit einem Royal Flush', title: 'Royal', ev: 'poker:hand', f: function (d) { return d.won && d.cat === 8 && /Royal/.test(d.handName || ''); } },
+    { id: 'all-in', icon: '🚀', name: 'Alles oder nichts', desc: 'Gewinne eine Hand, in der du All-in warst', ev: 'poker:hand', f: function (d) { return d.won && d.allin; } },
+    { id: 'dicker-fisch', icon: '🐟', name: 'Dicker Fisch', desc: 'Gewinne einen Pot von mindestens 50 Big Blinds', ev: 'poker:hand', f: function (d) { return d.won && d.bigBlind > 0 && d.pot >= 50 * d.bigBlind; } },
+    { id: 'pokerface', icon: '😏', name: 'Pokerface', desc: 'Zeige nach einer Hand deinen ersten Bluff', ev: 'poker:show', f: function (d) { return d.bluff; } },
+    { id: 'bluff-koenig', icon: '🤥', name: 'Bluff-König', desc: 'Zeige 10 Bluffs nach der Hand', goal: 10, title: 'Bluff-König', ev: 'poker:show', f: function (d) { return d.bluff; } },
+    { id: 'lehrbuch', icon: '🎓', name: 'Wie im Lehrbuch', desc: '100 % in der Auswertung nach der Hand (Profil → Einstellungen)', ev: 'coach', f: function (d) { return d.score >= 100; } },
+    { id: 'gesellig', icon: '🤝', name: 'In guter Gesellschaft', desc: 'Spiele eine Runde mit echten Mitspielern', ev: 'online:round', f: one },
+    { id: 'stammtisch', icon: '🌐', name: 'Stammtisch', desc: 'Spiele 50 Runden mit Freunden', goal: 50, ev: 'online:round', f: one },
+    /* Blackjack */
+    { id: 'blackjack', icon: '🂡', name: 'Blackjack!', desc: 'Bekomme deinen ersten Blackjack', ev: 'bj:round', f: function (d) { return d.result === 'bj'; } },
+    { id: 'naturtalent', icon: '✨', name: 'Naturtalent', desc: 'Bekomme 10 Blackjacks', goal: 10, ev: 'bj:round', f: function (d) { return d.result === 'bj'; } },
+    { id: 'verdoppelt', icon: '✌️', name: 'Doppelt hält besser', desc: 'Verdopple beim Blackjack und gewinne', ev: 'bj:round', f: function (d) { return d.doubled && d.net > 0; } },
+    { id: 'geteilt', icon: '✂️', name: 'Geteilte Freude', desc: 'Teile beim Blackjack und gewinne', ev: 'bj:round', f: function (d) { return d.split && d.net > 0; } },
+    { id: 'kartenkenner', icon: '🎴', name: 'Kartenkenner', desc: 'Spiele 200 Runden Blackjack', goal: 200, ev: 'bj:round', f: one },
+    { id: 'hausbank', icon: '🏦', name: 'Hausbank', desc: 'Gewinne beim Blackjack insgesamt 100.000 Chips', goal: 100000, title: 'Hausbank', ev: 'win', f: function (d) { return d.game === 'bj' && d.net > 0 ? d.net : 0; } },
+    /* Slots */
+    { id: 'jackpot', icon: '🎰', name: 'Jackpot!', desc: 'Knacke an den Slots einen Jackpot', title: 'Jackpot-Jäger', ev: 'slots:spin', f: function (d) { return d.jackpot; } },
+    { id: 'volltreffer', icon: '🍒', name: 'Volltreffer', desc: 'Gewinne an den Slots das 50-Fache deines Einsatzes', ev: 'slots:spin', f: function (d) { return d.mult >= 50; } },
+    { id: 'dauerdreher', icon: '🎡', name: 'Dauerdreher', desc: 'Drehe 1.000-mal an den Slots', goal: 1000, ev: 'slots:spin', f: one },
+    /* Roulette */
+    { id: 'auf-den-punkt', icon: '🎯', name: 'Auf den Punkt', desc: 'Triff im Roulette eine Zahl direkt', ev: 'rl:spin', f: function (d) { return d.straightHit; } },
+    { id: 'null-nummer', icon: '0️⃣', name: 'Null-Nummer', desc: 'Gewinne im Roulette direkt auf der 0', ev: 'rl:spin', f: function (d) { return d.straightHit && d.number === 0; } },
+    { id: 'croupier', icon: '🎲', name: 'Liebling des Croupiers', desc: 'Spiele 100 Drehungen am Roulette', goal: 100, ev: 'rl:spin', f: one },
+    /* Pop the Lock */
+    { id: 'schlossknacker', icon: '🔓', name: 'Schlossknacker', desc: 'Knacke bei Pop the Lock den Jackpot', title: 'Schlossknacker', ev: 'lock:round', f: function (d) { return d.jackpot; } },
+    { id: 'fingerspitzen', icon: '🔐', name: 'Fingerspitzengefühl', desc: 'Schaffe 500 Treffer bei Pop the Lock', goal: 500, ev: 'lock:round', f: function (d) { return Math.max(0, d.hits | 0); } },
+    /* Tomaten */
+    { id: 'mahlzeit', icon: '🍅', name: 'Mahlzeit', desc: 'Wirf deine erste Tomate', ev: 'tomato', f: one },
+    { id: 'tomaten-sniper', icon: '🥫', name: 'Tomaten-Sniper', desc: 'Wirf 50 Tomaten', goal: 50, title: 'Tomaten-Sniper', ev: 'tomato', f: one },
+    /* Allgemein */
+    { id: 'highroller', icon: '💸', name: 'Highroller', desc: 'Setze 50.000 Chips oder mehr auf einmal', title: 'Highroller', ev: 'bet', f: function (d) { return d.amount >= 50000; } },
+    { id: 'treue-seele', icon: '📅', name: 'Treue Seele', desc: 'Hol dir 7 Tage in Folge die tägliche Belohnung', goal: 7, abs: true, ev: 'streak', f: function (d) { return d.best | 0; } },
+    { id: 'stammgast', icon: '🏡', name: 'Stammgast', desc: '28 Tage in Folge da (Rahmen „Stammgast“)', goal: 28, abs: true, title: 'Stammgast', ev: 'streak', f: function (d) { return d.best | 0; } },
+    { id: 'feuer', icon: '🔥', name: 'Feuer und Flamme', desc: '30 Tage in Folge da (Rahmen „Flammen“)', goal: 30, abs: true, ev: 'streak', f: function (d) { return d.best | 0; } },
+    { id: 'sternenjaeger', icon: '⭐', name: 'Sternenjäger', desc: 'Sammle 100 Sterne', goal: 100, abs: true, ev: 'stars', f: function (d) { return d.stars | 0; } },
+    { id: 'supernova', icon: '🌟', name: 'Supernova', desc: 'Sammle 1.000 Sterne', goal: 1000, abs: true, title: 'Supernova', ev: 'stars', f: function (d) { return d.stars | 0; } },
+    { id: 'millionaer', icon: '🤑', name: 'Millionär', desc: 'Habe 1.000.000 Chips im Guthaben', goal: 1000000, abs: true },
+    { id: 'fleissig', icon: '📋', name: 'Fleißig', desc: 'Schaffe an einem Tag alle drei Aufgaben', ev: 'quests:chest', f: one },
+    { id: 'pflichtbewusst', icon: '✅', name: 'Pflichtbewusst', desc: 'Schaffe 50 tägliche Aufgaben', goal: 50, ev: 'quest', f: one },
+    { id: 'grosszuegig', icon: '🎁', name: 'Großzügig', desc: 'Schicke einem Freund Chips', ev: 'gift', f: one },
+    { id: 'plaudertasche', icon: '💬', name: 'Plaudertasche', desc: 'Schicke 25 Schnellsätze am Tisch', goal: 25, ev: 'chat', f: one },
+    { id: 'allrounder', icon: '🎮', name: 'Allrounder', desc: 'Spiel Poker, Blackjack, Slots, Roulette und Pop the Lock', goal: 5, abs: true, title: 'Allrounder' },
+    { id: 'sammler', icon: '🛍️', name: 'Sammler', desc: 'Kaufe 5 Artikel für Tisch oder Profil im Shop', goal: 5, abs: true },
+    { id: 'schick', icon: '🎩', name: 'Schick gemacht', desc: 'Lege einen Rahmen oder Titel an', abs: true }
+  ].forEach(function (d) { addDef(d); });
+
+  /* ---------- Speicher ---------- */
+  function num(v) { v = +v; return isFinite(v) && v > 0 ? Math.min(v, 1e15) : 0; }
+  var S = (function () {
+    var o = readJ(KEY), first = !o || typeof o !== 'object';
+    o = first ? {} : o;
+    var d = {}, p = {}, g = {}, q = [];
+    if (o.d && typeof o.d === 'object') Object.keys(o.d).forEach(function (k) { if (/^[a-z0-9-]{1,24}$/.test(k)) d[k] = num(o.d[k]) || 1; });
+    if (o.p && typeof o.p === 'object') Object.keys(o.p).forEach(function (k) { if (/^[a-z0-9-]{1,24}$/.test(k)) p[k] = num(o.p[k]); });
+    if (o.g && typeof o.g === 'object') ['poker', 'bj', 'slots', 'rl', 'lock'].forEach(function (k) { if (o.g[k]) g[k] = 1; });
+    if (Array.isArray(o.q)) o.q.forEach(function (k) { if (typeof k === 'string' && d[k] && q.indexOf(k) < 0 && q.length < 60) q.push(k); });
+    return { d: d, p: p, g: g, q: q, first: first, raw: o };
+  })();
+  function save() {
+    var o = {}, k;
+    for (k in S.raw) if (Object.prototype.hasOwnProperty.call(S.raw, k)) o[k] = S.raw[k];   // unbekannte Felder bleiben erhalten
+    o.d = S.d; o.p = S.p; o.g = S.g; o.q = S.q;
+    try { localStorage.setItem(KEY, JSON.stringify(o)); } catch (e) {}
+  }
+
+  /* ---------- Freischalten und Fortschritt ---------- */
+  var quiet = false;   // beim ersten Start: alte Erfolge still nachtragen, im Menue nur eine Sammel-Meldung
+  function addDef(d) {
+    if (!d || typeof d.id !== 'string' || !/^[a-z0-9-]{1,24}$/.test(d.id) || BY[d.id] || !d.name) return null;
+    var def = { id: d.id, icon: String(d.icon || '🏆'), name: String(d.name), desc: String(d.desc || ''), goal: Math.max(1, Math.round(+d.goal) || 1),
+                title: d.title ? String(d.title) : '', ev: d.ev ? String(d.ev) : '', f: typeof d.f === 'function' ? d.f : null, abs: !!d.abs };
+    DEFS.push(def); BY[def.id] = def;
+    if (def.ev && def.f) PR.on(def.ev, function (x) {
+      if (!x || S.d[def.id]) return;
+      var v; try { v = def.f(x); } catch (e) { return; }
+      v = v === true ? 1 : +v;
+      if (!(v > 0) || !isFinite(v)) return;
+      if (def.abs) progress(def.id, v); else bump(def.id, v);
+    });
+    if (window.PRCos && def.title) window.PRCos._title(def);
+    return def;
+  }
+  function unlock(id) {
+    var def = BY[id];
+    if (!def || S.d[id]) return false;
+    S.d[id] = Date.now(); S.p[id] = Math.max(S.p[id] || 0, def.goal);
+    if (!quiet && S.q.indexOf(id) < 0) S.q.push(id);
+    save();
+    PR.emit('ach', { id: id });
+    subs.forEach(function (fn) { try { fn(def); } catch (e) {} });
+    return true;
+  }
+  function progress(id, n) {
+    var def = BY[id];
+    if (!def || S.d[id]) return;
+    n = Math.min(num(n), 1e15);
+    if (n <= (S.p[id] || 0)) return;
+    S.p[id] = n;
+    if (n >= def.goal) unlock(id); else save();
+  }
+  function bump(id, n) { var def = BY[id]; if (!def || S.d[id]) return; progress(id, (S.p[id] || 0) + (n == null ? 1 : num(n))); }
+  function list() {
+    return DEFS.map(function (d) {
+      return { id: d.id, icon: d.icon, name: d.name, desc: d.desc, goal: d.goal, p: Math.min(d.goal, S.p[d.id] || 0), done: !!S.d[d.id], at: S.d[d.id] || 0, title: d.title };
+    });
+  }
+  function count() { var n = 0; DEFS.forEach(function (d) { if (S.d[d.id]) n++; }); return { done: n, total: DEFS.length }; }
+
+  /* Allrounder: jedes Spiel einmal geoeffnet */
+  PR.on('game:open', function (d) {
+    if (!d || ['poker', 'bj', 'slots', 'rl', 'lock'].indexOf(d.game) < 0 || S.g[d.game]) return;
+    S.g[d.game] = 1; save(); progress('allrounder', Object.keys(S.g).length);
+  });
+  /* Werte, die man jederzeit nachsehen kann (auch Stand von vorher): Serie, Sterne, Guthaben, Statistik */
+  function checks() {
+    try { if (window.PRDaily) { var b = window.PRDaily.info().best | 0; ['treue-seele', 'stammgast', 'feuer'].forEach(function (id) { progress(id, b); }); } } catch (e) {}
+    try { if (window.PRStars) { var st = window.PRStars.count(); progress('sternenjaeger', st); progress('supernova', st); } } catch (e) {}
+    try { progress('millionaer', PR.prof().bank || 0); } catch (e) {}
+    var sh = readJ('pr-pkshow'); if (sh && (sh.b | 0) > 0) { progress('bluff-koenig', sh.b | 0); unlock('pokerface'); }
+    var sl = readJ('pr-slstats'); if (sl && +sl.jp > 0) unlock('jackpot');
+    var lk = readJ('pr-lkstats'); if (lk && +lk.jp > 0) unlock('schlossknacker');
+    try { if (window.PRCos) { progress('sammler', window.PRCos.bought()); if (window.PRCos.current('frame') !== 'none' || window.PRCos.current('title') !== 'none') unlock('schick'); } } catch (e) {}
+  }
+  var before = count().done;
+  quiet = S.first;
+  checks();
+  quiet = false;
+  var retro = S.first ? count().done - before : 0;   // beim ersten Start schon geschafft
+  if (S.first) save();
+
+  /* ---------- Meldung im Menue (nie im Spiel) ---------- */
+  var tEl = document.createElement('div'), tT = 0, lastT = 0;
+  tEl.id = 'achToast'; tEl.setAttribute('role', 'status'); $('#app').appendChild(tEl);
+  function menuFree() {
+    if ($('#menu').hidden || !$('#splash').hidden) return false;
+    if (window.prIdle && !window.prIdle()) return false;
+    return ['#daily', '#friends', '#bjf', '#profile', '#pview', '#chipdlg', '#invBan', '#askBan', '#shop', '#giftDlg', '#starView', '#starUp', '#quests', '#chestDlg', '#achView', '#end']
+      .every(function (s) { var e = $(s); return !e || e.hidden; });
+  }
+  function show(t) {
+    tEl.textContent = t; tEl.classList.remove('on'); void tEl.offsetWidth; tEl.classList.add('on');
+    clearTimeout(tT); tT = setTimeout(function () { tEl.classList.remove('on'); }, 3200);
+    lastT = Date.now();
+    try { if (!navigator.userActivation || navigator.userActivation.hasBeenActive) PR.Snd.ping(); } catch (e) {}
+  }
+  setInterval(function () {
+    if (Date.now() - lastT < 3700 || !menuFree()) return;
+    checks();
+    if (retro > 0) { var n = retro; retro = 0; show('🏆 ' + (n === 1 ? '1 Erfolg' : fmt(n) + ' Erfolge') + ' schon geschafft – sieh im Profil nach'); return; }
+    if (!S.q.length) return;
+    var id = S.q.shift(); save();
+    var def = BY[id]; if (!def) return;
+    show('🏆 Erfolg: ' + def.name + (def.title ? ' · neuer Titel' : ''));
+  }, 900);
+
+  /* ---------- Liste (Profil → Erfolge) ---------- */
+  function renderList() {
+    var c = count(), host = $('#achList');
+    $('#achSum').textContent = fmt(c.done) + ' von ' + fmt(c.total) + ' Erfolgen geschafft';
+    host.innerHTML = '';
+    /* geschaffte zuerst (neueste oben), dann die mit Fortschritt, dann der Rest in fester Reihenfolge */
+    var L = list(), pos = {}; L.forEach(function (a, i) { pos[a.id] = i; });
+    L.sort(function (x, y) { return (y.done - x.done) || (y.at - x.at) || ((y.p > 0) - (x.p > 0)) || (pos[x.id] - pos[y.id]); });
+    L.forEach(function (a) {
+      var r = document.createElement('div'); r.className = 'achr' + (a.done ? ' done' : '');
+      var ic = document.createElement('i'); ic.textContent = a.icon; ic.setAttribute('aria-hidden', 'true');
+      var tx = document.createElement('div');
+      var b = document.createElement('b'); b.textContent = a.name;
+      var sm = document.createElement('small'); sm.textContent = a.desc;
+      tx.appendChild(b); tx.appendChild(sm);
+      if (a.title) { var em = document.createElement('em'); em.textContent = 'Titel: ' + a.title; tx.appendChild(em); }
+      if (!a.done && a.goal > 1) {
+        var bar = document.createElement('span'); bar.className = 'xpt'; var fi = document.createElement('i');
+        fi.style.width = Math.round(a.p / a.goal * 100) + '%'; bar.appendChild(fi); tx.appendChild(bar);
+      }
+      r.appendChild(ic); r.appendChild(tx);
+      var n = document.createElement('span'); n.className = 'achn';
+      n.textContent = a.done ? '✓' : a.goal > 1 ? short(a.p) + '/' + short(a.goal) : '';
+      r.appendChild(n);
+      r.setAttribute('aria-label', a.name + ': ' + a.desc + (a.done ? ' – geschafft' : a.goal > 1 ? ' – ' + fmt(a.p) + ' von ' + fmt(a.goal) : ''));
+      host.appendChild(r);
+    });
+  }
+  function short(v) { return v >= 1e6 ? Math.floor(v / 1e5) / 10 + ' Mio.' : v >= 1e4 ? Math.floor(v / 1000) + 'K' : fmt(v); }
+  function renderProfile() {
+    var c = count();
+    $('#pfAchT').textContent = fmt(c.done) + ' von ' + fmt(c.total) + ' Erfolgen';
+    $('#pfAchF').style.width = (c.total ? Math.round(c.done / c.total * 100) : 0) + '%';
+    var last = null; DEFS.forEach(function (d) { if (S.d[d.id] && (!last || S.d[d.id] > S.d[last.id])) last = d; });
+    $('#pfAchS').textContent = last ? 'Zuletzt: ' + last.icon + ' ' + last.name : 'Tippe, um alle Erfolge zu sehen';
+  }
+  function openList() { renderList(); $('#achView').hidden = false; $('#achView .endcard').scrollTop = 0; }
+  $('#pfAch').addEventListener('click', openList);
+  $('#achClose').addEventListener('click', function () { $('#achView').hidden = true; });
+  $('#achView').addEventListener('click', function (e) { if (e.target === this) this.hidden = true; });
+  $('#profBtn').addEventListener('click', renderProfile);
+  subs.push(function () { renderProfile(); if (!$('#achView').hidden) renderList(); });
+  renderProfile();
+
+  window.PRAch = {
+    list: list, has: function (id) { return !!S.d[id]; }, count: count, unlock: unlock, progress: progress, bump: bump,
+    onUnlock: function (fn) { if (typeof fn === 'function') subs.push(fn); },
+    add: addDef, def: function (id) { return BY[id] || null; }, open: openList
+  };
+  PR.ach = window.PRAch;
+})();
+</script>
+<script>
+/* Kosmetik: Kartenruecken, Tischfilz, Chip-Designs (Reiter „Tisch“), Profilrahmen und Titel (Reiter „Profil“).
+   Gekauft wird nur im Menue mit Chips aus dem Guthaben (Spielgeld). Kartenruecken, Filz und Chips sieht nur man selbst
+   (data-back / data-felt / data-chip an #stage, #bj, #rl); Rahmen und Titel sehen auch die anderen (Feld cos, PRLook).
+   Gespeichert in pr-cos { owned: ['kind:id', ...] gekaufte Artikel, on: { kind: id } angelegt,
+                           got: { 'kind:id': bis-Zeitpunkt (0 = fuer immer) } von aussen freigeschaltet (Krone) }.
+   Schnittstelle window.PRCos (Ids sind nur je kind eindeutig, deshalb ueberall optional kind mitgeben):
+     items                    Katalog: [{ id, kind, name, price | stars | ach | grant, std, hidden, lock, preview(el) }]
+                              std: Standard (immer da), price: Chips, stars: ab so vielen Sternen (steht dann auch in der
+                              Sterne-Ansicht), ach: Erfolg (PRAch), grant: nur von aussen (PRCos.grant), hidden: gesperrt
+                              unsichtbar, lock: eigener Text fuer den gesperrten Knopf
+     item(id, kind?)          Eintrag             owned(id, kind?)  vorhanden (gekauft / verdient / Standard)?
+     buy(id, kind?)           kaufen (nur im Menue, zieht Chips ab, legt gleich an): true/false
+     equip(kind, id)          anlegen              current(kind)     angelegte Id (sonst die Standard-Id)
+     onChange(fn)             fn(kind, id) nach Kauf, Anlegen oder Freischalten
+     addItem(def)             weiteren Artikel eintragen (Effekte, Wurfgegenstaende, Profilbild …)
+     addSection(tab, { kind, title, sub? })  Abschnitt in einem Shop-Reiter ('tisch' | 'profil' | 'fx'); der Reiter
+                              „Effekte“ (fx) zeigt einen Platzhalter, bis er einen Abschnitt mit Artikeln hat
+     scope(el)                weiteren Spieltisch anmelden (bekommt data-back/-felt/-chip)
+     grant(id, kind, ms?)     von aussen freischalten (ms: wie lange, z. B. Krone eine Woche), revoke(id, kind)
+     bought()                 Zahl der gekauften Artikel     open(tab)  Shop mit diesem Reiter oeffnen */
+(function () {
+  'use strict';
+  var PR = window.PR;
+  if (!PR) return;
+  var Snd = PR.Snd, fmt = PR.fmt;
+  function $(s) { return document.querySelector(s); }
+  function readJ(k) { try { return JSON.parse(localStorage.getItem(k) || 'null'); } catch (e) { return null; } }
+  var KEY = 'pr-cos', ITEMS = [], subs = [], DEFS = { back: 'std', felt: 'std', chip: 'std', frame: 'none', title: 'none' };
+  function k2(kind, id) { return kind + ':' + id; }
+
+  /* ---------- Speicher ---------- */
+  var S = (function () {
+    var o = readJ(KEY); o = o && typeof o === 'object' ? o : {};
+    var ow = [], on = {}, got = {};
+    if (Array.isArray(o.owned)) o.owned.forEach(function (x) { if (typeof x === 'string' && /^[a-z0-9-]{1,16}:[a-z0-9-]{1,24}$/.test(x) && ow.indexOf(x) < 0) ow.push(x); });
+    if (o.on && typeof o.on === 'object') Object.keys(o.on).forEach(function (k) { if (/^[a-z0-9-]{1,16}$/.test(k) && typeof o.on[k] === 'string' && /^[a-z0-9-]{1,24}$/.test(o.on[k])) on[k] = o.on[k]; });
+    if (o.got && typeof o.got === 'object') Object.keys(o.got).forEach(function (k) { var v = +o.got[k]; if (/^[a-z0-9-]{1,16}:[a-z0-9-]{1,24}$/.test(k) && isFinite(v) && v >= 0) got[k] = v; });
+    return { owned: ow, on: on, got: got, raw: o };
+  })();
+  function save() {
+    var o = {}, k;
+    for (k in S.raw) if (Object.prototype.hasOwnProperty.call(S.raw, k)) o[k] = S.raw[k];
+    o.owned = S.owned; o.on = S.on; o.got = S.got;
+    try { localStorage.setItem(KEY, JSON.stringify(o)); } catch (e) {}
+  }
+
+  /* ---------- Katalog ---------- */
+  function item(id, kind) { for (var i = 0; i < ITEMS.length; i++) if (ITEMS[i].id === id && (kind == null || ITEMS[i].kind === kind)) return ITEMS[i]; return null; }
+  function addItem(d) {
+    if (!d || typeof d.id !== 'string' || !/^[a-z0-9-]{1,24}$/.test(d.id) || !/^[a-z0-9-]{1,16}$/.test(String(d.kind || '')) || !d.name || item(d.id, d.kind)) return null;
+    var it = { id: d.id, kind: d.kind, name: String(d.name), price: Math.max(0, Math.round(+d.price) || 0), stars: Math.max(0, Math.round(+d.stars) || 0),
+               ach: d.ach ? String(d.ach) : '', grant: !!d.grant, std: !!d.std, hidden: !!d.hidden, lock: d.lock ? String(d.lock) : '',
+               preview: typeof d.preview === 'function' ? d.preview : null, icon: d.icon ? String(d.icon) : '' };
+    if (it.std && !DEFS[it.kind]) DEFS[it.kind] = it.id;
+    ITEMS.push(it);
+    if (it.stars && window.PRStars) window.PRStars.addUnlock({ stars: it.stars, kind: it.kind, id: it.id, label: KIND_NAME[it.kind] ? KIND_NAME[it.kind] + ' „' + it.name + '“' : it.name, icon: it.icon || '🎁' });
+    return it;
+  }
+  var KIND_NAME = { back: 'Kartenrücken', felt: 'Tischfilz', chip: 'Chips', frame: 'Profilrahmen', title: 'Titel' };
+  function gotIt(it) { var k = k2(it.kind, it.id); return S.got.hasOwnProperty(k) && (S.got[k] === 0 || S.got[k] > Date.now()); }
+  function owned(id, kind) {
+    var it = item(id, kind); if (!it) return false;
+    if (it.std || gotIt(it)) return true;
+    if (it.price && S.owned.indexOf(k2(it.kind, it.id)) >= 0) return true;
+    if (it.stars) return !!(window.PRStars && window.PRStars.unlocked(it.id, it.kind));
+    if (it.ach) return !!(window.PRAch && window.PRAch.has(it.ach));
+    return false;
+  }
+  function def(kind) { return DEFS[kind] || 'std'; }
+  function current(kind) { var id = S.on[kind]; return id && owned(id, kind) ? id : def(kind); }
+  function changed(kind, id) { apply(); subs.forEach(function (fn) { try { fn(kind, id); } catch (e) {} }); }
+  function equip(kind, id) {
+    if (!owned(id, kind)) return false;
+    if (id === def(kind)) delete S.on[kind]; else S.on[kind] = id;
+    save(); changed(kind, id);
+    if (window.PRAch && (kind === 'frame' || kind === 'title') && id !== 'none') window.PRAch.unlock('schick');
+    return true;
+  }
+  function bought() { return S.owned.filter(function (k) { var p = k.split(':'), it = item(p[1], p[0]); return it && it.price > 0; }).length; }
+  function buy(id, kind) {
+    var it = item(id, kind), P = PR.prof();
+    if (!it || !it.price || owned(it.id, it.kind)) return false;
+    if (window.prIdle && !window.prIdle()) return false;          // nur im Menue (kein Tisch rechnet gerade das Guthaben)
+    if ((P.bank | 0) < it.price) return false;
+    P.bank = (P.bank | 0) - it.price; PR.saveProf(); PR.renderBank();
+    S.owned.push(k2(it.kind, it.id)); save();
+    if (window.PRAch) window.PRAch.progress('sammler', bought());
+    equip(it.kind, it.id);
+    return true;
+  }
+  function grant(id, kind, ms) {
+    var it = item(id, kind); if (!it) return false;
+    ms = Math.round(+ms) || 0;
+    S.got[k2(it.kind, it.id)] = ms > 0 ? Date.now() + ms : 0; save(); changed(it.kind, it.id); return true;
+  }
+  function revoke(id, kind) { var it = item(id, kind); if (!it) return; delete S.got[k2(it.kind, it.id)]; save(); changed(it.kind, it.id); }
+
+  /* ---------- Vorschauen (gleiche CSS-Regeln wie am Tisch) ---------- */
+  function pvBack(id) { return function (el) { el.setAttribute('data-back', id); el.innerHTML = '<span class="cpback"></span>'; }; }
+  function pvFelt(id) { return function (el) { el.setAttribute('data-felt', id); el.innerHTML = '<span class="cpfelt' + (id === 'std' ? ' std' : '') + '"></span>'; }; }
+  function pvChip(id) { return function (el) { el.setAttribute('data-chip', id); el.innerHTML = '<i class="pchip c100"><b>100</b></i><i class="pchip c1000"><b>1K</b></i><i class="pchip c10"><b>10</b></i>'; }; }
+  function myAv() {
+    var a = document.createElement('span'), P = PR.prof();
+    a.className = 'pav'; a.style.setProperty('--av', P.color); a.textContent = PR.profName().charAt(0).toUpperCase();
+    return a;
+  }
+  function pvFrame(id) { return function (el) { el.innerHTML = ''; var a = myAv(); el.appendChild(a); window.PRLook.frame(a, id); }; }
+  function pvTitle(t) { return function (el) { el.innerHTML = ''; var s = document.createElement('span'); s.className = 'cttlp' + (t ? '' : ' none'); s.textContent = t || 'Kein Titel'; el.appendChild(s); }; }
+
+  [
+    { kind: 'back', id: 'std', name: 'Klassisch', std: true },
+    { kind: 'back', id: 'rot', name: 'Rot', price: 2000 },
+    { kind: 'back', id: 'blau', name: 'Blau', price: 2000 },
+    { kind: 'back', id: 'holz', name: 'Holz', price: 5000 },
+    { kind: 'back', id: 'schwarzgold', name: 'Schwarz-Gold', price: 10000 },
+    { kind: 'back', id: 'neon', name: 'Neon', price: 15000 },
+    { kind: 'back', id: 'logo', name: 'Pokerrunde', price: 25000 },
+    { kind: 'back', id: 'diamant', name: 'Diamant', stars: 500, icon: '💎' },
+    { kind: 'back', id: 'glitzer', name: 'Glitzer', price: 100000 }
+  ].forEach(function (d) { d.preview = pvBack(d.id); addItem(d); });
+  [
+    { kind: 'felt', id: 'std', name: 'Standard', std: true },
+    { kind: 'felt', id: 'gruen', name: 'Grün', price: 2000 },
+    { kind: 'felt', id: 'blau', name: 'Blau', price: 3000 },
+    { kind: 'felt', id: 'bordeaux', name: 'Bordeaux', price: 3000 },
+    { kind: 'felt', id: 'schwarz', name: 'Schwarz', price: 6000 },
+    { kind: 'felt', id: 'lila', name: 'Lila Samt', price: 10000 },
+    { kind: 'felt', id: 'vegas', name: 'Vegas', price: 20000 }
+  ].forEach(function (d) { d.preview = pvFelt(d.id); addItem(d); });
+  [
+    { kind: 'chip', id: 'std', name: 'Standard', std: true },
+    { kind: 'chip', id: 'retro', name: 'Retro', price: 6000 },
+    { kind: 'chip', id: 'gold', name: 'Gold', price: 8000 },
+    { kind: 'chip', id: 'neon', name: 'Neon', price: 12000 }
+  ].forEach(function (d) { d.preview = pvChip(d.id); addItem(d); });
+  [
+    { kind: 'frame', id: 'none', name: 'Kein Rahmen', std: true },
+    { kind: 'frame', id: 'bronze', name: 'Bronze', stars: 25, icon: '🥉' },
+    { kind: 'frame', id: 'silber', name: 'Silber', stars: 100, icon: '🥈' },
+    { kind: 'frame', id: 'gold', name: 'Gold', stars: 500, icon: '🥇' },
+    { kind: 'frame', id: 'diamant', name: 'Diamant', stars: 2000, icon: '💎' },
+    { kind: 'frame', id: 'stammgast', name: 'Stammgast', ach: 'stammgast' },
+    { kind: 'frame', id: 'flammen', name: 'Flammen', ach: 'feuer' },
+    { kind: 'frame', id: 'krone', name: 'Krone', grant: true, hidden: true, lock: '🔒 Wochenliga-Sieg' },   // Sitzung 2: Wochenliga ruft PRCos.grant('krone', 'frame', 7 Tage)
+    { kind: 'frame', id: 'neon', name: 'Neon', price: 5000 },
+    { kind: 'frame', id: 'holz', name: 'Holz', price: 12000 },
+    { kind: 'frame', id: 'regenbogen', name: 'Regenbogen', price: 50000 }
+  ].forEach(function (d) { d.preview = pvFrame(d.id); addItem(d); });
+  addItem({ kind: 'title', id: 'none', name: 'Kein Titel', std: true, preview: pvTitle('') });
+  /* Titel kommen aus den Erfolgen (PRAch-Eintraege mit title), auch aus spaeter mit PRAch.add angelegten */
+  function addTitle(a) { if (a && a.title) addItem({ kind: 'title', id: a.id, name: a.title, ach: a.id, preview: pvTitle(a.title) }); }
+
+  /* ---------- an den Tischen anwenden ---------- */
+  var SCOPES = ['#stage', '#bj', '#rl'].map(function (s) { return $(s); }).filter(Boolean);
+  function apply() {
+    var b = current('back'), f = current('felt'), c = current('chip');
+    SCOPES.forEach(function (el) {
+      [['data-back', b], ['data-felt', f], ['data-chip', c]].forEach(function (a) {
+        if (a[1] === 'std') el.removeAttribute(a[0]); else if (el.getAttribute(a[0]) !== a[1]) el.setAttribute(a[0], a[1]);
+      });
+    });
+    var fr = current('frame');
+    ['#pavMenu', '#pavBig', '#pfCosAv'].forEach(function (s) { window.PRLook.frame($(s), fr); });
+    renderProfRow();
+  }
+  function scope(el) { if (el && SCOPES.indexOf(el) < 0) { SCOPES.push(el); apply(); } }
+
+  /* ---------- Shop: Reiter ---------- */
+  var TABS = [
+    { id: 'art', label: 'Artikel' },
+    { id: 'tisch', label: 'Tisch', secs: [{ kind: 'back', title: 'Kartenrücken', sub: 'Für alle verdeckten Karten bei Poker und Blackjack' },
+                                         { kind: 'felt', title: 'Tischfilz', sub: 'Poker, Blackjack und Roulette – Standard: grün, Blackjack weinrot' },
+                                         { kind: 'chip', title: 'Chip-Designs', sub: 'Pot, Einsätze und Chips am Tisch' }],
+      note: 'Kartenrücken, Filz und Chips siehst nur du auf deinem Handy.' },
+    { id: 'profil', label: 'Profil', secs: [{ kind: 'frame', title: 'Rahmen', sub: 'Um dein Profilbild – sehen auch die anderen am Tisch und deine Freunde' },
+                                           { kind: 'title', title: 'Titel', sub: 'Klein unter deinem Namen, verdient durch Erfolge' }] },
+    { id: 'fx', label: 'Effekte', secs: [], empty: 'Bald gibt es hier Siegesanimationen und Gewinn-Sounds.' }
+  ];
+  var tab = 'art', sure = null, sureT = 0, cosKey = '';
+  function tabOf(id) { return TABS.filter(function (t) { return t.id === id; })[0]; }
+  function addSection(tid, sec) { var t = tabOf(tid); if (!t || !sec || !sec.kind || !sec.title) return; t.secs = t.secs || []; if (!t.secs.some(function (x) { return x.kind === sec.kind; })) t.secs.push({ kind: String(sec.kind), title: String(sec.title), sub: sec.sub ? String(sec.sub) : '' }); cosKey = ''; }
+  function buildTabs() {
+    var h = $('#shopTabs'); h.innerHTML = '';
+    TABS.forEach(function (t) {
+      var b = document.createElement('button'); b.type = 'button'; b.textContent = t.label; b.dataset.tab = t.id;
+      b.setAttribute('role', 'tab'); h.appendChild(b);
+    });
+  }
+  function markTabs() {
+    [].forEach.call($('#shopTabs').children, function (b) { var on = b.dataset.tab === tab; b.classList.toggle('on', on); b.setAttribute('aria-selected', on ? 'true' : 'false'); });
+  }
+  function setTab(t) {
+    if (!tabOf(t)) t = 'art';
+    tab = t; sure = null; cosKey = '';
+    markTabs();
+    $('#shopArt').hidden = t !== 'art';
+    $('#shopCos').hidden = t === 'art';
+    if (t === 'art') render(false); else renderCos();
+    $('#shop .endcard').scrollTop = 0;
+  }
+  $('#shopTabs').addEventListener('click', function (e) { var b = e.target.closest('[data-tab]'); if (b) { Snd.unlock(); setTab(b.dataset.tab); } });
+
+  /* Status eines Artikels: on | own | buy | lock */
+  function stateOf(it) {
+    if (owned(it.id, it.kind)) return current(it.kind) === it.id ? 'on' : 'own';
+    return it.price ? 'buy' : 'lock';
+  }
+  function lockText(it) {
+    if (it.stars) return '🔒 ab ' + fmt(it.stars) + ' ⭐';
+    if (it.ach) {
+      var a = window.PRAch && window.PRAch.def(it.ach);
+      if (a && it.kind === 'title') return '🔒 ' + a.desc;   // beim Titel steht der Name schon drueber: lieber sagen, was zu tun ist
+      return '🔒 Erfolg: ' + (a ? a.name : it.ach);
+    }
+    return it.lock || '🔒 Nicht kaufbar';
+  }
+  function visible(it) { return !it.hidden || owned(it.id, it.kind); }
+  function renderCos() {
+    var t = tabOf(tab), host = $('#shopCos'), bank = PR.prof().bank | 0;
+    if (!t || tab === 'art') return;
+    var secs = (t.secs || []).filter(function (s) { return ITEMS.some(function (it) { return it.kind === s.kind && visible(it); }); });
+    var key = JSON.stringify([tab, bank, sure && sure.k, PR.prof().color, PR.profName(), secs.map(function (s) {
+      return ITEMS.filter(function (it) { return it.kind === s.kind && visible(it); }).map(function (it) { return it.id + stateOf(it); });
+    })]);
+    if (key === cosKey) return;
+    cosKey = key;
+    host.innerHTML = '';
+    if (tab === 'profil') host.appendChild(meCard());
+    if (!secs.length) { var em = document.createElement('p'); em.className = 'cosempty'; em.textContent = t.empty || 'Hier gibt es bald mehr.'; host.appendChild(em); }
+    secs.forEach(function (s) {
+      var sec = document.createElement('div'); sec.className = 'cossec';
+      var h = document.createElement('div'); h.className = 'psec'; h.textContent = s.title; sec.appendChild(h);
+      if (s.sub) { var sb = document.createElement('div'); sb.className = 'frhint'; sb.style.margin = '-4px 0 0'; sb.textContent = s.sub; sec.appendChild(sb); }
+      var g = document.createElement('div'); g.className = 'cosgrid';
+      ITEMS.forEach(function (it) {
+        if (it.kind !== s.kind || !visible(it)) return;
+        var st = stateOf(it), tile = document.createElement('div');
+        tile.className = 'costile' + (st === 'on' ? ' on' : '') + (st === 'lock' ? ' lock' : '');
+        var pv = document.createElement('span'); pv.className = 'cprev'; pv.setAttribute('aria-hidden', 'true');
+        try { if (it.preview) it.preview(pv); } catch (e) {}
+        var nm = document.createElement('b'); nm.textContent = it.name;
+        var bt = document.createElement('button'); bt.type = 'button'; bt.className = 'btn'; bt.dataset.id = it.id; bt.dataset.kind = it.kind;
+        var k = k2(it.kind, it.id);
+        if (st === 'on') { bt.textContent = 'Angelegt ✓'; bt.className = 'btn isOn'; bt.disabled = true; }
+        else if (st === 'own') bt.textContent = 'Anlegen';
+        else if (st === 'buy') {
+          var isSure = sure && sure.k === k;
+          bt.className = 'btn primary' + (isSure ? ' sure' : '');
+          bt.textContent = isSure ? 'Wirklich? ' + fmt(it.price) : 'Kaufen · ' + fmt(it.price);
+          bt.disabled = bank < it.price;
+          bt.setAttribute('aria-label', it.name + ' für ' + fmt(it.price) + ' Chips kaufen');
+        } else { bt.className = 'btn lk'; bt.textContent = lockText(it); bt.disabled = true; }
+        tile.appendChild(pv); tile.appendChild(nm); tile.appendChild(bt);
+        g.appendChild(tile);
+      });
+      sec.appendChild(g); host.appendChild(sec);
+    });
+    if (t.note) { var n = document.createElement('p'); n.className = 'shopown'; n.textContent = t.note; host.appendChild(n); }
+    var own = document.createElement('p'); own.className = 'shopown'; own.textContent = 'Guthaben ' + fmt(bank) + ' Chips'; host.appendChild(own);
+  }
+  function meCard() {
+    var d = document.createElement('div'); d.className = 'cosme';
+    var a = myAv(); window.PRLook.frame(a, current('frame')); d.appendChild(a);
+    var tx = document.createElement('div'), b = document.createElement('b'); b.textContent = PR.profName(); tx.appendChild(b);
+    window.PRLook.title(b, current('title'));
+    var c = window.PRAch ? window.PRAch.count() : { done: 0, total: 0 };
+    var sm = document.createElement('small'); sm.textContent = '🏆 ' + fmt(c.done) + ' von ' + fmt(c.total) + ' Erfolgen'; tx.appendChild(sm);
+    d.appendChild(tx);
+    var lb = document.createElement('button'); lb.type = 'button'; lb.className = 'btn'; lb.textContent = 'Erfolge'; lb.style.marginLeft = 'auto'; lb.style.flex = 'none';
+    lb.addEventListener('click', function () { if (window.PRAch) window.PRAch.open(); });
+    d.appendChild(lb);
+    return d;
+  }
+  $('#shopCos').addEventListener('click', function (e) {
+    var b = e.target.closest('button[data-id]'); if (!b || b.disabled) return;
+    var it = item(b.dataset.id, b.dataset.kind); if (!it) return;
+    Snd.unlock();
+    var st = stateOf(it), k = k2(it.kind, it.id);
+    if (st === 'own') { equip(it.kind, it.id); Snd.chip(1, 0, true); }
+    else if (st === 'buy') {
+      /* teure Sachen nie aus Versehen: erst „Wirklich?“, dann kaufen */
+      if (!sure || sure.k !== k) { sure = { k: k }; clearTimeout(sureT); sureT = setTimeout(function () { sure = null; cosKey = ''; if (!$('#shop').hidden) renderCos(); }, 3500); }
+      else { sure = null; clearTimeout(sureT); if (buy(it.id, it.kind)) { Snd.chip(3, 0, true); setTimeout(function () { try { Snd.pot(); } catch (x) {} }, 180); } }
+    }
+    cosKey = ''; renderCos(); render(false);
+  });
+
+  /* ---------- Reiter „Artikel“: Tomaten, Streak-Schutz (PRDaily), Pop-the-Lock-Upgrades ---------- */
+  var PRICE = 2;
   function tomatoes() { var n = 0; try { n = parseInt(localStorage.getItem('pr-tom') || '0', 10); } catch (e) {} return isFinite(n) && n > 0 ? Math.min(n, 1e9) : 0; }
   function render(pop) {
     var n = tomatoes(), bank = PR.prof().bank | 0;
@@ -12403,7 +13177,6 @@ input.bprange[type=range]::-moz-range-thumb { width: 20px; height: 20px; border-
     $('#shopSell').disabled = n < 1;
     $('#shopOwn').textContent = 'Du hast ' + fmt(n) + (n === 1 ? ' Tomate' : ' Tomaten') + ' · Guthaben ' + fmt(bank) + ' Chips' + (bank < PRICE ? ' – zu wenig für eine Tomate' : '');
   }
-  /* Pop the Lock: eigene Seite im Shop mit den Upgrades */
   var UPI = [
     { k: 'b', name: 'Größerer Knopf', d: 'Der grüne Knopf wird ein Stück größer', ic: function (n) { return '<span class="gbtn' + (n >= 3 ? ' big' : '') + '"></span>'; } },
     { k: 'h', name: '5 Treffer weniger', d: 'Du knackst das Schloss mit 5 Treffern weniger', ic: function () { return '<b style="font:800 18px var(--ui);color:#ffe08a">−5</b>'; } },
@@ -12432,7 +13205,8 @@ input.bprange[type=range]::-moz-range-thumb { width: 20px; height: 20px; border-
     if (window.LKUP.buy(b.dataset.up)) Snd.chip(3, 0, true);
     renderUps(); render(false);
   });
-  $('#shopBtn').addEventListener('click', function () { Snd.unlock(); view(false); render(false); $('#shop').hidden = false; });
+  function open(t) { Snd.unlock(); view(false); setTab(t || tab); render(false); $('#shop').hidden = false; }
+  $('#shopBtn').addEventListener('click', function () { open(); });
   $('#shopClose').addEventListener('click', function () { $('#shop').hidden = true; });
   $('#shop').addEventListener('click', function (e) { if (e.target === this) this.hidden = true; });
   $('#shopBuy').addEventListener('click', function () {
@@ -12453,7 +13227,42 @@ input.bprange[type=range]::-moz-range-thumb { width: 20px; height: 20px; border-
     render(true);
   });
   /* Guthaben kann sich ueberall aendern (Spiele, taegliche Belohnung): Anzeige im Menue aktuell halten */
-  setInterval(function () { if (!$('#menu').hidden) { render(false); if (!$('#shop').hidden && !$('#shopLkView').hidden) renderUps(); } }, 1500);
+  setInterval(function () {
+    if ($('#menu').hidden) return;
+    render(false);
+    if (!$('#shop').hidden) { if (!$('#shopLkView').hidden) renderUps(); else if (tab !== 'art') renderCos(); }
+  }, 1500);
+
+  /* ---------- Profil: Zeile „Rahmen und Titel“ ---------- */
+  function renderProfRow() {
+    var f = item(current('frame'), 'frame'), t = item(current('title'), 'title');
+    var s = $('#pfCosS'); if (!s) return;
+    var parts = [];
+    if (f && f.id !== 'none') parts.push('Rahmen: ' + f.name);
+    if (t && t.id !== 'none') parts.push('Titel: ' + t.name);
+    s.textContent = parts.length ? parts.join(' · ') : 'Noch nichts angelegt – im Shop unter „Profil“';
+  }
+  $('#pfCos').addEventListener('click', function () { open('profil'); });
+  $('#profBtn').addEventListener('click', function () { apply(); });
+
+  /* Freischaltungen (Sterne, Erfolge) kommen jederzeit: einmal im Menue nachziehen */
+  var lastAv = '';
+  setInterval(function () {
+    var k = ITEMS.map(function (it) { return owned(it.id, it.kind) ? 1 : 0; }).join('') + current('frame') + current('title') + current('back') + current('felt') + current('chip');
+    if (k !== lastAv) { var first = !lastAv; lastAv = k; apply(); if (!first) subs.forEach(function (fn) { try { fn('', ''); } catch (e) {} }); }
+  }, 2000);
+
+  window.PRCos = {
+    items: ITEMS, item: item, owned: owned, buy: buy, equip: equip, current: current,
+    onChange: function (fn) { if (typeof fn === 'function') subs.push(fn); },
+    addItem: function (d) { var it = addItem(d); cosKey = ''; return it; },
+    addSection: addSection, scope: scope, grant: grant, revoke: revoke, bought: bought, open: open,
+    _title: addTitle
+  };
+  PR.cos = window.PRCos;
+  if (window.PRAch) window.PRAch.list().forEach(function (a) { if (a.title) addTitle(window.PRAch.def(a.id)); });
+  buildTabs(); markTabs();
+  apply();
   render(false);
 })();
 </script>
