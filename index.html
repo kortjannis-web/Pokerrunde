@@ -1427,6 +1427,74 @@ input.bprange[type=range]::-moz-range-thumb { width: 20px; height: 20px; border-
 #stGame { grid-template-columns: repeat(4, 1fr); }
 #stGame button { padding: 0 4px; font-size: 13px; }
 
+/* ---------- XP und Level ---------- */
+/* Balken im Hauptmenue: rechts neben dem runden Shop-Knopf, unter der Profil-Pille */
+.xpbar { position: absolute; left: 72px; top: 80px; z-index: 2; display: flex; align-items: center; gap: 8px; width: 122px; height: 32px; padding: 0 11px 0 10px; border-radius: 999px; background: rgba(16,18,19,.7); border: 1px solid var(--line); color: var(--ink); cursor: pointer; transition: border-color .3s, box-shadow .3s; }
+.xpbar:active { transform: scale(.96); }
+.xpbar b { flex: none; min-width: 34px; text-align: left; font: 800 12px var(--ui); color: var(--brass); white-space: nowrap; font-variant-numeric: tabular-nums; }
+.xpbar.gain { border-color: rgba(224,170,74,.7); box-shadow: 0 0 14px rgba(224,170,74,.35); }
+.xpbar.gain b { color: #f4d67f; animation: xpgain .45s cubic-bezier(.2,.9,.3,1.4); }
+@keyframes xpgain { from { transform: scale(.6); opacity: 0; } to { transform: none; opacity: 1; } }
+.xpt { display: block; flex: 1; min-width: 0; height: 6px; border-radius: 999px; background: rgba(236,231,218,.14); overflow: hidden; }
+.xpt i { display: block; height: 100%; width: 0; border-radius: inherit; background: linear-gradient(90deg, #c8873a, #f4d67f); transition: width .9s cubic-bezier(.2,.9,.3,1); }
+/* Level-Kreis (Profil, Detailansicht, Aufstieg) */
+.lvring { display: grid; place-items: center; flex: none; width: 46px; height: 46px; border-radius: 50%; background: radial-gradient(circle at 35% 30%, #f4d67f, #d0a040 58%, #a2742a); box-shadow: 0 0 0 3px rgba(224,170,74,.22), 0 4px 12px rgba(0,0,0,.4); }
+.lvring b { font: 800 19px var(--display); color: #3a2506; font-variant-numeric: tabular-nums; }
+.lvring.big { width: 84px; height: 84px; margin: 0 auto; }
+.lvring.big b { font-size: 36px; }
+/* Profil */
+.plv { display: flex; align-items: center; gap: 12px; width: 100%; padding: 12px 14px; border-radius: 14px; background: var(--bg2); border: 1px solid var(--line); color: var(--ink); text-align: left; cursor: pointer; }
+.plv > svg { width: 14px; height: 14px; opacity: .55; flex: none; }
+.plvt { flex: 1; min-width: 0; display: flex; flex-direction: column; gap: 6px; }
+.plvt b { font: 800 18px var(--display); }
+.plvt small { font: 500 12px/1.35 var(--ui); color: var(--muted); }
+.plvt .xpt { flex: none; height: 7px; }
+/* Detailansicht */
+#xpView { z-index: 75; }
+#xpView .endcard { display: flex; flex-direction: column; gap: 12px; max-height: 100%; overflow-y: auto; }
+#xpView .endcard h2, #xpView .endcard p { margin: 0; }
+#xpView .endcard > *, #lvUp .endcard > * { flex-shrink: 0; }
+#luUnl { max-height: 28vh; overflow-y: auto; }
+@media (max-height: 700px) { #xpView .endcard { gap: 9px; padding-top: 20px; } #xpView .lvring.big { width: 58px; height: 58px; } #xpView .lvring.big b { font-size: 25px; } .xvlist div { padding: 6px 10px; } }
+.xvbar { display: flex; flex-direction: column; gap: 6px; }
+.xvbar .xpt { flex: none; height: 9px; }
+.xvbar small { font: 700 12px var(--ui); color: var(--muted); font-variant-numeric: tabular-nums; }
+#xvNext { color: var(--ink); font-size: 14px; }
+.xvlist { display: flex; flex-direction: column; gap: 6px; text-align: left; }
+.xvlist div { display: flex; align-items: center; gap: 10px; padding: 8px 10px; border-radius: 10px; background: var(--bg); border: 1px solid var(--line); font: 600 13px var(--ui); }
+.xvlist div > b { flex: none; min-width: 44px; font: 800 12px var(--ui); color: var(--brass); font-variant-numeric: tabular-nums; }
+.xvlist div > span { flex: 1; min-width: 0; }
+.xvlist div > span em { display: block; font-style: normal; font-weight: 700; color: #f4d67f; }
+.xvhint { font-size: 12px !important; line-height: 1.45 !important; }
+.xvhint b { color: var(--ink); }
+/* Level-Aufstieg */
+#lvUp { z-index: 93; }
+#lvUp .endcard { display: flex; flex-direction: column; gap: 10px; overflow: hidden; position: relative; animation: luin .5s cubic-bezier(.2,.9,.3,1.2) both; }
+#lvUp .endcard h2, #lvUp .endcard p { margin: 0; }
+@keyframes luin { from { transform: scale(.7); opacity: 0; } to { transform: none; opacity: 1; } }
+.lustar { position: relative; display: grid; place-items: center; height: 112px; }
+.lustar .lvring { position: relative; z-index: 1; animation: lupop .8s cubic-bezier(.2,.9,.3,1.5) .15s both, luglow 1.6s ease-in-out 1s 2; }
+@keyframes lupop { from { transform: scale(.2) rotate(-40deg); opacity: 0; } to { transform: none; opacity: 1; } }
+@keyframes luglow { 50% { box-shadow: 0 0 0 6px rgba(224,170,74,.25), 0 0 34px 10px rgba(244,214,127,.55); } }
+.lurays { position: absolute; left: 50%; top: 50%; width: 220px; height: 220px; margin: -110px 0 0 -110px; border-radius: 50%; pointer-events: none;
+  background: repeating-conic-gradient(rgba(244,214,127,.28) 0 9deg, transparent 9deg 24deg);
+  -webkit-mask: radial-gradient(circle, #000 25%, transparent 68%); mask: radial-gradient(circle, #000 25%, transparent 68%);
+  animation: lurays 9s linear infinite, lufade .6s ease .2s both; }
+@keyframes lurays { to { transform: rotate(360deg); } }
+@keyframes lufade { from { opacity: 0; transform: scale(.4); } }
+.lukick { font: 800 11px var(--ui); letter-spacing: .2em; text-transform: uppercase; color: var(--brass); }
+.lureward { display: inline-flex; align-self: center; align-items: center; gap: 8px; padding: 8px 16px; border-radius: 999px; background: rgba(224,170,74,.14); border: 1px solid rgba(224,170,74,.5); font: 800 20px var(--display); color: #f4d67f; font-variant-numeric: tabular-nums; opacity: 0; }
+.lureward.on { animation: luchip .5s cubic-bezier(.2,.9,.3,1.4) both; }
+@keyframes luchip { from { transform: scale(.5) translateY(10px); opacity: 0; } to { transform: none; opacity: 1; } }
+.lureward .bchip { position: relative; width: 20px; height: 20px; border-radius: 50%; flex: none; background: radial-gradient(circle at 35% 30%, #f4d67f, #d0a040 58%, #a2742a); box-shadow: 0 1px 2px rgba(0,0,0,.45); }
+.luconf { position: absolute; top: -12px; width: 7px; height: 11px; border-radius: 2px; pointer-events: none; animation: luconf var(--t, 1.8s) ease-in var(--d, 0s) both; }
+@keyframes luconf { from { transform: translate(0, 0) rotate(0); opacity: 1; } to { transform: translate(var(--dx), 460px) rotate(var(--r)); opacity: 0; } }
+/* Level-Abzeichen am Profilbild der Mitspieler (Poker, Blackjack, Roulette) */
+.lvb { position: absolute; right: -9px; bottom: -4px; z-index: 5; min-width: 18px; height: 15px; padding: 0 3px; box-sizing: border-box; border-radius: 8px; background: #1b1d1f; border: 1px solid rgba(224,170,74,.85); color: #f4d67f; font: 800 9px/13px var(--ui); font-style: normal; text-align: center; letter-spacing: 0; font-variant-numeric: tabular-nums; pointer-events: none; }
+.avatar > .lvb { right: -12px; bottom: auto; top: 17px; }
+.bjwho .pav, .slfa .pav { position: relative; }
+.bjwho .lvb { right: auto; left: -6px; bottom: -5px; min-width: 16px; height: 13px; font-size: 8px; line-height: 11px; }
+
 </style>
 
 <div id="app">
@@ -1547,6 +1615,7 @@ input.bprange[type=range]::-moz-range-thumb { width: 20px; height: 20px; border-
     <div class="bank" role="status" aria-label="Deine Chips"><i class="bchip" aria-hidden="true"></i><span id="bankVal">1.000</span></div>
     <button class="shopbtn" id="shopBtn" type="button" aria-label="Shop öffnen"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 9.5V20h16V9.5"/><path d="M3 9.5l1.6-5h14.8l1.6 5"/><path d="M3 9.5c0 1.4 1.1 2.5 2.5 2.5S8 10.9 8 9.5c0 1.4 1.1 2.5 2.5 2.5S13 10.9 13 9.5c0 1.4 1.1 2.5 2.5 2.5S18 10.9 18 9.5c0 1.4 1.1 2.5 2.5 2.5S21 10.9 21 9.5"/><path d="M10 20v-5h4v5"/></svg></button>
     <div class="tomchip" id="tomChip" role="status" aria-label="Deine Tomaten"><i aria-hidden="true">🍅</i><span id="tomVal">0</span></div>
+    <button class="xpbar" id="xpBar" type="button" aria-label="Level und XP ansehen"><b id="xpLv">Lv 1</b><span class="xpt"><i id="xpFill"></i></span></button>
     <div class="mbg3" aria-hidden="true"></div>
     <div class="mbgrl" aria-hidden="true"></div>
     <div class="menucard">
@@ -2126,6 +2195,19 @@ input.bprange[type=range]::-moz-range-thumb { width: 20px; height: 20px; border-
         <div class="ptime"><i aria-hidden="true">⏱️</i><div><b id="ptVal">0 Min.</b><small id="ptNote">insgesamt in Poker, Blackjack, Slots und Roulette</small></div></div>
       </div>
       <div>
+        <div class="psec" style="margin-bottom:8px">Level</div>
+        <button class="plv" id="pfLv" type="button" aria-label="Level und nächste Belohnungen ansehen">
+          <span class="lvring" aria-hidden="true"><b id="pfLvN">1</b></span>
+          <span class="plvt"><b id="pfLvT">Level 1</b><span class="xpt"><i id="pfLvF"></i></span><small id="pfLvS"></small></span>
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M9 5l7 7-7 7"/></svg>
+        </button>
+        <div class="pstats" style="margin-top:8px">
+          <div class="pstat"><b id="pfXp">0</b><span>XP gesamt</span></div>
+          <div class="pstat"><b id="pfXpTo">0</b><span id="pfXpToL">XP bis Level 2</span></div>
+          <div class="pstat"><b id="pfWag">0</b><span>Chips gesetzt</span></div>
+        </div>
+      </div>
+      <div>
         <div class="psec">Statistik</div>
         <div class="seg" id="stGame" role="radiogroup" aria-label="Statistik für welches Spiel"></div>
         <div class="pstats" id="stTiles" style="margin-top:10px">
@@ -2176,6 +2258,31 @@ input.bprange[type=range]::-moz-range-thumb { width: 20px; height: 20px; border-
       <p id="dlText"></p>
       <div class="dldays" id="dlDays" aria-hidden="true"></div>
       <button class="btn primary wide" id="dlGo" type="button">Abholen</button>
+    </div>
+  </div>
+
+  <div id="xpView" class="overlay" hidden>
+    <div class="endcard">
+      <span class="lvring big" aria-hidden="true"><b id="xvLv">1</b></span>
+      <h2 id="xvTitle">Level 1</h2>
+      <div class="xvbar"><span class="xpt"><i id="xvFill"></i></span><small id="xvNums">0 / 500 XP</small></div>
+      <p id="xvNext"></p>
+      <div class="psec">Nächste Belohnungen</div>
+      <div class="xvlist" id="xvList"></div>
+      <p class="xvhint">XP gibt es für jeden gesetzten Chip (höchstens 5.000 pro Einsatz) und in Pop the Lock (5 pro Treffer, 50 pro Runde). Insgesamt gesetzt: <b id="xvWag">0</b> Chips.</p>
+      <button class="btn wide" id="xvClose" type="button">Schließen</button>
+    </div>
+  </div>
+
+  <div id="lvUp" class="overlay" hidden>
+    <div class="endcard">
+      <div class="lustar" aria-hidden="true"><i class="lurays"></i><span class="lvring big"><b id="luLv">2</b></span></div>
+      <small class="lukick">Level-Aufstieg</small>
+      <h2 id="luTitle">Level 2</h2>
+      <p id="luText"></p>
+      <div class="lureward" id="luChips"><i class="bchip" aria-hidden="true"></i><span></span></div>
+      <div class="xvlist" id="luUnl" hidden></div>
+      <button class="btn primary wide" id="luGo" type="button">Weiter</button>
     </div>
   </div>
 
@@ -2267,15 +2374,24 @@ input.bprange[type=range]::-moz-range-thumb { width: 20px; height: 20px; border-
    game: 'poker' | 'bj' | 'slots' | 'rl' | 'lock'. Mit window.PR_DEBUG = true steht jedes Ereignis in der Konsole. */
 (function () {
   'use strict';
-  var L = {};
+  var L = {}, Q = [], busy = false;
   function on(name, fn) { if (typeof fn === 'function') (L[name] || (L[name] = [])).push(fn); }
   function off(name, fn) { var a = L[name], i = a ? a.indexOf(fn) : -1; if (i >= 0) a.splice(i, 1); }
+  /* meldet ein Zuhoerer selbst etwas (z. B. 'xp' waehrend 'bet'), kommt das erst danach: Reihenfolge bleibt bet, xp, level */
   function emit(name, d) {
-    if (window.PR_DEBUG) { try { console.log('[PR]', name, d); } catch (e) {} }
-    var a = (L[name] || []).concat(name === '*' ? [] : (L['*'] || []));
-    for (var i = 0; i < a.length; i++) {
-      try { a[i](d, name); } catch (e) { try { console.error('PR-Zuhoerer', name, e); } catch (x) {} }
-    }
+    Q.push([name, d]);
+    if (busy) return;
+    busy = true;
+    try {
+      while (Q.length) {
+        var e = Q.shift(), n = e[0];
+        if (window.PR_DEBUG) { try { console.log('[PR]', n, e[1]); } catch (x) {} }
+        var a = (L[n] || []).concat(n === '*' ? [] : (L['*'] || []));
+        for (var i = 0; i < a.length; i++) {
+          try { a[i](e[1], n); } catch (x) { try { console.error('PR-Zuhoerer', n, x); } catch (y) {} }
+        }
+      }
+    } finally { busy = false; }
   }
   window.PRBus = { on: on, off: off, emit: emit };
   /* kleines Level-Abzeichen am Profilbild der Mitspieler: host = Profilbild, lv 0 = keins */
@@ -7007,7 +7123,7 @@ input.bprange[type=range]::-moz-range-thumb { width: 20px; height: 20px; border-
   } catch (e) {}
   [].forEach.call(document.querySelectorAll('.mdots button'), function (b) { b.addEventListener('click', function () { setPage(+b.dataset.p, true); }); });
   menu.addEventListener('pointerdown', function (e) {
-    if (e.target.closest('.profchip, .bank, .shopbtn, .tomchip') || (e.pointerType === 'mouse' && e.button !== 0)) return;
+    if (e.target.closest('.profchip, .bank, .shopbtn, .tomchip, .xpbar') || (e.pointerType === 'mouse' && e.button !== 0)) return;
     sw = { x: e.clientX, y: e.clientY, id: e.pointerId, on: false, dx: 0, w: $('#mSwipe').offsetWidth || 300 };
   });
   menu.addEventListener('pointermove', function (e) {
@@ -10218,7 +10334,7 @@ input.bprange[type=range]::-moz-range-thumb { width: 20px; height: 20px; border-
   function menuFree() {
     if ($('#menu').hidden || !$('#splash').hidden || !$('#daily').hidden) return false;
     if (window.prIdle && !window.prIdle()) return false;
-    return ['#friends', '#bjf', '#profile', '#pview', '#chipdlg', '#invBan', '#askBan', '#shop', '#giftDlg'].every(function (s) { var e = $(s); return !e || e.hidden; });
+    return ['#friends', '#bjf', '#profile', '#pview', '#chipdlg', '#invBan', '#askBan', '#shop', '#giftDlg', '#xpView', '#lvUp'].every(function (s) { var e = $(s); return !e || e.hidden; });
   }
   function showDaily() {
     var d = loadDaily(); if (d.day === today()) return;
@@ -10255,6 +10371,243 @@ input.bprange[type=range]::-moz-range-thumb { width: 20px; height: 20px; border-
   });
   $('#profBtn').addEventListener('click', function () { renderVib(); });
   renderVib();
+})();
+</script>
+
+<script>
+/* XP und Level ueber alle Spiele (hoert nur an der Ereignis-Zentrale zu).
+   1 XP pro gesetztem Chip ('bet'), hoechstens 5.000 aus einem einzelnen Einsatz; Pop the Lock 5 XP pro Treffer und
+   50 pro Runde (ab einem Treffer). Von Level n auf n+1 braucht man round(500 * n^1.5) XP, hoechstes Level 100.
+   Beim ersten Start werden die XP einmal aus der bisherigen Statistik geschaetzt (ohne nachtraegliche Belohnungen).
+   Gespeichert in pr-xp { xp, lv, wagered: gesamt gesetzte Chips, claimed: Level, dessen Belohnung schon ausgezahlt ist }.
+   Level-Aufstieg: XP und Level zaehlen sofort (auch fuer die anderen am Tisch), die Animation und die Chips
+   (100 x neues Level) kommen erst, wenn man wieder im Menue ist. Bis dahin bleibt es in pr-xp vorgemerkt, es geht
+   also nichts verloren, und am Tisch ueberschreibt die Tisch-Abrechnung (saveBank) die Gutschrift nicht.
+   Schnittstelle:
+     PR.addXP(menge, grund)  XP gutschreiben (fuer Aufgaben, Serie ...), gibt die gutgeschriebene Menge zurueck
+     PR.xp()                 { xp, lv, wagered, claimed, into, need, toNext } (into/need: XP im aktuellen Level)
+     window.PRXP             { add, info, level, need(n), total(n), MAX, REWARDS, addReward(e), rewardsFor(lv), chipsFor(lv) }
+     PRXP.REWARDS = PR.LEVEL_REWARDS: Liste { lv, kind, id, label, icon? } fuer Freischaltungen (Rahmen, Titel, Kartenruecken);
+                             spaetere Schritte tragen mit PRXP.addReward({ lv: 30, kind: 'back', id: 'diamond', label: 'Kartenrücken Diamant' })
+                             ein, die Detailansicht zeigt sie dann von selbst unter „Nächste Belohnungen“.
+   Ereignisse: 'xp' { amount, reason, xp, lv } bei jeder Gutschrift, 'level' { lv, reward, unlocks } beim Erreichen. */
+(function () {
+  'use strict';
+  var PR = window.PR;
+  if (!PR) return;
+  var Snd = PR.Snd, fmt = PR.fmt;
+  function $(s) { return document.querySelector(s); }
+  function readJ(k) { try { return JSON.parse(localStorage.getItem(k) || 'null'); } catch (e) { return null; } }
+  var MAX = 100, BET_CAP = 5000, KEY = 'pr-xp';
+  /* NEED[n]: XP von Level n auf n+1, TOT[n]: XP gesamt, ab denen man Level n ist */
+  var NEED = [0], TOT = [0, 0];
+  for (var n = 1; n < MAX; n++) { NEED[n] = Math.round(500 * Math.pow(n, 1.5)); TOT[n + 1] = TOT[n] + NEED[n]; }
+  function levelOf(xp) { var lv = 1; while (lv < MAX && xp >= TOT[lv + 1]) lv++; return lv; }
+  function chipsFor(lv) { return 100 * lv; }
+
+  /* ---------- Freischaltungen je Level (spaetere Schritte tragen hier ein) ---------- */
+  var REWARDS = [];
+  function addReward(e) {
+    if (!e || !(e.lv >= 2 && e.lv <= MAX) || !e.label) return;
+    if (e.id && REWARDS.some(function (r) { return r.id === e.id && r.kind === e.kind; })) return;
+    REWARDS.push({ lv: e.lv | 0, kind: String(e.kind || ''), id: String(e.id || ''), label: String(e.label), icon: e.icon ? String(e.icon) : '' });
+    REWARDS.sort(function (a, b) { return a.lv - b.lv; });
+  }
+  function rewardsFor(lv) { return REWARDS.filter(function (r) { return r.lv === lv; }); }
+
+  /* ---------- Speichern und Start-Schaetzung ---------- */
+  var X;
+  function num(v, d) { v = +v; return isFinite(v) && v >= 0 ? Math.round(v) : d; }
+  function estimate() {
+    var P = PR.prof(), bj = readJ('pr-bjstats') || {}, sl = readJ('pr-slstats') || {}, rl = readJ('pr-rlstats') || {}, lk = readJ('pr-lkstats') || {};
+    /* Pop the Lock zaehlt keine Runden: geknackte Schloesser (jp) stehen fuer die Runden */
+    return Math.min(1e9, num(P.hands, 0) * 20 + num(bj.r, 0) * 20 + num(sl.n, 0) * 5 + num(rl.n, 0) * 10 + num(lk.jp, 0) * 50);
+  }
+  function save() { try { localStorage.setItem(KEY, JSON.stringify({ xp: X.xp, lv: X.lv, wagered: X.wagered, claimed: X.claimed })); } catch (e) {} }
+  (function load() {
+    var o = readJ(KEY);
+    if (o && typeof o === 'object' && isFinite(+o.xp)) {
+      var xp = Math.min(1e12, num(o.xp, 0)), lv = levelOf(xp);
+      X = { xp: xp, lv: lv, wagered: Math.min(1e15, num(o.wagered, 0)), claimed: Math.max(1, Math.min(lv, num(o.claimed, lv))) };
+    } else {
+      var e = estimate(), l = levelOf(e);
+      X = { xp: e, lv: l, wagered: 0, claimed: l };
+      save();
+    }
+  })();
+  function info() {
+    var lv = X.lv, top = lv >= MAX, into = top ? 0 : X.xp - TOT[lv], need = top ? 0 : NEED[lv];
+    return { xp: X.xp, lv: lv, wagered: X.wagered, claimed: X.claimed, into: into, need: need, toNext: top ? 0 : need - into };
+  }
+
+  /* ---------- XP gutschreiben ---------- */
+  var gainShow = 0;   // seit der letzten Anzeige am Balken dazugekommen
+  function addXP(amount, reason) {
+    amount = Math.round(+amount);
+    if (!(amount > 0) || !isFinite(amount)) return 0;
+    amount = Math.min(amount, 1e8);
+    var before = X.lv;
+    X.xp = Math.min(1e12, X.xp + amount); X.lv = levelOf(X.xp);
+    gainShow += amount;
+    save();
+    PR.emit('xp', { amount: amount, reason: String(reason || ''), xp: X.xp, lv: X.lv });
+    for (var l = before + 1; l <= X.lv; l++) PR.emit('level', { lv: l, reward: chipsFor(l), unlocks: rewardsFor(l) });
+    return amount;
+  }
+  PR.on('bet', function (d) {
+    var a = Math.round(+(d && d.amount) || 0);
+    if (!(a > 0)) return;
+    X.wagered = Math.min(1e15, X.wagered + a);
+    addXP(Math.min(a, BET_CAP), 'bet:' + (d.game || ''));
+  });
+  PR.on('lock:round', function (d) {
+    var h = Math.max(0, Math.min(500, (d && d.hits) | 0));
+    if (h > 0) addXP(5 * h + 50, 'lock');
+  });
+
+  /* ---------- Balken im Menue ---------- */
+  var bar = $('#xpBar'), lab = $('#xpLv'), fill = $('#xpFill'), shownXp = X.xp, anim = false;
+  function frac(xp) { var lv = levelOf(xp); return lv >= MAX ? 1 : Math.max(0, Math.min(1, (xp - TOT[lv]) / NEED[lv])); }
+  function setW(el, f, instant) {
+    if (instant) { el.style.transition = 'none'; el.style.width = (f * 100).toFixed(1) + '%'; void el.offsetWidth; el.style.transition = ''; }
+    else el.style.width = (f * 100).toFixed(1) + '%';
+  }
+  function barLabel() {
+    var I = info();
+    bar.setAttribute('aria-label', 'Level ' + I.lv + (I.lv < MAX ? ', noch ' + fmt(I.toNext) + ' XP bis Level ' + (I.lv + 1) : '') + ' – Details ansehen');
+  }
+  function paintBar() { lab.textContent = 'Lv ' + levelOf(shownXp); setW(fill, frac(shownXp), true); barLabel(); }
+  paintBar();
+  /* nach einer Runde: kurz „+120 XP“ im Balken, der Balken laeuft nach (ueber eine Levelgrenze erst bis voll) */
+  function playGain() {
+    var from = shownXp, to = X.xp, g = gainShow;
+    gainShow = 0; shownXp = to; anim = true;
+    bar.classList.remove('gain'); void bar.offsetWidth; bar.classList.add('gain');
+    lab.textContent = '+' + short(g) + ' XP';
+    var up = levelOf(to) > levelOf(from);
+    if (up) {
+      setW(fill, 1);
+      setTimeout(function () { setW(fill, 0, true); setW(fill, frac(to)); }, 950);
+    } else setW(fill, frac(to));
+    setTimeout(function () {
+      bar.classList.remove('gain'); lab.textContent = 'Lv ' + X.lv; barLabel(); anim = false;
+    }, up ? 2600 : 2000);
+  }
+
+  /* ---------- Level-Aufstieg: Animation mit Sound und Vibration, dann Chips ---------- */
+  function free() {
+    if ($('#menu').hidden || !$('#splash').hidden) return false;
+    if (window.prIdle && !window.prIdle()) return false;
+    return ['#daily', '#friends', '#bjf', '#profile', '#pview', '#chipdlg', '#invBan', '#askBan', '#shop', '#giftDlg', '#xpView', '#lvUp', '#end']
+      .every(function (s) { var e = $(s); return !e || e.hidden; });
+  }
+  var luT = [];
+  function confetti(card) {
+    var cols = ['#f4d67f', '#e0aa4a', '#8fcf9a', '#6fb7e8', '#e5826f', '#ffffff'];
+    for (var i = 0; i < 26; i++) {
+      var c = document.createElement('i'); c.className = 'luconf';
+      c.style.left = Math.round(Math.random() * 96 + 2) + '%';
+      c.style.background = cols[i % cols.length];
+      c.style.setProperty('--dx', Math.round((Math.random() - 0.5) * 120) + 'px');
+      c.style.setProperty('--r', Math.round((Math.random() - 0.5) * 900) + 'deg');
+      c.style.setProperty('--t', (1.4 + Math.random() * 1.1).toFixed(2) + 's');
+      c.style.setProperty('--d', (0.25 + Math.random() * 0.6).toFixed(2) + 's');
+      c.addEventListener('animationend', function () { this.remove(); });
+      card.appendChild(c);
+    }
+  }
+  function showLevelUp() {
+    var from = X.claimed, to = X.lv;
+    if (to <= from) return;
+    var chips = 0, unl = [];
+    for (var l = from + 1; l <= to; l++) { chips += chipsFor(l); unl = unl.concat(rewardsFor(l)); }
+    /* gleich gutschreiben und merken (im Menue rechnet kein Tisch das Guthaben neu) */
+    var P = PR.prof(); P.bank = Math.round((P.bank || 0) + chips); PR.saveProf();
+    X.claimed = to; save();
+    luT.forEach(clearTimeout); luT = [];
+    $('#luLv').textContent = String(to);
+    $('#luTitle').textContent = 'Level ' + to;
+    $('#luText').textContent = to - from > 1 ? 'Gleich ' + (to - from) + ' Level auf einmal – stark!' : to >= MAX ? 'Höchstes Level erreicht. Respekt!' : 'Weiter so! Nächstes Ziel: Level ' + (to + 1) + '.';
+    var rw = $('#luChips'); rw.classList.remove('on'); rw.querySelector('span').textContent = '+' + fmt(chips) + ' Chips';
+    var ul = $('#luUnl'); ul.innerHTML = ''; ul.hidden = !unl.length;
+    unl.forEach(function (r) { ul.appendChild(row('Neu', r.icon || '🎁', r.label, '')); });
+    var ov = $('#lvUp'), card = ov.querySelector('.endcard');
+    [].forEach.call(card.querySelectorAll('.luconf'), function (c) { c.remove(); });
+    /* Animationen neu starten */
+    [card, card.querySelector('.lvring'), card.querySelector('.lurays')].forEach(function (e) { e.style.animation = 'none'; void e.offsetWidth; e.style.animation = ''; });
+    ov.hidden = false;
+    confetti(card);
+    /* Snd.win spielt den Gewinn-Klang und vibriert (Einstellung Vibration). Erst nach einer Beruehrung, sonst blockt der Browser */
+    var touched = !navigator.userActivation || navigator.userActivation.hasBeenActive;
+    try { if (touched) { Snd.unlock(); Snd.win(); } } catch (e) {}
+    luT.push(setTimeout(function () {
+      rw.classList.add('on'); PR.renderBank();
+      try { if (touched) { Snd.chip(4, 0, true); Snd.pot(); } } catch (e) {}
+    }, 900));
+  }
+  $('#luGo').addEventListener('click', function () { $('#lvUp').hidden = true; $('#luChips').classList.add('on'); PR.renderBank(); });
+  setInterval(function () {
+    if (anim || !free()) return;
+    if (gainShow > 0) { playGain(); return; }
+    if (X.claimed < X.lv) showLevelUp();
+  }, 700);
+
+  /* ---------- Detailansicht und Profil ---------- */
+  function row(left, icon, label, sub) {
+    var d = document.createElement('div'), b = document.createElement('b'), s = document.createElement('span');
+    b.textContent = left;
+    s.textContent = (icon ? icon + ' ' : '') + label;
+    if (sub) { var em = document.createElement('em'); em.textContent = sub; s.appendChild(em); }
+    d.appendChild(b); d.appendChild(s);
+    return d;
+  }
+  function short(v) { return v >= 1e6 ? (Math.round(v / 1e5) / 10).toString().replace('.', ',') + ' Mio.' : v >= 1e5 ? Math.round(v / 1000) + 'K' : fmt(v); }
+  function renderView() {
+    var I = info(), top = I.lv >= MAX;
+    $('#xvLv').textContent = String(I.lv);
+    $('#xvTitle').textContent = 'Level ' + I.lv;
+    setW($('#xvFill'), top ? 1 : I.into / I.need, true);
+    $('#xvNums').textContent = top ? fmt(I.xp) + ' XP' : fmt(I.into) + ' / ' + fmt(I.need) + ' XP';
+    $('#xvNext').textContent = top ? 'Du hast das höchste Level erreicht.' : 'Noch ' + fmt(I.toNext) + ' XP bis Level ' + (I.lv + 1);
+    $('#xvWag').textContent = fmt(I.wagered);
+    var list = $('#xvList'); list.innerHTML = '';
+    var shown = {};
+    for (var l = I.lv + 1; l <= Math.min(MAX, I.lv + 5); l++) {
+      var ex = rewardsFor(l);
+      ex.forEach(function (r) { shown[r.kind + ':' + r.id + ':' + r.lv] = 1; });
+      list.appendChild(row('Lv ' + l, '🪙', fmt(chipsFor(l)) + ' Chips', ex.map(function (r) { return (r.icon || '🎁') + ' ' + r.label; }).join(' · ')));
+    }
+    /* besondere Freischaltungen weiter weg: die naechsten drei */
+    REWARDS.filter(function (r) { return r.lv > I.lv && !shown[r.kind + ':' + r.id + ':' + r.lv]; }).slice(0, 3).forEach(function (r) {
+      list.appendChild(row('Lv ' + r.lv, r.icon || '🎁', r.label, ''));
+    });
+    if (!list.children.length) list.appendChild(row('', '🏆', 'Alle Belohnungen abgeholt', ''));
+  }
+  function openView() { renderView(); $('#xpView').hidden = false; }
+  bar.addEventListener('click', function () { if (anim) return; openView(); });
+  $('#xvClose').addEventListener('click', function () { $('#xpView').hidden = true; });
+  $('#xpView').addEventListener('click', function (e) { if (e.target === this) this.hidden = true; });
+  function renderProfile() {
+    var I = info(), top = I.lv >= MAX;
+    $('#pfLvN').textContent = String(I.lv);
+    $('#pfLvT').textContent = 'Level ' + I.lv;
+    setW($('#pfLvF'), top ? 1 : I.into / I.need, true);
+    $('#pfLvS').textContent = top ? 'Höchstes Level erreicht' : fmt(I.into) + ' / ' + fmt(I.need) + ' XP in diesem Level';
+    $('#pfXp').textContent = short(I.xp);
+    $('#pfXpTo').textContent = top ? '–' : short(I.toNext);
+    $('#pfXpToL').textContent = top ? 'höchstes Level' : 'XP bis Level ' + (I.lv + 1);
+    $('#pfWag').textContent = short(I.wagered);
+  }
+  $('#profBtn').addEventListener('click', renderProfile);
+  $('#pfLv').addEventListener('click', openView);
+  renderProfile();
+
+  window.PRXP = {
+    add: addXP, info: info, level: function () { return X.lv; }, MAX: MAX, BET_CAP: BET_CAP,
+    need: function (lv) { return NEED[lv] || 0; }, total: function (lv) { return TOT[Math.max(1, Math.min(MAX, lv | 0))]; },
+    REWARDS: REWARDS, addReward: addReward, rewardsFor: rewardsFor, chipsFor: chipsFor
+  };
+  PR.addXP = addXP; PR.xp = info; PR.LEVEL_REWARDS = REWARDS;
 })();
 </script>
 
