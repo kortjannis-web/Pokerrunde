@@ -37,8 +37,9 @@ Wurfgegenstände `{ t: 'tom', k }` (k fehlt = Tomate, `k: 'schirm'` = Abprall-Me
 mit den Feldern `sh`/`sb` im Stand, 6 ersetzt das Level `lv` durch die Sternzahl `st` im öffentlichen Profil, 5 brachte `lv`,
 4 das Feld `rid` zum Wiederverbinden), Blackjack `BJ_V` (aktuell 9: `cos.win/av/um` und Würfe mit `k`, 8 `cos` im Profil,
 7 Schnellsätze), Roulette `RL_V` (aktuell 6: `cos.win/av/um` und Würfe `{ t: 'tom' }`, 5 `cos` im Profil,
-4 Reaktionen und Schnellsätze); bei Blackjack
-und Roulette müssen beide Seiten genau gleich sein. Alte Versionen werden dann mit einer Meldung „App einmal ganz schließen und neu öffnen“ abgewiesen.
+4 Reaktionen und Schnellsätze), Crash `CR_V` (eigenes Raum-Protokoll, aktuell 1: `snap { s: { ph, rd, el, k, dl, crash,
+hist, pl } }`, `bet { a, au }`, `out { m, h }`, Reaktionen/Sätze/Würfe wie beim Roulette; den Absturzpunkt `crash` schickt der
+Ersteller erst beim Absturz); bei Blackjack, Roulette und Crash müssen beide Seiten genau gleich sein. Alte Versionen werden dann mit einer Meldung „App einmal ganz schließen und neu öffnen“ abgewiesen.
 Das Feld `cos` (siehe `window.PRLook` in index.html) ist erweiterbar: neue Unterfelder mit `PRLook.field(name, clean, mine)`
 anmelden; ältere Apps ignorieren unbekannte Unterfelder. Wer `cos` neu belegt (z. B. Siegesanimation `win`), erhöht trotzdem
 die Versionen, damit alle am Tisch dasselbe sehen. Die Freundesliste (`myPub`) hat keine Version und schickt `cos` einfach mit.
