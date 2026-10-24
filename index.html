@@ -419,9 +419,9 @@ input[type=range]::-moz-range-thumb {
 #reactBtn svg { width: 24px; height: 24px; }
 #reactPanel { position: absolute; left: 32px; bottom: 54px; z-index: 13; display: flex; gap: 2px; padding: 5px 6px; border-radius: 999px; background: var(--bg2); border: 1px solid var(--line); box-shadow: 0 10px 28px rgba(0,0,0,.55); align-items: center; }
 #reactPanel[hidden] { display: none; }
-#reactPanel button { width: 40px; height: 40px; border-radius: 50%; border: 0; background: transparent; font-size: 24px; line-height: 1; padding: 0; }
-#reactPanel button:active { background: rgba(255,255,255,.08); }
-#reactPanel.locked button { opacity: .35; pointer-events: none; }
+#reactPanel .remo button { width: 40px; height: 40px; border-radius: 50%; border: 0; background: transparent; font-size: 24px; line-height: 1; padding: 0; }
+#reactPanel .remo button:active { background: rgba(255,255,255,.08); }
+#reactPanel.locked .remo button { opacity: .35; pointer-events: none; }
 #reactWait { display: none; font: 600 12px var(--ui); color: var(--muted); padding: 0 8px; white-space: nowrap; }
 #reactPanel.locked #reactWait { display: block; }
 .react { position: absolute; left: 50%; bottom: calc(100% + 2px); transform: translateX(-50%); z-index: 9; font-size: 30px; line-height: 1; padding: 5px 9px; border-radius: 16px; background: rgba(16,18,19,.92); border: 1px solid var(--line); box-shadow: 0 6px 16px rgba(0,0,0,.5); pointer-events: none; white-space: nowrap; }
@@ -769,7 +769,7 @@ input.bprange[type=range]::-moz-range-thumb { width: 20px; height: 20px; border-
 #bjReact svg { width: 24px; height: 24px; }
 .bjrpanel { position: absolute; left: 8px; bottom: 52px; z-index: 12; display: flex; gap: 2px; padding: 5px 6px; border-radius: 999px; background: var(--bg2); border: 1px solid var(--line); box-shadow: 0 10px 28px rgba(0,0,0,.55); }
 .bjrpanel[hidden] { display: none; }
-.bjrpanel button { width: 40px; height: 40px; border-radius: 50%; border: 0; background: transparent; font-size: 24px; line-height: 1; padding: 0; }
+.bjrpanel .remo button { width: 40px; height: 40px; border-radius: 50%; border: 0; background: transparent; font-size: 24px; line-height: 1; padding: 0; }
 .bjo { position: relative; }
 #bjMe > .react { bottom: auto; top: -44px; z-index: 9; }
 .bjre { position: absolute; left: 50%; top: 40%; transform: translate(-50%, -50%); z-index: 20; padding: 12px 18px; border-radius: 14px; background: rgba(16,18,19,.92); border: 1px solid rgba(224,170,74,.55); font: 700 14px var(--ui); white-space: nowrap; box-shadow: 0 10px 28px rgba(0,0,0,.55); }
@@ -1584,6 +1584,60 @@ input.bprange[type=range]::-moz-range-thumb { width: 20px; height: 20px; border-
 #qToast { position: absolute; left: 50%; bottom: max(24px, env(safe-area-inset-bottom)); z-index: 97; transform: translate(-50%, 12px); padding: 9px 16px; border-radius: 999px; background: var(--brass); color: var(--brass-ink); font: 800 13px var(--ui); opacity: 0; pointer-events: none; transition: opacity .3s, transform .3s; white-space: nowrap; max-width: calc(100% - 20px); overflow: hidden; text-overflow: ellipsis; box-shadow: 0 6px 18px rgba(0,0,0,.5); }
 #qToast.on { opacity: 1; transform: translate(-50%, 0); }
 
+/* ---------- Schnellsaetze: zweiter Reiter im Reaktionsfeld, Sprechblasen, Stummschalten ---------- */
+.rpx { flex-direction: column !important; align-items: stretch !important; border-radius: 18px !important; padding: 6px !important; gap: 6px !important; width: min(296px, calc(100vw - 44px)); box-sizing: border-box; }
+.rtabs { display: flex; gap: 3px; padding: 3px; border-radius: 999px; background: rgba(255,255,255,.06); }
+.rpx .rtabs button { flex: 1; width: auto; height: 32px; border-radius: 999px; border: 0; background: transparent; color: var(--muted); font: 700 13px var(--ui); padding: 0 6px; }
+.rpx .rtabs button.on { background: rgba(236,231,218,.92); color: #151617; }
+.remo { display: flex; gap: 2px; justify-content: space-between; align-items: center; }
+.rsay { display: none; grid-template-columns: 1fr 1fr; gap: 5px; max-height: min(44vh, 252px); overflow-y: auto; overscroll-behavior: contain; }
+.rpx.say .remo { display: none; }
+.rpx.say .rsay { display: grid; }
+.rpx .rsay button { width: auto; height: auto; min-height: 40px; padding: 6px 8px; border-radius: 12px; border: 1px solid var(--line); background: rgba(255,255,255,.04); color: var(--ink); font: 600 13px/1.2 var(--ui); text-align: left; }
+.rpx .rsay button:active { background: rgba(255,255,255,.12); }
+.rpx.locked .rsay button { opacity: .35; pointer-events: none; }
+.rpx #reactWait { text-align: center; padding: 0; }
+.react.say { font: 700 13px/1.25 var(--ui); padding: 6px 10px; width: max-content; max-width: 150px; white-space: normal; text-align: center; color: var(--ink); }
+.react.say::after { left: calc(50% - var(--sx, 0px)); }
+.react.down { bottom: auto; top: calc(100% + 8px); }
+.react.down::after { bottom: auto; top: -5px; border-width: 1px 0 0 1px; }
+.mutei { position: absolute; left: -7px; top: -7px; z-index: 7; width: 20px; height: 20px; border-radius: 50%; background: #1b1d1f; border: 1px solid var(--line); font: 400 11px/18px var(--ui); font-style: normal; text-align: center; pointer-events: none; }
+.bjwho .mutei, .slfa .mutei { left: -6px; top: -6px; width: 16px; height: 16px; font-size: 9px; line-height: 14px; }
+.avatar, .bjwho .pav, .slfa .pav { -webkit-touch-callout: none; -webkit-user-select: none; user-select: none; }
+#muteDlg { position: fixed; z-index: 120; display: flex; flex-direction: column; gap: 8px; width: 210px; padding: 12px; border-radius: 16px; background: var(--bg2); border: 1px solid var(--line); box-shadow: 0 14px 36px rgba(0,0,0,.6); }
+#muteDlg[hidden] { display: none; }
+#muteDlg b { font: 700 14px var(--ui); overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+#muteDlg small { color: var(--muted); font: 500 12px/1.35 var(--ui); }
+#muteDlg .btn { min-height: 44px; }
+#rlReact { position: absolute; left: 8px; bottom: 6px; z-index: 9; width: 40px; height: 40px; border-radius: 50%; border: 1px solid var(--line); background: rgba(16,18,19,.85); color: var(--ink); padding: 0; display: grid; place-items: center; }
+#rlReact[hidden] { display: none; }
+#rlReact svg { width: 24px; height: 24px; }
+#rlRPanel { z-index: 14; }
+#rlMe { position: absolute; left: 28px; bottom: 50px; width: 0; height: 0; z-index: 13; pointer-events: none; }
+#rlMe .react { left: 0; }
+
+/* ---------- Karten zeigen (Poker, nach einer Hand ohne Showdown) ---------- */
+.seat.folded.showed { opacity: 1; filter: none; }
+.seat.showed .minis { opacity: 1; transform: translateY(-6px); }
+.seat.showed .minis .card:not(.down) .face { box-shadow: 0 0 0 2px var(--brass), 0 4px 10px rgba(0,0,0,.5); }
+.seat.me.showed .minis { display: flex; position: absolute; left: -8px; bottom: calc(100% + 8px); height: 40px; margin: 0; transform: none; }
+.seat.me.showed:not(.folded) .minis { display: none; }   /* Hand liegt noch offen da: dort leuchten die gezeigten Karten */
+.seat.me.showed .minis .card { --w: 28px; }
+#handShw { top: -20px; z-index: 6; font-size: 11px; line-height: 16px; }
+.shwl { position: absolute; left: 50%; top: -15px; transform: translateX(-50%); z-index: 3; padding: 1px 7px; border-radius: 999px; background: rgba(16,18,19,.94); border: 1px solid rgba(224,170,74,.55); color: var(--ink); font: 800 10px/14px var(--ui); font-style: normal; white-space: nowrap; pointer-events: none; }
+.shwl:empty { display: none; }
+.shwl.bluff { background: var(--brass); color: var(--brass-ink); border-color: transparent; }
+.seat.me .shwl { top: -14px; }
+#hand .hslot.shw .face { box-shadow: 0 0 0 3px var(--brass), 0 0 18px rgba(224,170,74,.7), 0 16px 28px rgba(0,0,0,.5); }
+#showRow { display: grid; grid-template-columns: 58px 58px 1fr; gap: 10px; }
+#showRow[hidden] { display: none; }
+#showRow .shc { padding: 0; position: relative; overflow: hidden; }
+#showRow .shc .card { --w: 30px; pointer-events: none; }
+#showRow .shc.done { opacity: .35; }
+#bShow { position: relative; overflow: hidden; }
+#bShow i { position: absolute; left: 0; bottom: 0; height: 4px; width: 100%; background: rgba(29,19,7,.45); transform-origin: left; animation: shbar var(--ms, 4000ms) linear forwards; }
+@keyframes shbar { from { transform: scaleX(1); } to { transform: scaleX(0); } }
+
 </style>
 
 <div id="app">
@@ -1619,6 +1673,7 @@ input.bprange[type=range]::-moz-range-thumb { width: 20px; height: 20px; border-
     </div>
     <div class="bjre" id="pkRe" hidden><i class="dots">Verbindung weg · verbinde neu</i></div>
     <div id="handwrap">
+      <i class="shwl" id="handShw"></i>
       <div id="hand" class="none"></div>
     </div>
   </main>
@@ -1641,6 +1696,11 @@ input.bprange[type=range]::-moz-range-thumb { width: 20px; height: 20px; border-
         <button class="btn" id="rBack" type="button">Zurück</button>
         <button class="btn raise" id="rGo" type="button">Erhöhen</button>
       </div>
+    </div>
+    <div id="showRow" hidden>
+      <button class="btn shc" type="button" data-k="0" aria-label="Nur diese Karte zeigen"></button>
+      <button class="btn shc" type="button" data-k="1" aria-label="Nur diese Karte zeigen"></button>
+      <button class="btn primary" id="bShow" type="button"><span>Karten zeigen</span><small>alle sehen deine Hand</small><i></i></button>
     </div>
     <button class="btn primary wide" id="bNext" type="button" hidden>Nächste Hand</button>
   </footer>
@@ -2036,6 +2096,11 @@ input.bprange[type=range]::-moz-range-thumb { width: 20px; height: 20px; border-
         <div class="rlwmsg" id="rlWMsg" aria-live="polite"></div>
       </div>
       <div class="bjtoast" id="rlToast"></div>
+      <button id="rlReact" type="button" hidden aria-label="Reaktion oder Satz senden"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path d="M8.2 14.2c1 1.5 2.3 2.2 3.8 2.2s2.8-.7 3.8-2.2"/><circle cx="9" cy="9.7" r=".6" fill="currentColor"/><circle cx="15" cy="9.7" r=".6" fill="currentColor"/></svg></button>
+      <div class="bjrpanel" id="rlRPanel" hidden>
+        <button type="button" data-e="😂">😂</button><button type="button" data-e="😱">😱</button><button type="button" data-e="😭">😭</button><button type="button" data-e="🤑">🤑</button><button type="button" data-e="👍">👍</button><button type="button" data-e="🔥">🔥</button>
+      </div>
+      <div id="rlMe"></div>
     </main>
     <footer id="rlCtl">
       <div id="rlStatus" aria-live="polite"></div>
@@ -2505,6 +2570,10 @@ input.bprange[type=range]::-moz-range-thumb { width: 20px; height: 20px; border-
      'quest'        { id, diff, chips }            eine Aufgabe ist geschafft (im Spiel moeglich, abgeholt wird im Menue)
      'quest:claim'  { id, diff, chips }            Belohnung einer Aufgabe abgeholt
      'quests:chest' { day, chips }                 Bonus-Truhe der Aufgaben geoeffnet (siehe PRQ.onChest)
+     'chat'         { game, text }                 eigener Schnellsatz gesendet (Poker, Blackjack, Roulette; siehe PRChat)
+     'poker:show'   { cards: [{ r, s }], bluff }   eigene Karten nach der Hand gezeigt (cards: die jetzt gezeigten;
+                                           bluff: beide offen und ohne Showdown mit weniger als einem Paar gewonnen)
+     'coach'        { score }                      Auswertung einer Pokerhand fertig (score 0-100 = Anteil guter Entscheidungen)
    game: 'poker' | 'bj' | 'slots' | 'rl' | 'lock'. Mit window.PR_DEBUG = true steht jedes Ereignis in der Konsole. */
 (function () {
   'use strict';
@@ -2546,6 +2615,144 @@ input.bprange[type=range]::-moz-range-thumb { width: 20px; height: 20px; border-
     var t = starShort(n);
     if (b.textContent !== t) b.textContent = t;
   };
+})();
+</script>
+
+<script>
+/* Schnellsaetze und Stummschalten (Poker, Blackjack, Roulette): gemeinsame Bausteine.
+   window.PRChat:
+     list(game)                 feste Saetze des Spiels ('poker' | 'bj' | 'rl'). Uebers Netz geht nur der Index q,
+                                angezeigt wird nur, was in der Liste steht (kein freier Text von anderen Handys).
+     text(game, q)              Satz zu Index q oder '' bei ungueltigem Index
+     tabs(panel, game, onSay)   macht aus einem Emoji-Feld eins mit zwei Reitern (Emojis / Saetze); onSay(q, text)
+     bubble(host, text, say, cls)  Sprechblase (say = Satz: 3 s, sonst Emoji 2,2 s) in host; cls z. B. 'down' (unter dem Bild)
+     muted(name), setMuted(name, on)  stumm geschaltete Mitspieler. Gilt nur fuer diese Sitzung (bis die App neu
+                                startet), damit niemand aus Versehen fuer immer stumm bleibt. Kennung ist der Name am Tisch.
+     hold(el, nameFn, mark?)    langes Druecken auf ein Profilbild oeffnet „Stummschalten“; nameFn() -> Name oder '' (= nicht);
+                                mark: Element fuer das 🔇 (sonst el)
+     badge(el, name)            kleines 🔇 am Profilbild, wenn stumm
+   Eigene gesendete Saetze meldet jedes Spiel als 'chat' { game, text } an die Ereignis-Zentrale. */
+(function () {
+  'use strict';
+  var COMMON_A = ['Hallo zusammen 👋'];
+  var LISTS = {
+    poker: ['Hallo zusammen 👋', 'Schöne Hand 👏', 'Glück gehabt 🙄', 'Du blufft doch!', 'Ich hab’s gewusst', 'Nicht schon wieder…',
+      'All-in? Mutig 😏', 'Gut gespielt', 'Mach schneller ⏰', 'Revanche!', 'Danke für die Chips 😘', 'Autsch', 'Na warte…',
+      'Was war das denn?', 'GG', 'Ich bin raus', 'Reingefallen 😏'],
+    bj: COMMON_A.concat(['Dealer, sei nett!', 'Komm schon, Bild! 🃏', 'Einundzwanzig! 🎉', 'Ich bleib stehen', 'Glück gehabt 🙄',
+      'Ich hab’s gewusst', 'Nicht schon wieder…', 'Gut gespielt', 'Mach schneller ⏰', 'Revanche!', 'Autsch', 'Na warte…',
+      'Was war das denn?', 'GG', 'Ich bin raus']),
+    rl: COMMON_A.concat(['Alles auf Rot!', 'Schwarz, komm schon!', 'Die Null kommt! 🟢', 'Nur noch eine Runde', 'Glück gehabt 🙄',
+      'Ich hab’s gewusst', 'Nicht schon wieder…', 'Gut gespielt', 'Mach schneller ⏰', 'Revanche!', 'Autsch', 'Na warte…',
+      'Was war das denn?', 'GG', 'Ich bin raus'])
+  };
+  function list(game) { return LISTS[game] || LISTS.poker; }
+  function text(game, q) { var l = list(game); return (q === (q | 0) && q >= 0 && q < l.length) ? l[q] : ''; }
+  var TAB = {};   // zuletzt gewaehlter Reiter pro Spiel (nur diese Sitzung)
+  function tabs(panel, game, onSay) {
+    if (!panel || panel.classList.contains('rpx')) return;
+    var emo = document.createElement('div'); emo.className = 'remo';
+    [].slice.call(panel.querySelectorAll('button[data-e]')).forEach(function (b) { emo.appendChild(b); });
+    var bar = document.createElement('div'); bar.className = 'rtabs';
+    bar.innerHTML = '<button type="button" data-tab="e" class="on" aria-pressed="true">😀 Emojis</button><button type="button" data-tab="s" aria-pressed="false">💬 Sätze</button>';
+    var say = document.createElement('div'); say.className = 'rsay';
+    list(game).forEach(function (t, q) {
+      var b = document.createElement('button'); b.type = 'button'; b.dataset.q = String(q); b.textContent = t; say.appendChild(b);
+    });
+    panel.insertBefore(say, panel.firstChild); panel.insertBefore(emo, say); panel.insertBefore(bar, emo);
+    panel.classList.add('rpx');
+    function set(t) {
+      TAB[game] = t; panel.classList.toggle('say', t === 's');
+      [].forEach.call(bar.children, function (b) { var on = b.dataset.tab === t; b.classList.toggle('on', on); b.setAttribute('aria-pressed', on ? 'true' : 'false'); });
+    }
+    bar.addEventListener('click', function (e) { var b = e.target.closest('button[data-tab]'); if (b) set(b.dataset.tab); });
+    say.addEventListener('click', function (e) {
+      var b = e.target.closest('button[data-q]'); if (!b) return;
+      var q = +b.dataset.q; onSay(q, text(game, q));
+    });
+    set(TAB[game] || 'e');
+  }
+  /* Sprechblase am Bildschirmrand nach innen schieben (der kleine Pfeil zeigt weiter aufs Profilbild) */
+  function fit(b, host) {
+    var hr = host.getBoundingClientRect(), w = b.offsetWidth, vw = document.documentElement.clientWidth || window.innerWidth;
+    var cx = hr.left + hr.width / 2, sh = 0;
+    if (cx - w / 2 < 6) sh = 6 - (cx - w / 2);
+    else if (cx + w / 2 > vw - 6) sh = (vw - 6) - (cx + w / 2);
+    sh = Math.round(sh);
+    if (sh) { b.style.marginLeft = sh + 'px'; b.style.setProperty('--sx', sh + 'px'); }
+  }
+  function bubble(host, txt, say, cls) {
+    if (!host) return null;
+    var old = host.querySelector(':scope > .react'); if (old) old.remove();
+    var b = document.createElement('div');
+    b.className = 'react' + (say ? ' say' : '') + (cls ? ' ' + cls : ''); b.textContent = txt;
+    host.appendChild(b);
+    fit(b, host);
+    var dur = say ? 3000 : 2200, dy = cls === 'down' ? -8 : 8;
+    if (b.animate) {
+      b.animate([{ transform: 'translateX(-50%) translateY(' + dy + 'px) scale(.4)', opacity: 0 }, { transform: 'translateX(-50%) translateY(' + (-dy / 2) + 'px) scale(1.15)', opacity: 1, offset: .14 },
+        { transform: 'translateX(-50%) translateY(0) scale(1)', opacity: 1, offset: .22 }, { transform: 'translateX(-50%) translateY(0) scale(1)', opacity: 1, offset: .86 },
+        { transform: 'translateX(-50%) translateY(' + (-dy - 2) + 'px) scale(.9)', opacity: 0 }], { duration: dur, easing: 'ease-out' });
+    }
+    setTimeout(function () { if (b.parentNode) b.remove(); }, dur);
+    return b;
+  }
+  /* ---------- Stummschalten ---------- */
+  var MUTE = {};
+  function key(n) { return String(n || '').trim().toLowerCase(); }
+  function muted(n) { return !!MUTE[key(n)]; }
+  function setMuted(n, on) { var k = key(n); if (!k) return; if (on) MUTE[k] = 1; else delete MUTE[k]; }
+  function badge(el, n) {
+    if (!el) return;
+    var on = !!n && muted(n), i = el.querySelector(':scope > .mutei');
+    if (on && !i) { i = document.createElement('i'); i.className = 'mutei'; i.textContent = '🔇'; i.setAttribute('aria-hidden', 'true'); el.appendChild(i); }
+    else if (!on && i) i.remove();
+  }
+  var dlg = null, dlgT = 0;
+  function closeDlg() { if (dlg) dlg.hidden = true; clearTimeout(dlgT); }
+  function openDlg(el, name, mark) {
+    if (!dlg) {
+      dlg = document.createElement('div'); dlg.id = 'muteDlg'; dlg.hidden = true;
+      dlg.setAttribute('role', 'dialog');
+      dlg.innerHTML = '<b></b><small></small><button class="btn" type="button"></button>';
+      document.body.appendChild(dlg);
+      document.addEventListener('pointerdown', function (e) { if (dlg && !dlg.hidden && !e.target.closest('#muteDlg')) closeDlg(); }, true);
+    }
+    var on = muted(name), btn = dlg.querySelector('button');
+    dlg.querySelector('b').textContent = name;
+    dlg.querySelector('small').textContent = on ? 'Du siehst gerade keine Sätze und Reaktionen von diesem Spieler.' : 'Sätze und Reaktionen dieses Spielers ausblenden (bis du die App neu öffnest).';
+    btn.textContent = on ? '🔊 Wieder anzeigen' : '🔇 Stummschalten';
+    btn.onclick = function () {
+      setMuted(name, !on); badge(mark || el, name);
+      dlg.querySelector('small').textContent = !on ? name + ' ist stumm geschaltet.' : name + ' ist wieder zu sehen.';
+      btn.disabled = true;
+      clearTimeout(dlgT); dlgT = setTimeout(function () { btn.disabled = false; closeDlg(); }, 900);
+    };
+    btn.disabled = false;
+    dlg.hidden = false;
+    var r = el.getBoundingClientRect(), vw = document.documentElement.clientWidth || window.innerWidth, vh = window.innerHeight;
+    var w = dlg.offsetWidth, h = dlg.offsetHeight;
+    var x = Math.max(8, Math.min(vw - w - 8, r.left + r.width / 2 - w / 2));
+    var y = r.bottom + 8; if (y + h > vh - 8) y = Math.max(8, r.top - h - 8);
+    dlg.style.left = x + 'px'; dlg.style.top = y + 'px';
+    clearTimeout(dlgT); dlgT = setTimeout(closeDlg, 6000);
+  }
+  function hold(el, nameFn, mark) {
+    if (!el || el._prHold) return;
+    el._prHold = true;
+    var t = 0, x0 = 0, y0 = 0, fired = false;
+    function stop() { clearTimeout(t); t = 0; }
+    el.addEventListener('pointerdown', function (e) {
+      fired = false; var nm = nameFn(); if (!nm) return;
+      x0 = e.clientX; y0 = e.clientY; stop();
+      t = setTimeout(function () { t = 0; fired = true; try { navigator.vibrate && navigator.vibrate(15); } catch (x) {} openDlg(el, nameFn() || nm, mark); }, 520);
+    });
+    el.addEventListener('pointermove', function (e) { if (t && Math.hypot(e.clientX - x0, e.clientY - y0) > 10) stop(); });
+    el.addEventListener('pointerup', stop); el.addEventListener('pointercancel', stop); el.addEventListener('pointerleave', stop);
+    el.addEventListener('contextmenu', function (e) { if (nameFn()) e.preventDefault(); });
+    el.addEventListener('click', function (e) { if (fired) { fired = false; e.stopPropagation(); e.preventDefault(); } }, true);
+  }
+  window.PRChat = { list: list, text: text, tabs: tabs, bubble: bubble, muted: muted, setMuted: setMuted, hold: hold, badge: badge, close: closeDlg };
 })();
 </script>
 
@@ -2898,7 +3105,7 @@ input.bprange[type=range]::-moz-range-thumb { width: 20px; height: 20px; border-
       return {
         id: id, name: name, kind: kind, color: color || null, chips: chips, start: chips, buy0: chips, pend: 0, out: false, hole: [], bet: 0, total: 0,
         folded: false, allIn: false, acted: false, inHand: false, label: '',
-        revealed: false, win: 0, value: undefined,
+        revealed: false, win: 0, value: undefined, shown: null, sbluff: false,
         limped: false, pfRaise: false, pfCall: false, aggr: 0,
         ag: 0, pa: 0, pfrN: 0, hands: 0, bluffs: 0, pers: pers
       };
@@ -3375,6 +3582,7 @@ input.bprange[type=range]::-moz-range-thumb { width: 20px; height: 20px; border-
         if (p.out) p.chips = 0;
         p.inHand = p.chips > 0; p.hole = []; p.bet = 0; p.total = 0; p.folded = !p.inHand;
         p.allIn = false; p.acted = false; p.label = ''; p.revealed = false; p.win = 0; p.value = undefined;
+        p.shown = null; p.sbluff = false;   // nach der Hand freiwillig gezeigte Karten [Karte|null, Karte|null] (Oberflaeche)
         p.limped = false; p.pfRaise = false; p.pfCall = false; p.aggr = 0;
         if (p.inHand) p.hands++;
       });
@@ -3814,9 +4022,12 @@ input.bprange[type=range]::-moz-range-thumb { width: 20px; height: 20px; border-
     },
     waitNext: function () {
       var g = gen;
+      try { botTalk(); } catch (e) {}
       return new Promise(function (res) {
         nextResolve = res; render();
         var R = S.result, ms = (R && R.showdown) ? 6500 : 3500;   // Zeit, das Ergebnis zu sehen
+        nextAt = Date.now() + ms;
+        try { botShow(); } catch (e) {}
         clearTimeout(nextTimer);
         nextTimer = setTimeout(function () {
           if (g !== gen || !nextResolve) return;
@@ -3824,9 +4035,9 @@ input.bprange[type=range]::-moz-range-thumb { width: 20px; height: 20px; border-
         }, ms);
       });
     },
-    react: function (id, emo, delay) { var g = gen; setTimeout(function () { if (g === gen) showReaction(id, emo); }, delay || 0); if (MP.on) mpReact(id, emo, delay, -1); },
+    react: function (id, emo, delay) { botEmoHand[id] = S.handNo; var g = gen; setTimeout(function () { if (g === gen) showReaction(id, emo); }, delay || 0); if (MP.on) mpReact(id, emo, delay, -1); },
     onEnd: function (w) { if (MP.on && MP.role === 'host') mpHostEnd(); else showEnd(w); },
-    beforeHand: function () { if (MP.on && MP.role === 'host') mpSeatJoins(); },
+    beforeHand: function () { if (MP.on && MP.role === 'host') mpSeatJoins(); if (S.handNo === 0) { try { botHello(); } catch (e) {} } },
     onBroke: function (pl) {
       if (pl && pl.id !== 0 && MP.on) return remoteBroke(pl);
       return uiBroke();
@@ -3928,10 +4139,16 @@ input.bprange[type=range]::-moz-range-thumb { width: 20px; height: 20px; border-
       var minis = el.querySelector('.minis');
       var m = [cardEl('mini down'), cardEl('mini down')];
       m.forEach(function (c) { minis.appendChild(c); });
+      var shl = document.createElement('i'); shl.className = 'shwl'; minis.appendChild(shl);   // Schild „gezeigt“ / „Bluff 😏“
       if (i > 0) el.addEventListener('click', function () { if (el.classList.contains('empty')) inviteSeat(); });
+      /* langes Druecken aufs Profilbild eines anderen: Saetze und Reaktionen stumm schalten */
+      if (i > 0) window.PRChat.hold(el.querySelector('.avatar'), function () {
+        var q = S.players[i];
+        return q && !el.classList.contains('empty') && !el.classList.contains('gone') ? q.name : '';
+      });
       seatsEl.appendChild(el);
       seats.push({
-        el: el, minis: minis, m: m,
+        el: el, minis: minis, m: m, shl: shl,
         blind: el.querySelector('.bbtn'), name: el.querySelector('.pill b'), pl: el.querySelector('.pl'), plv: el.querySelector('.plv'), chips: el.querySelector('.pill em'), tag: el.querySelector('.tag')
       });
       var b = document.createElement('div');
@@ -4038,8 +4255,10 @@ input.bprange[type=range]::-moz-range-thumb { width: 20px; height: 20px; border-
         var avSp = avEl.querySelector('span'); if (avSp) avSp.textContent = wi;
       }
       window.PRStarBadge(el.querySelector('.avatar'), seatStars(p, i));
+      window.PRChat.badge(el.querySelector('.avatar'), p.name);
     }
     var result = S.phase === 'result';
+    var shownC = renderShowSeat(p, i, r);
     var empty = i > 0 && p.kind === 'bot' && botFree(i);
     var out = p.chips === 0 && (!p.inHand || result) && !empty;
     el.classList.toggle('empty', empty);
@@ -4074,13 +4293,20 @@ input.bprange[type=range]::-moz-range-thumb { width: 20px; height: 20px; border-
       return;
     }
     var has = p.inHand && p.hole.length > 0 && !p.folded;
-    el.classList.toggle('cards', has);
+    el.classList.toggle('cards', has || shownC);
     el.classList.toggle('reveal', has && p.revealed);
     if (S.handNo !== lastHand) {
       r.minis.classList.remove('pop'); void r.minis.offsetWidth; r.minis.classList.add('pop');
       r.m.forEach(function (c) { c.classList.add('down'); c.dataset.key = ''; });
     }
-    if (has && p.revealed) {
+    if (shownC) {
+      r.m.forEach(function (c, k) {
+        var cd = p.shown[k];
+        if (!cd) { c.classList.add('down'); return; }
+        if (c.dataset.key !== cd.r + '-' + cd.s) setFace(c, cd);
+        c.classList.remove('down');
+      });
+    } else if (has && p.revealed) {
       r.m.forEach(function (c, k) {
         var cd = p.hole[k];
         if (c.dataset.key !== cd.r + '-' + cd.s) setFace(c, cd);
@@ -4331,11 +4557,13 @@ input.bprange[type=range]::-moz-range-thumb { width: 20px; height: 20px; border-
       raiseMode = false; preRaise = false;
     }
     btns.hidden = result || raiseMode;
+    if (!result) $('#showRow').hidden = true;
     rp.hidden = !((myTurn || preOk) && raiseMode);
     nx.hidden = true;
     st.hidden = raiseMode;
 
     if (result) {
+      renderShowRow();
       nx.textContent = me.chips <= 0 || S.players.filter(function (p) { return p.chips > 0; }).length === 1 ? 'Weiter' : 'Nächste Hand';
       var rt = resultText();
       st.innerHTML = '<b>' + rt.t + '</b>' + (rt.s ? ' · ' + rt.s : '');
@@ -4391,6 +4619,7 @@ input.bprange[type=range]::-moz-range-thumb { width: 20px; height: 20px; border-
       toastTimer = setTimeout(function () { tt.classList.remove('on'); }, 3600);
     }
     shownBB = S.bb;
+    showWindow();
     S.players.forEach(renderSeat);
     renderBoard(); renderBets(); renderPot(); renderHand(); renderShow(); renderControls();
     lastHand = S.handNo;
@@ -4965,8 +5194,9 @@ input.bprange[type=range]::-moz-range-thumb { width: 20px; height: 20px; border-
   /* ---------- Online-Tisch (Vermittlung ueber PeerJS, Verbindung direkt von Handy zu Handy) ---------- */
   var PEER_PREFIX = 'pokerrunde-';
   /* Version der Tisch-Nachrichten (hello-Feld v). Der Ersteller laesst nur Mitspieler ab PK_V an den Tisch,
-     aeltere bekommen { t: 'old' } und den Hinweis, die App neu zu oeffnen. 6: Sterne (st) statt Level (lv) im oeffentlichen Profil */
-  var PK_V = 6;
+     aeltere bekommen { t: 'old' } und den Hinweis, die App neu zu oeffnen. 6: Sterne (st) statt Level (lv) im oeffentlichen Profil,
+     7: Schnellsaetze { t: 'chat', q } und Karten zeigen { t: 'show', c } (Feld sh/sb im Stand) */
+  var PK_V = 7;
   var MSG_NOLIB = 'Online-Tische gehen nur über den Link zum Spiel (kortjannis-web.github.io/Pokerrunde), nicht in dieser Vorschau.';
   function peerOpts() { return window.PR_PEER_OPTS || {}; }
   function netAvail() { return typeof window.Peer === 'function'; }
@@ -5093,7 +5323,7 @@ input.bprange[type=range]::-moz-range-thumb { width: 20px; height: 20px; border-
       conn.on('open', function () { try { conn.send({ t: 'hello', v: PK_V, rid: NET.rid, p: myPublic(pkJoin.get()) }); } catch (e) {} });
       conn.on('data', function (d) {
         if (g !== NET.gen || !d || typeof d !== 'object') return;
-        if (d.t === 'start' || d.t === 'snap' || d.t === 'react' || d.t === 'tom' || d.t === 'broke' || d.t === 'ack' || d.t === 'end') { guestMsg(d); return; }
+        if (d.t === 'start' || d.t === 'snap' || d.t === 'react' || d.t === 'chat' || d.t === 'tom' || d.t === 'broke' || d.t === 'ack' || d.t === 'end') { guestMsg(d); return; }
         if (d.t === 'full') { fail('Der Tisch ist voll.'); return; }
         if (d.t === 'started') { fail('Das Spiel an diesem Tisch läuft schon.'); return; }
         if (d.t === 'old') {
@@ -5169,7 +5399,7 @@ input.bprange[type=range]::-moz-range-thumb { width: 20px; height: 20px; border-
             try { conn.send({ t: 'ready' }); } catch (e) {}
             return;
           }
-          if (back && (d.t === 'snap' || d.t === 'react' || d.t === 'tom' || d.t === 'broke' || d.t === 'ack' || d.t === 'end')) { guestMsg(d); return; }
+          if (back && (d.t === 'snap' || d.t === 'react' || d.t === 'chat' || d.t === 'tom' || d.t === 'broke' || d.t === 'ack' || d.t === 'end')) { guestMsg(d); return; }
           if (d.t === 'closed') { giveUp('Spiel beendet', 'Der Ersteller hat den Tisch verlassen. Deine Chips bleiben in deinem Guthaben.'); return; }
           if (!back && d.t === 'old') { giveUp('Andere App-Version', 'Schließ die App einmal ganz und öffne sie neu. Deine Chips bleiben in deinem Guthaben.'); try { conn.close(); } catch (e) {} return; }
           if (!back && (d.t === 'wait' || d.t === 'full' || d.t === 'started')) {
@@ -5265,7 +5495,8 @@ input.bprange[type=range]::-moz-range-thumb { width: 20px; height: 20px; border-
         name: v === 0 ? 'Du' : st.name, color: st.color, chips: p.chips, bet: p.bet, total: p.total, folded: p.folded, allIn: p.allIn, acted: p.acted, inHand: p.inHand,
         label: p.label, win: p.win, revealed: p.revealed, st: st.kind === 'human' ? st.st | 0 : 0,
         hole: open ? p.hole : p.hole.map(function () { return { r: 2, s: 0 }; }),
-        value: p.revealed ? p.value : undefined
+        value: p.revealed ? p.value : undefined,
+        sh: p.shown ? p.shown : null, sb: !!p.sbluff   // nur freiwillig gezeigte Karten
       });
     }
     var R = S.result, rv = null;
@@ -5295,6 +5526,14 @@ input.bprange[type=range]::-moz-range-thumb { width: 20px; height: 20px; border-
     MP.seats.forEach(function (st, g) {
       if (g === 0 || g === except || st.gone || !st.conn) return;
       try { st.conn.send({ t: 'react', s: (real - g + MP.n) % MP.n, e: emo, d: delay || 0 }); } catch (e) {}
+    });
+  }
+  /* Schnellsatz an alle (q = Index in PRChat.list('poker')), aus Sicht jedes Mitspielers */
+  function mpChat(real, q, delay, except) {
+    if (!MP.on || MP.role !== 'host') return;
+    MP.seats.forEach(function (st, g) {
+      if (g === 0 || g === except || st.gone || !st.conn) return;
+      try { st.conn.send({ t: 'chat', s: (real - g + MP.n) % MP.n, q: q, d: delay || 0 }); } catch (e) {}
     });
   }
   function remoteAction(p) {
@@ -5347,9 +5586,20 @@ input.bprange[type=range]::-moz-range-thumb { width: 20px; height: 20px; border-
     } else if (d.t === 'rebuy') {
       var b = MP.brokes[seat]; if (b) b.res(Math.max(0, Math.min(1e9, Math.round(+d.n) || 0)));
     } else if (d.t === 'react') {
-      if (typeof d.e === 'string' && d.e.length > 0 && d.e.length <= 8) {
-        var g = gen; showReaction(seat, d.e);
+      if (typeof d.e === 'string' && d.e.length > 0 && d.e.length <= 8 && seatTalkOk(seat)) {
+        showReaction(seat, d.e);
         mpReact(seat, d.e, 0, seat);
+        botReply(d.e, false);
+      }
+    } else if (d.t === 'show') {
+      var sc = Array.isArray(d.c) ? [d.c[0] ? 1 : 0, d.c[1] ? 1 : 0] : [0, 0];
+      if (sc[0] || sc[1]) applyShow(seat, sc, 900);   // kleiner Zuschlag fuer die Laufzeit der Nachricht
+    } else if (d.t === 'chat') {
+      var ct = window.PRChat.text('poker', d.q);
+      if (ct && seatTalkOk(seat)) {
+        showReaction(seat, ct, true);
+        mpChat(seat, d.q, 0, seat);
+        botReply(ct, true);
       }
     } else if (d.t === 'tom') {
       var tm = cleanTom(d), real = tm.s >= 0 && tm.s < MP.n ? (tm.s + seat) % MP.n : -1;
@@ -5528,6 +5778,12 @@ input.bprange[type=range]::-moz-range-thumb { width: 20px; height: 20px; border-
         var g = gen; setTimeout(function () { if (g === gen) showReaction(sIdx, d.e); }, Math.max(0, Math.min(3000, +d.d || 0)));
       }
     }
+    else if (d.t === 'chat') {
+      var cIdx = d.s | 0, ct = window.PRChat.text('poker', d.q);
+      if (cIdx > 0 && cIdx < MP.n && ct) {
+        var cg = gen; setTimeout(function () { if (cg === gen) showReaction(cIdx, ct, true); }, Math.max(0, Math.min(3000, +d.d || 0)));
+      }
+    }
     else if (d.t === 'tom') {
       var tm = cleanTom(d), fv = d.f | 0;
       if (fv > 0 && fv < MP.n && tm.s < MP.n) tomShow(fv, tm.s, tm.x, tm.y);
@@ -5566,7 +5822,7 @@ input.bprange[type=range]::-moz-range-thumb { width: 20px; height: 20px; border-
     G.players = d.pl.map(function (p, i) {
       return { id: i, name: String(p.name || '').slice(0, 14), color: p.color, chips: p.chips | 0, bet: p.bet | 0, total: p.total | 0, folded: !!p.folded, allIn: !!p.allIn, acted: !!p.acted,
                inHand: !!p.inHand, label: String(p.label || ''), win: p.win | 0, revealed: !!p.revealed, hole: Array.isArray(p.hole) ? p.hole : [], value: p.value,
-               st: Math.min(1e9, Math.max(0, p.st | 0)) };
+               st: Math.min(1e9, Math.max(0, p.st | 0)), shown: cleanShown(p.sh), sbluff: !!p.sb };
     });
     G.board = Array.isArray(d.bd) ? d.bd : []; G.phase = d.ph; G.dealer = d.dl; G.sbIdx = d.sbI; G.bbIdx = d.bbI; G.glow = d.gl; G.toAct = d.ta;
     G.sb = d.sb; G.bb = d.bb; G.currentBet = d.cb; G.lastRaise = d.lr; G.handNo = d.hn; G.result = d.rs; G.humanStart = d.st;
@@ -5840,6 +6096,11 @@ input.bprange[type=range]::-moz-range-thumb { width: 20px; height: 20px; border-
     handEl.classList.remove('dragging');
     zone.classList.remove('show', 'hot');
     d.slot.classList.remove('lifted');
+    /* in der Ergebnisphase: Karte antippen = nur diese Karte zeigen */
+    if (e.type === 'pointerup' && S.phase === 'result' && Math.hypot(e.clientX - d.x0, e.clientY - d.y0) < 12) {
+      var tk = [].indexOf.call(handEl.children, d.slot);
+      if (tk === 0 || tk === 1) { var tc = [0, 0]; tc[tk] = 1; myShow(tc); }
+    }
     var drop = e.type === 'pointerup' && canFold() && inZone(e.clientX, e.clientY);
     if (drop) {
       var zr = zone.getBoundingClientRect();
@@ -5861,10 +6122,12 @@ input.bprange[type=range]::-moz-range-thumb { width: 20px; height: 20px; border-
   handEl.addEventListener('pointerup', endDrag);
   handEl.addEventListener('pointercancel', endDrag);
 
-  /* ---------- Reaktionen (Emojis ueber dem Profilbild, auch fuer Online-Spieler gedacht) ---------- */
-  function showReaction(id, emo) {
+  /* ---------- Reaktionen und Schnellsaetze (ueber dem Profilbild, auch fuer Online-Spieler) ---------- */
+  /* say: emo ist ein Schnellsatz (Sprechblase 3 s). Stumm geschaltete Mitspieler (langes Druecken aufs Profilbild) zeigen nichts. */
+  function showReaction(id, emo, say) {
     var host = seats[id] && seats[id].el.querySelector('.rslot');
     if (!host) return;
+    if (id !== 0 && S.players[id] && window.PRChat.muted(S.players[id].name)) return;
     if (id === 0) {
       // eigene Reaktion in der obersten Ebene, damit sie ueber den eigenen Handkarten liegt
       var layer = $('#fly'), ar = seats[0].el.querySelector('.avatar').getBoundingClientRect(), st = stage.getBoundingClientRect();
@@ -5873,16 +6136,10 @@ input.bprange[type=range]::-moz-range-thumb { width: 20px; height: 20px; border-
       host.className = 'reactwrap';
       host.style.cssText = 'position:absolute;width:0;height:0;left:' + (ar.left + ar.width / 2 - st.left) + 'px;top:' + (ar.top - st.top) + 'px;';
       layer.appendChild(host);
+      var wrap = host;
+      setTimeout(function () { if (wrap.parentNode && !wrap.querySelector('.react')) wrap.remove(); }, say ? 3050 : 2250);
     }
-    if (id !== 0) host.innerHTML = '';
-    var b = document.createElement('div');
-    b.className = 'react'; b.textContent = emo;
-    host.appendChild(b);
-    if (b.animate) {
-      b.animate([{ transform: 'translateX(-50%) translateY(8px) scale(.4)', opacity: 0 }, { transform: 'translateX(-50%) translateY(-4px) scale(1.15)', opacity: 1, offset: .18 }, { transform: 'translateX(-50%) translateY(0) scale(1)', opacity: 1, offset: .28 }, { transform: 'translateX(-50%) translateY(0) scale(1)', opacity: 1, offset: .82 }, { transform: 'translateX(-50%) translateY(-10px) scale(.9)', opacity: 0 }], { duration: 2200, easing: 'ease-out' });
-    }
-    clearTimeout(b.__t);
-    b.__t = setTimeout(function () { if (b.parentNode) b.remove(); if (id === 0 && host.parentNode) host.remove(); }, 2200);
+    window.PRChat.bubble(host, emo, !!say);
   }
   var reactTimes = [], REACT_MAX = 3, REACT_WINDOW = 9000, reactLockTimer = 0;
   function reactLocked() {
@@ -5947,7 +6204,99 @@ input.bprange[type=range]::-moz-range-thumb { width: 20px; height: 20px; border-
       if (MP.role === 'host') mpReact(0, emo, 0, -1);
       else { try { MP.conn.send({ t: 'react', e: emo }); } catch (e) {} }
     }
+    botReply(emo, false);
     updateReactLock();
+  }
+  /* Schnellsatz: gleiches Limit wie Reaktionen (3 in 9 Sekunden), uebers Netz geht nur der Index q */
+  function sendSay(q) {
+    var t = window.PRChat.text('poker', q);
+    if (!t) return;
+    if (reactLocked()) { updateReactLock(); return; }
+    reactTimes.push(Date.now());
+    showReaction(0, t, true);
+    if (MP.on) {
+      if (MP.role === 'host') mpChat(0, q, 0, -1);
+      else { try { MP.conn.send({ t: 'chat', q: q }); } catch (e) {} }
+    }
+    window.PRBus.emit('chat', { game: 'poker', text: t });
+    botReply(t, true);
+    updateReactLock();
+  }
+  /* beim Ersteller: hoechstens 3 Reaktionen/Saetze in 9 Sekunden pro Mitspieler (auch wenn eine fremde App mehr schickt) */
+  var seatTalk = {};
+  function seatTalkOk(seat) {
+    var now = Date.now(), l = (seatTalk[seat] || []).filter(function (x) { return now - x < REACT_WINDOW; });
+    seatTalk[seat] = l;
+    if (l.length >= REACT_MAX) return false;
+    l.push(now); return true;
+  }
+
+  /* ---------- Bots plaudern selten: Antwort auf Saetze/Reaktionen und ab und zu ein passender Satz nach der Hand
+     (gegen Bots offline und beim Ersteller eines Online-Tischs mit Bots; die Mitspieler sehen es ueber 'chat'/'react') ---------- */
+  var PQ = {};
+  window.PRChat.list('poker').forEach(function (t, q) { PQ[t] = q; });
+  var botTalkHand = -9, botReplyAt = 0, botEmoHand = {};
+  function rnd(n) { return Math.floor(Math.random() * n); }
+  function pickOne(a) { return a[rnd(a.length)]; }
+  function botsAt() {
+    if (MP.on && MP.role !== 'host') return [];
+    return S.players.filter(function (p, i) { return i > 0 && p.kind === 'bot' && !p.out && p.chips + p.total > 0 && !botFree(i); });
+  }
+  function botSay(id, t, delay) {
+    var q = PQ[t], g = gen;
+    if (q === undefined) {   // Emoji
+      setTimeout(function () { if (g === gen) showReaction(id, t); }, delay);
+      if (MP.on) mpReact(id, t, delay, -1);
+      return;
+    }
+    setTimeout(function () { if (g === gen) showReaction(id, t, true); }, delay);
+    if (MP.on) mpChat(id, q, delay, -1);
+  }
+  var REPLY = {
+    'Hallo zusammen 👋': ['Hallo zusammen 👋', 'Hallo zusammen 👋', '👍'],
+    'Schöne Hand 👏': ['Gut gespielt', '😏'], 'Glück gehabt 🙄': ['Danke für die Chips 😘', '😂', 'Ich hab’s gewusst'],
+    'Du blufft doch!': ['Reingefallen 😏', 'Na warte…', '😂'], 'Ich hab’s gewusst': ['Glück gehabt 🙄', '🙄'],
+    'Nicht schon wieder…': ['😂', 'Danke für die Chips 😘'], 'All-in? Mutig 😏': ['Na warte…', '😏'],
+    'Gut gespielt': ['GG', 'Gut gespielt', '👍'], 'Mach schneller ⏰': ['Na warte…', '😤'], 'Revanche!': ['Na warte…', 'Revanche!'],
+    'Danke für die Chips 😘': ['Autsch', 'Revanche!', '😭'], 'Autsch': ['😂', 'Glück gehabt 🙄'], 'Na warte…': ['😂', 'Mach schneller ⏰'],
+    'Was war das denn?': ['Ich hab’s gewusst', '😏'], 'GG': ['GG', 'Gut gespielt'], 'Ich bin raus': ['GG', '👋'], 'Reingefallen 😏': ['Na warte…', 'Was war das denn?'],
+    '😂': ['😤', '😂'], '😱': ['😂'], '😭': ['😂', 'Danke für die Chips 😘'], '🤑': ['😱', 'Na warte…'], '👍': ['👍'], '🔥': ['🔥', '😱']
+  };
+  /* say: ein Satz (antwortet eher), sonst ein Emoji (antwortet seltener) */
+  function botReply(t, say) {
+    var opts = REPLY[t], bots = botsAt();
+    if (!opts || !bots.length || Date.now() - botReplyAt < 12000 || Math.random() > (say ? 0.45 : 0.22)) return;
+    botReplyAt = Date.now();
+    botSay(pickOne(bots).id, pickOne(opts), 1100 + rnd(900));
+  }
+  /* nach einer Hand (hoechstens alle 3 Haende, oft gar nicht): Bad Beat, Mut beim All-in, grosser Pot */
+  function botTalk() {
+    var R = S.result, bots = botsAt();
+    if (!R || !bots.length || S.handNo - botTalkHand < 3 || Math.random() > 0.55) return;
+    var won = R.won || {}, big = S.bb * 25;
+    var free = bots.filter(function (b) { return botEmoHand[b.id] !== S.handNo && b.inHand; });
+    var losers = free.filter(function (b) { return !(won[b.id] > 0); }), winners = free.filter(function (b) { return won[b.id] > 0; });
+    var hum = S.players.filter(function (p) { return p.kind === 'human' && p.inHand; });
+    var humWin = hum.filter(function (h) { return won[h.id] > 0; })[0], humLost = hum.filter(function (h) { return !(won[h.id] > 0) && h.total > 0; })[0];
+    var line = null;
+    if (R.showdown && humWin) {
+      var beat = losers.filter(function (b) { return !b.folded && b.value !== undefined && P.catOf(b.value) >= 2; })[0];
+      var weak = humWin.value !== undefined && P.catOf(humWin.value) <= 1;
+      if (beat) line = [beat, pickOne(['Glück gehabt 🙄', 'Nicht schon wieder…', 'Autsch'])];
+      else if (humWin.allIn && losers.length) line = [pickOne(losers), 'All-in? Mutig 😏'];
+      else if (weak && losers.length) line = [pickOne(losers), 'Was war das denn?'];
+    }
+    if (!line && winners.length && humLost && (won[winners[0].id] | 0) >= big) line = [winners[0], pickOne(['Danke für die Chips 😘', 'GG'])];
+    if (!line && humWin && (won[humWin.id] | 0) >= big && losers.length) line = [pickOne(losers), pickOne(['Na warte…', 'Revanche!', 'Schöne Hand 👏'])];
+    if (!line) return;
+    botTalkHand = S.handNo;
+    botSay(line[0].id, line[1], 1500 + rnd(600));
+  }
+  function botHello() {
+    var bots = botsAt();
+    if (!bots.length || Math.random() > 0.5) return;
+    botTalkHand = 0;
+    botSay(pickOne(bots).id, pickOne(['Hallo zusammen 👋', 'Hallo zusammen 👋', '👋']), 900 + rnd(700));
   }
   /* Der Smiley-Kreis ist versteckt: Pfeil antippen oder nach rechts wischen blendet ihn ein; Pfeil (zeigt dann nach links) antippen oder nach links wischen versteckt ihn wieder */
   function setReactShown(on) {
@@ -5970,6 +6319,7 @@ input.bprange[type=range]::-moz-range-thumb { width: 20px; height: 20px; border-
     if (swiped) return;
     var p = $('#reactPanel'); p.hidden = !p.hidden; updateReactLock();
   });
+  window.PRChat.tabs($('#reactPanel'), 'poker', function (q) { sendSay(q); $('#reactPanel').hidden = true; });
   $('#reactPanel').addEventListener('click', function (e) {
     var b = e.target.closest('button[data-e]');
     if (!b) return;
@@ -5980,6 +6330,151 @@ input.bprange[type=range]::-moz-range-thumb { width: 20px; height: 20px; border-
     var p = $('#reactPanel');
     if (!p.hidden && !e.target.closest('#reactPanel') && !e.target.closest('#reactBtn')) p.hidden = true;
   });
+
+  /* ---------- Karten zeigen: nach einer Hand ohne Showdown (oder wenn ich gepasst habe) 4 Sekunden lang ----------
+     Knopf „Karten zeigen“ (beide) oder eine Karte antippen (nur diese). Die naechste Hand wartet nicht extra; nur wenn
+     jemand kurz vor Schluss zeigt, bleibt das Ergebnis so lange stehen, dass man die Karten sieht (holdNext).
+     Online schickt der Mitspieler { t: 'show', c: [0|1, 0|1] } an den Ersteller, der prueft und verteilt die gezeigten
+     Karten im Stand (Feld sh, sb = Bluff). Verdeckte Karten gehen nie mit. Bots zeigen ab und zu (ca. 15 %) einen Bluff. */
+  var SHOW_MS = 4000, showHn = -1, showUntil = 0, showT = 0, nextAt = 0, showStatHn = -1;
+  function realCard(c) { return !!c && c.r >= 2 && c.r <= 14 && c.s >= 0 && c.s <= 3; }
+  function cleanShown(a) {
+    if (!Array.isArray(a) || a.length !== 2) return null;
+    var o = a.map(function (c) { return realCard(c) ? { r: c.r | 0, s: c.s | 0 } : null; });
+    return o[0] || o[1] ? o : null;
+  }
+  function bothShown(p) { return !!(p && p.shown && p.shown[0] && p.shown[1]); }
+  /* darf dieser Platz gerade zeigen? (ohne Showdown, oder er hat gepasst; seine Karten sind noch nicht offen) */
+  function mayShow(p) {
+    var R = S.result;
+    return S.phase === 'result' && !!R && !!p && p.inHand && p.hole.length === 2 && realCard(p.hole[0]) && realCard(p.hole[1]) &&
+      !p.revealed && (!R.showdown || p.folded) && !bothShown(p);
+  }
+  /* ohne Showdown gewonnen mit weniger als einem Paar (ein Paar, das nur auf dem Brett liegt, zaehlt nicht) */
+  function weakWin(p) {
+    var R = S.result;
+    if (!R || R.showdown || !(p.win > 0) || p.hole.length !== 2) return false;
+    var c = P.catOf(P.eval7(p.hole.concat(S.board)));
+    return c === 0 || (c === 1 && S.board.length >= 2 && P.catOf(P.eval7(S.board)) === 1);
+  }
+  /* Ergebnis noch mindestens ms stehen lassen (nur wer die Haende ablaufen laesst: offline oder Ersteller) */
+  function holdNext(ms) {
+    if (!nextResolve || (MP.on && MP.role !== 'host')) return;
+    var need = Date.now() + ms;
+    if (nextAt >= need) return;
+    nextAt = need;
+    var g = gen;
+    clearTimeout(nextTimer);
+    nextTimer = setTimeout(function () { if (g !== gen || !nextResolve) return; var r = nextResolve; nextResolve = null; r(); }, ms);
+  }
+  /* Ersteller/offline: Platz id zeigt die Karten c = [0|1, 0|1] */
+  function applyShow(id, c, late) {
+    var p = S.players[id];
+    if (!mayShow(p) || Date.now() > showUntil + (late || 0)) return false;
+    var sh = p.shown ? p.shown.slice() : [null, null];
+    if (c[0]) sh[0] = { r: p.hole[0].r, s: p.hole[0].s };
+    if (c[1]) sh[1] = { r: p.hole[1].r, s: p.hole[1].s };
+    p.shown = sh;
+    p.sbluff = !!(sh[0] && sh[1]) && weakWin(p);
+    holdNext(2200);
+    if (p.kind === 'human' && p.sbluff) {   // ein Bot hat es geahnt (oder aergert sich)
+      var bots = botsAt().filter(function (b) { return b !== p && botEmoHand[b.id] !== S.handNo; });
+      if (bots.length && Math.random() < 0.5 && botTalkHand !== S.handNo) { botTalkHand = S.handNo; botSay(pickOne(bots).id, pickOne(['Ich hab’s gewusst', 'Na warte…', 'Was war das denn?', '😱']), 900); }
+    }
+    render();
+    return true;
+  }
+  /* eigene Karten zeigen (alle Rollen) */
+  function myShow(c) {
+    var me = S.players[0];
+    if (!playing || !mayShow(me) || Date.now() > showUntil) return;
+    c = [c[0] && !(me.shown && me.shown[0]) ? 1 : 0, c[1] && !(me.shown && me.shown[1]) ? 1 : 0];
+    if (!c[0] && !c[1]) return;
+    var cards = [];
+    if (c[0]) cards.push({ r: me.hole[0].r, s: me.hole[0].s });
+    if (c[1]) cards.push({ r: me.hole[1].r, s: me.hole[1].s });
+    if (MP.on && MP.role === 'guest') {
+      try { MP.conn.send({ t: 'show', c: c }); } catch (e) {}
+      /* gleich selbst anzeigen; der naechste Stand vom Ersteller bestaetigt es */
+      var sh = me.shown ? me.shown.slice() : [null, null];
+      if (c[0]) sh[0] = cards[0]; if (c[1]) sh[1] = cards[cards.length - 1];
+      me.shown = sh; me.sbluff = bothShown(me) && weakWin(me);
+      render();
+    } else if (!applyShow(0, c)) return;
+    var bluff = bothShown(me) && weakWin(me);
+    Snd.card(0);
+    window.PRBus.emit('poker:show', { cards: cards, bluff: bluff });
+    if (showStatHn !== S.handNo || bluff) {
+      var st = readJ('pr-pkshow') || {}, n = st.n | 0, b = st.b | 0;
+      if (showStatHn !== S.handNo) n++;
+      if (bluff) b++;
+      showStatHn = S.handNo;
+      try { localStorage.setItem('pr-pkshow', JSON.stringify({ n: n, b: b })); } catch (e) {}
+    }
+  }
+  /* Ersteller/offline: ein Bot, der ohne Showdown mit Luft gewonnen hat, zeigt manchmal */
+  function botShow() {
+    var R = S.result;
+    if (!R || R.showdown) return;
+    var w = S.players[R.topId];
+    if (!w || w.kind !== 'bot' || !weakWin(w) || Math.random() > 0.15) return;
+    var g = gen, hn = S.handNo;
+    setTimeout(function () {
+      if (g !== gen || S.handNo !== hn || !applyShow(w.id, [1, 1])) return;
+      if (botTalkHand !== S.handNo && Math.random() < 0.75) { botTalkHand = S.handNo; botSay(w.id, 'Reingefallen 😏', 450); }
+    }, 600 + rnd(500));
+  }
+  /* Platz i: gezeigte Karten in den kleinen Karten am Platz, Schild darueber; true, wenn etwas gezeigt ist */
+  function renderShowSeat(p, i, r) {
+    var sh = S.phase === 'result' && p.shown && (p.shown[0] || p.shown[1]) ? p.shown : null;
+    r.el.classList.toggle('showed', !!sh);
+    var lab = sh ? (p.sbluff ? 'Bluff 😏' : 'gezeigt') : '';
+    if (r.shl.textContent !== lab) r.shl.textContent = lab;
+    r.shl.classList.toggle('bluff', !!(sh && p.sbluff));
+    if (i === 0) {
+      r.m.forEach(function (c, k) {
+        var cd = sh && sh[k];
+        if (!cd) { c.classList.add('down'); return; }
+        if (c.dataset.key !== cd.r + '-' + cd.s) setFace(c, cd);
+        c.classList.remove('down');
+      });
+      [].forEach.call(handEl.children, function (sl, k) { sl.classList.toggle('shw', !!(sh && sh[k])); });
+      var hl = sh && !p.folded ? lab : '', hs = $('#handShw');
+      if (hs.textContent !== hl) hs.textContent = hl;
+      hs.classList.toggle('bluff', !!(hl && p.sbluff));
+    }
+    return !!sh;
+  }
+  /* Bedienleiste in der Ergebnisphase: Knopf und die beiden eigenen Karten (einzeln antippbar) */
+  var showRowHn = -1;
+  function renderShowRow() {
+    var row = $('#showRow'), me = S.players[0], left = showUntil - Date.now();
+    var on = playing && S.phase === 'result' && showHn === S.handNo && left > 0 && mayShow(me);
+    row.hidden = !on;
+    if (!on) return false;
+    var btns = row.querySelectorAll('.shc');
+    if (showRowHn !== S.handNo) {
+      showRowHn = S.handNo;
+      [].forEach.call(btns, function (b, k) { b.innerHTML = ''; var cd = cardEl('mini'); setFace(cd, me.hole[k]); b.appendChild(cd); });
+      var bar = $('#bShow i'); bar.style.animation = 'none'; void bar.offsetWidth; bar.style.animation = ''; bar.style.setProperty('--ms', Math.max(0, left) + 'ms');
+    }
+    [].forEach.call(btns, function (b, k) { var dn = !!(me.shown && me.shown[k]); b.classList.toggle('done', dn); b.disabled = dn; });
+    var one = !!(me.shown && (me.shown[0] || me.shown[1]));
+    $('#bShow span').textContent = one ? 'Andere Karte zeigen' : 'Karten zeigen';
+    $('#bShow small').textContent = weakWin(me) ? 'zeig deinen Bluff 😏' : 'alle sehen deine Hand';
+    return true;
+  }
+  /* beim ersten Bild der Ergebnisphase: 4-Sekunden-Fenster starten */
+  function showWindow() {
+    if (S.phase !== 'result' || showHn === S.handNo) return;
+    showHn = S.handNo; showUntil = Date.now() + SHOW_MS;
+    clearTimeout(showT);
+    showT = setTimeout(function () { renderControls(); }, SHOW_MS + 30);
+  }
+  [].forEach.call(document.querySelectorAll('#showRow .shc'), function (b) {
+    b.addEventListener('click', function () { var c = [0, 0]; c[+b.dataset.k] = 1; myShow(c); });
+  });
+  $('#bShow').addEventListener('click', function () { myShow([1, 1]); });
 
   /* ---------- Spielende ---------- */
   function showEnd(win, wname) {
@@ -6040,7 +6535,7 @@ input.bprange[type=range]::-moz-range-thumb { width: 20px; height: 20px; border-
   var GIFT = 50;   // so viele Chips gibt es, wenn man pleite ist und auch im Guthaben nichts mehr hat
   var MIN_OPTS = [10, 25, 50], SEAT_OPTS = [2, 3, 4, 5];
   var PEER_PREFIX = 'pokerrunde-bj-';
-  var BJ_V = 6;   // Version des Tisch-Protokolls: Ersteller und Mitspieler muessen gleich sein (6: Sterne st statt Level lv im Profil)
+  var BJ_V = 7;   // Version des Tisch-Protokolls: Ersteller und Mitspieler muessen gleich sein (6: Sterne st statt Level lv im Profil, 7: Schnellsaetze t 'chat')
 
   /* ---------- Karten und Werte ---------- */
   function randInt(n) {
@@ -6409,6 +6904,7 @@ input.bprange[type=range]::-moz-range-thumb { width: 20px; height: 20px; border-
         el = document.createElement('div'); el.className = 'bjo';
         el.innerHTML = '<div class="bjwho"><span class="pav"></span><span></span></div><div class="bjhands"></div><div class="bjbet"><span class="stk"></span><b></b></div><div class="bjsub"></div>';
         col.appendChild(el);
+        (function (box) { window.PRChat.hold(box.querySelector('.bjwho'), function () { return box._nm || ''; }, box.querySelector('.pav')); })(el);   // langes Druecken: stumm schalten
       }
       var turn = t.phase === 'play' && t.seats[t.turn] === s;
       el._sid = s.id;
@@ -6418,6 +6914,7 @@ input.bprange[type=range]::-moz-range-thumb { width: 20px; height: 20px; border-
       el.classList.toggle('many', s.hands.length > 1);
       var av = el.querySelector('.pav'); av.style.setProperty('--av', s.color); av.textContent = (s.name.charAt(0) || '?').toUpperCase();
       window.PRStarBadge(av, s.st);
+      el._nm = s.name; window.PRChat.badge(av, s.name);
       el.querySelector('.bjwho span:last-child').textContent = s.name;
       el.classList.toggle('turn', turn);
       el.classList.toggle('out', s.gone || (t.phase !== 'bet' && !s.inR));
@@ -6770,17 +7267,17 @@ input.bprange[type=range]::-moz-range-thumb { width: 20px; height: 20px; border-
     if (l.length >= 3) return false;
     l.push(now); return true;
   }
-  function showBjReact(id, emo) {
-    if (EMOS.indexOf(emo) < 0) return;
+  /* q: Index eines Schnellsatzes (dann ist emo leer), sonst ein Emoji. Stumm geschaltete Mitspieler zeigen nichts. */
+  function showBjReact(id, emo, q) {
+    var txt = q === undefined ? emo : window.PRChat.text('bj', q);
+    if (q === undefined ? EMOS.indexOf(emo) < 0 : !txt) return;
     var host = null;
     if (id === ME) host = $('#bjMe');
     else [].forEach.call(document.querySelectorAll('#bjOthers .bjo'), function (el) { if (el._sid === id) host = el; });
     if (!host) return;
-    var old = host.querySelector(':scope > .react'); if (old) old.remove();
-    var b = document.createElement('div'); b.className = 'react'; b.textContent = emo;
-    host.appendChild(b);
-    if (b.animate) b.animate([{ transform: 'translateX(-50%) translateY(8px) scale(.4)', opacity: 0 }, { transform: 'translateX(-50%) translateY(-4px) scale(1.15)', opacity: 1, offset: .18 }, { transform: 'translateX(-50%) scale(1)', opacity: 1, offset: .28 }, { transform: 'translateX(-50%) scale(1)', opacity: 1, offset: .82 }, { transform: 'translateX(-50%) translateY(-10px) scale(.9)', opacity: 0 }], { duration: 2200, easing: 'ease-out' });
-    setTimeout(function () { if (b.parentNode) b.remove(); }, 2200);
+    var sd = seatOf(id);
+    if (id !== ME && sd && window.PRChat.muted(sd.name)) return;
+    window.PRChat.bubble(host, txt, q !== undefined);
   }
   /* ---------- Tomate werfen: auf einen Mitspieler, den Dealer oder irgendwo auf den Tisch ---------- */
   function bjEl(id) {
@@ -6829,8 +7326,15 @@ input.bprange[type=range]::-moz-range-thumb { width: 20px; height: 20px; border-
     NB.conns.forEach(function (c) { if (c._bj) { try { c.send({ t: 'react', id: id, e: emo }); } catch (e) {} } });
     showBjReact(id, emo);
   }
+  /* Schnellsatz: gleiches Limit wie Reaktionen, uebers Netz geht nur der Index q (PRChat.list('bj')) */
+  function hChat(id, q) {
+    q = +q;
+    if (!T || !window.PRChat.text('bj', q) || !seatOf(id) || !reactOk(id)) return;
+    NB.conns.forEach(function (c) { if (c._bj) { try { c.send({ t: 'chat', id: id, q: q }); } catch (e) {} } });
+    showBjReact(id, '', q);
+  }
   $('#bjReact').addEventListener('click', function () { $('#bjRPanel').hidden = !$('#bjRPanel').hidden; });
-  [].forEach.call(document.querySelectorAll('#bjRPanel button'), function (b) {
+  [].forEach.call(document.querySelectorAll('#bjRPanel button[data-e]'), function (b) {
     b.addEventListener('click', function () {
       var emo = b.dataset.e;
       $('#bjRPanel').hidden = true;
@@ -6843,6 +7347,18 @@ input.bprange[type=range]::-moz-range-thumb { width: 20px; height: 20px; border-
       } else if (!reactOk(ME)) { bjToast('Kurz warten …'); return; }
       else { NB.conns.forEach(function (c) { if (c._bj) { try { c.send({ t: 'react', id: ME, e: emo }); } catch (e) {} } }); showBjReact(ME, emo); }
     });
+  });
+  window.PRChat.tabs($('#bjRPanel'), 'bj', function (q, txt) {
+    $('#bjRPanel').hidden = true;
+    if (!T || !multi()) return;
+    if (NB.role === 'guest') {
+      var now = Date.now(), l = (reactLog.me || []).filter(function (x) { return now - x < 9000; });
+      if (l.length >= 3) { bjToast('Kurz warten …'); return; }
+      reactLog.me = l.concat(now);
+      try { NB.conn.send({ t: 'chat', q: q }); } catch (e) {}
+    } else if (!reactOk(ME)) { bjToast('Kurz warten …'); return; }
+    else { NB.conns.forEach(function (c) { if (c._bj) { try { c.send({ t: 'chat', id: ME, q: q }); } catch (e) {} } }); showBjReact(ME, '', q); }
+    PR.emit('chat', { game: 'bj', text: txt });
   });
   document.addEventListener('pointerdown', function (e) { if (!$('#bjRPanel').hidden && !e.target.closest('#bjRPanel, #bjReact')) $('#bjRPanel').hidden = true; });
 
@@ -7099,6 +7615,7 @@ input.bprange[type=range]::-moz-range-thumb { width: 20px; height: 20px; border-
         else if (d.t === 'add') hTop(conn.peer, d.a, d.r);
         else if (d.t === 'bet') hBet(conn.peer, d.a);
         else if (d.t === 'react') hReact(conn.peer, d.e);
+        else if (d.t === 'chat') hChat(conn.peer, d.q);
         else if (d.t === 'tom') hTom(conn.peer, d);
         else if (d.t === 'bye') { conn._bj = false; NB.conns = NB.conns.filter(function (c) { return c !== conn; }); hostGone(conn.peer); }
         return;
@@ -7189,6 +7706,7 @@ input.bprange[type=range]::-moz-range-thumb { width: 20px; height: 20px; border-
           return;
         }
         if (d.t === 'react' && finished) { showBjReact(String(d.id), String(d.e)); return; }
+        if (d.t === 'chat' && finished) { showBjReact(String(d.id), '', +d.q); return; }
         if (d.t === 'tom' && finished) { var tm = cleanBjTom(d); bjTomShow(String(d.id), tm.to, tm.x, tm.y); return; }
         if (d.t === 'old') {
           fail((d.v | 0) > BJ_V ? 'Deine App ist nicht aktuell. Schließ sie einmal ganz und öffne sie neu, dann klappt es.'
@@ -7253,6 +7771,7 @@ input.bprange[type=range]::-moz-range-thumb { width: 20px; height: 20px; border-
             if (!back) { back = true; done = true; clearTimeout(to); NB.conn = conn; $('#bjRe').hidden = true; bjToast('Wieder verbunden'); }
             view(d.s, peer.id);
           } else if (d.t === 'react' && back) showBjReact(String(d.id), String(d.e));
+          else if (d.t === 'chat' && back) showBjReact(String(d.id), '', +d.q);
           else if (d.t === 'tom' && back) { var tm = cleanBjTom(d); bjTomShow(String(d.id), tm.to, tm.x, tm.y); }
           else if (d.t === 'closed') { $('#bjRe').hidden = true; endCard('Tisch geschlossen', 'Der Ersteller hat den Tisch verlassen. Deine Chips bleiben in deinem Guthaben.'); }
           else if (d.t === 'full' || d.t === 'old') { $('#bjRe').hidden = true; endCard('Verbindung weg', 'Dein Platz am Tisch ist nicht mehr frei. Deine Chips bleiben in deinem Guthaben.'); }
@@ -8916,7 +9435,7 @@ input.bprange[type=range]::-moz-range-thumb { width: 20px; height: 20px; border-
   function $(s) { return document.querySelector(s); }
   function all(s) { return [].slice.call(document.querySelectorAll(s)); }
 
-  var RL_V = 3;   // Version des Tisch-Protokolls: Ersteller und Mitspieler muessen gleich sein (3: Sterne st statt Level lv im Profil)
+  var RL_V = 4;   // Version des Tisch-Protokolls: Ersteller und Mitspieler muessen gleich sein (3: Sterne st statt Level lv im Profil, 4: Reaktionen und Schnellsaetze)
   var PEER_PREFIX = 'pokerrunde-rl-', MAX_PL = 6, SPIN_MS = 6500, HOLD_MS = 2600, BET_MS = 15000, GIFT = 50;
   var CHIPS = [10, 50, 100, 500, 1000, 5000];
   var WHEEL = [0, 32, 15, 19, 4, 21, 2, 25, 17, 34, 6, 27, 13, 36, 11, 30, 8, 23, 10, 5, 24, 16, 33, 1, 20, 14, 31, 9, 22, 18, 29, 7, 28, 12, 35, 3, 26];
@@ -9357,7 +9876,9 @@ input.bprange[type=range]::-moz-range-thumb { width: 20px; height: 20px; border-
   var plKey = '';
   function renderPl() {
     var host = $('#rlFr'), list = R && multi() ? R.pl.filter(function (p) { return p.id !== ME; }) : [];
-    var k = JSON.stringify(list.map(function (p) { return [p.id, p.name, p.color, p.rdy, p.st | 0]; }));
+    var k = JSON.stringify(list.map(function (p) { return [p.id, p.name, p.color, p.rdy, p.st | 0, window.PRChat.muted(p.name)]; }));
+    var talk = multi() && others();
+    $('#rlReact').hidden = !talk; if (!talk) $('#rlRPanel').hidden = true;
     if (k === plKey) return;
     plKey = k;
     host.hidden = !list.length; host.innerHTML = '';
@@ -9365,6 +9886,9 @@ input.bprange[type=range]::-moz-range-thumb { width: 20px; height: 20px; border-
       var el = document.createElement('span'); el.className = 'slfa rlfa' + (p.rdy ? ' rdy' : ''); el.title = p.name + (p.rdy ? ' (fertig)' : '');
       var a = document.createElement('span'); a.className = 'pav'; a.style.setProperty('--av', p.color); a.textContent = (p.name || '?').charAt(0).toUpperCase();
       window.PRStarBadge(a, p.st);
+      window.PRChat.badge(a, p.name);
+      el._sid = p.id;
+      window.PRChat.hold(el, function () { return p.name; }, a);   // langes Druecken: stumm schalten
       el.appendChild(a); host.appendChild(el);
     });
     if (list.length > 5) { var m = document.createElement('span'); m.className = 'slfmore'; m.textContent = '+' + (list.length - 5); host.appendChild(m); }
@@ -9561,6 +10085,49 @@ input.bprange[type=range]::-moz-range-thumb { width: 20px; height: 20px; border-
   });
   $('#rlInvX').addEventListener('click', function () { $('#rlInvDlg').hidden = true; });
 
+  /* ---------- Reaktionen und Schnellsaetze am Tisch mit Freunden: hoechstens 3 in 9 Sekunden pro Spieler.
+     Uebers Netz: { t: 'react', e } / { t: 'chat', q } an den Ersteller, der gibt { ..., id } an alle weiter (auch zurueck). ---------- */
+  var RL_EMOS = ['😂', '😱', '😭', '🤑', '👍', '🔥'], talkLog = {};
+  function talkOk(id) {
+    var now = Date.now(), l = (talkLog[id] || []).filter(function (x) { return now - x < 9000; });
+    talkLog[id] = l;
+    if (l.length >= 3) return false;
+    l.push(now); return true;
+  }
+  /* q: Index eines Satzes (PRChat.list('rl')), sonst emo ein Emoji */
+  function showTalk(id, emo, q) {
+    var txt = q === undefined ? emo : window.PRChat.text('rl', q);
+    if (q === undefined ? RL_EMOS.indexOf(emo) < 0 : !txt) return;
+    var p = plOf(id); if (!p) return;
+    if (id !== ME && window.PRChat.muted(p.name)) return;
+    var host = null;
+    if (id === ME) host = $('#rlMe');
+    else all('#rlFr .rlfa').forEach(function (el) { if (el._sid === id) host = el; });
+    if (host) window.PRChat.bubble(host, txt, q !== undefined, id === ME ? '' : 'down');
+  }
+  function hTalk(id, emo, q) {
+    if (!R || !plOf(id)) return false;
+    if (q === undefined ? RL_EMOS.indexOf(emo) < 0 : !window.PRChat.text('rl', q)) return false;
+    if (!talkOk(id)) return false;
+    var msg = q === undefined ? { t: 'react', id: id, e: emo } : { t: 'chat', id: id, q: q };
+    NB.conns.forEach(function (c) { if (c._rl) { try { c.send(msg); } catch (e) {} } });
+    showTalk(id, emo, q);
+    return true;
+  }
+  function sendTalk(emo, q) {
+    $('#rlRPanel').hidden = true;
+    if (!R || !multi() || !others()) return;
+    if (NB.role === 'guest') {
+      if (!talkOk('me')) { toast('Kurz warten …'); return; }
+      try { NB.conn.send(q === undefined ? { t: 'react', e: emo } : { t: 'chat', q: q }); } catch (e) {}
+    } else if (!hTalk(ME, emo, q)) { toast('Kurz warten …'); return; }
+    if (q !== undefined) PR.emit('chat', { game: 'rl', text: window.PRChat.text('rl', q) });
+  }
+  $('#rlReact').addEventListener('click', function () { $('#rlRPanel').hidden = !$('#rlRPanel').hidden; });
+  all('#rlRPanel button[data-e]').forEach(function (b) { b.addEventListener('click', function () { sendTalk(b.dataset.e); }); });
+  window.PRChat.tabs($('#rlRPanel'), 'rl', function (q) { sendTalk('', q); });
+  document.addEventListener('pointerdown', function (e) { if (!$('#rlRPanel').hidden && !e.target.closest('#rlRPanel, #rlReact')) $('#rlRPanel').hidden = true; });
+
   /* ---------- Online: der Tisch wird erst geoeffnet, wenn ein Freund dazukommen will ---------- */
   function cleanProf(p) {
     p = (p && typeof p === 'object') ? p : {};
@@ -9600,6 +10167,8 @@ input.bprange[type=range]::-moz-range-thumb { width: 20px; height: 20px; border-
       if (conn._rl) {
         if (d.t === 'bets') hBets(conn.peer, d.b);
         else if (d.t === 'ready') hReady(conn.peer);
+        else if (d.t === 'react') hTalk(conn.peer, String(d.e));
+        else if (d.t === 'chat') hTalk(conn.peer, '', +d.q);
         else if (d.t === 'bye') gone();
         return;
       }
@@ -9674,6 +10243,8 @@ input.bprange[type=range]::-moz-range-thumb { width: 20px; height: 20px; border-
           return;
         }
         if (d.t === 'closed') { if (!fin) fail('Der Tisch wurde geschlossen – du spielst allein'); else lost('Der Tisch wurde geschlossen – du spielst allein weiter'); return; }
+        if (d.t === 'react' && fin) { showTalk(String(d.id), String(d.e)); return; }
+        if (d.t === 'chat' && fin) { showTalk(String(d.id), '', +d.q); return; }
         if (d.t !== 'snap') return;
         if ((d.v | 0) !== RL_V) { fail('Ihr habt verschiedene App-Versionen. Schließt beide die App einmal ganz und öffnet sie neu.'); return; }
         var s = cleanSnap(d.s); if (!s) return;
