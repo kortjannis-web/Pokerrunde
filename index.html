@@ -2244,6 +2244,53 @@ input.bprange[type=range]::-moz-range-thumb { width: 20px; height: 20px; border-
 </div>
 
 <script>
+/* Ereignis-Zentrale (laeuft vor allen Spiel-Skripten, damit jedes Spiel sofort melden kann).
+   window.PRBus (spaeter auch als PR.on / PR.off / PR.emit erreichbar):
+     on(name, fn)    Zuhoerer anmelden, fn(daten, name). name '*' hoert auf alle Ereignisse.
+     off(name, fn)   wieder abmelden
+     emit(name, d)   Ereignis melden. Fehler in einem Zuhoerer werden abgefangen und stoeren das Spiel nie.
+   Gemeldet wird nur, was der eigene Spieler tut (nie Bots oder Mitspieler; Online-Mitspieler melden auf ihrem Handy).
+   Ereignisse kommen in dem Moment, in dem die Chips verbucht werden (Slots und Roulette also schon beim Drehen,
+   bevor das Ergebnis zu sehen ist). Wer etwas anzeigen will, wartet selbst, bis man wieder im Menue ist.
+     'bet'          { game, amount }       gesetzte Chips (Poker: Blinds, Mitgehen, Erhoehen, All-in einzeln;
+                                           Blackjack: Einsatz inkl. Verdoppeln und Teilen am Rundenende; Slots: Einsatz pro
+                                           bezahltem Dreh, Extra Spins zaehlen nicht; Roulette: Summe pro Dreh)
+     'win'          { game, amount, net }  ausgezahlter Gewinn (nur wenn etwas ausgezahlt wurde) und Netto der Runde
+     'poker:hand'   { won, net, pot, handName, cat, showdown, allin, folded, hole, board, online, bigBlind }
+     'bj:round'     { result: 'win'|'lose'|'push'|'bj', net, bet, doubled, split, online }
+     'slots:spin'   { bet, stake, win, mult, extraSpins, free, jackpot }
+     'rl:spin'      { bet, win, number, straightHit, online }
+     'lock:round'   { level, hits, jackpot, amount }
+     'tomato'       { game }       'gift' { amount }       'game:open' { game }
+     'online:round' { game }       eine Runde mit echten Mitspielern
+     'xp'           { amount, reason, xp, lv }    'level' { lv, reward, unlocks }   (aus dem XP-Skript)
+   game: 'poker' | 'bj' | 'slots' | 'rl' | 'lock'. Mit window.PR_DEBUG = true steht jedes Ereignis in der Konsole. */
+(function () {
+  'use strict';
+  var L = {};
+  function on(name, fn) { if (typeof fn === 'function') (L[name] || (L[name] = [])).push(fn); }
+  function off(name, fn) { var a = L[name], i = a ? a.indexOf(fn) : -1; if (i >= 0) a.splice(i, 1); }
+  function emit(name, d) {
+    if (window.PR_DEBUG) { try { console.log('[PR]', name, d); } catch (e) {} }
+    var a = (L[name] || []).concat(name === '*' ? [] : (L['*'] || []));
+    for (var i = 0; i < a.length; i++) {
+      try { a[i](d, name); } catch (e) { try { console.error('PR-Zuhoerer', name, e); } catch (x) {} }
+    }
+  }
+  window.PRBus = { on: on, off: off, emit: emit };
+  /* kleines Level-Abzeichen am Profilbild der Mitspieler: host = Profilbild, lv 0 = keins */
+  window.PRLvBadge = function (host, lv) {
+    if (!host) return;
+    lv = Math.max(0, Math.min(100, lv | 0));
+    var b = host.querySelector(':scope > .lvb');
+    if (!lv) { if (b) b.remove(); return; }
+    if (!b) { b = document.createElement('i'); b.className = 'lvb'; b.setAttribute('aria-hidden', 'true'); host.appendChild(b); }
+    if (b.textContent !== String(lv)) b.textContent = String(lv);
+  };
+})();
+</script>
+
+<script>
 /* Pokerrunde – Spiel-Engine (Texas Hold'em, 5 Plätze, No-Limit)
    Die Bots sehen nur ihre eigenen Karten, das Board und das, was alle am Tisch sehen
    (Einsätze, Positionen, wer gepasst oder erhöht hat). Fremde Karten und den Kartenstapel
@@ -3445,14 +3492,48 @@ input.bprange[type=range]::-moz-range-thumb { width: 20px; height: 20px; border-
         if (dealt && window.JAR && S.players[0].win > (S.players[0].total || 0)) window.JAR.add(S.players[0].win - (S.players[0].total || 0));
         saveBank();
         if (dealt) logHand();
+        if (dealt) pkHandEvents();
         if (S.players[0].win > 0) Snd.win(); else Snd.pot();
       }
       if (turn && !snap.turn) Snd.ping();
     }
+    pkBetEvents();
     snap.hand = S.handNo; snap.board = S.board.length; snap.phase = S.phase; snap.turn = turn;
     snap.bets = S.players.map(function (p) { return p.bet; });
     snap.folded = S.players.map(function (p) { return p.folded ? 1 : 0; });
     snap.label = S.players.map(function (p) { return p.label; });
+  }
+
+  /* ---------- Ereignisse an die Ereignis-Zentrale (nur fuer den eigenen Platz 0, auch als Online-Mitspieler) ---------- */
+  /* pkPaid: so viel habe ich in Hand hn schon in den Pot gelegt (Blinds, Mitgehen, Erhoehen, All-in) */
+  var pkPaid = { hn: -1, paid: 0 };
+  function pkBetEvents() {
+    var me = S.players[0];
+    if (!playing || !me) return;
+    if (S.handNo !== pkPaid.hn) pkPaid = { hn: S.handNo, paid: 0 };
+    var t = me.inHand ? me.total | 0 : 0;
+    if (t > pkPaid.paid) { var d = t - pkPaid.paid; pkPaid.paid = t; window.PRBus.emit('bet', { game: 'poker', amount: d }); }
+  }
+  /* echte Mitspieler am Tisch? (Mitspieler: der Ersteller ist immer ein Mensch) */
+  function pkOnline() {
+    if (!MP.on) return false;
+    if (MP.role !== 'host') return true;
+    return MP.seats.some(function (st, i) { return i > 0 && st.kind === 'human' && !st.gone; });
+  }
+  function pkHandEvents() {
+    var me = S.players[0], R = S.result;
+    if (!me || !R) return;
+    pkBetEvents();   // falls der letzte Einsatz erst mit dem Ergebnis ankommt
+    var tot = me.total | 0, win = me.win | 0, pot = S.players.reduce(function (a, p) { return a + (p.total | 0); }, 0);
+    var hole = (me.hole || []).filter(function (c) { return c && c.r >= 2 && c.r <= 14; }), board = (S.board || []).slice();
+    var hn = '', cat = -1;
+    try { if (hole.length === 2 && board.length >= 3) { var v = P.best(hole.concat(board)); hn = P.describe(v); cat = P.catOf(v); } } catch (e) {}
+    var on = pkOnline();
+    if (win > 0) window.PRBus.emit('win', { game: 'poker', amount: win, net: win - tot });
+    window.PRBus.emit('poker:hand', { won: win > 0, net: win - tot, pot: pot, handName: hn, cat: cat, showdown: !!R.showdown, allin: !!me.allIn,
+      folded: !!me.folded, hole: hole.map(function (c) { return { r: c.r, s: c.s }; }), board: board.map(function (c) { return { r: c.r, s: c.s }; }),
+      online: on, bigBlind: S.bb | 0 });
+    if (on) window.PRBus.emit('online:round', { game: 'poker' });
   }
 
   var MP = { on: false };   // laufendes Online-Spiel (siehe unten)
@@ -4201,6 +4282,7 @@ input.bprange[type=range]::-moz-range-thumb { width: 20px; height: 20px; border-
     bi = Math.max(Math.min(P.REBUY, total), Math.min(total, bi));
     wallet = total - bi; PROF.buyin = bi; saveProf(); sessBank = PROF.bank;
     game.reset(bi); S = game.S; profit = 0; playing = true; applyProfToSeat();
+    window.PRBus.emit('game:open', { game: 'poker' });
     snap.hand = -1;
     render();
     game.run();
@@ -4879,6 +4961,7 @@ input.bprange[type=range]::-moz-range-thumb { width: 20px; height: 20px; border-
       sb: cfg.sb, every: cfg.every
     });
     S = game.S; profit = 0; playing = true; applyProfToSeat();
+    window.PRBus.emit('game:open', { game: 'poker' });
     snap.hand = -1;
     seatsArr.forEach(function (st, g) { if (g > 0 && st.conn) { try { st.conn.send({ t: 'start', seat: g, n: n, chips: st.chips }); } catch (e) {} } });
     $('#friends').hidden = true; $('#pview').hidden = true;
@@ -5187,6 +5270,7 @@ input.bprange[type=range]::-moz-range-thumb { width: 20px; height: 20px; border-
     G.board = []; G.handNo = 0; G.phase = 'idle'; G.toAct = -1; G.glow = -1; G.result = null; G.sbIdx = -1; G.bbIdx = -1; G.dealer = 0; G.humanStart = bi; G.pendingAdd = 0;
     G.players[0].chips = bi;   // sonst stuende bis zur ersten fertigen Hand -Einsatz als Gewinn/Verlust da (wichtig fuer spaeter Dazugekommene)
     game = guestGame; S = G; profit = 0; playing = true; applyProfToSeat();
+    window.PRBus.emit('game:open', { game: 'poker' });
     snap.hand = -1;
     $('#friends').hidden = true; $('#pview').hidden = true;
     wantWake();
@@ -5635,6 +5719,8 @@ input.bprange[type=range]::-moz-range-thumb { width: 20px; height: 20px; border-
   /* fuer Blackjack (eigenes Skript weiter unten): gemeinsames Profil, Guthaben, Klaenge, Karten und Online-Vermittlung */
   window.PR = {
     Snd: Snd, fmt: fmt, REBUY: P.REBUY, SITE_URL: SITE_URL, AV: AV,
+    /* Ereignis-Zentrale (siehe window.PRBus ganz oben): on(name, fn), off(name, fn), emit(name, daten) */
+    on: window.PRBus.on, off: window.PRBus.off, emit: window.PRBus.emit,
     prof: function () { return PROF; }, saveProf: saveProf, renderBank: renderBank, profName: profName,
     cardEl: cardEl, setFace: setFace, chipStack: chipStack, seg: seg, Picker: Picker,
     newCode: newCode, cleanCode: cleanCode, netAvail: netAvail, peerOpts: peerOpts, MSG_NOLIB: MSG_NOLIB,
@@ -6105,11 +6191,22 @@ input.bprange[type=range]::-moz-range-thumb { width: 20px; height: 20px; border-
         if (net > 0) Snd.win(); else if (net === 0) Snd.knock();
         if (net > 0 && window.JAR) window.JAR.add(net);
         bjStat(net, my.hands.filter(function (h) { return h.res === 'bj'; }).length);
+        bjEvents(t, my, net);
       }
     }
     Object.keys(CEL).forEach(function (id) { if (!CEL[id].isConnected) delete CEL[id]; });
     V.phase = t.phase; V.round = t.round; V.quiet = false;
     renderCtl();
+  }
+  /* Ereignis-Zentrale: Einsatz der Runde (inkl. Verdoppeln und Teilen), Auszahlung und Ergebnis */
+  function bjEvents(t, my, net) {
+    var bet = 0, pay = 0, dbl = false, spl = false, bjs = false;
+    my.hands.forEach(function (h) { bet += h.bet | 0; pay += h.pay | 0; if (h.dbl) dbl = true; if (h.split) spl = true; if (h.res === 'bj') bjs = true; });
+    var on = multi() && t.seats.some(function (s) { return s.id !== ME && !s.gone; });
+    if (bet > 0) PR.emit('bet', { game: 'bj', amount: bet });
+    if (pay > 0) PR.emit('win', { game: 'bj', amount: pay, net: net });
+    PR.emit('bj:round', { result: net > 0 ? (bjs ? 'bj' : 'win') : net < 0 ? 'lose' : 'push', net: net, bet: bet, doubled: dbl, split: spl, online: on });
+    if (on) PR.emit('online:round', { game: 'bj' });
   }
   /* Statistik fuers Profil: Runden, gewonnen, verloren, Blackjacks, Saldo */
   function bjStat(net, bjs) {
@@ -6471,7 +6568,9 @@ input.bprange[type=range]::-moz-range-thumb { width: 20px; height: 20px; border-
     myBet = 0; dlg = null; $('#bjChipDlg').hidden = true; $('#bjPause').hidden = true; $('#bjInvDlg').hidden = true; $('#bjEnd').hidden = true; $('#bjToast').classList.remove('on');
   }
   function openTable() {
+    var was = bj.hidden;
     $('#menu').hidden = true; $('#bjf').hidden = true; bj.hidden = false;
+    if (was) PR.emit('game:open', { game: 'bj' });
     $('#bjCodeBtn').hidden = !NB.code; $('#bjCodeTxt').textContent = NB.code; $('.bjbar').classList.toggle('coded', !!NB.code);
   }
   function playSolo() {
@@ -7452,6 +7551,10 @@ input.bprange[type=range]::-moz-range-thumb { width: 20px; height: 20px; border-
     var before = P.bank;
     P.bank = before - cost + total; PR.saveProf(); PR.renderBank(); saveState();
     var st = slStat(total - cost, total, jpAny);
+    /* Ereignis-Zentrale: nur bezahlte Drehs sind ein Einsatz, Extra Spins nicht */
+    if (cost > 0) PR.emit('bet', { game: 'slots', amount: cost });
+    if (total > 0) PR.emit('win', { game: 'slots', amount: total, net: total - cost });
+    PR.emit('slots:spin', { bet: cost, stake: b, win: total, mult: b > 0 ? Math.round(total / b * 100) / 100 : 0, extraSpins: !!sc0, free: fr, jackpot: jpAny });
     busy = true; ++gen;
     clearHits(); renderAll();
     showBank(before - cost); $('#slWinL').textContent = '0';
@@ -7913,6 +8016,7 @@ input.bprange[type=range]::-moz-range-thumb { width: 20px; height: 20px; border-
   function open() {
     Snd.unlock();
     $('#menu').hidden = true; sl.hidden = false; $('#slPause').hidden = true;
+    PR.emit('game:open', { game: 'slots' });
     if (cur === M2 && !unlocked()) cur = M1;
     build(); clearHits(); endOffers(); $('#slWinL').textContent = '0';
     showBank(bank()); renderAll(); checkUnlock();
@@ -8420,6 +8524,7 @@ input.bprange[type=range]::-moz-range-thumb { width: 20px; height: 20px; border-
     var s = stats(); if (k > s.best) { s.best = k; saveStats(s); t += ' · neuer Rekord: ' + k + ' Treffer'; }
     if (Math.floor(jd.v) >= 1) t += ' · der Jackpot bleibt im Glas';
     msg(t, 'bad');
+    PR.emit('lock:round', { level: need, hits: k, jackpot: false, amount: 0 });
     go.classList.remove('run');
     showLast(rw, 'gewonnen');
     renderInfo();
@@ -8436,6 +8541,7 @@ input.bprange[type=range]::-moz-range-thumb { width: 20px; height: 20px; border-
       try { if (Snd.vibOn() && navigator.vibrate) navigator.vibrate([70, 50, 140]); } catch (e) {}
       var jp = collect(); if (jp) pay(jp);
       var s = stats(); s.jp++; if (k > s.best) s.best = k; saveStats(s);
+      PR.emit('lock:round', { level: need, hits: k, jackpot: true, amount: jp | 0 });
       coins(jp ? 36 : 12); showLast(rw, 'Jackpot!');
       msg(jp ? 'JACKPOT! Schloss geknackt: +' + fmt(jp) + ' Chips aus dem Glas' : 'Schloss geknackt! Das Glas war aber noch leer', 'good');
       renderInfo();
@@ -8465,6 +8571,7 @@ input.bprange[type=range]::-moz-range-thumb { width: 20px; height: 20px; border-
   function open() {
     Snd.unlock();
     $('#menu').hidden = true; lk.hidden = false; $('#lkPause').hidden = true;
+    PR.emit('game:open', { game: 'lock' });
     st = 'idle'; won = 0; rw = 0; k = 0; ang = 0; drawNeedle(); tgtG.style.opacity = 0;
     lk.classList.remove('open', 'miss', 'hit', 'run');
     go.classList.remove('run');
@@ -8478,6 +8585,8 @@ input.bprange[type=range]::-moz-range-thumb { width: 20px; height: 20px; border-
     renderInfo();
   }
   function leave() {
+    /* mitten in der Runde verlassen: die Treffer bis hier zaehlen als Runde */
+    if (st === 'run' && k > 0) PR.emit('lock:round', { level: need, hits: k, jackpot: false, amount: 0 });
     clearTimeout(nextT); if (raf) { cancelAnimationFrame(raf); raf = 0; }
     if (jRaf) { cancelAnimationFrame(jRaf); jRaf = 0; }
     fly = []; pourDone();
@@ -8805,6 +8914,12 @@ input.bprange[type=range]::-moz-range-thumb { width: 20px; height: 20px; border-
       var P = PR.prof(); P.bank = Math.max(0, (P.bank | 0) - stake + win); PR.saveProf(); PR.renderBank();
       rlStat(stake, win);
       lastB = myB;
+      /* Ereignis-Zentrale: Summe aller eigenen Chips dieses Drehs */
+      var straight = Object.keys(myB).some(function (k) { var ns = numsOf(k); return !!ns && ns.length === 1 && ns[0] === res; }), on = others();
+      PR.emit('bet', { game: 'rl', amount: stake });
+      if (win > 0) PR.emit('win', { game: 'rl', amount: win, net: win - stake });
+      PR.emit('rl:spin', { bet: stake, win: win, number: res, straightHit: straight, online: on });
+      if (on) PR.emit('online:round', { game: 'rl' });
     }
     V.shown = bank() - win;
     myB = {}; undo = [];
@@ -9089,7 +9204,9 @@ input.bprange[type=range]::-moz-range-thumb { width: 20px; height: 20px; border-
   function open(asGuest) {
     Snd.unlock();
     ['#menu', '#profile', '#pview', '#friends', '#bjf'].forEach(function (s) { var el = $(s); if (el) el.hidden = true; });
+    var was = rl.hidden;
     rl.hidden = false; $('#rlPause').hidden = true; $('#rlInvDlg').hidden = true; $('#rlToast').classList.remove('on');
+    if (was) PR.emit('game:open', { game: 'rl' });
     V.hold = false; clearSettle(); V.kept = false;
     stopAnim(); closeWheel();
     myB = {}; undo = []; V.hit = -1; V.rdy = false; V.anim = false; V.hold = false; V.lock = null; V.shown = null; V.spun = -1; V.betRd = -1;
@@ -9950,6 +10067,7 @@ input.bprange[type=range]::-moz-range-thumb { width: 20px; height: 20px; border-
     var g = sentGifts[d.id]; if (!g) return;
     clearTimeout(g.t); delete sentGifts[d.id];
     toast((f.name || f.code) + ' hat deine ' + fmt(g.n) + ' Chips bekommen');
+    PR.emit('gift', { amount: g.n });
   }
   /* Eingang: gespeichert, bis man im Menue ist; jede Sendung zaehlt nur einmal (Kennung) */
   function readQ() { try { var q = JSON.parse(localStorage.getItem('pr-gifts') || '[]'); return Array.isArray(q) ? q : []; } catch (e) { return []; } }
@@ -10344,6 +10462,7 @@ input.bprange[type=range]::-moz-range-thumb { width: 20px; height: 20px; border-
       /* los geht es dort, wo die Tomate am Finger war */
       var from = { x: e.clientX, y: e.clientY - LIFT };
       H().throwAt(d.moved ? aimPt(d, e, from) : null, from);
+      PR.emit('tomato', { game: H() === window.BJT ? 'bj' : 'poker' });
       sync();
     }
     btn.addEventListener('pointerup', function (e) { end(e, false); });
