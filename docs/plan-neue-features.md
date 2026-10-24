@@ -21,7 +21,7 @@ gleichzeitig die App offen haben.
 | Nr. | Schritt | Braucht | Online-Version erhöhen? | Aufwand |
 |---|---|---|---|---|
 | 1 | Ereignis-Zentrale (unsichtbares Fundament) | – | nein | klein |
-| 2 | XP-Balken und Level | 1 | ja, falls Level am Tisch sichtbar | mittel |
+| 2 | Sterne (ersetzt XP und Level) | 1 | ja (Sterne am Tisch sichtbar) | mittel |
 | 3 | Tägliche Aufgaben | 1, 2 | nein | mittel |
 | 4 | 7-Tage-Serie 2.0 mit Streak-Schutz | 2 | nein | klein |
 | 5 | Supabase: Projekt anlegen (**machst du**, ca. 10 Min.) | – | – | – |
@@ -37,7 +37,7 @@ gleichzeitig die App offen haben.
 | 15 | Karten zeigen (Poker) | – | **ja** (Poker) | klein |
 | 16 | Auswertung nach der Hand (Standard: aus) | 1 | nein | mittel |
 | 17 | Personalisierung 1: Kartenrücken, Tischfilz, Chips | Shop | nein | mittel |
-| 18 | Personalisierung 2: Profilrahmen und Titel | 2 | **ja** | mittel |
+| 18 | Personalisierung 2: Profilrahmen und Titel | 2 (Sterne) | **ja** | mittel |
 | 19 | Personalisierung 3: Siegesanimationen und Sounds | – | **ja** | mittel |
 | 20 | Personalisierung 4: neue Wurfgegenstände | Tomaten | **ja** | mittel |
 | 21 | Personalisierung 5: Profilbild selbst gestalten | – | **ja** | klein |
@@ -74,7 +74,8 @@ Gilt für alle Schritte:
 - localStorage immer in try/catch, neue Schlüssel mit Präfix pr-, alte Spielstände dürfen nie kaputtgehen.
 - Chips: Es ist Spielgeld. Keine echten Käufe, keine Tricks mit künstlichen Beinahe-Gewinnen.
   Gewinnwahrscheinlichkeiten ehrlich per Zufall (crypto.getRandomValues, wo es um Geld geht).
-- Neue Ereignisse an die Ereignis-Zentrale (Schritt 1) melden, damit XP, Aufgaben, Feed und Erfolge sie sehen.
+- Neue Ereignisse an die Ereignis-Zentrale (Schritt 1) melden, damit Sterne, Aufgaben, Feed und Erfolge sie sehen
+  (Gewinne als 'win' mit net melden, dann zählen sie von selbst für die Sterne).
 - Neue Einstellungen kommen ins Profil unter „Einstellungen“.
 - Am Ende kurz auf Deutsch zusammenfassen, was neu ist und was ich testen soll.
 ```
@@ -86,7 +87,7 @@ Gilt für alle Schritte:
 ## Schritt 1: Ereignis-Zentrale
 
 **Was es ist:** Eine unsichtbare Schaltstelle. Jedes Spiel meldet dort, was passiert („Hand gewonnen“,
-„10 Chips gesetzt“). XP, Aufgaben, Feed und Liga hören nur dort zu, statt dass man jedes Spiel einzeln umbaut.
+„10 Chips gesetzt“). Sterne, Aufgaben, Feed und Liga hören nur dort zu, statt dass man jedes Spiel einzeln umbaut.
 Für dich ändert sich sichtbar nichts. Alles Weitere wird dadurch aber viel einfacher und fehlerfreier.
 
 ```text
@@ -114,37 +115,31 @@ Mit window.PR_DEBUG = true sollen alle Ereignisse in der Konsole erscheinen. Pr�
 jedem Spiel nach einer Runde die erwarteten Ereignisse kommen. Keine sichtbare Änderung in der App.
 ```
 
-## Schritt 2: XP-Balken und Level
+## Schritt 2: Sterne (ersetzt XP und Level)
 
-**Deine Idee:** XP = insgesamt gesetztes Geld. Das finde ich gut, weil es einfach und für jeden verständlich ist.
-Zwei Ergänzungen:
-- **Obergrenze pro Einsatz** (5.000 XP), sonst springt ein All-in über 1 Mio. Chips gleich 30 Level.
-- Pop the Lock ist kostenlos, gibt aber trotzdem ein paar XP. Aufgaben und Serie geben ebenfalls XP.
-- **Start-XP aus der bisherigen Statistik:** Niemand fängt bei 0 an. Psychologisch heißt das „Endowed Progress“:
-  Wer schon Fortschritt sieht, macht eher weiter.
+**Gebaut, dann ersetzt:** Zuerst gab es XP (1 XP pro gesetztem Chip) und Level mit Chip-Belohnung. Das ist
+**ersetzt durch Sterne**: „Man sammelt einfach Sterne und sie beweisen, wie viel ein Spieler schon gewonnen hat.“
+Keine Level-Aufstiege und keine Level-Chips mehr. Bereits ausgezahlte Level-Chips bleiben, `pr-xp` wird nicht
+mehr benutzt.
 
-```text
-Beachte „Gilt für alle“ in docs/plan-neue-features.md. Braucht Schritt 1.
-
-Baue XP und Level über alle Spiele:
-- XP-Quelle: 1 XP pro gesetztem Chip (Ereignis 'bet'), aber höchstens 5.000 XP aus einem einzelnen 'bet'.
-  Pop the Lock: 5 XP pro Treffer, 50 XP pro Runde. Später kommen XP aus Aufgaben und der Serie dazu
-  (Funktion PR.addXP(menge, grund) dafür anbieten).
-- Level-Kurve: von Level n auf n+1 braucht man round(500 * n^1.5) XP. Höchstes Level 100.
-- Start-XP einmalig aus der vorhandenen Statistik schätzen: Pokerhände x 20, Blackjack-Runden x 20,
-  Slots-Drehs x 5, Roulette-Drehs x 10, Pop-the-Lock-Runden x 50. Danach normal weiterzählen.
-- Belohnung pro Level-Aufstieg: 100 x neues Level Chips. Lege eine Tabelle LEVEL_REWARDS an, in die spätere
-  Schritte Freischaltungen (Rahmen, Titel, Kartenrücken) eintragen können.
-- Oberfläche: im Hauptmenü unter dem Profil ein schmaler Balken mit „Lv 12“ und Fortschritt; antippen öffnet
-  eine Ansicht mit XP bis zum nächsten Level und den nächsten Belohnungen. Nach einer Runde kurz und dezent
-  „+120 XP“ am Balken (nicht während einer laufenden Hand einblenden). Level-Aufstieg: kurze, schöne Animation
-  mit Sound und Vibration (Einstellung Vibration beachten), dann Chips gutschreiben.
-- Im Profil: Level, gesamte XP, gesamt gesetzte Chips.
-- Speichern in pr-xp { xp, lv, wagered, claimed }.
-- Online: Level als kleines Abzeichen am Platz für die anderen anzeigen (Feld lv im öffentlichen Profil).
-  Versionsregel aus CLAUDE.md beachten; wenn das Feld rein optional ist, wie bei rid begründen und die
-  Untergrenze beim Ersteller entsprechend setzen.
-```
+So funktioniert es jetzt (eingebaut):
+- **1 Stern pro 1.000 gewonnene Chips** (`STAR_CHIPS = 1000`). Gezählt wird das Netto jeder Hand, Runde oder
+  Drehung mit Gewinn (Ereignis `'win'` mit `net > 0`, Poker, Blackjack, Slots, Roulette und jedes neue Spiel, das
+  `'win'` meldet) und der Pop-the-Lock-Jackpot. Verluste ziehen nichts ab. Geschenke, Tagesbonus, Aufgaben und
+  Truhen zählen nicht.
+- Startwert einmalig vorsichtig aus der bisherigen Statistik geschätzt (Anstiege in den Saldo-Verläufen von
+  Poker, Blackjack, Slots, Roulette und die Pop-the-Lock-Jackpots).
+- Menü: kleine Anzeige „⭐ 37“ mit schmalem Fortschritt bis zum nächsten Stern, nach Runden kurz „+2 ⭐“.
+  Antippen zeigt Sterne, gewonnene Chips, Chips bis zum nächsten Stern, nächsten Meilenstein und
+  „Nächste Freischaltungen“. Im Profil der Abschnitt „Sterne“.
+- **Meilensteine** bei 10, 25, 50, 100, 250, 500, 1.000, 2.500, 5.000 und 10.000 Sternen: kurze Feier im Menü
+  (nie mitten im Spiel), ohne Chips („100 Sterne! Du hast schon 100.000 Chips gewonnen.“).
+- Freischaltungen hängen an Sternen: `PRStars.addUnlock({ stars, kind, id, label, icon })`, abfragen mit
+  `PRStars.unlocked(id)`. Vorgesehen: Kartenrücken Diamant ab 500 ⭐, Rahmen Bronze 25 ⭐, Silber 100 ⭐,
+  Gold 500 ⭐, Diamant 2.000 ⭐, Feuerwerk ab 100 ⭐.
+- Online sehen die anderen die Sternzahl als kleines Abzeichen „★37“ am Profilbild (ab 1.000 als „1,2k“),
+  Feld `st` im öffentlichen Profil (Poker `PK_V` 6, `BJ_V` 6, `RL_V` 3).
+- Speichern in `pr-stars { won, stars, seen, est }`.
 
 ## Schritt 3: Tägliche Aufgaben
 
@@ -153,12 +148,12 @@ Spiele, die sie sonst nie öffnen. **Alle Freunde bekommen dieselben drei Aufgab
 dann kann man sich darüber austauschen („Hast du den Flush schon?“).
 
 ```text
-Beachte „Gilt für alle“ in docs/plan-neue-features.md. Braucht Schritte 1 und 2.
+Beachte „Gilt für alle“ in docs/plan-neue-features.md. Braucht Schritt 1.
 
 Baue tägliche Aufgaben:
 - Jeden Tag 3 Aufgaben: 1 leicht, 1 mittel, 1 schwer. Auswahl per Zufallsgenerator mit dem Datum
   (Europe/Berlin) als Startwert, damit alle Freunde dieselben haben. Neu um Mitternacht.
-- Belohnung: leicht 200 Chips + 300 XP, mittel 500 + 800 XP, schwer 1.500 + 2.000 XP.
+- Belohnung (nur Chips, zählt nicht für die Sterne): leicht 300, mittel 800, schwer 2.000 Chips.
   Alle drei geschafft: Bonus-Truhe mit 1.000 Chips (später auch Rubbellos aus Schritt 25).
 - Einmal am Tag eine Aufgabe kostenlos neu würfeln.
 - Belohnung muss man mit „Abholen“ antippen (Abholen fühlt sich gut an), mit Chip-Sound.
@@ -184,12 +179,12 @@ Leute jeden Tag ihren Bonus ab. Der **Streak-Schutz** nimmt den Frust, wenn man 
 gleichzeitig etwas Sinnvolles, wofür man Chips ausgeben kann.
 
 ```text
-Beachte „Gilt für alle“ in docs/plan-neue-features.md. Braucht Schritt 2.
+Beachte „Gilt für alle“ in docs/plan-neue-features.md.
 
 Erweitere die tägliche Belohnung (pr-daily, DAILY-Tabelle):
 - Tag 1 bis 7 wie bisher (100 … 500). Ab Tag 8 jeden Tag 500.
-- Truhen an Tag 7 (1.000 Chips + 500 XP), Tag 14 (2.500 + 1.000 XP), Tag 21 (5.000 + 2.000 XP),
-  Tag 28 (10.000 + 5.000 XP und Profilrahmen „Stammgast“, sobald Schritt 18 da ist). Danach alle 7 Tage
+- Truhen an Tag 7 (1.000 Chips), Tag 14 (2.500), Tag 21 (5.000), Tag 28 (10.000 und Profilrahmen
+  „Stammgast“, sobald Schritt 18 da ist); Truhen zählen nicht für die Sterne. Danach alle 7 Tage
   eine Truhe mit 5.000. Truhe mit eigener kleiner Öffnen-Animation.
 - Die Ansicht zeigt die aktuelle Woche (7 Felder) und darüber die Serie „🔥 12 Tage“ plus die nächste Truhe.
 - Streak-Schutz im Shop: 2.000 Chips, höchstens 2 im Besitz. Wird automatisch verbraucht, wenn genau ein Tag
@@ -297,10 +292,10 @@ Baue Konten und Cloud-Speicher mit Supabase:
 - Beim App-Start still anonym anmelden (signInAnonymously), Sitzung bleibt gespeichert. Ohne Netz läuft die
   App wie bisher nur mit localStorage und gleicht später ab.
 - Lege supabase/migrations/001_profile.sql an (idempotent mit if not exists): Tabelle profiles
-  (id = auth.uid, player_code unique, name, color, level, xp, bank, stats jsonb, settings jsonb,
+  (id = auth.uid, player_code unique, name, color, stars, won, bank, stats jsonb, settings jsonb,
   cosmetics jsonb, created_at, updated_at) mit Row Level Security: jeder liest und schreibt nur die eigene
-  Zeile; Freunde dürfen später Name, Farbe, Level, Kosmetik lesen (als eigene View oder Policy vorbereiten).
-- Erstes Anmelden: alle pr-*-Daten (Profil, Chips, Statistiken, XP, Aufgaben, Serie, Upgrades, Tomaten,
+  Zeile; Freunde dürfen später Name, Farbe, Sterne, Kosmetik lesen (als eigene View oder Policy vorbereiten).
+- Erstes Anmelden: alle pr-*-Daten (Profil, Chips, Statistiken, Sterne pr-stars, Aufgaben, Serie, Upgrades, Tomaten,
   Spielzeit, Spielercode pr-pcode) ins Konto übernehmen. Den bestehenden Spielercode behalten.
 - Abgleich: Änderungen gesammelt alle 5 Sekunden und beim Verlassen der App (visibilitychange) hochladen.
   Bei zwei Geräten gewinnt der neuere Stand (updated_at), bis Schritt 9 die Chips serverseitig bucht.
@@ -376,7 +371,7 @@ Baue einen Freundesfeed:
   löschen.
 - Einträge entstehen automatisch (über die Ereignis-Zentrale) bei: Royal Flush, Straight Flush, Vierling;
   Poker-Pot ab 5.000 und mindestens 10 Big Blinds; Blackjack-Gewinn ab 5.000; Slots ab 50x Einsatz oder
-  Jackpot; Roulette-Zahl direkt getroffen ab 1.000 Gewinn; Pop-the-Lock-Jackpot; alle 5 Level; alle drei
+  Jackpot; Roulette-Zahl direkt getroffen ab 1.000 Gewinn; Pop-the-Lock-Jackpot; Stern-Meilenstein (10, 25, 50 …); alle drei
   Tagesaufgaben; Serie 7/14/30/50/100; Wochenliga gewonnen; später Crash ab 10x, Reaktion unter 200 ms,
   Rubbellos-Hauptgewinn, Turniersieg.
 - Oberfläche: in den Freunden ein Reiter „Neuigkeiten“ mit Profilbild, kurzem Text („Lea hat einen
@@ -393,7 +388,7 @@ Beachte „Gilt für alle“ in docs/plan-neue-features.md. Braucht Schritt 9.
 Baue eine Wochenliga unter Freunden:
 - Woche: Montag 00:00 bis Sonntag 23:59 Europe/Berlin.
 - Zwei Ranglisten: „Wochengewinn“ (Netto-Chips aus Spielen, ohne Geschenke, Tagesbonus und Aufgaben) und
-  „Fleißigster“ (XP dieser Woche). Berechnet auf dem Server aus chip_tx bzw. XP-Buchungen.
+  „Fleißigster“ (gespielte Runden dieser Woche). Berechnet auf dem Server aus chip_tx bzw. den gemeldeten Runden.
 - Migration 005_league.sql: Tabellen/Views für die Woche, Funktion close_week(). pg_cron läuft stündlich und
   schließt die Woche nur, wenn in Berlin gerade Montag 0 Uhr vorbei ist (pg_cron rechnet in UTC, Sommer- und
   Winterzeit beachten).
@@ -503,7 +498,7 @@ Wenn an:
 # Teil D: Personalisierung (alle 5)
 
 Gemeinsam für 17 bis 21: Der Shop bekommt Reiter **Artikel · Tisch · Profil · Effekte**. Jeder Gegenstand hat
-eine Vorschau, einen Preis oder eine Freischalt-Bedingung (Level, Erfolg, Serie) und den Knopf „Anlegen“.
+eine Vorschau, einen Preis oder eine Freischalt-Bedingung (Sterne, Erfolg, Serie) und den Knopf „Anlegen“.
 Manche Dinge kann man **nicht kaufen, sondern nur verdienen**. Das macht sie wertvoll (Status) und gibt
 Gründe weiterzuspielen.
 
@@ -515,7 +510,7 @@ Beachte „Gilt für alle“ in docs/plan-neue-features.md.
 Baue den Shop um (Reiter Artikel · Tisch · Profil · Effekte, Artikel = Tomaten, Pop-the-Lock-Upgrades,
 später Streak-Schutz und Rubbellose). Reiter „Tisch“:
 - Kartenrücken (mindestens 8): Klassisch Rot (Standard), Blau, Schwarz-Gold, Holz, Neon, Pokerrunde-Logo,
-  Diamant (ab Level 30, nicht kaufbar), Glitzer animiert (100.000 Chips). Preise 2.000 bis 25.000.
+  Diamant (ab 500 ⭐, nicht kaufbar, über PRStars.addUnlock eintragen), Glitzer animiert (100.000 Chips). Preise 2.000 bis 25.000.
 - Tischfilz (mindestens 6): Grün (Standard), Blau, Bordeaux, Schwarz, Lila Samt, Vegas-Muster. Gilt für Poker
   und Blackjack, Roulette-Tisch optional passend einfärben.
 - Chip-Designs (mindestens 4): Standard, Gold, Neon, Retro.
@@ -526,10 +521,11 @@ später Streak-Schutz und Rubbellose). Reiter „Tisch“:
 ## Schritt 18: Profilrahmen und Titel
 
 ```text
-Beachte „Gilt für alle“ in docs/plan-neue-features.md. Braucht Schritt 2.
+Beachte „Gilt für alle“ in docs/plan-neue-features.md. Braucht Schritt 2 (Sterne).
 
 Reiter „Profil“ im Shop:
-- Rahmen ums Profilbild: Bronze (Lv 10), Silber (Lv 25), Gold (Lv 50), Diamant (Lv 75), alle verdient;
+- Rahmen ums Profilbild: Bronze (25 ⭐), Silber (100 ⭐), Gold (500 ⭐), Diamant (2.000 ⭐), alle verdient
+  (Schwellen über PRStars.addUnlock eintragen);
   Flammen (Serie 30), Krone (Wochenliga-Sieg, nur eine Woche), Stammgast (Serie 28); kaufbar: Neon, Holz,
   Regenbogen animiert (5.000 bis 50.000).
 - Titel unter dem Namen (einer auswählbar), verdient durch Erfolge: „Bluff-König“ (10 gezeigte Bluffs),
@@ -550,7 +546,7 @@ Reiter „Effekte“ im Shop:
 - Siegesanimation bei großen Gewinnen (Poker-Pot ab 10 Big Blinds, Blackjack mit Blackjack, Slots ab 20x,
   Roulette-Zahl direkt): Konfetti, Goldregen, Feuerwerk, Chip-Regen, Blitze. Standard: die bisherige.
 - Gewinn-Sound: Standard, „Ka-ching“, Fanfare, Jubel, Retro 8-Bit (alles mit WebAudio erzeugt, keine Dateien).
-- Preise 3.000 bis 30.000, Feuerwerk erst ab Level 20.
+- Preise 3.000 bis 30.000, Feuerwerk erst ab 100 ⭐.
 - Online sehen die anderen meine Animation an meinem Platz (Feld im öffentlichen Profil, Version erhöhen).
   Einstellung „Effekte anderer anzeigen“ (Standard: an). Animationen kurz halten (max. 2 Sekunden) und
   „Bewegung reduzieren“ des Handys beachten.
@@ -583,7 +579,7 @@ Im Profil „Profilbild gestalten“:
 - Statt nur Buchstabe + Farbe: wählbar Buchstabe ODER Emoji (Auswahl von ca. 60 passenden Emojis),
   Hintergrund (Farbe, Farbverlauf, Muster wie Streifen/Punkte/Karo), Schriftstil des Buchstabens.
 - Live-Vorschau, so wie es am Tisch aussieht (mit Rahmen aus Schritt 18, falls vorhanden).
-- Einige Muster/Emojis kosten Chips oder brauchen ein Level.
+- Einige Muster/Emojis kosten Chips oder brauchen Sterne (PRStars.addUnlock).
 - Kompakt als kleines Objekt im öffentlichen Profil senden (Feld av), Versionen erhöhen. Überall verwenden:
   Tisch, Freundesliste, Feed, Liga, Menü.
 ```
