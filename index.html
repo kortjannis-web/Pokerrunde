@@ -1739,6 +1739,7 @@ input.bprange[type=range]::-moz-range-thumb { width: 20px; height: 20px; border-
 
 /* ---------- Shop: Reiter und Kosmetik-Kacheln ---------- */
 #shop .endcard { width: min(400px, 100%); padding: 22px 16px 18px; }
+#shop.overlay { padding: 14px 12px; }
 #shopArt, #shopCos { display: flex; flex-direction: column; gap: 14px; }
 #shopArt[hidden], #shopCos[hidden] { display: none; }
 .shoptabs { grid-template-columns: repeat(4, 1fr); gap: 6px; margin-top: 0; }
@@ -1775,6 +1776,39 @@ input.bprange[type=range]::-moz-range-thumb { width: 20px; height: 20px; border-
 #shopCos .shopown { margin: 0; }
 .cosempty { margin: 6px 0; padding: 18px 14px; border-radius: 14px; border: 1px dashed var(--line); color: var(--muted); font: 500 14px/1.45 var(--ui); text-align: center; }
 .cosach { width: 100%; }
+/* ---------- Wurfgegenstaende: Auswahl, Regenschirm, Flug-Varianten ---------- */
+#rlTom { right: 8px; bottom: 4px; width: 48px; height: 48px; font-size: 27px; }
+#tomLayer .tomfly.k-wasser { filter: hue-rotate(195deg) saturate(1.3); }
+#tomLayer .tomfly.k-schnee { width: 30px; height: 30px; border-radius: 50%; background: radial-gradient(circle at 35% 32%, #ffffff, #e8f2fb 55%, #b9d3ea); box-shadow: 0 3px 8px rgba(0,0,0,.35); }
+#tomLayer .tomumb { position: absolute; left: 0; top: 0; font-size: 46px; line-height: 1; filter: drop-shadow(0 6px 8px rgba(0,0,0,.45)); will-change: transform; }
+#shopThrow { display: flex; flex-direction: column; gap: 8px; }
+#shopThrow .psec { margin: 0 0 -2px; text-align: left; }
+.shopitem.thitem { display: grid; grid-template-columns: 42px minmax(0, 1fr) auto; column-gap: 10px; row-gap: 3px; padding: 9px 10px; }
+.thitem .si { grid-row: 1 / 3; align-self: center; width: 42px; height: 42px; font-size: 25px; border-radius: 12px; }
+.thitem.sh .si { background: radial-gradient(circle at 40% 35%, rgba(111,183,232,.3), rgba(111,183,232,.06)); }
+.thitem .thn { grid-column: 2 / 4; grid-row: 1; min-width: 0; font: 800 14.5px var(--ui); color: var(--ink); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.thitem .thd { grid-column: 2; grid-row: 2; align-self: start; font: 500 11.5px/1.35 var(--ui); color: var(--muted); }
+.thitem .thd em { font-style: normal; font-weight: 800; color: #f4d67f; }
+.thitem .thd .bchip { display: inline-block; vertical-align: -1px; margin-right: 3px; width: 11px; height: 11px; border-radius: 50%; background: radial-gradient(circle at 35% 30%, #f4d67f, #d0a040 58%, #a2742a); }
+.thitem .thstep { grid-column: 3; grid-row: 2; align-self: end; }
+.thstep { display: flex; align-items: center; gap: 4px; flex: none; }
+.thstep .btn { width: 38px; height: 38px; padding: 0; border-radius: 12px; font: 800 20px/1 var(--ui); }
+.thstep b { min-width: 24px; text-align: center; font: 800 15px var(--ui); color: var(--ink); font-variant-numeric: tabular-nums; }
+#shopThrow .thnote { margin: 0; font: 500 12px/1.4 var(--ui); color: var(--muted); text-align: left; }
+#tomPick { position: fixed; z-index: 101; width: min(300px, calc(100vw - 16px)); padding: 12px 12px 10px; border-radius: 18px; background: rgba(24,26,28,.97); border: 1px solid var(--line); box-shadow: 0 14px 34px rgba(0,0,0,.6); }
+#tomPick[hidden] { display: none; }
+#tomPick .tptitle { display: block; margin: 0 2px 8px; font: 700 13px var(--ui); color: var(--muted); }
+#tomPick .tpgrid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 6px; }
+#tomPick .tpgrid button { position: relative; display: flex; flex-direction: column; align-items: center; gap: 3px; min-width: 0; padding: 8px 2px 6px; border-radius: 12px; background: var(--bg); border: 1.5px solid var(--line); color: var(--ink); }
+#tomPick .tpgrid button span { font-size: 26px; line-height: 1; }
+#tomPick .tpgrid button small { font: 600 10px/1.1 var(--ui); color: var(--muted); max-width: 100%; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+#tomPick .tpgrid button b { position: absolute; right: 3px; top: 3px; min-width: 16px; height: 16px; padding: 0 4px; border-radius: 8px; background: #d8322f; color: #fff; font: 800 10px/16px var(--ui); }
+#tomPick .tpgrid button.on { border-color: var(--brass); background: rgba(224,170,74,.14); }
+#tomPick .tpgrid button.on small { color: #f4d67f; }
+#tomPick .tpgrid button:disabled { opacity: .4; }
+#tomPick .tpgrid button:disabled b { background: #5d6268; }
+#tomPick .tpnote { margin: 8px 2px 0; font: 500 12px/1.35 var(--ui); color: var(--muted); }
+.tomchip { cursor: pointer; }
 .cosav { position: relative; flex: none; display: block; cursor: pointer; }
 .cosav .cosed { position: absolute; right: -6px; bottom: -4px; z-index: 3; width: 26px; height: 26px; padding: 0; border-radius: 50%; display: grid; place-items: center; font-size: 13px; line-height: 1; background: var(--bg2); border: 1.5px solid rgba(224,170,74,.7); box-shadow: 0 2px 6px rgba(0,0,0,.5); }
 
@@ -2320,6 +2354,7 @@ input.bprange[type=range]::-moz-range-thumb { width: 20px; height: 20px; border-
         <div class="rlwmsg" id="rlWMsg" aria-live="polite"></div>
       </div>
       <div class="bjtoast" id="rlToast"></div>
+      <button class="tombtn" id="rlTom" type="button" hidden aria-label="Werfen (ziehen und loslassen)"><span aria-hidden="true">🍅</span><b>0</b></button>
       <button id="rlReact" type="button" hidden aria-label="Reaktion oder Satz senden"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path d="M8.2 14.2c1 1.5 2.3 2.2 3.8 2.2s2.8-.7 3.8-2.2"/><circle cx="9" cy="9.7" r=".6" fill="currentColor"/><circle cx="15" cy="9.7" r=".6" fill="currentColor"/></svg></button>
       <div class="bjrpanel" id="rlRPanel" hidden>
         <button type="button" data-e="😂">😂</button><button type="button" data-e="😱">😱</button><button type="button" data-e="😭">😭</button><button type="button" data-e="🤑">🤑</button><button type="button" data-e="👍">👍</button><button type="button" data-e="🔥">🔥</button>
@@ -2725,7 +2760,7 @@ input.bprange[type=range]::-moz-range-thumb { width: 20px; height: 20px; border-
       <h2>Shop</h2>
       <div class="seg shoptabs" id="shopTabs" role="tablist" aria-label="Bereiche im Shop"></div>
       <div id="shopArt" role="tabpanel">
-      <div class="shopitem">
+      <div class="shopitem" hidden>
         <span class="si" aria-hidden="true">🍅</span>
         <span class="sn"><b>Tomate</b><small><i class="bchip" aria-hidden="true"></i><span id="shopPrice">2</span> Chips</small></span>
         <span class="sb">
@@ -2733,6 +2768,7 @@ input.bprange[type=range]::-moz-range-thumb { width: 20px; height: 20px; border-
           <button class="btn" id="shopSell" type="button">Verkaufen</button>
         </span>
       </div>
+      <div id="shopThrow"></div>
       <div class="shopitem" id="shopShield">
         <span class="si sh" aria-hidden="true">🛡️</span>
         <span class="sn"><b>Streak-Schutz</b><small class="d">Rettet deine Serie, wenn du einen Tag vergisst</small><small><i class="bchip" aria-hidden="true"></i><span><span id="shShPrice">2.000</span> Chips · Bestand <span id="shShN">0</span>/2</span></small></span>
@@ -2832,7 +2868,9 @@ input.bprange[type=range]::-moz-range-thumb { width: 20px; height: 20px; border-
      'rl:spin'      { bet, win, number, straightHit, colorBet, colorWon, online }  (colorBet: Chip auf Rot oder Schwarz,
                                            colorWon: eine dieser Wetten hat gewonnen)
      'lock:round'   { level, hits, jackpot, amount }
-     'tomato'       { game }       'gift' { amount }       'game:open' { game }
+     'tomato'       { game, kind }  etwas geworfen (kind: 'tom' | 'ei' | 'torte' | 'wasser' | 'konfetti' | 'rose' | 'schnee')
+     'umbrella'     { game }       der eigene Regenschirm hat einen Wurf abgefangen
+     'gift'         { amount }     'game:open' { game }
      'online:round' { game }       eine Runde mit echten Mitspielern
      'stars'        { added, stars, won, chips, game }  ein Gewinn wurde fuer die Sterne gezaehlt (aus dem Sterne-Skript;
                                            chips: dieser Gewinn, won: alle Gewinne bisher, added: neue Sterne, auch 0)
@@ -6139,9 +6177,14 @@ input.bprange[type=range]::-moz-range-thumb { width: 20px; height: 20px; border-
         botReply(ct, true);
       }
     } else if (d.t === 'tom') {
+      if (d.k === 'schirm') {   // Abprall-Meldung: Regenschirm-Stand im Stand merken und weitergeben
+        var bn = d.n ? 1 : 0, bs = MP.seats[seat]; if (bs && bs.cos) bs.cos.um = bn ? 1 : '';
+        tomBnc(seat, bn); mpBnc(seat, bn, seat);
+        return;
+      }
       var tm = cleanTom(d), real = tm.s >= 0 && tm.s < MP.n ? (tm.s + seat) % MP.n : -1;
-      tomShow(seat, real, tm.x, tm.y);
-      mpTom(seat, real, tm.x, tm.y, seat);
+      tomShow(seat, real, tm.x, tm.y, tm.k);
+      mpTom(seat, real, tm.x, tm.y, seat, tm.k);
     }
   }
   /* Verbindung eines Mitspielers abgerissen (nicht abgemeldet): Platz 90 Sekunden freihalten. Ist er dran,
@@ -6323,7 +6366,8 @@ input.bprange[type=range]::-moz-range-thumb { width: 20px; height: 20px; border-
     }
     else if (d.t === 'tom') {
       var tm = cleanTom(d), fv = d.f | 0;
-      if (fv > 0 && fv < MP.n && tm.s < MP.n) tomShow(fv, tm.s, tm.x, tm.y);
+      if (d.k === 'schirm') { if (fv > 0 && fv < MP.n) tomBnc(fv, d.n ? 1 : 0); }
+      else if (fv > 0 && fv < MP.n && tm.s < MP.n) tomShow(fv, tm.s, tm.x, tm.y, tm.k);
     }
     else if (d.t === 'broke') {
       uiBroke().then(function (n) { try { MP.conn.send({ t: 'rebuy', n: n }); } catch (e) {} });
@@ -6708,33 +6752,69 @@ input.bprange[type=range]::-moz-range-thumb { width: 20px; height: 20px; border-
     var x = p ? (p.x - r.left) / r.width : 0.5, y = p ? (p.y - r.top) / r.height : 0.42;
     return { s: best, x: Math.max(-0.2, Math.min(1.2, x)), y: Math.max(-0.2, Math.min(1.2, y)) };
   }
-  function tomHit(s) { if (s > 0 && !MP.on && S.players[s] && S.players[s].kind === 'bot') setTimeout(function () { showReaction(s, Math.random() < 0.5 ? '😤' : '😱'); }, 350); }
-  function tomShow(f, s, x, y) {
+  /* Bots (nur offline): schauen boese bzw. freuen sich ueber Rose und Konfetti; manchmal kommt eine Tomate zurueck */
+  function tomHit(s, k) {
+    if (!(s > 0) || MP.on || !S.players[s] || S.players[s].kind !== 'bot') return;
+    var it = window.TOM && window.TOM.item(k), nice = !!(it && it.nice), g = gen;
+    setTimeout(function () { showReaction(s, nice ? (k === 'rose' ? '😍' : '🥳') : Math.random() < 0.5 ? '😤' : '😱'); }, 350);
+    if (!nice && Math.random() < 0.3) setTimeout(function () {
+      if (g !== gen || !playing || MP.on || !S.players[s] || S.players[s].kind !== 'bot' || botFree(s) || !$('#menu').hidden) return;
+      tomShow(s, 0, 0.5, 0.85, 'tom');
+    }, 1100 + Math.random() * 700);
+  }
+  /* Ziel fuer TOM.fly: ich (Regenschirm pruefen, Abprall melden) oder ein Mitspieler (hat er laut cos.um einen Schirm?) */
+  function tomTg(s) {
+    if (!seats[s]) return null;
+    var av = seats[s].el.querySelector('.avatar');
+    if (s === 0) return { me: true, game: 'poker', el: av, report: mpBounce };
+    var c = s > 0 ? seatCos(S.players[s], s) : null;
+    return { um: !!(c && c.um === 1), el: av };
+  }
+  function tomShow(f, s, x, y, k) {
     var from = f > 0 ? seatPt(f) : null, to = s >= 0 ? seatPt(s) : null;
     if (!from) { var sr = stage.getBoundingClientRect(); from = { x: sr.left + sr.width / 2, y: sr.bottom }; }
-    if (window.TOM) window.TOM.fly(from, to || tablePt(x, y));
+    if (window.TOM) window.TOM.fly(from, to || tablePt(x, y), k, s >= 0 ? tomTg(s) : null);
   }
   /* reals: echte Plaetze beim Ersteller; jeder Mitspieler bekommt Werfer und Ziel aus seiner eigenen Sicht */
-  function mpTom(fromReal, toReal, x, y, except) {
+  function mpTom(fromReal, toReal, x, y, except, k) {
     if (!MP.on || MP.role !== 'host') return;
     MP.seats.forEach(function (st, g) {
       if (g === 0 || g === except || st.gone || !st.conn) return;
-      try { st.conn.send({ t: 'tom', f: (fromReal - g + MP.n) % MP.n, s: toReal < 0 ? -1 : (toReal - g + MP.n) % MP.n, x: x, y: y }); } catch (e) {}
+      try { st.conn.send({ t: 'tom', f: (fromReal - g + MP.n) % MP.n, s: toReal < 0 ? -1 : (toReal - g + MP.n) % MP.n, x: x, y: y, k: k || 'tom' }); } catch (e) {}
     });
   }
+  /* Regenschirm: mein Schirm hat abgefangen -> allen sagen, ob ich noch einen habe (n); beim Ersteller auch in den Stand */
+  function mpBounce(n) {
+    if (!MP.on) return;
+    if (MP.role === 'host') { var me = MP.seats[0]; if (me && me.cos) me.cos.um = n ? 1 : ''; mpBnc(0, n, -1); }
+    else { try { MP.conn.send({ t: 'tom', k: 'schirm', n: n ? 1 : 0 }); } catch (e) {} }
+  }
+  function mpBnc(fromReal, n, except) {
+    if (!MP.on || MP.role !== 'host') return;
+    MP.seats.forEach(function (st, g) {
+      if (g === 0 || g === except || st.gone || !st.conn) return;
+      try { st.conn.send({ t: 'tom', k: 'schirm', f: (fromReal - g + MP.n) % MP.n, n: n ? 1 : 0 }); } catch (e) {}
+    });
+  }
+  /* Abprall-Meldung von Platz i (eigene Sicht): Schirm-Stand merken; war hier kein Abprall zu sehen, den Schirm zeigen */
+  function tomBnc(i, n) {
+    var c = i > 0 ? seatCos(S.players[i], i) : null; if (c) c.um = n ? 1 : '';
+    if (seats[i] && window.TOM) { var av = seats[i].el.querySelector('.avatar'); if (!window.TOM.bounced(av)) window.TOM.umbrellaPop(seatPt(i), av); }
+  }
   window.PKT = {
+    game: 'poker',
     on: function () { return playing && $('#menu').hidden; },
-    throwAt: function (p, from) {
+    throwAt: function (p, from, k) {
       var a = tomAim(p, from), to = a.s > 0 ? seatPt(a.s) : tablePt(a.x, a.y);
-      if (window.TOM) window.TOM.fly(from, to);
-      tomHit(a.s);
+      if (window.TOM) window.TOM.fly(from, to, k, a.s > 0 ? tomTg(a.s) : null);
+      tomHit(a.s, k);
       if (MP.on) {
-        if (MP.role === 'host') mpTom(0, a.s, a.x, a.y, -1);
-        else { try { MP.conn.send({ t: 'tom', s: a.s, x: a.x, y: a.y }); } catch (e) {} }
+        if (MP.role === 'host') mpTom(0, a.s, a.x, a.y, -1, k);
+        else { try { MP.conn.send({ t: 'tom', s: a.s, x: a.x, y: a.y, k: k || 'tom' }); } catch (e) {} }
       }
     }
   };
-  function cleanTom(d) { var x = +d.x, y = +d.y; return { s: (d.s | 0) >= 0 ? d.s | 0 : -1, x: isFinite(x) ? Math.max(-0.2, Math.min(1.2, x)) : 0.5, y: isFinite(y) ? Math.max(-0.2, Math.min(1.2, y)) : 0.42 }; }
+  function cleanTom(d) { var x = +d.x, y = +d.y; return { s: (d.s | 0) >= 0 ? d.s | 0 : -1, x: isFinite(x) ? Math.max(-0.2, Math.min(1.2, x)) : 0.5, y: isFinite(y) ? Math.max(-0.2, Math.min(1.2, y)) : 0.42, k: window.TOM ? window.TOM.kind(d.k) : 'tom' }; }
 
   function sendReaction(emo) {
     if (reactLocked()) { updateReactLock(); return; }
@@ -8009,24 +8089,53 @@ input.bprange[type=range]::-moz-range-thumb { width: 20px; height: 20px; border-
     var x = p ? (p.x - r.left) / r.width : 0.5, y = p ? (p.y - r.top) / r.height : 0.3;
     return { to: best, x: Math.max(-0.2, Math.min(1.2, x)), y: Math.max(-0.2, Math.min(1.2, y)) };
   }
-  function bjTomShow(from, to, x, y) {
+  /* Ziel fuer TOM.fly: ich (Regenschirm pruefen, Abprall melden), ein Mitspieler (hat er laut cos.um einen Schirm?) */
+  function bjTg(to) {
+    if (!to || to === 'D') return null;
+    var el = bjEl(to);
+    if (to === ME) return { me: true, game: 'bj', el: el, report: bjBounce };
+    var s = seatOf(to);
+    return { um: !!(s && s.cos && s.cos.um === 1), el: el };
+  }
+  function bjTomShow(from, to, x, y, k) {
     var a = elPt(bjEl(from)), b = (to && elPt(bjEl(to))) || stPt(x, y);
     if (!a) { var r = $('#bjStage').getBoundingClientRect(); a = { x: r.left + r.width / 2, y: r.bottom }; }
-    if (window.TOM) window.TOM.fly(a, b);
+    if (window.TOM) window.TOM.fly(a, b, k, bjTg(to));
   }
-  function cleanBjTom(d) { var x = +d.x, y = +d.y; return { to: typeof d.to === 'string' ? d.to.slice(0, 64) : '', x: isFinite(x) ? Math.max(-0.2, Math.min(1.2, x)) : 0.5, y: isFinite(y) ? Math.max(-0.2, Math.min(1.2, y)) : 0.3 }; }
+  function cleanBjTom(d) { var x = +d.x, y = +d.y; return { to: typeof d.to === 'string' ? d.to.slice(0, 64) : '', x: isFinite(x) ? Math.max(-0.2, Math.min(1.2, x)) : 0.5, y: isFinite(y) ? Math.max(-0.2, Math.min(1.2, y)) : 0.3, k: window.TOM ? window.TOM.kind(d.k) : 'tom' }; }
   function hTom(from, d) {
+    if (d.k === 'schirm') { hBnc(from, d.n ? 1 : 0); return; }
     var tm = cleanBjTom(d);
-    bjTomShow(from, tm.to, tm.x, tm.y);
-    NB.conns.forEach(function (c) { if (c._bj && c.peer !== from) { try { c.send({ t: 'tom', id: from, to: tm.to, x: tm.x, y: tm.y }); } catch (e) {} } });
+    bjTomShow(from, tm.to, tm.x, tm.y, tm.k);
+    NB.conns.forEach(function (c) { if (c._bj && c.peer !== from) { try { c.send({ t: 'tom', id: from, to: tm.to, x: tm.x, y: tm.y, k: tm.k }); } catch (e) {} } });
+  }
+  /* Regenschirm: Abprall-Meldung (n = hat noch einen). Beim Ersteller in den Stand (cos.um) und an alle anderen weiter */
+  function bjBncShow(id, n) {
+    var s = seatOf(id); if (s && s.cos) s.cos.um = n ? 1 : '';
+    var el = bjEl(id); if (el && window.TOM && !window.TOM.bounced(el)) window.TOM.umbrellaPop(elPt(el), el);
+  }
+  function hBnc(from, n) {
+    bjBncShow(from, n);
+    NB.conns.forEach(function (c) { if (c._bj && c.peer !== from) { try { c.send({ t: 'tom', id: from, k: 'schirm', n: n }); } catch (e) {} } });
+  }
+  function bjBounce(n) {
+    n = n ? 1 : 0;
+    if (NB.role === 'guest' && NB.conn) { try { NB.conn.send({ t: 'tom', k: 'schirm', n: n }); } catch (e) {} }
+    else if (NB.role === 'host') { var s = seatOf(ME); if (s && s.cos) s.cos.um = n ? 1 : ''; NB.conns.forEach(function (c) { if (c._bj) { try { c.send({ t: 'tom', id: ME, k: 'schirm', n: n }); } catch (e) {} } }); }
   }
   window.BJT = {
+    game: 'bj',
     on: function () { return !bj.hidden && !!T; },
-    throwAt: function (p, from) {
+    throwAt: function (p, from, k) {
       var a = bjAim(p, from);
-      if (window.TOM) window.TOM.fly(from, (a.to && elPt(bjEl(a.to))) || stPt(a.x, a.y));
-      if (NB.role === 'guest' && NB.conn) { try { NB.conn.send({ t: 'tom', to: a.to, x: a.x, y: a.y }); } catch (e) {} }
-      else if (NB.role === 'host') NB.conns.forEach(function (c) { if (c._bj) { try { c.send({ t: 'tom', id: ME, to: a.to, x: a.x, y: a.y }); } catch (e) {} } });
+      if (window.TOM) window.TOM.fly(from, (a.to && elPt(bjEl(a.to))) || stPt(a.x, a.y), k, bjTg(a.to));
+      if (NB.role === 'guest' && NB.conn) { try { NB.conn.send({ t: 'tom', to: a.to, x: a.x, y: a.y, k: k || 'tom' }); } catch (e) {} }
+      else if (NB.role === 'host') NB.conns.forEach(function (c) { if (c._bj) { try { c.send({ t: 'tom', id: ME, to: a.to, x: a.x, y: a.y, k: k || 'tom' }); } catch (e) {} } });
+      /* allein am Tisch: der Dealer wirft manchmal zurueck (nicht bei Rose oder Konfetti) */
+      var it = window.TOM && window.TOM.item(k);
+      if (a.to === 'D' && !multi() && !(it && it.nice) && Math.random() < 0.3) {
+        var tt = T; setTimeout(function () { if (T === tt && !bj.hidden && !multi()) bjTomShow('D', ME, 0.5, 0.85, 'tom'); }, 1100 + Math.random() * 700);
+      }
     }
   };
   /* beim Ersteller: an alle weitergeben */
@@ -8416,7 +8525,7 @@ input.bprange[type=range]::-moz-range-thumb { width: 20px; height: 20px; border-
         }
         if (d.t === 'react' && finished) { showBjReact(String(d.id), String(d.e)); return; }
         if (d.t === 'chat' && finished) { showBjReact(String(d.id), '', +d.q); return; }
-        if (d.t === 'tom' && finished) { var tm = cleanBjTom(d); bjTomShow(String(d.id), tm.to, tm.x, tm.y); return; }
+        if (d.t === 'tom' && finished) { if (d.k === 'schirm') { bjBncShow(String(d.id), d.n ? 1 : 0); return; } var tm = cleanBjTom(d); bjTomShow(String(d.id), tm.to, tm.x, tm.y, tm.k); return; }
         if (d.t === 'old') {
           fail((d.v | 0) > BJ_V ? 'Deine App ist nicht aktuell. Schließ sie einmal ganz und öffne sie neu, dann klappt es.'
                                 : 'Der Ersteller hat noch eine ältere App-Version. Er sollte die App einmal ganz schließen und neu öffnen.');
@@ -8481,7 +8590,7 @@ input.bprange[type=range]::-moz-range-thumb { width: 20px; height: 20px; border-
             view(d.s, peer.id);
           } else if (d.t === 'react' && back) showBjReact(String(d.id), String(d.e));
           else if (d.t === 'chat' && back) showBjReact(String(d.id), '', +d.q);
-          else if (d.t === 'tom' && back) { var tm = cleanBjTom(d); bjTomShow(String(d.id), tm.to, tm.x, tm.y); }
+          else if (d.t === 'tom' && back) { if (d.k === 'schirm') bjBncShow(String(d.id), d.n ? 1 : 0); else { var tm = cleanBjTom(d); bjTomShow(String(d.id), tm.to, tm.x, tm.y, tm.k); } }
           else if (d.t === 'closed') { $('#bjRe').hidden = true; endCard('Tisch geschlossen', 'Der Ersteller hat den Tisch verlassen. Deine Chips bleiben in deinem Guthaben.'); }
           else if (d.t === 'full' || d.t === 'old') { $('#bjRe').hidden = true; endCard('Verbindung weg', 'Dein Platz am Tisch ist nicht mehr frei. Deine Chips bleiben in deinem Guthaben.'); }
         });
@@ -10848,6 +10957,62 @@ input.bprange[type=range]::-moz-range-thumb { width: 20px; height: 20px; border-
   window.PRChat.tabs($('#rlRPanel'), 'rl', function (q) { sendTalk('', q); });
   document.addEventListener('pointerdown', function (e) { if (!$('#rlRPanel').hidden && !e.target.closest('#rlRPanel, #rlReact')) $('#rlRPanel').hidden = true; });
 
+  /* ---------- Werfen (window.TOM) am Tisch mit Freunden: auf die Profilbilder oben oder irgendwo aufs Feld.
+     Uebers Netz: { t: 'tom', to, x, y, k } an den Ersteller, der gibt { ..., id } an alle anderen weiter;
+     Regenschirm-Abprall { t: 'tom', k: 'schirm', n } genauso (n = hat noch einen, steht dann in cos.um). ---------- */
+  function rlEl(id) {
+    if (id === ME) return $('#rlTom');   // eigener Platz: unten rechts beim Wurf-Knopf
+    var hit = null; all('#rlFr .rlfa').forEach(function (el) { if (el._sid === id) hit = el; }); return hit;
+  }
+  function rlPt(el) { if (!el) return null; var r = el.getBoundingClientRect(); if (!r.width) return null; return { x: r.left + r.width / 2, y: r.top + r.height / 2 }; }
+  function boardPt(x, y) { var r = $('#rlStage').getBoundingClientRect(); return { x: r.left + x * r.width, y: r.top + y * r.height }; }
+  function rlAim(p, from) {
+    var best = '', bd = 80;
+    if (p && R) R.pl.forEach(function (pl) { if (pl.id === ME) return; var q = rlPt(rlEl(pl.id)); if (q && window.TOM.onLine(from, p, q)) { var d = Math.hypot(q.x - p.x, q.y - p.y); if (d < bd) { bd = d; best = pl.id; } } });
+    var r = $('#rlStage').getBoundingClientRect();
+    var x = p ? (p.x - r.left) / r.width : 0.5, y = p ? (p.y - r.top) / r.height : 0.45;
+    return { to: best, x: Math.max(-0.2, Math.min(1.2, x)), y: Math.max(-0.2, Math.min(1.2, y)) };
+  }
+  function rlTg(to) {
+    if (!to) return null;
+    var el = rlEl(to);
+    if (to === ME) return { me: true, game: 'rl', el: el, report: rlBounce };
+    var p = plOf(to); return { um: !!(p && p.cos && p.cos.um === 1), el: el };
+  }
+  function rlTomShow(from, to, x, y, k) {
+    var a = rlPt(rlEl(from)), b = (to && rlPt(rlEl(to))) || boardPt(x, y);
+    if (!a) { var r = $('#rlStage').getBoundingClientRect(); a = { x: r.left + 40, y: r.top + 10 }; }
+    if (window.TOM) window.TOM.fly(a, b, k, rlTg(to));
+  }
+  function cleanRlTom(d) { var x = +d.x, y = +d.y; return { to: typeof d.to === 'string' ? d.to.slice(0, 64) : '', x: isFinite(x) ? Math.max(-0.2, Math.min(1.2, x)) : 0.5, y: isFinite(y) ? Math.max(-0.2, Math.min(1.2, y)) : 0.45, k: window.TOM ? window.TOM.kind(d.k) : 'tom' }; }
+  function rlBncShow(id, n) {
+    var p = plOf(id); if (p && p.cos) p.cos.um = n ? 1 : '';
+    var el = rlEl(id); if (el && window.TOM && !window.TOM.bounced(el)) window.TOM.umbrellaPop(rlPt(el), el);
+  }
+  function hRlTom(id, d) {
+    if (!R || !plOf(id)) return;
+    var msg;
+    if (d.k === 'schirm') { var n = d.n ? 1 : 0; rlBncShow(id, n); msg = { t: 'tom', id: id, k: 'schirm', n: n }; }
+    else { var tm = cleanRlTom(d); rlTomShow(id, tm.to, tm.x, tm.y, tm.k); msg = { t: 'tom', id: id, to: tm.to, x: tm.x, y: tm.y, k: tm.k }; }
+    NB.conns.forEach(function (c) { if (c._rl && c.peer !== id) { try { c.send(msg); } catch (e) {} } });
+  }
+  function rlBounce(n) {
+    n = n ? 1 : 0;
+    if (NB.role === 'guest' && NB.conn) { try { NB.conn.send({ t: 'tom', k: 'schirm', n: n }); } catch (e) {} }
+    else if (NB.role === 'host') { var p = plOf(ME); if (p && p.cos) p.cos.um = n ? 1 : ''; NB.conns.forEach(function (c) { if (c._rl) { try { c.send({ t: 'tom', id: ME, k: 'schirm', n: n }); } catch (e) {} } }); }
+  }
+  window.RLT = {
+    game: 'rl',
+    on: function () { return !rl.hidden && !!R && multi() && others(); },
+    throwAt: function (p, from, k) {
+      var a = rlAim(p, from);
+      if (window.TOM) window.TOM.fly(from, (a.to && rlPt(rlEl(a.to))) || boardPt(a.x, a.y), k, rlTg(a.to));
+      var msg = { t: 'tom', to: a.to, x: a.x, y: a.y, k: k || 'tom' };
+      if (NB.role === 'guest' && NB.conn) { try { NB.conn.send(msg); } catch (e) {} }
+      else if (NB.role === 'host') { msg.id = ME; NB.conns.forEach(function (c) { if (c._rl) { try { c.send(msg); } catch (e) {} } }); }
+    }
+  };
+
   /* ---------- Online: der Tisch wird erst geoeffnet, wenn ein Freund dazukommen will ---------- */
   function cleanProf(p) {
     p = (p && typeof p === 'object') ? p : {};
@@ -10889,6 +11054,7 @@ input.bprange[type=range]::-moz-range-thumb { width: 20px; height: 20px; border-
         else if (d.t === 'ready') hReady(conn.peer);
         else if (d.t === 'react') hTalk(conn.peer, String(d.e));
         else if (d.t === 'chat') hTalk(conn.peer, '', +d.q);
+        else if (d.t === 'tom') hRlTom(conn.peer, d);
         else if (d.t === 'bye') gone();
         return;
       }
@@ -10965,6 +11131,7 @@ input.bprange[type=range]::-moz-range-thumb { width: 20px; height: 20px; border-
         if (d.t === 'closed') { if (!fin) fail('Der Tisch wurde geschlossen – du spielst allein'); else lost('Der Tisch wurde geschlossen – du spielst allein weiter'); return; }
         if (d.t === 'react' && fin) { showTalk(String(d.id), String(d.e)); return; }
         if (d.t === 'chat' && fin) { showTalk(String(d.id), '', +d.q); return; }
+        if (d.t === 'tom' && fin) { if (d.k === 'schirm') rlBncShow(String(d.id), d.n ? 1 : 0); else { var tm = cleanRlTom(d); rlTomShow(String(d.id), tm.to, tm.x, tm.y, tm.k); } return; }
         if (d.t !== 'snap') return;
         if ((d.v | 0) !== RL_V) { fail('Ihr habt verschiedene App-Versionen. Schließt beide die App einmal ganz und öffnet sie neu.'); return; }
         var s = cleanSnap(d.s); if (!s) return;
@@ -11907,7 +12074,7 @@ input.bprange[type=range]::-moz-range-thumb { width: 20px; height: 20px; border-
   function menuFree() {
     if ($('#menu').hidden || !$('#splash').hidden || !$('#daily').hidden) return false;
     if (window.prIdle && !window.prIdle()) return false;
-    return ['#friends', '#bjf', '#profile', '#pview', '#chipdlg', '#invBan', '#askBan', '#shop', '#giftDlg', '#starView', '#starUp', '#quests', '#chestDlg', '#achView'].every(function (s) { var e = $(s); return !e || e.hidden; });
+    return ['#friends', '#bjf', '#profile', '#pview', '#chipdlg', '#invBan', '#askBan', '#shop', '#giftDlg', '#starView', '#starUp', '#quests', '#chestDlg', '#achView', '#avEdit'].every(function (s) { var e = $(s); return !e || e.hidden; });
   }
   function showDaily() {
     var d = loadDaily(); if (d.day === today()) return;
@@ -12154,7 +12321,7 @@ input.bprange[type=range]::-moz-range-thumb { width: 20px; height: 20px; border-
   function free() {
     if ($('#menu').hidden || !$('#splash').hidden) return false;
     if (window.prIdle && !window.prIdle()) return false;
-    return ['#daily', '#friends', '#bjf', '#profile', '#pview', '#chipdlg', '#invBan', '#askBan', '#shop', '#giftDlg', '#starView', '#starUp', '#end', '#quests', '#chestDlg', '#achView']
+    return ['#daily', '#friends', '#bjf', '#profile', '#pview', '#chipdlg', '#invBan', '#askBan', '#shop', '#giftDlg', '#starView', '#starUp', '#end', '#quests', '#chestDlg', '#achView', '#avEdit']
       .every(function (s) { var e = $(s); return !e || e.hidden; });
   }
   function pendingMile() {
@@ -12352,7 +12519,7 @@ input.bprange[type=range]::-moz-range-thumb { width: 20px; height: 20px; border-
     { id: 'slw5', d: 'e', t: 'Gewinne 5 Mal an den Slots', n: 5, ev: 'slots:spin', f: function (d) { return d.win > 0 ? 1 : 0; } },
     { id: 'rl10', d: 'e', t: 'Spiele 10 Roulette-Drehs', n: 10, ev: 'rl:spin', f: one },
     { id: 'lk3', d: 'e', t: 'Spiele 3 Runden Pop the Lock', n: 3, ev: 'lock:round', f: one },
-    { id: 'tom3', d: 'e', t: 'Wirf 3 Tomaten', n: 3, ev: 'tomato', f: one },
+    { id: 'tom3', d: 'e', t: 'Wirf 3 Tomaten (Eier, Torten … zählen auch)', n: 3, ev: 'tomato', f: one },
     { id: 'gm3', d: 'e', t: 'Spiele heute 3 verschiedene Spiele', n: 3, ev: Object.keys(GAMEEV), f: function (d, q, name) {
       var g = q.g || (q.g = []), k = GAMEEV[name];
       if (k && g.indexOf(k) < 0) { g.push(k); return 1; }
@@ -12554,7 +12721,7 @@ input.bprange[type=range]::-moz-range-thumb { width: 20px; height: 20px; border-
   function menuFree() {
     if ($('#menu').hidden || !$('#splash').hidden) return false;
     if (window.prIdle && !window.prIdle()) return false;
-    return ['#daily', '#friends', '#bjf', '#profile', '#pview', '#chipdlg', '#invBan', '#askBan', '#shop', '#giftDlg', '#starView', '#starUp', '#chestDlg', '#achView']
+    return ['#daily', '#friends', '#bjf', '#profile', '#pview', '#chipdlg', '#invBan', '#askBan', '#shop', '#giftDlg', '#starView', '#starUp', '#chestDlg', '#achView', '#avEdit']
       .every(function (s) { var e = $(s); return !e || e.hidden; });
   }
   function credit(chips) { var P = PR.prof(); P.bank = Math.round((P.bank || 0) + chips); PR.saveProf(); PR.renderBank(); }
@@ -12675,23 +12842,82 @@ input.bprange[type=range]::-moz-range-thumb { width: 20px; height: 20px; border-
 </script>
 
 <script>
-/* Tomaten werfen am Poker- und Blackjack-Tisch (nur zum Spass): Knopf unten rechts, solange man Tomaten hat.
-   Beim Draufdruecken hat man die Tomate am Finger und zieht sie mit; beim Loslassen fliegt sie genau in die Richtung,
+/* Werfen am Poker-, Blackjack- und Roulette-Tisch (nur zum Spass): Knopf unten rechts, solange man etwas zum Werfen hat.
+   Beim Draufdruecken hat man den Gegenstand am Finger und zieht ihn mit; beim Loslassen fliegt er genau in die Richtung,
    in die der Finger zuletzt gezogen hat (je schneller, desto weiter; stand der Finger still, in Zugrichtung vom Knopf aus).
-   Nur antippen wirft auf die Tischmitte. Die Tomate fliegt gerade los, steigt (wird groesser), faellt (wird kleiner)
-   und platscht. Am Online-Tisch sehen es alle (Nachricht 'tom', aeltere Versionen ignorieren sie). */
+   Nur antippen wirft auf die Tischmitte. Lange druecken (ohne zu ziehen) oeffnet die Auswahl der Gegenstaende.
+   Gegenstaende: Tomate, Ei, Torte, Wasserbombe, Konfetti-Bombe (freundlich), Rose (freundlich, bleibt kurz am Profilbild
+   liegen), Schneeball (nur Dezember bis Februar), jeder mit eigenem Klecks und Klang. Der Regenschirm wird nicht geworfen:
+   hat man einen, faengt er automatisch den naechsten Wurf auf einen selbst ab (Abprall, danach ist er verbraucht).
+   Bestand: pr-tom = Zahl der Tomaten (wie bisher), pr-throw { n: { ei: 3, ... , schirm: 1 }, sel: 'ei' } fuer den Rest.
+   Online sehen es alle: Nachricht 'tom' mit Feld k (Art; fehlt = Tomate). Den Abprall entscheidet der Getroffene: er meldet
+   { t: 'tom', k: 'schirm', n } (n = 1: hat noch einen), die anderen sagen ihn ueber das Feld cos.um (hat einen Schirm)
+   schon beim Landen voraus und halten cos.um mit diesen Meldungen aktuell.
+   Schnittstelle window.TOM:
+     ITEMS                      [{ k, e, name, pl, price, nice?, season?, shield? }]   item(k)   kind(v) -> gueltige Wurf-Art
+     count(k), add(k, n)        Bestand (k 'tom' = pr-tom)          sel()  gewaehlte Art (mit Bestand, sonst die erste mit Bestand)
+     inSeason(k)                Schneeball nur Dezember bis Februar   total()  alles Werfbare zusammen
+     fly(from, to, k, tg)       Wurf zeigen; tg (Ziel, optional): { me: true, report(n) } = trifft mich (Regenschirm pruefen,
+                                report meldet den Abprall weiter), { um: true } = Getroffener hat (vermutlich) einen Schirm,
+                                { el } = Profilbild des Getroffenen (Rose bleibt dort liegen, Abprall wird gemerkt)
+     umbrellaPop(pt, el)        nur den aufgehenden Schirm zeigen (Meldung kam, ohne dass hier ein Abprall zu sehen war)
+     bounced(el)                gerade erst einen Abprall an el gezeigt?    splat(p, v)  Tomaten-Klecks (v 0-4)
+     onLine(from, p, q)         liegt q auf der Wurflinie?
+   Die Spiele stellen bereit: window.PKT / BJT / RLT = { game, on(), throwAt(p, from, k) }. */
 (function () {
   'use strict';
   var PR = window.PR;
   if (!PR) return;
-  var Snd = PR.Snd;
+  var Snd = PR.Snd, fmt = PR.fmt;
   function $(s) { return document.querySelector(s); }
-  function count() { var n = 0; try { n = parseInt(localStorage.getItem('pr-tom') || '0', 10); } catch (e) {} return isFinite(n) && n > 0 ? n : 0; }
-  function use() { var n = count(); if (n <= 0) return false; try { localStorage.setItem('pr-tom', String(n - 1)); } catch (e) {} return true; }
+  var ITEMS = [
+    { k: 'tom', e: '🍅', name: 'Tomate', pl: 'Tomaten', price: 2, d: 'Der Klassiker' },
+    { k: 'ei', e: '🥚', name: 'Ei', pl: 'Eier', price: 2, d: 'Knackt auf' },
+    { k: 'torte', e: '🥧', name: 'Torte', pl: 'Torten', price: 5, d: 'Sahne ins Gesicht' },
+    { k: 'wasser', e: '💦', name: 'Wasserbombe', s: 'Wasser', pl: 'Wasserbomben', price: 5, d: 'Platzt und spritzt' },
+    { k: 'konfetti', e: '🎉', name: 'Konfetti-Bombe', s: 'Konfetti', pl: 'Konfetti-Bomben', price: 5, nice: true, d: 'Freundlich: bunter Gruß' },
+    { k: 'rose', e: '🌹', name: 'Rose', pl: 'Rosen', price: 10, nice: true, d: 'Freundlich, bleibt liegen' },
+    { k: 'schnee', e: '❄️', name: 'Schneeball', s: 'Schnee', pl: 'Schneebälle', price: 3, season: true, d: 'Nur Dezember bis Februar' },
+    { k: 'schirm', e: '☂️', name: 'Regenschirm', pl: 'Regenschirme', price: 50, shield: true, d: 'Fängt den nächsten Wurf auf dich ab' }
+  ];
+  var BY = {}; ITEMS.forEach(function (it) { BY[it.k] = it; });
+  function item(k) { return BY[k] || null; }
+  /* gueltige Wurf-Art aus einer Nachricht (alles andere wird zur Tomate, nie freier Text) */
+  function kind(v) { return typeof v === 'string' && BY[v] && !BY[v].shield ? v : 'tom'; }
+  function inSeason(k) { var it = BY[k]; if (!it || !it.season) return true; var m = new Date().getMonth(); return m === 11 || m <= 1; }
+
+  /* ---------- Bestand ---------- */
+  function readT() { var o = null; try { o = JSON.parse(localStorage.getItem('pr-throw') || 'null'); } catch (e) {} return o && typeof o === 'object' ? o : {}; }
+  function count(k) {
+    if (k === 'tom') { var n = 0; try { n = parseInt(localStorage.getItem('pr-tom') || '0', 10); } catch (e) {} return isFinite(n) && n > 0 ? Math.min(n, 1e9) : 0; }
+    var o = readT(), v = o.n && typeof o.n === 'object' ? +o.n[k] : 0;
+    return BY[k] && isFinite(v) && v > 0 ? Math.min(Math.floor(v), 1e9) : 0;
+  }
+  function add(k, n) {
+    if (!BY[k]) return false;
+    var v = Math.max(0, count(k) + (n | 0));
+    if (k === 'tom') { try { localStorage.setItem('pr-tom', String(v)); } catch (e) { return false; } return true; }
+    var o = readT(); if (!o.n || typeof o.n !== 'object') o.n = {};
+    if (v) o.n[k] = v; else delete o.n[k];
+    try { localStorage.setItem('pr-throw', JSON.stringify(o)); } catch (e) { return false; }
+    return true;
+  }
+  function throwable(k) { var it = BY[k]; return !!it && !it.shield && inSeason(k); }
+  function avail() { return ITEMS.filter(function (it) { return throwable(it.k) && count(it.k) > 0; }); }
+  function total() { return avail().reduce(function (a, it) { return a + count(it.k); }, 0); }
+  function sel() {
+    var s = readT().sel;
+    if (typeof s === 'string' && throwable(s) && count(s) > 0) return s;
+    var a = avail(); return a.length ? a[0].k : (typeof s === 'string' && throwable(s) ? s : 'tom');
+  }
+  function setSel(k) { if (!throwable(k)) return; var o = readT(); o.sel = k; try { localStorage.setItem('pr-throw', JSON.stringify(o)); } catch (e) {} }
+  function use(k) { if (count(k) <= 0) return false; return add(k, -1); }
+
   var layer = document.createElement('div'); layer.id = 'tomLayer'; document.body.appendChild(layer);
-  /* Klecks in fuenf Arten (v 0 bis 4): normal, Spritzer mit langen Zacken, flacher Matsch, Explosion mit vielen Tropfen,
-     und einer, der nach unten herunterlaeuft. Jede Art hat ihr eigenes Platschen (Snd.splat(v)). */
   function rnd(a, b) { return a + Math.random() * (b - a); }
+
+  /* ---------- Tomate: Klecks in fuenf Arten (v 0 bis 4): normal, Spritzer mit langen Zacken, flacher Matsch,
+     Explosion mit vielen Tropfen, und einer, der nach unten herunterlaeuft. Jede Art hat ihr eigenes Platschen (Snd.splat(v)). */
   function blob(n, r0, r1, spike, sx, sy) {
     var pts = [], k;
     for (k = 0; k < n; k++) { var a = k / n * Math.PI * 2, r = rnd(r0, r1) + (k % 3 === 0 ? spike : 0); pts.push((Math.cos(a) * r * sx).toFixed(1) + ' ' + (Math.sin(a) * r * sy).toFixed(1)); }
@@ -12708,98 +12934,231 @@ input.bprange[type=range]::-moz-range-thumb { width: 20px; height: 20px; border-
     return h;
   }
   var LEAF = '<path d="M-5 -2 l3 -6 l3 6 l6 -2 l-4 5 l5 4 l-7 0 l-3 6 l-2 -6 l-6 0 l5 -4 l-4 -5z" fill="#4a8c3a" opacity=".9"/>';
+  function svg(inner) { return '<svg viewBox="-50 -50 100 100" width="96" height="96" aria-hidden="true">' + inner + '</svg>'; }
   function splatSvg(v) {
     /* under: unter dem Klecks (Nasen), over: Tropfen und Spritzer darauf, sd: Kerne */
     var body, under = '', over, sd, k, hl = '<ellipse cx="-8" cy="-9" rx="12" ry="7" fill="#ff7a6b" opacity=".75"/>';
     if (v === 1) {
-      /* Spritzer: lange Zacken, duenne Spritzer dazwischen */
       body = blob(18, 16, 22, 20, 1, 1); over = drops(4, 36, 46, 1.5, 2.6, '#c9281f'); sd = seeds(5, 24);
       for (k = 0; k < 5; k++) { var a = Math.random() * Math.PI * 2, r1 = rnd(28, 34), r2 = rnd(40, 47); over += '<line x1="' + (Math.cos(a) * r1).toFixed(1) + '" y1="' + (Math.sin(a) * r1).toFixed(1) + '" x2="' + (Math.cos(a) * r2).toFixed(1) + '" y2="' + (Math.sin(a) * r2).toFixed(1) + '" stroke="#c9281f" stroke-width="2.6" stroke-linecap="round"/>'; }
       hl = '<ellipse cx="-6" cy="-7" rx="8" ry="5" fill="#ff7a6b" opacity=".7"/>';
     } else if (v === 2) {
-      /* Matsch: breit und flach, glatter Rand */
       body = blob(12, 30, 35, 4, 1.25, 0.78); over = drops(4, 40, 46, 2.5, 4.5, '#c9281f'); sd = seeds(8, 40);
       hl = '<ellipse cx="-12" cy="-8" rx="16" ry="6" fill="#ff7a6b" opacity=".7"/>';
     } else if (v === 3) {
-      /* Explosion: kleiner Kern, viele Tropfen weit verteilt */
       body = blob(12, 16, 22, 6, 1, 1); over = drops(9, 26, 40, 2.5, 5, '#d8322f') + drops(8, 40, 48, 1.4, 2.6, '#c9281f'); sd = seeds(4, 18);
       hl = '<ellipse cx="-5" cy="-6" rx="7" ry="4" fill="#ff7a6b" opacity=".75"/>';
     } else if (v === 4) {
-      /* laeuft herunter: unten ein paar Nasen */
       body = blob(14, 24, 32, 6, 1, 0.95); over = drops(4, 34, 42, 2, 3.5, '#c9281f'); sd = seeds(6, 30);
       for (k = 0; k < 3; k++) { var x = rnd(-18, 18), len = rnd(14, 24), w = rnd(3.5, 5.5); under += '<path d="M' + (x - w).toFixed(1) + ' 18 L' + (x - w * 0.7).toFixed(1) + ' ' + (22 + len).toFixed(1) + ' A' + w.toFixed(1) + ' ' + w.toFixed(1) + ' 0 0 0 ' + (x + w * 0.7).toFixed(1) + ' ' + (22 + len).toFixed(1) + ' L' + (x + w).toFixed(1) + ' 18 Z" fill="#d8322f" stroke="#a91e17" stroke-width="1.5"/>'; }
     } else {
       body = blob(14, 26, 38, 10, 1, 1); over = drops(7, 38, 48, 2, 5.5, '#c9281f'); sd = seeds(6, 30);
     }
-    return '<svg viewBox="-50 -50 100 100" width="96" height="96" aria-hidden="true">' + under + '<path d="' + body + '" fill="#d8322f" stroke="#a91e17" stroke-width="2" stroke-linejoin="round"/>' +
-      hl + over + sd + (v === 3 ? '' : LEAF) + '</svg>';
+    return svg(under + '<path d="' + body + '" fill="#d8322f" stroke="#a91e17" stroke-width="2" stroke-linejoin="round"/>' + hl + over + sd + (v === 3 ? '' : LEAF));
   }
-  /* Ablauf je Art: aufploppen, kurz stehen bleiben, verschwinden (der Matsch wackelt, der Laeufer rutscht nach unten) */
-  function splatAnim(v, b) {
+  /* ---------- die anderen Gegenstaende ---------- */
+  function shards(n, r0, r1, fill, stroke) {
+    var h = '', k;
+    for (k = 0; k < n; k++) {
+      var a = k / n * Math.PI * 2 + rnd(-0.3, 0.3), d = rnd(r0, r1), x = Math.cos(a) * d, y = Math.sin(a) * d, s = rnd(4, 7), rot = Math.round(rnd(0, 360));
+      h += '<path d="M' + (-s).toFixed(1) + ' ' + (s * 0.4).toFixed(1) + ' L' + (s * 0.2).toFixed(1) + ' ' + (-s).toFixed(1) + ' L' + s.toFixed(1) + ' ' + (s * 0.7).toFixed(1) + ' Z" fill="' + fill + '" stroke="' + stroke + '" stroke-width="1" transform="translate(' + x.toFixed(1) + ' ' + y.toFixed(1) + ') rotate(' + rot + ')"/>';
+    }
+    return h;
+  }
+  var CONF = ['#ffd35c', '#ff6b6b', '#5ec8ff', '#7ee08a', '#c58bff', '#ff9f43', '#ffffff'];
+  function itemSvg(k) {
+    var k2, h = '';
+    if (k === 'ei') {
+      return svg('<path d="' + blob(14, 24, 33, 7, 1.1, 0.92) + '" fill="#fbf7ec" stroke="#d9cfb6" stroke-width="2" stroke-linejoin="round"/>' +
+        '<circle cx="3" cy="1" r="13" fill="#f6b21a" stroke="#d98e0b" stroke-width="1.5"/><ellipse cx="-1" cy="-3" rx="5" ry="3.4" fill="#ffe08a" opacity=".85"/>' +
+        drops(4, 34, 42, 1.6, 3, '#f3ead8') + shards(5, 30, 44, '#f6efe0', '#c8bb98'));
+    }
+    if (k === 'torte') {
+      for (k2 = 0; k2 < 9; k2++) h += '<rect x="' + rnd(-26, 22).toFixed(1) + '" y="' + rnd(-22, 20).toFixed(1) + '" width="5" height="1.8" rx=".9" fill="' + CONF[k2 % CONF.length] + '" transform="rotate(' + Math.round(rnd(0, 180)) + ')"/>';
+      return svg('<path d="' + blob(16, 30, 38, 6, 1.15, 0.95) + '" fill="#fff4dc" stroke="#e6cf9f" stroke-width="2" stroke-linejoin="round"/>' +
+        '<path d="M-30 14 Q-18 26 0 24 Q20 26 30 12" fill="none" stroke="#c98b4a" stroke-width="5" stroke-linecap="round"/>' +
+        '<path d="M-26 -16 Q-12 -26 6 -24" fill="none" stroke="#c98b4a" stroke-width="3.5" stroke-linecap="round" opacity=".8"/>' + h +
+        '<circle cx="2" cy="-4" r="6.5" fill="#c8102e" stroke="#8c0b20" stroke-width="1"/><circle cx="0" cy="-6" r="2" fill="#ff7a8a"/>' +
+        '<path d="M3 -10 Q8 -20 14 -22" fill="none" stroke="#4a8c3a" stroke-width="1.6"/>' + drops(5, 38, 46, 2, 3.6, '#fff4dc'));
+    }
+    if (k === 'wasser') {
+      return svg('<path d="' + blob(18, 18, 26, 16, 1, 1) + '" fill="rgba(90,170,255,.5)" stroke="rgba(170,215,255,.95)" stroke-width="2" stroke-linejoin="round"/>' +
+        '<ellipse cx="-6" cy="-7" rx="8" ry="4" fill="rgba(255,255,255,.7)"/>' + drops(10, 30, 47, 1.6, 4, 'rgba(120,190,255,.85)') +
+        '<path d="M-14 -2 a3 3 0 0 1 6 0" fill="none" stroke="#e24b4b" stroke-width="2.5"/><path d="M10 8 l6 3" stroke="#e24b4b" stroke-width="2.5" stroke-linecap="round"/>' +
+        '<circle r="12" fill="none" stroke="rgba(190,225,255,.9)" stroke-width="2"><animate attributeName="r" from="12" to="47" dur=".9s" fill="freeze"/><animate attributeName="opacity" from="1" to="0" dur=".9s" fill="freeze"/></circle>' +
+        '<circle r="8" fill="none" stroke="rgba(190,225,255,.8)" stroke-width="1.5"><animate attributeName="r" from="8" to="40" begin=".25s" dur=".9s" fill="freeze"/><animate attributeName="opacity" values="0;1;0" begin="0s" dur="1.15s" fill="freeze"/></circle>');
+    }
+    if (k === 'konfetti') {
+      for (k2 = 0; k2 < 34; k2++) {
+        var a = Math.random() * Math.PI * 2, d = rnd(4, 46), x = Math.cos(a) * d, y = Math.sin(a) * d, c = CONF[k2 % CONF.length];
+        h += k2 % 3 ? '<rect x="' + (x - 3).toFixed(1) + '" y="' + (y - 1.5).toFixed(1) + '" width="6" height="3" rx="1" fill="' + c + '" transform="rotate(' + Math.round(rnd(0, 180)) + ' ' + x.toFixed(1) + ' ' + y.toFixed(1) + ')"/>'
+          : '<circle cx="' + x.toFixed(1) + '" cy="' + y.toFixed(1) + '" r="' + rnd(1.5, 2.8).toFixed(1) + '" fill="' + c + '"/>';
+      }
+      for (k2 = 0; k2 < 4; k2++) { var b = k2 / 4 * Math.PI * 2 + 0.4; h += '<path d="M' + (Math.cos(b) * 8).toFixed(1) + ' ' + (Math.sin(b) * 8).toFixed(1) + ' Q' + (Math.cos(b + 0.5) * 22).toFixed(1) + ' ' + (Math.sin(b + 0.5) * 22).toFixed(1) + ' ' + (Math.cos(b) * 36).toFixed(1) + ' ' + (Math.sin(b) * 36).toFixed(1) + '" fill="none" stroke="' + CONF[k2] + '" stroke-width="2" stroke-linecap="round"/>'; }
+      return svg(h + '<text x="0" y="8" text-anchor="middle" font-size="22">✨</text>');
+    }
+    if (k === 'schnee') {
+      for (k2 = 0; k2 < 16; k2++) { var a2 = Math.random() * Math.PI * 2, d2 = rnd(22, 46); h += '<circle cx="' + (Math.cos(a2) * d2).toFixed(1) + '" cy="' + (Math.sin(a2) * d2).toFixed(1) + '" r="' + rnd(1.4, 3.6).toFixed(1) + '" fill="#ffffff" opacity="' + rnd(0.7, 1).toFixed(2) + '"/>'; }
+      return svg('<path d="' + blob(16, 20, 28, 7, 1, 0.95) + '" fill="#f7fbff" stroke="#c9dff2" stroke-width="2" stroke-linejoin="round"/>' +
+        '<ellipse cx="6" cy="6" rx="14" ry="9" fill="#dcebf8" opacity=".9"/>' + h + '<text x="-4" y="2" text-anchor="middle" font-size="14" fill="#9cc8ee">❄</text>');
+    }
+    if (k === 'rose') {
+      for (k2 = 0; k2 < 6; k2++) { var a3 = rnd(0, Math.PI * 2), d3 = rnd(16, 34); h += '<ellipse cx="' + (Math.cos(a3) * d3).toFixed(1) + '" cy="' + (Math.sin(a3) * d3).toFixed(1) + '" rx="4.5" ry="2.6" fill="#d81f3c" opacity=".9" transform="rotate(' + Math.round(rnd(0, 180)) + ' ' + (Math.cos(a3) * d3).toFixed(1) + ' ' + (Math.sin(a3) * d3).toFixed(1) + ')"/>'; }
+      return svg(h + '<text x="2" y="12" text-anchor="middle" font-size="40" transform="rotate(-28)">🌹</text>');
+    }
+    return splatSvg(0);
+  }
+  /* Ablauf je Art: aufploppen, kurz stehen bleiben, verschwinden */
+  function anim(v, b) {
     if (v === 1) return [{ transform: b + ' scale(.1)', opacity: 1 }, { transform: b + ' scale(1.18)', opacity: 1, offset: 0.12 }, { transform: b + ' scale(1)', opacity: 1, offset: 0.25 }, { transform: b + ' scale(1)', opacity: 1, offset: 0.8 }, { transform: b + ' scale(1.02)', opacity: 0 }];
     if (v === 2) return [{ transform: b + ' scale(.3,.15)', opacity: 1 }, { transform: b + ' scale(1.22,.8)', opacity: 1, offset: 0.16 }, { transform: b + ' scale(.9,1.08)', opacity: 1, offset: 0.28 }, { transform: b + ' scale(1.04,.97)', opacity: 1, offset: 0.38 }, { transform: b + ' scale(1)', opacity: 1, offset: 0.8 }, { transform: b + ' scale(1.06,.94)', opacity: 0 }];
     if (v === 3) return [{ transform: b + ' scale(.1) rotate(-30deg)', opacity: 1 }, { transform: b + ' scale(1.25) rotate(0deg)', opacity: 1, offset: 0.14 }, { transform: b + ' scale(1)', opacity: 1, offset: 0.3 }, { transform: b + ' scale(1)', opacity: 1, offset: 0.78 }, { transform: b + ' scale(.96)', opacity: 0 }];
     if (v === 4) return [{ transform: b + ' scale(.2)', opacity: 1 }, { transform: b + ' scale(1.1)', opacity: 1, offset: 0.2 }, { transform: b + ' scale(1)', opacity: 1, offset: 0.32 }, { transform: b + ' translateY(10px) scale(1,1.08)', opacity: 1, offset: 0.8 }, { transform: b + ' translateY(18px) scale(1,1.12)', opacity: 0 }];
+    if (v === 'konfetti') return [{ transform: b + ' scale(.15)', opacity: 1 }, { transform: b + ' scale(1.3)', opacity: 1, offset: 0.2 }, { transform: b + ' scale(1.15) translateY(6px)', opacity: 1, offset: 0.7 }, { transform: b + ' scale(1.2) translateY(16px)', opacity: 0 }];
+    if (v === 'rose') return [{ transform: b + ' scale(.4) rotate(-40deg)', opacity: 0 }, { transform: b + ' scale(1.08) rotate(4deg)', opacity: 1, offset: 0.06 }, { transform: b + ' scale(1)', opacity: 1, offset: 0.12 }, { transform: b + ' scale(1)', opacity: 1, offset: 0.9 }, { transform: b + ' scale(.95)', opacity: 0 }];
+    if (v === 'schnee') return [{ transform: b + ' scale(.3)', opacity: 1 }, { transform: b + ' scale(1.1)', opacity: 1, offset: 0.14 }, { transform: b + ' scale(1)', opacity: 1, offset: 0.3 }, { transform: b + ' scale(1.02)', opacity: 0.9, offset: 0.75 }, { transform: b + ' scale(1.12)', opacity: 0 }];
     return [{ transform: b + ' scale(.2)', opacity: 1 }, { transform: b + ' scale(1.12)', opacity: 1, offset: 0.25 }, { transform: b + ' scale(1)', opacity: 1, offset: 0.4 }, { transform: b + ' scale(1)', opacity: 1, offset: 0.8 }, { transform: b + ' scale(1.04) translateY(6px)', opacity: 0 }];
   }
+  /* ---------- Klaenge der neuen Gegenstaende (ueber Snd.fx, gleiche Lautstaerke wie alles andere) ---------- */
+  var SND = {
+    ei: function (a) { var t = a.t; a.noise(t, 0.02, 'highpass', 3800, 0.8, 0.32, 0.001); a.noise(t + 0.03, 0.018, 'highpass', 4200, 0.8, 0.22, 0.001); a.tone(t, 1900, 0.04, 0.06, 'triangle', 900);
+      a.noise(t + 0.05, 0.16, 'lowpass', 900, 0.8, 0.3, 0.004); a.tone(t + 0.05, 260, 0.12, 0.12, 'sine', 90); },
+    torte: function (a) { var t = a.t; a.noise(t, 0.3, 'lowpass', 520, 0.9, 0.6, 0.004); a.tone(t, 150, 0.22, 0.28, 'sine', 50); a.noise(t + 0.04, 0.22, 'bandpass', 1300, 0.8, 0.14, 0.02); },
+    wasser: function (a) {
+      var t = a.t, k; a.noise(t, 0.04, 'highpass', 2600, 0.8, 0.42, 0.001); a.tone(t, 900, 0.05, 0.08, 'triangle', 300);
+      a.noise(t + 0.03, 0.34, 'bandpass', 1700, 0.7, 0.26, 0.02);
+      for (k = 0; k < 6; k++) a.tone(t + 0.12 + k * 0.07 + Math.random() * 0.03, 900 + Math.random() * 900, 0.06, 0.05, 'sine', 1900 + Math.random() * 600);
+    },
+    konfetti: function (a) {
+      var t = a.t, k; a.noise(t, 0.05, 'highpass', 2000, 0.7, 0.45, 0.001); a.tone(t, 180, 0.08, 0.18, 'sine', 70);
+      for (k = 0; k < 9; k++) a.noise(t + 0.06 + k * 0.035 + Math.random() * 0.02, 0.02, 'bandpass', 3500 + Math.random() * 2500, 2.5, 0.08, 0.001);
+      a.tone(t + 0.1, 523, 0.14, 0.05, 'square', 784); a.tone(t + 0.25, 784, 0.18, 0.045, 'square', 1047);
+    },
+    rose: function (a) { var t = a.t; [784, 988, 1175, 1568].forEach(function (f, i) { a.tone(t + i * 0.09, f, 0.7 - i * 0.1, 0.07, 'sine'); a.tone(t + i * 0.09, f * 2, 0.3, 0.015, 'sine'); }); },
+    schnee: function (a) { var t = a.t; a.noise(t, 0.22, 'lowpass', 1100, 0.7, 0.42, 0.006); a.noise(t + 0.01, 0.12, 'highpass', 5200, 0.6, 0.12, 0.004); a.noise(t + 0.08, 0.1, 'bandpass', 2400, 1.5, 0.06, 0.01); },
+    boing: function (a) { var t = a.t; a.noise(t, 0.04, 'lowpass', 700, 0.7, 0.3, 0.002); a.tone(t + 0.02, 170, 0.3, 0.16, 'triangle', 560); a.tone(t + 0.05, 230, 0.26, 0.08, 'sine', 700); a.tone(t + 0.3, 520, 0.14, 0.05, 'sine', 380); },
+    hit: function (a) { var t = a.t; a.noise(t, 0.05, 'lowpass', 600, 0.7, 0.2, 0.003); }
+  };
+  function sfx(k) { if (SND[k]) Snd.fx(SND[k]); }
+
   var lastV = -1;
-  function splat(p, v) {
-    /* nicht zweimal hintereinander dieselbe Art (v nur zum Ausprobieren vorgeben) */
-    if (!(v >= 0 && v <= 4)) { v = Math.floor(Math.random() * (lastV < 0 ? 5 : 4)); if (lastV >= 0 && v >= lastV) v++; }
-    lastV = v;
-    var el = document.createElement('div'); el.className = 'tomsplat'; el.innerHTML = splatSvg(v);
-    /* der Laeufer bleibt fast gerade, damit er nach unten laeuft */
-    var rot = v === 4 ? Math.round(rnd(-8, 8)) : Math.round(Math.random() * 360);
-    el.style.transform = 'translate(' + p.x + 'px,' + p.y + 'px) rotate(' + rot + 'deg)';
-    layer.appendChild(el);
-    Snd.splat(v);
-    if (el.animate) el.animate(splatAnim(v, el.style.transform), { duration: 2600, easing: 'ease-out' });
-    setTimeout(function () { el.remove(); }, 2550);
+  /* Klecks/Effekt an p; el = Profilbild des Getroffenen (die Rose bleibt dort laenger liegen) */
+  function splatK(p, k, el, force) {
+    var v = k, dur = 2600, d = document.createElement('div'), rot;
+    d.className = 'tomsplat k-' + k;
+    if (k === 'tom') {
+      /* nicht zweimal hintereinander dieselbe Art (force nur zum Ausprobieren vorgeben) */
+      if (force >= 0 && force <= 4) v = force;
+      else { v = Math.floor(Math.random() * (lastV < 0 ? 5 : 4)); if (lastV >= 0 && v >= lastV) v++; }
+      lastV = v; d.innerHTML = splatSvg(v); rot = v === 4 ? Math.round(rnd(-8, 8)) : Math.round(Math.random() * 360);
+      Snd.splat(v);
+    } else {
+      d.innerHTML = itemSvg(k);
+      rot = k === 'torte' || k === 'rose' ? Math.round(rnd(-10, 10)) : Math.round(Math.random() * 360);
+      if (k === 'torte') v = 4; else if (k === 'ei') v = 0; else if (k === 'wasser') v = 3;
+      if (k === 'rose') dur = el ? 4800 : 2600;
+      sfx(k);
+    }
+    d.style.transform = 'translate(' + p.x + 'px,' + p.y + 'px) rotate(' + rot + 'deg)';
+    layer.appendChild(d);
+    if (d.animate) d.animate(anim(v, d.style.transform), { duration: dur, easing: 'ease-out' });
+    setTimeout(function () { d.remove(); }, dur - 50);
   }
+  function splat(p, v) { splatK(p, 'tom', null, v); }
+  /* ---------- Regenschirm: geht ueber dem Ziel auf, der Gegenstand prallt im Bogen ab und fliegt weg ---------- */
+  function umbrellaPop(pt, el) {
+    if (!pt) return;
+    if (el) el._bnc = Date.now();
+    var u = document.createElement('div'); u.className = 'tomumb'; u.textContent = '☂️'; layer.appendChild(u);
+    var b = 'translate(' + pt.x + 'px,' + (pt.y - 14) + 'px) translate(-50%,-50%)';
+    if (u.animate) u.animate([{ transform: b + ' scale(.2) rotate(-30deg)', opacity: 0 }, { transform: b + ' scale(1.25) rotate(8deg)', opacity: 1, offset: 0.15 },
+      { transform: b + ' scale(1) rotate(-4deg)', opacity: 1, offset: 0.3 }, { transform: b + ' scale(1.05) rotate(3deg)', opacity: 1, offset: 0.55 },
+      { transform: b + ' scale(1) rotate(0deg)', opacity: 1, offset: 0.8 }, { transform: b + ' scale(.6)', opacity: 0 }], { duration: 1500, easing: 'ease-out' });
+    setTimeout(function () { u.remove(); }, 1450);
+  }
+  function bounce(pt, k, el) {
+    umbrellaPop(pt, el);
+    sfx('boing');
+    var f = document.createElement('div'); f.className = 'tomfly k-' + k; f.textContent = FLY[k] || '🍅'; layer.appendChild(f);
+    var dir = pt.x < window.innerWidth / 2 ? 1 : -1, x1 = pt.x + dir * rnd(90, 150), y1 = pt.y - rnd(120, 190);
+    if (!f.animate) { f.remove(); return; }
+    var an = f.animate([{ transform: tf(pt.x, pt.y - 34, 0.9, 0), opacity: 1 }, { transform: tf(pt.x + (x1 - pt.x) * 0.5, y1, 0.75, dir * 260), opacity: 1, offset: 0.55 },
+      { transform: tf(x1, y1 + 60, 0.4, dir * 540), opacity: 0 }], { duration: 750, easing: 'cubic-bezier(.25,.6,.5,1)' });
+    an.onfinish = function () { f.remove(); };
+  }
+  function bounced(el) { return !!el && el._bnc > Date.now() - 2500; }
+
   /* Flug von oben gesehen: auf gerader Linie (so bleibt die Wurfrichtung genau erhalten), die Hoehe zeigt nur die Groesse:
-     erst groesser (steigt), dann kleiner (faellt), dabei dreht sie sich; dann Platschen */
-  /* Landepunkt mit Abstand zum Bildschirmrand, damit der Klecks ganz zu sehen ist */
+     erst groesser (steigt), dann kleiner (faellt), dabei dreht er sich; dann der Klecks */
+  var FLY = { tom: '🍅', ei: '🥚', torte: '🥧', wasser: '🎈', konfetti: '🎉', rose: '🌹', schnee: '' };
   var EDGE = 56;
   function inside(p) { return { x: Math.max(EDGE, Math.min(window.innerWidth - EDGE, p.x)), y: Math.max(EDGE, Math.min(window.innerHeight - EDGE, p.y)) }; }
   function tf(x, y, sc, rot) { return 'translate(' + x + 'px,' + y + 'px) translate(-50%,-50%) scale(' + sc + ') rotate(' + rot + 'deg)'; }
-  function fly(from, to) {
+  function land(to, k, tg) {
+    tg = tg || {};
+    if (tg.me && count('schirm') > 0) {
+      /* trifft mich, und ich habe einen Regenschirm: abfangen, verbrauchen, den anderen melden */
+      add('schirm', -1);
+      bounce(to, k, tg.el);
+      PR.emit('umbrella', { game: tg.game || '' });
+      if (tg.report) { try { tg.report(count('schirm') > 0 ? 1 : 0); } catch (e) {} }
+      sync();
+      return;
+    }
+    if (!tg.me && tg.um) { bounce(to, k, tg.el); return; }
+    splatK(to, k, tg.el);
+  }
+  function fly(from, to, k, tg) {
     if (!from || !to) return;
-    var el = document.createElement('div'); el.className = 'tomfly'; el.textContent = '🍅'; layer.appendChild(el);
+    k = kind(k);
+    var el = document.createElement('div'); el.className = 'tomfly k-' + k; el.textContent = FLY[k]; layer.appendChild(el);
     to = inside(to);
     var dist = Math.hypot(to.x - from.x, to.y - from.y), dur = Math.max(420, Math.min(900, 300 + dist * 0.75));
-    var spin = (to.x < from.x ? -1 : 1) * Math.round(dur * 0.7), up = Math.min(1.6, 1.15 + dist * 0.0008);
+    var spin = (to.x < from.x ? -1 : 1) * Math.round(dur * (k === 'rose' ? 0.3 : 0.7)), up = Math.min(1.6, 1.15 + dist * 0.0008);
     Snd.toss();
-    if (!el.animate) { el.remove(); splat(to); return; }
+    if (!el.animate) { el.remove(); land(to, k, tg); return; }
     var an = el.animate([{ transform: tf(from.x, from.y, 1.15, 0) },
       { transform: tf(from.x + (to.x - from.x) * 0.45, from.y + (to.y - from.y) * 0.45, up, spin * 0.45), offset: 0.45 },
       { transform: tf(to.x, to.y, 0.45, spin) }], { duration: dur, easing: 'cubic-bezier(.2,.35,.55,1)' });
-    an.onfinish = function () { el.remove(); splat(to); };
+    an.onfinish = function () { el.remove(); land(to, k, tg); };
   }
   /* liegt q (ein Platz) fast genau auf der Wurflinie von from nach p? Nur dann wird der Platz getroffen,
-     damit die Tomate nicht zur Seite abbiegt */
+     damit der Wurf nicht zur Seite abbiegt */
   function onLine(from, p, q) {
     if (!from || Math.hypot(q.x - p.x, q.y - p.y) < 28) return true;
     var ax = p.x - from.x, ay = p.y - from.y, bx = q.x - from.x, by = q.y - from.y, la = Math.hypot(ax, ay), lb = Math.hypot(bx, by);
     return la > 1 && lb > 1 && (ax * bx + ay * by) / (la * lb) > 0.985;   // hoechstens etwa 10 Grad daneben
   }
-  /* die Tomate am Finger sitzt ein Stueck ueber der Fingerspitze, damit man sie sieht */
-  var LIFT = 30;
+
+  /* ---------- Knopf: ziehen und loslassen wirft, lange druecken waehlt aus ---------- */
+  var LIFT = 30, HOLD_MS = 480;
   function bind(btn, H) {
-    var drag = null, held = null;
+    var drag = null, held = null, ht = 0;
     function hold(x, y) { if (held) held.style.transform = tf(x, y - LIFT, 1.15, 0); }
+    function drop() { clearTimeout(ht); ht = 0; btn.classList.remove('aim'); if (held) { held.remove(); held = null; } }
     btn.addEventListener('pointerdown', function (e) {
-      if (!count() || !H().on()) return;
-      e.preventDefault(); Snd.unlock();
+      if (!total() || !H() || !H().on()) return;
+      e.preventDefault(); Snd.unlock(); closePick();
       try { btn.setPointerCapture(e.pointerId); } catch (x) {}
-      drag = { id: e.pointerId, x0: e.clientX, y0: e.clientY, moved: false, pts: [{ x: e.clientX, y: e.clientY, t: performance.now() }] };
+      var k = sel();
+      drag = { id: e.pointerId, x0: e.clientX, y0: e.clientY, moved: false, k: k, pts: [{ x: e.clientX, y: e.clientY, t: performance.now() }] };
       btn.classList.add('aim');
       if (held) held.remove();
-      held = document.createElement('div'); held.className = 'tomfly hold'; held.textContent = '🍅'; layer.appendChild(held);
+      held = document.createElement('div'); held.className = 'tomfly hold k-' + k; held.textContent = FLY[k]; layer.appendChild(held);
       hold(e.clientX, e.clientY);
+      clearTimeout(ht);
+      ht = setTimeout(function () {
+        ht = 0;
+        if (!drag || drag.moved) return;
+        /* lange gedrueckt: nicht werfen, sondern auswaehlen */
+        drag = null; drop();
+        try { navigator.vibrate && navigator.vibrate(12); } catch (x) {}
+        openPick(btn);
+      }, HOLD_MS);
     });
     btn.addEventListener('pointermove', function (e) {
       if (!drag || e.pointerId !== drag.id) return;
-      if (!drag.moved && Math.hypot(e.clientX - drag.x0, e.clientY - drag.y0) > 12) drag.moved = true;
+      if (!drag.moved && Math.hypot(e.clientX - drag.x0, e.clientY - drag.y0) > 12) { drag.moved = true; clearTimeout(ht); ht = 0; }
       hold(e.clientX, e.clientY);
       var now = performance.now(); drag.pts.push({ x: e.clientX, y: e.clientY, t: now });
       while (drag.pts.length > 2 && now - drag.pts[0].t > 250) drag.pts.shift();
@@ -12828,31 +13187,121 @@ input.bprange[type=range]::-moz-range-thumb { width: 20px; height: 20px; border-
     }
     function end(e, cancel) {
       if (!drag || e.pointerId !== drag.id) return;
-      var d = drag; drag = null; btn.classList.remove('aim');
-      if (held) { held.remove(); held = null; }
-      if (cancel || !H().on() || !use()) { sync(); return; }
-      /* los geht es dort, wo die Tomate am Finger war */
+      var d = drag; drag = null; drop();
+      if (cancel || !H() || !H().on() || !use(d.k)) { sync(); return; }
+      /* los geht es dort, wo der Gegenstand am Finger war */
       var from = { x: e.clientX, y: e.clientY - LIFT };
-      H().throwAt(d.moved ? aimPt(d, e, from) : null, from);
-      PR.emit('tomato', { game: H() === window.BJT ? 'bj' : 'poker' });
+      H().throwAt(d.moved ? aimPt(d, e, from) : null, from, d.k);
+      PR.emit('tomato', { game: H().game, kind: d.k });
       sync();
     }
     btn.addEventListener('pointerup', function (e) { end(e, false); });
     btn.addEventListener('pointercancel', function (e) { end(e, true); });
     btn.addEventListener('click', function (e) { e.preventDefault(); });
+    btn.addEventListener('contextmenu', function (e) { e.preventDefault(); });
   }
-  var pk = $('#pkTom'), bj = $('#bjTom');
-  function sync() {
-    var n = count();
-    [[pk, window.PKT], [bj, window.BJT]].forEach(function (x) {
-      var on = n > 0 && !!x[1] && x[1].on();
-      x[0].hidden = !on;
-      x[0].querySelector('b').textContent = n > 99 ? '99+' : String(n);
+
+  /* ---------- Auswahl (lange auf den Knopf druecken) ---------- */
+  var pick = document.createElement('div'); pick.id = 'tomPick'; pick.hidden = true; pick.setAttribute('role', 'dialog'); pick.setAttribute('aria-label', 'Was willst du werfen?');
+  document.body.appendChild(pick);
+  function closePick() { pick.hidden = true; }
+  function openPick(btn) {
+    var s = sel(), h = '<b class="tptitle">Was willst du werfen?</b><div class="tpgrid">';
+    ITEMS.forEach(function (it) {
+      if (it.shield) return;
+      var n = count(it.k), ok = throwable(it.k) && n > 0;
+      if (it.season && !inSeason(it.k) && !n) return;
+      h += '<button type="button" data-k="' + it.k + '"' + (ok ? '' : ' disabled') + (it.k === s && ok ? ' class="on"' : '') + ' aria-label="' + it.name + ', ' + n + ' Stück"><span>' + it.e + '</span><small>' + (it.s || it.name) + '</small><b>' + (n > 99 ? '99+' : n) + '</b></button>';
     });
+    h += '</div>';
+    var u = count('schirm');
+    h += '<p class="tpnote">' + (u ? '☂️ ' + fmt(u) + (u === 1 ? ' Regenschirm fängt' : ' Regenschirme fangen') + ' Würfe auf dich ab' : 'Mehr gibt es im Shop unter „Artikel“') + '</p>';
+    pick.innerHTML = h; pick.hidden = false;
+    var r = btn.getBoundingClientRect(), vw = document.documentElement.clientWidth || window.innerWidth, w = pick.offsetWidth, ph = pick.offsetHeight;
+    pick.style.left = Math.max(8, Math.min(vw - w - 8, r.right - w)) + 'px';
+    pick.style.top = Math.max(8, r.top - ph - 10) + 'px';
   }
-  bind(pk, function () { return window.PKT; }); bind(bj, function () { return window.BJT; });
+  pick.addEventListener('click', function (e) {
+    var b = e.target.closest('button[data-k]'); if (!b || b.disabled) return;
+    setSel(b.dataset.k); Snd.chip(1, 0, true); closePick(); sync();
+  });
+  document.addEventListener('pointerdown', function (e) { if (!pick.hidden && !e.target.closest('#tomPick')) closePick(); }, true);
+
+  /* ---------- Knoepfe an den Tischen und Anzeige im Menue ---------- */
+  var BTNS = [['#pkTom', 'PKT'], ['#bjTom', 'BJT'], ['#rlTom', 'RLT']];
+  function sync() {
+    var k = sel(), n = count(k), any = total() > 0, it = BY[k];
+    BTNS.forEach(function (x) {
+      var b = $(x[0]), H = window[x[1]]; if (!b) return;
+      var on = any && !!H && H.on();
+      b.hidden = !on;
+      if (!on) { if (!pick.hidden) closePick(); return; }
+      var sp = b.querySelector('span'), bb = b.querySelector('b'), t = n > 99 ? '99+' : String(n);
+      if (sp.textContent !== it.e) sp.textContent = it.e;
+      if (bb.textContent !== t) bb.textContent = t;
+      b.setAttribute('aria-label', it.name + ' werfen (ziehen und loslassen, lange drücken zum Auswählen)');
+    });
+    var mc = $('#tomChip'); if (!mc) return;
+    var u = count('schirm'), ic = any ? it.e : '🍅', val = fmt(any ? n : 0) + (u ? ' · ☂️' + (u > 1 ? fmt(u) : '') : '');
+    var ie = mc.querySelector('i'); if (ie.textContent !== ic) ie.textContent = ic;
+    var ve = $('#tomVal'); if (ve.textContent !== val) ve.textContent = val;
+    mc.setAttribute('aria-label', 'Zum Werfen: ' + (any ? fmt(n) + ' ' + (n === 1 ? it.name : it.pl) : 'nichts') + (total() > n ? ', insgesamt ' + fmt(total()) : '') + (u ? ', ' + fmt(u) + ' Regenschirm' : '') + ' – öffnet den Shop');
+  }
+  BTNS.forEach(function (x) { var b = $(x[0]); if (b) bind(b, function () { return window[x[1]]; }); });
   setInterval(sync, 700);
-  window.TOM = { fly: fly, splat: splat, count: count, onLine: onLine };
+  /* Anzeige oben rechts im Menue: antippen oeffnet den Shop (Reiter „Artikel“) */
+  (function () {
+    var mc = $('#tomChip'); if (!mc) return;
+    mc.setAttribute('role', 'button'); mc.tabIndex = 0;
+    function go() { if (window.PRCos) window.PRCos.open('art'); }
+    mc.addEventListener('click', go);
+    mc.addEventListener('keydown', function (e) { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); go(); } });
+  })();
+
+  /* ---------- Shop, Reiter „Artikel“: alle Wurfsachen mit − Bestand + (die alte Tomaten-Zeile ist versteckt) ---------- */
+  function sellOf(it) { return Math.max(1, Math.floor(it.price / 2)); }
+  var shopH = '';
+  function renderShop() {
+    var host = $('#shopThrow'); if (!host) return;
+    var bank = PR.prof().bank | 0, h = '<div class="psec">Zum Werfen am Tisch</div>';
+    ITEMS.forEach(function (it) {
+      var n = count(it.k), season = inSeason(it.k), can = bank >= it.price && season;
+      h += '<div class="shopitem thitem' + (it.shield ? ' sh' : '') + '"><span class="si" aria-hidden="true">' + it.e + '</span>' +
+        '<b class="thn">' + it.name + '</b>' +
+        '<small class="thd"><i class="bchip" aria-hidden="true"></i><em>' + fmt(it.price) + '</em> · ' + it.d + '</small>' +
+        '<span class="thstep"><button class="btn" type="button" data-ts="' + it.k + '"' + (n ? '' : ' disabled') + ' aria-label="' + it.name + ' verkaufen (' + fmt(sellOf(it)) + ' Chips zurück)">−</button>' +
+        '<b aria-label="Bestand">' + (n > 999 ? '999+' : fmt(n)) + '</b>' +
+        '<button class="btn primary" type="button" data-tb="' + it.k + '"' + (can ? '' : ' disabled') + ' aria-label="' + it.name + ' für ' + fmt(it.price) + ' Chips kaufen">+</button></span></div>';
+    });
+    h += '<p class="thnote">Verkaufen gibt die Hälfte zurück. Lange auf den Wurf-Knopf drücken: auswählen, was du wirfst.</p>';
+    if (h !== shopH) { host.innerHTML = h; shopH = h; }   // nur neu bauen, wenn sich etwas aendert (sonst geht ein Tippen verloren)
+  }
+  var sh = $('#shopThrow');
+  if (sh) sh.addEventListener('click', function (e) {
+    var b = e.target.closest('button[data-tb], button[data-ts]'); if (!b || b.disabled) return;
+    var P = PR.prof(), k = b.dataset.tb || b.dataset.ts, it = BY[k]; if (!it) return;
+    if (window.prIdle && !window.prIdle()) return;
+    Snd.unlock();
+    if (b.dataset.tb) {
+      if ((P.bank | 0) < it.price || !inSeason(k)) { renderShop(); return; }
+      if (!add(k, 1)) return;
+      P.bank = (P.bank | 0) - it.price;
+    } else {
+      if (count(k) < 1 || !add(k, -1)) { renderShop(); return; }
+      P.bank = (P.bank | 0) + sellOf(it);
+    }
+    PR.saveProf(); PR.renderBank(); Snd.chip(2, 0, true);
+    renderShop(); sync();
+  });
+  setInterval(function () { if (!$('#shop').hidden) renderShop(); }, 700);
+  $('#shopBtn').addEventListener('click', function () { setTimeout(renderShop, 0); });
+  renderShop();
+
+  /* Regenschirm im oeffentlichen Profil (cos.um = 1: hat mindestens einen), damit die anderen den Abprall gleich sehen */
+  if (window.PRLook) window.PRLook.field('um', function (v) { return v === 1 ? 1 : ''; }, function () { return count('schirm') > 0 ? 1 : ''; });
+
+  window.TOM = { ITEMS: ITEMS, item: item, kind: kind, count: count, add: add, sel: sel, setSel: setSel, inSeason: inSeason, total: total,
+                 fly: fly, splat: splat, umbrellaPop: umbrellaPop, bounced: bounced, onLine: onLine, sync: sync };
 })();
 </script>
 
@@ -12920,8 +13369,10 @@ input.bprange[type=range]::-moz-range-thumb { width: 20px; height: 20px; border-
     { id: 'schlossknacker', icon: '🔓', name: 'Schlossknacker', desc: 'Knacke bei Pop the Lock den Jackpot', title: 'Schlossknacker', ev: 'lock:round', f: function (d) { return d.jackpot; } },
     { id: 'fingerspitzen', icon: '🔐', name: 'Fingerspitzengefühl', desc: 'Schaffe 500 Treffer bei Pop the Lock', goal: 500, ev: 'lock:round', f: function (d) { return Math.max(0, d.hits | 0); } },
     /* Tomaten */
-    { id: 'mahlzeit', icon: '🍅', name: 'Mahlzeit', desc: 'Wirf deine erste Tomate', ev: 'tomato', f: one },
-    { id: 'tomaten-sniper', icon: '🥫', name: 'Tomaten-Sniper', desc: 'Wirf 50 Tomaten', goal: 50, title: 'Tomaten-Sniper', ev: 'tomato', f: one },
+    { id: 'mahlzeit', icon: '🍅', name: 'Mahlzeit', desc: 'Wirf deine erste Tomate (oder ein Ei, eine Torte …)', ev: 'tomato', f: one },
+    { id: 'tomaten-sniper', icon: '🥫', name: 'Tomaten-Sniper', desc: 'Wirf 50-mal etwas – alle Wurfsachen zählen', goal: 50, title: 'Tomaten-Sniper', ev: 'tomato', f: one },
+    { id: 'rosenkavalier', icon: '🌹', name: 'Rosenkavalier', desc: 'Wirf 10 Rosen', goal: 10, ev: 'tomato', f: function (d) { return d.kind === 'rose'; } },
+    { id: 'trocken', icon: '☂️', name: 'Trocken geblieben', desc: 'Dein Regenschirm fängt einen Wurf ab', ev: 'umbrella', f: one },
     /* Allgemein */
     { id: 'highroller', icon: '💸', name: 'Highroller', desc: 'Setze 50.000 Chips oder mehr auf einmal', title: 'Highroller', ev: 'bet', f: function (d) { return d.amount >= 50000; } },
     { id: 'treue-seele', icon: '📅', name: 'Treue Seele', desc: 'Hol dir 7 Tage in Folge die tägliche Belohnung', goal: 7, abs: true, ev: 'streak', f: function (d) { return d.best | 0; } },
@@ -13029,7 +13480,7 @@ input.bprange[type=range]::-moz-range-thumb { width: 20px; height: 20px; border-
   function menuFree() {
     if ($('#menu').hidden || !$('#splash').hidden) return false;
     if (window.prIdle && !window.prIdle()) return false;
-    return ['#daily', '#friends', '#bjf', '#profile', '#pview', '#chipdlg', '#invBan', '#askBan', '#shop', '#giftDlg', '#starView', '#starUp', '#quests', '#chestDlg', '#achView', '#end']
+    return ['#daily', '#friends', '#bjf', '#profile', '#pview', '#chipdlg', '#invBan', '#askBan', '#shop', '#giftDlg', '#starView', '#starUp', '#quests', '#chestDlg', '#achView', '#avEdit', '#end']
       .every(function (s) { var e = $(s); return !e || e.hidden; });
   }
   /* auch jedes andere offene Fenster (.overlay) zaehlt, damit die Meldung nie durch ein Fenster scheint */
@@ -13413,7 +13864,7 @@ input.bprange[type=range]::-moz-range-thumb { width: 20px; height: 20px; border-
   function tomatoes() { var n = 0; try { n = parseInt(localStorage.getItem('pr-tom') || '0', 10); } catch (e) {} return isFinite(n) && n > 0 ? Math.min(n, 1e9) : 0; }
   function render(pop) {
     var n = tomatoes(), bank = PR.prof().bank | 0;
-    $('#tomVal').textContent = fmt(n);
+    if (window.TOM) window.TOM.sync(); else $('#tomVal').textContent = fmt(n);
     if (pop) { var c = $('#tomChip'); c.classList.remove('pop'); void c.offsetWidth; c.classList.add('pop'); }
     $('#shopPrice').textContent = fmt(PRICE);
     $('#shopBuy').disabled = bank < PRICE;
@@ -13465,7 +13916,7 @@ input.bprange[type=range]::-moz-range-thumb { width: 20px; height: 20px; border-
     if (n < 1) { render(false); return; }
     try { localStorage.setItem('pr-tom', String(n - 1)); } catch (e) { return; }
     var P = PR.prof();
-    P.bank = (P.bank | 0) + PRICE; PR.saveProf(); PR.renderBank();
+    P.bank = (P.bank | 0) + Math.max(1, Math.floor(PRICE / 2)); PR.saveProf(); PR.renderBank();   // Verkauf: die Haelfte zurueck
     Snd.chip(2, 0, true);
     render(true);
   });
