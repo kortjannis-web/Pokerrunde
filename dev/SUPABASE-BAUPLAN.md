@@ -89,4 +89,13 @@ Deshalb kein Umbau der Spiele, sondern ein **PeerJS-kompatibler Ersatz**:
 
 ## Stand
 
-(wird von den Helfern ergänzt)
+Gebaut (Oktober 2026), abweichend vom Plan oben ohne anonyme Konten und ohne eigenen Transport:
+- `supabase/pokerrunde.sql`: profiles, saves, friendships, invites, name_free, befriend/accept_friend/unfriend, RLS,
+  Realtime, Aufräum-Job. Test: `node dev/test/sql/pglite.js` (PGlite, kein installiertes Postgres nötig).
+- `index.html`: Konstanten `SUPABASE_URL`/`SUPABASE_KEY` ganz oben, Skript `window.PRSB` vor dem Service-Worker:
+  Konto mit Name + Passwort (Adresse aus Namens-Hash, Passwort-Hash), Konto sichern für Bestandsspieler,
+  Cloud-Spielstand (alle pr-* Werte), Hall mit Presence, Freundschaften/Einladungen in der Datenbank. Das Freunde-System
+  (PRF) hat dafür Haken (`PRF.on`) und `confirm/reqIn/drop/inviteIn`. Spiele laufen weiter über PeerJS.
+- Tests: `node dev/test/online-konto.js` (Supabase-Ersatz `dev/test/fakesb.js` + PeerJS-Ersatz, drei Handys).
+- Wachhalter: `.github/workflows/supabase-wach.yml`.
+- Offen: Transport über Realtime statt PeerJS, Chip-Geschenke, Feed, Liga, Push.

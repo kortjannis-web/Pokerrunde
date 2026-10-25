@@ -1,8 +1,8 @@
 // Network-first: bei Verbindung immer die neueste Version, sonst Cache (offline spielbar).
 // Die Seite selbst wird mit einem wechselnden ?v=... geholt: so kommt sie garantiert frisch vom Server
 // und nicht aus einem Zwischenspeicher (GitHub Pages haelt Seiten sonst bis zu 10 Minuten vor).
-const C='pokerrunde-v4';
-const FILES=['peerjs.min.js','./','index.html','manifest.webmanifest','icon-192.png','icon-512.png'];
+const C='pokerrunde-v5';
+const FILES=['peerjs.min.js','supabase.min.js','./','index.html','manifest.webmanifest','icon-192.png','icon-512.png'];
 self.addEventListener('install',e=>{self.skipWaiting();e.waitUntil(caches.open(C).then(c=>c.addAll(FILES)).catch(()=>{}))});
 self.addEventListener('activate',e=>{e.waitUntil(caches.keys().then(k=>Promise.all(k.filter(x=>x!==C).map(x=>caches.delete(x)))).then(()=>self.clients.claim()))});
 self.addEventListener('fetch',e=>{

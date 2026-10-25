@@ -24,6 +24,12 @@ Reihenfolge: zuerst **Supabase Stufe 1**; macht Supabase Probleme (Ausfall, Ausl
 es nicht, **Cloudflare** vorschlagen; macht Cloudflare Probleme, zurück zu Supabase bzw. PeerJS als Rückfall.
 Immer den bisherigen Weg als Rückfall im Code behalten.
 
+## Supabase (Konten, Hall, Cloud-Spielstand)
+
+Zugang steht ganz oben in `index.html` (`SUPABASE_URL`, `SUPABASE_KEY`, leer = aus). Datenbank: `supabase/pokerrunde.sql`,
+Code: Skript `window.PRSB`, Stand und Tests: `dev/SUPABASE-BAUPLAN.md` (Abschnitt „Stand“). Anleitung für Nutzer:
+`docs/supabase-anleitung.txt`.
+
 ## Online-Versionen
 
 Ersteller und Mitspieler müssen dieselbe App-Version haben, sonst rechnen sie verschieden. Wer die Nachrichten

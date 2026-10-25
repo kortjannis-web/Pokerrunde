@@ -9,6 +9,12 @@
 <meta name="apple-mobile-web-app-title" content="Pokertisch">
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 <script src="peerjs.min.js"></script>
+<script>
+/* Supabase-Zugang (docs/supabase-anleitung.txt). Leer = Konten, Hall und Cloud-Spielstand aus, alles laeuft wie bisher.
+   Beide Werte duerfen oeffentlich sein (Project URL und Publishable key). Geheime Schluessel gehoeren NIE hierher. */
+var SUPABASE_URL = '';
+var SUPABASE_KEY = '';
+</script>
 <style>html,body{margin:0;padding:0;background:#17191b}img{max-width:100%}[hidden]{display:none!important}</style>
 <title>Pokertisch</title>
 <meta name="theme-color" content="#17191b">
@@ -608,6 +614,18 @@ input.bprange[type=range]::-moz-range-thumb { width: 20px; height: 20px; border-
 .pfield label, .psec { color: var(--muted); font: 700 11px var(--ui); letter-spacing: .14em; text-transform: uppercase; }
 #pName { height: 48px; border-radius: 12px; background: var(--bg2); border: 1px solid var(--line); color: var(--ink); font: 700 17px var(--ui); padding: 0 14px; outline: none; }
 #pName:focus { border-color: var(--brass); }
+#pName[readonly] { color: var(--muted); }
+/* Konto (Supabase): Anmelden/Registrieren, Hall mit allen Spielern */
+#acct { z-index: 96; padding: 12px; }
+#acct .endcard { width: min(380px, 100%); text-align: left; display: flex; flex-direction: column; gap: 12px; }
+#acct h2, #acct .tndesc { text-align: center; }
+#acct input, #hallQ { height: 48px; border-radius: 12px; background: var(--bg2); border: 1px solid var(--line); color: var(--ink); font: 700 17px var(--ui); padding: 0 14px; outline: none; width: 100%; box-sizing: border-box; }
+#acct input:focus, #hallQ:focus { border-color: var(--brass); }
+#acMsg { margin: 0; }
+#hall { z-index: 81; padding: 12px; }
+#hall .endcard { width: min(440px, 100%); max-height: 100%; overflow-y: auto; display: flex; flex-direction: column; gap: 12px; text-align: left; }
+#hall h2, #hallN { text-align: center; margin: 0; }
+#hallL .fl .btn:disabled { opacity: .6; }
 .pstats { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; }
 /* Tomate werfen (Poker und Blackjack): Knopf unten rechts, Wurf mit Platschen */
 .tombtn { position: absolute; right: 10px; bottom: 8px; z-index: 12; width: 54px; height: 54px; border-radius: 50%; padding: 0; display: grid; place-items: center; font-size: 32px; line-height: 1;
@@ -2888,6 +2906,7 @@ input.bprange[type=range]::-moz-range-thumb { width: 20px; height: 20px; border-
       <div class="frview" id="frMain">
         <button class="frcard hl" id="frCreate" type="button"><b>Tisch erstellen</b><span>Du bekommst einen Code, den du deinen Freunden schickst.</span></button>
         <button class="frcard" id="frJoin" type="button"><b>Tisch beitreten</b><span>Gib den Code ein, den dir ein Freund geschickt hat.</span></button>
+        <button class="frcard" id="frHall" type="button" hidden><b>Alle Spieler</b><span>Wer ist gerade online? Spieler finden, als Freund hinzufügen und einladen.</span></button>
         <p class="frnote warn" id="frMainMsg" hidden></p>
         <div class="fsec" data-fl></div>
       </div>
@@ -3082,6 +3101,16 @@ input.bprange[type=range]::-moz-range-thumb { width: 20px; height: 20px; border-
           <div class="pstat"><b id="tnSnI">–</b><span>Siegquote</span></div>
         </div>
         <div class="frhint" id="tnSnX" style="text-align:center"></div>
+      </div>
+      <div id="acctBox" hidden>
+        <div class="psec" style="margin-bottom:8px">Konto</div>
+        <div class="codebox">
+          <div class="frhint" id="acctTxt" style="margin:0;text-align:center"></div>
+          <div class="codebtns">
+            <button class="btn" id="acctHall" type="button">Alle Spieler</button>
+            <button class="btn" id="acctOut" type="button">Abmelden</button>
+          </div>
+        </div>
       </div>
       <div>
         <div class="psec" style="margin-bottom:8px">Einstellungen</div>
@@ -3293,6 +3322,29 @@ input.bprange[type=range]::-moz-range-thumb { width: 20px; height: 20px; border-
       <button class="btn primary wide" id="tnGo" type="button">Starten</button>
       <button class="btn wide" id="tnCancel" type="button">Abbrechen</button>
       <button class="tnlink" id="tnFr" type="button">Mit Freunden? Tisch erstellen → Spielart Turnier</button>
+    </div>
+  </div>
+  <div id="acct" class="overlay" hidden>
+    <div class="endcard">
+      <h2 id="acT">Konto</h2>
+      <p class="tndesc" id="acX"></p>
+      <div class="seg" id="acTabs" role="radiogroup" aria-label="Neu oder anmelden"></div>
+      <div class="pfield"><label for="acName">Name</label><input id="acName" type="text" maxlength="14" autocomplete="username" autocapitalize="words" spellcheck="false" placeholder="Dein Spielername"></div>
+      <div class="pfield"><label for="acPw">Passwort</label><input id="acPw" type="password" autocomplete="new-password" placeholder="mindestens 4 Zeichen"></div>
+      <div class="pfield" id="acPw2L"><label for="acPw2">Passwort wiederholen</label><input id="acPw2" type="password" autocomplete="new-password"></div>
+      <p class="frnote warn" id="acMsg" hidden></p>
+      <button class="btn primary wide" id="acGo" type="button">Weiter</button>
+      <p class="frnote" id="acNote" style="margin:0;text-align:center">Merk dir dein Passwort gut. Damit kommst du auf jedem Handy an deinen Spielstand.</p>
+    </div>
+  </div>
+  <div id="hall" class="overlay" hidden>
+    <div class="endcard">
+      <h2>Alle Spieler</h2>
+      <p class="frnote" id="hallN"></p>
+      <input id="hallQ" type="search" autocomplete="off" spellcheck="false" placeholder="Spieler suchen" aria-label="Spieler suchen">
+      <div class="seg" id="hallTabs" role="radiogroup" aria-label="Filter"></div>
+      <div class="flist" id="hallL"></div>
+      <button class="btn wide" id="hallClose" type="button">Schließen</button>
     </div>
   </div>
   <div id="bjtPick" class="overlay" hidden>
@@ -12505,7 +12557,7 @@ input.bprange[type=range]::-moz-range-thumb { width: 20px; height: 20px; border-
       changed();
     } else if (d.t === 'inv') {
       var st = cleanSt({ g: d.g, code: d.code });
-      if (st.code && st.g !== 'menu') showInvite(f, st);
+      if (st.code && st.g !== 'menu' && !invSeen(code, st.code)) showInvite(f, st);
     } else if (d.t === 'ask') {
       gotAsk(f, d.g === 'bj' ? 'bj' : d.g === 'rl' ? 'rl' : d.g === 'cr' ? 'cr' : d.g === 'rx' ? 'rx' : 'poker');
     } else if (d.t === 'askok') {
@@ -12589,9 +12641,13 @@ input.bprange[type=range]::-moz-range-thumb { width: 20px; height: 20px; border-
     var L = live(code); L.next = 0;
     if (L.conn && L.conn.open) send(L.conn, { t: 'hi', p: myPub(), s: lastSt || myStatus(), add: true, fr: 1 });
     else if (peer && alive && !L.try) dial(code);
+    hook('add', code);
     changed();
     return '';
   }
+  /* Haken fuer andere Skripte (Supabase, window.PRSB): add, accept, decline, remove (code) und invite (code, g, Tischcode) */
+  var HOOK = { add: [], accept: [], decline: [], remove: [], invite: [] };
+  function hook(k) { var a = [].slice.call(arguments, 1); HOOK[k].forEach(function (fn) { try { fn.apply(null, a); } catch (e) {} }); }
   /* ---------- Freundschaftsanfragen an mich: Banner oben und eigener Abschnitt in der Freundesliste ---------- */
   function gotReq(code, d) {
     var p = cleanFriend({ code: code, name: d.p && d.p.name, color: d.p && d.p.color }), isNew = !REQ[code];
@@ -12611,6 +12667,7 @@ input.bprange[type=range]::-moz-range-thumb { width: 20px; height: 20px; border-
     takeBank(f, r.p); FR.push(f); saveFR();
     var L = live(code);
     if (L.conn && L.conn.open) { send(L.conn, { t: 'hi', p: myPub(), s: lastSt || myStatus(), add: false, fr: 1 }); L.on = true; L.st = r.st; }
+    hook('accept', code);
     toast((f.name || code) + ' ist jetzt dein Freund');
     changed();
   }
@@ -12619,10 +12676,13 @@ input.bprange[type=range]::-moz-range-thumb { width: 20px; height: 20px; border-
     delete REQ[code]; NOPE[code] = 1;
     var L = LIVE[code];
     if (L && L.conn) { var c = L.conn; send(c, { t: 'rm', no: 1 }); setTimeout(function () { try { c.close(); } catch (e) {} }, 300); }
+    hook('decline', code);
     changed();
   }
   function removeFriend(code, tell) {
+    if (!friend(code)) return;
     FR = FR.filter(function (f) { return f.code !== code; }); saveFR();
+    if (tell) hook('remove', code);
     var L = LIVE[code];
     if (L && L.conn) { var c = L.conn; if (tell) send(c, { t: 'rm' }); setTimeout(function () { try { c.close(); } catch (e) {} }, 300); }
     delete LIVE[code];
@@ -12723,11 +12783,7 @@ input.bprange[type=range]::-moz-range-thumb { width: 20px; height: 20px; border-
       go.textContent = me.g === 'rx' ? (done ? 'Gefordert …' : '⚡ Duell') : done ? 'Eingeladen' : 'Einladen'; go.disabled = done;
       go.addEventListener('click', function () {
         if (me.g === 'rx') { duelAsk(f); return; }
-        var L = LIVE[f.code]; if (!L || !L.on) return;
-        send(L.conn, { t: 'inv', g: me.g, code: me.code });
-        invited[f.code + ':' + me.code] = Date.now() + 30000;
-        render(true);
-        setTimeout(function () { render(true); }, 30100);
+        inviteFriend(f.code);
       });
       r.appendChild(go);
     }
@@ -12913,7 +12969,55 @@ input.bprange[type=range]::-moz-range-thumb { width: 20px; height: 20px; border-
       try { Snd.ping(); } catch (e) {}
     }
   }
-  window.PRF = { brag: brag, slw: slw, count: function () { return FR.filter(function (f) { return !f.pending; }).length; } };
+  /* an den eigenen Tisch einladen: direkt (PeerJS, wenn der Freund verbunden ist) und ueber Supabase (Haken 'invite') */
+  function inviteFriend(code) {
+    var me = lastSt || myStatus(), L = LIVE[code];
+    if (!me.code || me.g === 'menu') return false;
+    if (L && L.on) send(L.conn, { t: 'inv', g: me.g, code: me.code });
+    hook('invite', code, me.g, me.code);
+    invited[code + ':' + me.code] = Date.now() + 30000;
+    render(true);
+    setTimeout(function () { render(true); }, 30100);
+    return true;
+  }
+  /* dieselbe Einladung kommt evtl. doppelt (PeerJS und Supabase): nur einmal zeigen */
+  var invShown = {};
+  function invSeen(code, table) { var k = code + ':' + table, t = invShown[k]; invShown[k] = Date.now(); return !!(t && Date.now() - t < 120000); }
+  /* Schnittstelle fuer Supabase (window.PRSB): Freundschaften aus der Datenbank in die Freundesliste uebernehmen */
+  window.PRF = {
+    brag: brag, slw: slw, count: function () { return FR.filter(function (f) { return !f.pending; }).length; },
+    code: function () { return MY; },
+    list: function () { return FR.map(function (f) { return { code: f.code, name: f.name, color: f.color, pending: !!f.pending }; }); },
+    has: function (code) { var f = friend(code); return f ? (f.pending ? 'pending' : 'friend') : REQ[code] ? 'req' : ''; },
+    add: addFriend,
+    online: isOn,
+    status: function () { return lastSt || myStatus(); },
+    stText: stText,
+    toast: function (t) { toast(t); },
+    invite: inviteFriend,
+    on: function (k, fn) { if (HOOK[k] && typeof fn === 'function') HOOK[k].push(fn); },
+    /* Anfrage an mich (aus der Datenbank) */
+    reqIn: function (code, name, color) { if (!/^[A-Z2-9]{6}$/.test(code) || code === MY || friend(code) || REQ[code] || NOPE[code]) return; gotReq(code, { p: { name: name, color: color }, s: {} }); },
+    /* befreundet laut Datenbank (der andere hat angenommen oder wir waren es schon) */
+    confirm: function (code, name, color) {
+      if (!/^[A-Z2-9]{6}$/.test(code) || code === MY) return;
+      var f = friend(code), c = cleanFriend({ code: code, name: name, color: color });
+      if (f) {
+        var was = f.pending; f.pending = false; if (c.name) f.name = c.name; f.color = c.color; saveFR();
+        if (was) { toast((f.name || code) + ' hat deine Freundschaftsanfrage angenommen'); Snd.ping(); }
+      } else if (FR.length < MAX_FRIENDS) { delete REQ[code]; FR.push(c); saveFR(); }
+      var L = live(code); L.next = 0; if (!L.conn && peer && alive && !L.try) dial(code);
+      changed();
+    },
+    /* in der Datenbank beendet oder abgelehnt */
+    drop: function (code) { delete REQ[code]; removeFriend(code, false); changed(); },
+    /* Einladung aus der Datenbank (auch an Freunde, die gerade nicht direkt verbunden sind) */
+    inviteIn: function (code, g, table, name, color) {
+      var st = cleanSt({ g: g, code: table });
+      if (!st.code || st.g === 'menu' || invSeen(code, st.code)) return;
+      showInvite(friend(code) || cleanFriend({ code: code, name: name, color: color }), st);
+    }
+  };
   function changed() { render(false); renderSlFr(); }
   setInterval(function () { render(false); renderSlFr(); }, 1000);
 
@@ -17806,6 +17910,489 @@ input.bprange[type=range]::-moz-range-thumb { width: 20px; height: 20px; border-
     friends: startFr
   };
   if (window.PR_TESTHOOKS) window.RX._dbg = { R: function () { return R; }, H: function () { return H; }, V: V, botTime: botTime, median: median, start: hStart };
+})();
+</script>
+
+<script>
+/* Supabase-Online-Modus (nur wenn SUPABASE_URL und SUPABASE_KEY ganz oben gesetzt sind, sonst laeuft alles wie bisher).
+   - Konto mit Name + Passwort, ohne E-Mail: aus dem Namen wird eine nie benutzte Adresse (pr-<Hash>@topsichtbar.de),
+     Supabase bekommt nur einen Hash des Passworts. In Supabase muss "Confirm email" aus sein.
+     Wer schon spielt, sichert beim naechsten Online-Gehen sein Konto (Name + Passwort festlegen), neue Spieler
+     registrieren sich, auf einem neuen Geraet meldet man sich an. Danach automatisch angemeldet.
+   - Spielstand in der Cloud: alle pr-* Werte aus dem Browser (Tabelle saves), alle 20 s bei Aenderungen, beim
+     Schliessen sofort. Anmelden auf einem anderen Geraet holt ihn zurueck (Seite laedt neu). Hat ein anderes Geraet
+     neuer gespeichert, wird dessen Stand beim Start und beim Zurueckkehren in die App uebernommen (nur ausserhalb eines
+     Spiels), beim Speichern selbst gewinnt das zuletzt benutzte Geraet.
+   - Oeffentliches Profil (profiles: Name, Spielercode, Farbe, Chips, Sterne, Aussehen) fuer die Hall mit allen Spielern,
+     Online-Status und "spielt gerade" ueber Realtime Presence (Kanal 'hall').
+   - Freundschaften und Einladungen zusaetzlich in der Datenbank: kommen auch an, wenn der andere offline ist. Das
+     Freunde-System ueber PeerJS (window.PRF) bleibt und bekommt die Ergebnisse ueber PRF.confirm/reqIn/drop/inviteIn.
+   - Nicht erreichbar: Notbetrieb, alles laeuft ueber PeerJS und localStorage weiter, neuer Versuch nach 30 s, 1 und 5 min.
+   Datenbank: supabase/pokerrunde.sql. window.PRSB: on(), state() 'aus' | 'verbinde' | 'anmelden' | 'ok' | 'notbetrieb',
+   me() eigenes Profil, onState(fn), hall() Hall oeffnen, client().
+   Tests: window.PR_SB_URL / PR_SB_KEY ersetzen die Konstanten; ist window.supabase schon da (Ersatz), wird
+   supabase.min.js nicht geladen. */
+(function () {
+  'use strict';
+  var PR = window.PR;
+  if (!PR) return;
+  var fmt = PR.fmt;
+  function $(s) { return document.querySelector(s); }
+  var SB_URL = window.PR_SB_URL || window.SUPABASE_URL || '', SB_KEY = window.PR_SB_KEY || window.SUPABASE_KEY || '';
+  var DOMAIN = 'topsichtbar.de', NAME_MIN = 2, PW_MIN = 4, COLS = 'id,name,code,color,bank,stars,cos,seen_at';
+  /* nicht in den Cloud-Spielstand: Anmeldung, Konto-Kennung und laufende Runden (wuerden auf dem neuen Geraet als aufgegeben zaehlen) */
+  var EXCL = /^pr-(sb-|acct$|tnrun$|crrun$|bjtnrun$)/;
+  var S = { st: 'aus', sb: null, user: null, me: null, subs: [], fails: 0, retry: 0, syncAt: 0 };
+  function setSt(st) { if (S.st === st) return; S.st = st; S.subs.forEach(function (fn) { try { fn(st); } catch (e) {} }); renderBox(); }
+  window.PRSB = {
+    on: function () { return !!(SB_URL && SB_KEY); }, state: function () { return S.st; }, me: function () { return S.me; },
+    onState: function (fn) { if (typeof fn === 'function') S.subs.push(fn); }, hall: openHall, client: function () { return S.sb; }
+  };
+  if (!SB_URL || !SB_KEY) return;
+
+  function readS(k) { try { return localStorage.getItem(k); } catch (e) { return null; } }
+  function writeS(k, v) { try { localStorage.setItem(k, v); } catch (e) {} }
+  function toast(t) { if (window.PRF && window.PRF.toast) window.PRF.toast(t); }
+  function within(p, ms) { return Promise.race([p, new Promise(function (_, rej) { setTimeout(function () { rej(new Error('timeout')); }, ms); })]); }
+  function sha(t) {
+    return crypto.subtle.digest('SHA-256', new TextEncoder().encode(t)).then(function (h) {
+      return [].map.call(new Uint8Array(h), function (x) { return ('0' + x.toString(16)).slice(-2); }).join('');
+    });
+  }
+  function nameKey(n) { return String(n || '').trim().normalize('NFC').toLowerCase(); }
+  /* Zugang fuer Supabase: Adresse aus dem Namen, Passwort nur als Hash (64 Zeichen, erfuellt jede Passwort-Regel) */
+  function access(name, pw) {
+    return Promise.all([sha('pokerrunde-konto:' + nameKey(name)), sha('pokerrunde-pw:' + pw)]).then(function (r) {
+      return { email: 'pr-' + r[0].slice(0, 24) + '@' + DOMAIN, password: r[1] };
+    });
+  }
+
+  /* ---------- Start: Bibliothek laden, Sitzung pruefen ---------- */
+  function load(done) {
+    if (window.supabase && window.supabase.createClient) { done(); return; }
+    var s = document.createElement('script'); s.src = 'supabase.min.js';
+    s.onload = done; s.onerror = function () { offline(); };
+    document.head.appendChild(s);
+  }
+  function offline() {
+    setSt('notbetrieb');
+    clearTimeout(S.retry);
+    var n = ++S.fails;
+    S.retry = setTimeout(boot, n < 2 ? 30000 : n < 3 ? 60000 : 300000);
+  }
+  function boot() {
+    if (S.st === 'ok' || S.st === 'anmelden') return;
+    setSt('verbinde');
+    load(function () {
+      try {
+        if (!S.sb) S.sb = window.supabase.createClient(SB_URL, SB_KEY, { auth: { persistSession: true, autoRefreshToken: true, storageKey: 'pr-sb-auth' } });
+      } catch (e) { offline(); return; }
+      within(S.sb.auth.getSession(), 8000).then(function (r) {
+        var ses = r && r.data && r.data.session;
+        if (ses && ses.user) return enter(ses.user, false);
+        return within(S.sb.rpc('name_free', { n: 'xx' }), 8000).then(function (q) {
+          if (q.error) throw q.error;
+          S.fails = 0; setSt('anmelden'); askLogin();
+        });
+      }).catch(function () { offline(); });
+    });
+  }
+  /* angemeldet: eigenes Profil holen; gehoert der Spielstand auf diesem Geraet zu einem anderen (oder keinem) Konto,
+     den Cloud-Stand uebernehmen (fresh: gerade hier registriert, dann ist der Stand hier der richtige) */
+  function enter(user, fresh) {
+    S.user = user;
+    return within(S.sb.from('profiles').select(COLS).eq('id', user.id).maybeSingle(), 10000).then(function (r) {
+      if (r.error) throw r.error;
+      if (!r.data) throw new Error('kein Profil');
+      S.me = r.data;
+      if (fresh) { writeS('pr-acct', user.id); return ready(); }
+      if (readS('pr-acct') !== user.id) return adopt();
+      return ready();
+    });
+  }
+  /* Name ueberall setzen: ueber das Namensfeld im Profil, dann zeichnet die App Menue und Tisch selbst neu */
+  function setName(n) {
+    var pn = $('#pName');
+    if (!n || PR.prof().name === n) return;
+    if (pn) { pn.value = n; pn.dispatchEvent(new Event('input')); } else { PR.prof().name = n; PR.saveProf(); }
+  }
+  function wipeLocal() {
+    var ks = [];
+    try { for (var i = 0; i < localStorage.length; i++) { var k = localStorage.key(i); if (/^pr-/.test(k) && !/^pr-sb-/.test(k) && k !== 'pr-acct') ks.push(k); } } catch (e) {}
+    ks.forEach(function (k) { try { localStorage.removeItem(k); } catch (e) {} });
+  }
+  /* Cloud-Stand auf dieses Geraet holen und neu laden */
+  function adopt() {
+    return within(S.sb.from('saves').select('data,updated_at').eq('id', S.user.id).maybeSingle(), 10000).then(function (r) {
+      if (r.error) throw r.error;
+      var d = r.data && r.data.data;
+      if (d && typeof d === 'object' && Object.keys(d).length) {
+        wipeLocal();
+        Object.keys(d).forEach(function (k) { if (/^pr-/.test(k) && !EXCL.test(k) && typeof d[k] === 'string') writeS(k, d[k]); });
+      }
+      writeS('pr-pcode', S.me.code); writeS('pr-acct', S.user.id);
+      if (d) writeS('pr-sb-sync', String(Date.parse(r.data.updated_at) || Date.now()));
+      $('#acct').hidden = true;
+      toast('Dein Spielstand wird geladen …');
+      setTimeout(function () { location.reload(); }, 700);
+      return new Promise(function () {});   // die Seite laedt neu
+    });
+  }
+  function ready() {
+    S.fails = 0; S.syncAt = +readS('pr-sb-sync') || 0;
+    /* Spielercode des Kontos ist massgeblich (Freunde finden einen daran); weicht er ab: uebernehmen und neu laden */
+    if (window.PRF && window.PRF.code && S.me.code && window.PRF.code() !== S.me.code) { writeS('pr-pcode', S.me.code); location.reload(); return new Promise(function () {}); }
+    setName(S.me.name);
+    var pn = $('#pName'); if (pn) { pn.readOnly = true; pn.title = 'Dein Name ist dein Login und lässt sich nicht ändern'; }
+    setSt('ok');
+    return newer().then(function (yes) {
+      if (yes) return adopt();
+      startLive();
+      upload(true); pushPub(true);
+    });
+  }
+  /* hat ein anderes Geraet neuer gespeichert als dieses zuletzt geladen oder gespeichert hat? */
+  function newer() {
+    if (!S.syncAt) return Promise.resolve(false);
+    return S.sb.from('saves').select('updated_at').eq('id', S.user.id).maybeSingle().then(function (r) {
+      var at = r && r.data ? Date.parse(r.data.updated_at) || 0 : 0;
+      return at > S.syncAt + 1500;
+    }, function () { return false; });
+  }
+
+  /* ---------- Konto-Fenster: registrieren / Konto sichern / anmelden ---------- */
+  var mode = 'reg';
+  function existing() {
+    var P = PR.prof();
+    if ((P.hands | 0) > 0 || PR.profName() !== 'Spieler') return true;
+    try { var f = JSON.parse(localStorage.getItem('pr-friends') || '[]'); if (Array.isArray(f) && f.length) return true; } catch (e) {}
+    return ['pr-bjstats', 'pr-crstats', 'pr-slstats', 'pr-rlstats'].some(function (k) { return readS(k) != null; });
+  }
+  function waitMenu(fn) {
+    (function chk() {
+      var m = $('#menu'), sp = $('#splash');
+      if (m && !m.hidden && (!sp || sp.hidden)) fn(); else setTimeout(chk, 400);
+    })();
+  }
+  function askLogin() { waitMenu(function () { if (S.st === 'anmelden') openAcct(existing() ? 'reg' : 'reg'); }); }
+  function msg(t) { var e = $('#acMsg'); e.textContent = t; e.hidden = !t; }
+  function busy(on) { $('#acGo').disabled = on; $('#acGo').textContent = on ? 'Einen Moment …' : mode === 'login' ? 'Anmelden' : 'Konto anlegen'; }
+  function openAcct(m) {
+    mode = m;
+    var ex = existing();
+    PR.seg($('#acTabs'), ['reg', 'login'], m, function (v) { return v === 'reg' ? (ex ? 'Konto sichern' : 'Neu hier') : 'Ich habe ein Konto'; }, function (v) { openAcct(v); });
+    $('#acTabs').style.gridTemplateColumns = 'repeat(2, 1fr)';
+    $('#acT').textContent = m === 'login' ? 'Anmelden' : ex ? 'Konto sichern' : 'Willkommen';
+    $('#acX').textContent = m === 'login' ? 'Melde dich mit deinem Namen und Passwort an. Dein Spielstand kommt dann auf dieses Gerät.'
+      : ex ? 'Ab jetzt hat jeder Spieler ein Konto. Leg ein Passwort fest, dann sind deine Chips gesichert und du siehst alle anderen Spieler.'
+        : 'Wähl einen Spielernamen und ein Passwort. Eine E-Mail brauchst du nicht.';
+    $('#acPw2L').hidden = m === 'login';
+    $('#acPw').setAttribute('autocomplete', m === 'login' ? 'current-password' : 'new-password');
+    if (m === 'reg' && !$('#acName').value && PR.profName() !== 'Spieler') $('#acName').value = PR.profName();
+    msg(''); busy(false);
+    $('#acct').hidden = false;
+  }
+  function fail(t) { var e = new Error(t); e.say = t; return e; }
+  function go() {
+    var name = $('#acName').value.trim(), pw = $('#acPw').value, pw2 = $('#acPw2').value;
+    if (name.length < NAME_MIN) { msg('Der Name braucht mindestens 2 Zeichen.'); return; }
+    if (pw.length < PW_MIN) { msg('Das Passwort braucht mindestens 4 Zeichen.'); return; }
+    if (mode === 'reg' && pw !== pw2) { msg('Die beiden Passwörter sind nicht gleich.'); return; }
+    msg(''); busy(true);
+    (mode === 'reg' ? register(name, pw) : login(name, pw)).then(function () { busy(false); }, function (e) {
+      busy(false); msg(e && e.say ? e.say : 'Keine Verbindung zum Server. Versuch es gleich nochmal.');
+    });
+  }
+  function register(name, pw) {
+    return within(S.sb.rpc('name_free', { n: name }), 10000).then(function (r) {
+      if (r.error) throw r.error;
+      if (r.data !== true) throw fail('Den Namen „' + name + '“ gibt es schon. Nimm einen anderen oder tipp auf „Ich habe ein Konto“.');
+      return access(name, pw);
+    }).then(function (z) {
+      var code = window.PRF && window.PRF.code ? window.PRF.code() : '';
+      return within(S.sb.auth.signUp({ email: z.email, password: z.password, options: { data: { name: name, code: code, color: PR.prof().color } } }), 15000);
+    }).then(function (r) {
+      if (r.error) throw fail(/regist|exist/i.test(r.error.message || '') ? 'Den Namen „' + name + '“ gibt es schon.' : 'Das Konto konnte nicht angelegt werden (' + (r.error.message || 'Fehler') + ').');
+      if (!r.data || !r.data.session) throw fail('Supabase verlangt noch eine E-Mail-Bestätigung. In Supabase muss „Confirm email“ aus sein (Anleitung Schritt 4).');
+      setName(name);
+      return enter(r.data.user, true);
+    }).then(function () {
+      $('#acct').hidden = true; $('#acPw').value = ''; $('#acPw2').value = '';
+      toast('Konto angelegt. Willkommen, ' + name + '!');
+    });
+  }
+  function login(name, pw) {
+    return access(name, pw).then(function (z) { return within(S.sb.auth.signInWithPassword(z), 15000); }).then(function (r) {
+      if (r.error) throw fail(/invalid|credentials/i.test(r.error.message || '') ? 'Name oder Passwort stimmt nicht.' : 'Anmelden ging nicht (' + r.error.message + ').');
+      return enter(r.data.user, false);
+    }).then(function () {
+      $('#acct').hidden = true; $('#acPw').value = '';
+      toast('Angemeldet als ' + S.me.name);
+    });
+  }
+  $('#acGo').addEventListener('click', go);
+  ['#acName', '#acPw', '#acPw2'].forEach(function (id) {
+    $(id).addEventListener('keydown', function (e) { e.stopPropagation(); if (e.key === 'Enter') { e.preventDefault(); go(); } });
+  });
+  /* Abmelden: Stand vorher sichern, dann dieses Geraet leeren (das Konto liegt in der Cloud) */
+  var outAsk = 0;
+  $('#acctOut').addEventListener('click', function () {
+    var b = this;
+    if (Date.now() - outAsk > 4000) { outAsk = Date.now(); b.textContent = 'Wirklich abmelden?'; setTimeout(function () { b.textContent = 'Abmelden'; }, 4000); return; }
+    b.disabled = true; b.textContent = 'Melde ab …';
+    upload(true).then(function () { return S.sb.auth.signOut(); }).catch(function () {}).then(function () {
+      wipeLocal(); try { localStorage.removeItem('pr-acct'); localStorage.removeItem('pr-sb-sync'); } catch (e) {}
+      location.reload();
+    });
+  });
+
+  /* ---------- Spielstand und oeffentliches Profil ---------- */
+  function collect() {
+    var o = {};
+    try { for (var i = 0; i < localStorage.length; i++) { var k = localStorage.key(i); if (/^pr-/.test(k) && !EXCL.test(k)) o[k] = localStorage.getItem(k); } } catch (e) {}
+    if (JSON.stringify(o).length > 450000) Object.keys(o).forEach(function (k) { if (/log$/.test(k)) delete o[k]; });   // Verlaeufe zuerst weglassen
+    return o;
+  }
+  var lastUp = '', upBusy = false;
+  function upload(force) {
+    if (S.st !== 'ok' || !S.user || upBusy) return Promise.resolve();
+    var d = collect(), j = JSON.stringify(d);
+    if (!force && j === lastUp) return Promise.resolve();
+    upBusy = true;
+    var now = new Date().toISOString();
+    return S.sb.from('saves').upsert({ id: S.user.id, data: d, updated_at: now }).then(function (w) {
+      upBusy = false;
+      if (!w.error) { lastUp = j; S.syncAt = Date.parse(now); writeS('pr-sb-sync', String(S.syncAt)); }
+    }, function () { upBusy = false; });
+  }
+  function pub() {
+    var P = PR.prof(), cos = window.PRLook ? window.PRLook.mine() : {};
+    if (cos && JSON.stringify(cos).length > 3800) { cos = Object.assign({}, cos); delete cos.av; }
+    return { color: P.color, bank: Math.max(0, Math.round(P.bank || 0)), stars: window.PRStars ? Math.max(0, window.PRStars.count() | 0) : 0, cos: cos || {} };
+  }
+  var lastPub = '';
+  function pushPub(seen) {
+    if (S.st !== 'ok' || !S.user) return;
+    var p = pub(), j = JSON.stringify(p);
+    if (j === lastPub && !seen) return;
+    p.updated_at = p.seen_at = new Date().toISOString();
+    S.sb.from('profiles').update(p).eq('id', S.user.id).then(function (r) { if (!r.error) { lastPub = j; Object.assign(S.me, p); PL[S.me.id] = S.me; } }, function () {});
+  }
+  document.addEventListener('visibilitychange', function () {
+    if (document.visibilityState === 'hidden') { upload(false); pushPub(true); return; }
+    /* zurueck in der App: hat ein anderes Geraet inzwischen weitergespielt? Dann dessen Stand holen (nicht mitten im Spiel) */
+    if (S.st === 'ok' && (!window.prIdle || window.prIdle())) newer().then(function (yes) { if (yes) adopt(); });
+  });
+  window.addEventListener('pagehide', function () { upload(false); });
+
+  /* ---------- Live: Spieler, Online-Status, Freundschaften, Einladungen ---------- */
+  var PL = {}, ON = {}, FS = {}, chHall = null, lastPres = '', live = false;
+  function startLive() {
+    if (live) return;
+    live = true;
+    loadPlayers().then(syncFriends).then(checkInvites);
+    chHall = S.sb.channel('hall', { config: { presence: { key: S.user.id } } });
+    chHall.on('presence', { event: 'sync' }, function () {
+      var st = chHall.presenceState(), on = {};
+      Object.keys(st).forEach(function (k) { var a = st[k]; if (a && a[0]) on[k] = a[0]; });
+      ON = on; hallRender();
+    });
+    chHall.subscribe(function (s) { if (s === 'SUBSCRIBED') { lastPres = ''; track(); } });
+    S.sb.channel('db-' + S.user.id)
+      .on('postgres_changes', { event: '*', schema: 'public', table: 'profiles' }, function (p) { var r = p && p.new; if (r && r.id) { PL[r.id] = Object.assign(PL[r.id] || {}, r); hallRender(); } })
+      .on('postgres_changes', { event: '*', schema: 'public', table: 'friendships' }, function () { syncFriends(); })
+      .on('postgres_changes', { event: 'INSERT', schema: 'public', table: 'invites', filter: 'to_id=eq.' + S.user.id }, function (p) { gotInvite(p && p.new); })
+      .subscribe();
+    setInterval(track, 3000);
+    setInterval(function () { pushPub(false); }, 5000);
+    setInterval(function () { pushPub(true); }, 60000);
+    setInterval(function () { upload(false); }, 20000);
+    setInterval(syncFriends, 120000);   // falls ein Echtzeit-Ereignis verloren ging
+  }
+  function track() {
+    if (!chHall || S.st !== 'ok') return;
+    var F = window.PRF, st = F && F.status ? F.status() : { g: 'menu', code: '' }, P = PR.prof();
+    var o = { id: S.user.id, code: S.me.code, name: S.me.name, color: P.color, g: st.g, c: st.code || '', ask: st.ask ? 1 : 0 };
+    var j = JSON.stringify(o);
+    if (j === lastPres) return;
+    lastPres = j;
+    try { chHall.track(o); } catch (e) {}
+  }
+  function loadPlayers() {
+    return S.sb.from('profiles').select(COLS).order('seen_at', { ascending: false }).limit(500).then(function (r) {
+      if (!r.error && r.data) r.data.forEach(function (p) { PL[p.id] = p; });
+      hallRender();
+    }, function () {});
+  }
+  function byCode(c) { for (var k in PL) if (PL[k].code === c) return PL[k]; return null; }
+  function rpc(fn, args) { return S.sb.rpc(fn, args).then(function (r) { return r; }, function () { return {}; }); }
+  var fsBusy = false, fsAgain = false, migrated = false;
+  function syncFriends() {
+    if (S.st !== 'ok') return Promise.resolve();
+    if (fsBusy) { fsAgain = true; return Promise.resolve(); }
+    fsBusy = true;
+    return S.sb.from('friendships').select('a,b,status').then(function (r) {
+      if (r.error || !r.data) { fsBusy = false; return; }
+      var me = S.user.id, now = {}, need = [];
+      r.data.forEach(function (f) {
+        var o = f.a === me ? f.b : f.a;
+        now[o] = f.status === 'accepted' ? 'accepted' : f.a === me ? 'out' : 'in';
+        if (!PL[o]) need.push(o);
+      });
+      var more = need.length ? S.sb.from('profiles').select(COLS).in('id', need) : Promise.resolve({ data: [] });
+      return more.then(function (q) {
+        (q && q.data || []).forEach(function (p) { PL[p.id] = p; });
+        var F = window.PRF;
+        if (F) {
+          Object.keys(now).forEach(function (o) {
+            var p = PL[o]; if (!p) return;
+            if (now[o] === 'accepted') F.confirm(p.code, p.name, p.color);
+            else if (now[o] === 'in') F.reqIn(p.code, p.name, p.color);
+          });
+          /* in der Datenbank beendet oder abgelehnt: auch aus der Freundesliste */
+          Object.keys(FS).forEach(function (o) { if (!now[o] && PL[o]) F.drop(PL[o].code); });
+        }
+        FS = now; fsBusy = false;
+        if (!migrated) { migrated = true; migrate(); }
+        hallRender();
+        if (fsAgain) { fsAgain = false; syncFriends(); }
+      });
+    }).catch(function () { fsBusy = false; });
+  }
+  /* Freunde aus der Zeit vor den Konten: wer selbst ein Konto hat, wird auch in der Datenbank befreundet
+     (beide Seiten fragen, dann ist es angenommen) */
+  function migrate() {
+    var F = window.PRF; if (!F || !F.list) return;
+    var todo = F.list().filter(function (f) { var p = !f.pending && byCode(f.code); return p && !FS[p.id]; });
+    if (!todo.length) return;
+    Promise.all(todo.map(function (f) { return rpc('befriend', { other: byCode(f.code).id }); })).then(syncFriends);
+  }
+  var seenInv = {};
+  function gotInvite(r) {
+    if (!r || !r.id || seenInv[r.id]) return;
+    seenInv[r.id] = 1;
+    S.sb.from('invites').delete().eq('id', r.id).then(function () {}, function () {});
+    if (Date.now() - (Date.parse(r.created_at) || 0) > 600000) return;   // aelter als 10 Minuten: Tisch ist wohl weg
+    var p = PL[r.from_id];
+    if (p && window.PRF && window.PRF.inviteIn) window.PRF.inviteIn(p.code, r.g, r.code, p.name, p.color);
+  }
+  function checkInvites() {
+    if (S.st !== 'ok') return;
+    var since = new Date(Date.now() - 600000).toISOString();
+    S.sb.from('invites').select('id,from_id,to_id,g,code,created_at').eq('to_id', S.user.id).gte('created_at', since)
+      .then(function (r) { (r && r.data || []).forEach(gotInvite); }, function () {});
+  }
+  /* Freunde-System -> Datenbank */
+  if (window.PRF && window.PRF.on) {
+    var F0 = window.PRF;
+    var befr = function (code) { var p = byCode(code); if (p && S.st === 'ok') rpc('befriend', { other: p.id }).then(syncFriends); };
+    var unfr = function (code) { var p = byCode(code); if (p && S.st === 'ok') rpc('unfriend', { other: p.id }).then(syncFriends); };
+    F0.on('add', befr); F0.on('accept', befr); F0.on('decline', unfr); F0.on('remove', unfr);
+    F0.on('invite', function (code, g, table) {
+      var p = byCode(code);
+      if (p && S.st === 'ok' && FS[p.id] === 'accepted') S.sb.from('invites').insert({ from_id: S.user.id, to_id: p.id, g: g, code: table }).then(function () {}, function () {});
+    });
+  }
+
+  /* ---------- Hall: alle Spieler ---------- */
+  var hallTab = 'all';
+  function openHall() {
+    if (S.st !== 'ok') { toast(S.st === 'notbetrieb' ? 'Server gerade nicht erreichbar' : 'Erst anmelden'); return; }
+    $('#hallQ').value = '';
+    $('#hall').hidden = false;
+    hallRender(); loadPlayers();
+  }
+  function ago(t) {
+    var s = (Date.now() - (Date.parse(t) || 0)) / 1000;
+    if (!(s >= 0) || s > 3e8) return '';
+    if (s < 120) return 'gerade eben';
+    if (s < 3600) return 'vor ' + Math.round(s / 60) + ' Min.';
+    if (s < 86400) return 'vor ' + Math.round(s / 3600) + ' Std.';
+    var d = Math.round(s / 86400); return 'vor ' + d + (d === 1 ? ' Tag' : ' Tagen');
+  }
+  function hallRender() {
+    var box = $('#hall');
+    if (!box || box.hidden || !S.user) return;
+    var me = S.user.id, F = window.PRF, mySt = F && F.status ? F.status() : {}, q = nameKey($('#hallQ').value);
+    PR.seg($('#hallTabs'), ['all', 'on', 'fr'], hallTab, function (v) { return v === 'all' ? 'Alle' : v === 'on' ? 'Online' : 'Freunde'; }, function (v) { hallTab = v; hallRender(); });
+    $('#hallTabs').style.gridTemplateColumns = 'repeat(3, 1fr)';
+    var all = Object.keys(PL).map(function (k) { return PL[k]; });
+    $('#hallN').textContent = Object.keys(ON).length + ' online · ' + all.length + ' Spieler';
+    var list = all.filter(function (p) {
+      if (q && nameKey(p.name).indexOf(q) < 0) return false;
+      if (hallTab === 'on') return !!ON[p.id];
+      if (hallTab === 'fr') return FS[p.id] === 'accepted';
+      return true;
+    });
+    list.sort(function (a, b) { return (b.id === me) - (a.id === me) || (!!ON[b.id]) - (!!ON[a.id]) || (Date.parse(b.seen_at) || 0) - (Date.parse(a.seen_at) || 0); });
+    var host = $('#hallL'); host.innerHTML = '';
+    if (!list.length) {
+      var e = document.createElement('div'); e.className = 'fempty';
+      e.textContent = hallTab === 'on' ? 'Gerade ist niemand sonst online.' : hallTab === 'fr' ? 'Noch keine Freunde. Tipp bei einem Spieler auf „Hinzufügen“.' : 'Kein Spieler gefunden.';
+      host.appendChild(e); return;
+    }
+    list.slice(0, 200).forEach(function (p) { host.appendChild(hallRow(p, me, mySt)); });
+  }
+  function hallRow(p, me, mySt) {
+    var on = ON[p.id], F = window.PRF, el = document.createElement('div');
+    el.className = 'fl' + (on ? ' on' : '');
+    var r = document.createElement('div'); r.className = 'flr';
+    var a = document.createElement('span'); a.className = 'pav';
+    window.PRAv.paint(a, p.name, p.color, p.cos && p.cos.av);
+    a.appendChild(document.createElement('i'));
+    if (p.cos && window.PRLook) window.PRLook.frame(a, p.cos.frame);
+    if (window.PRStarBadge) window.PRStarBadge(a, p.stars | 0);
+    r.appendChild(a);
+    var n = document.createElement('div'); n.className = 'fln';
+    var b = document.createElement('b'); b.textContent = p.id === me ? p.name + ' (du)' : p.name;
+    var sm = document.createElement('small');
+    var where = on ? (F && F.stText ? F.stText({ g: on.g, code: on.c, ask: on.ask }) : 'Online') : 'Offline' + (ago(p.seen_at) ? ' · ' + ago(p.seen_at) : '');
+    sm.textContent = where + ' · ' + fmt(p.bank | 0) + ' Chips';
+    n.appendChild(b); n.appendChild(sm); r.appendChild(n);
+    if (p.id !== me) {
+      var fs = FS[p.id], btn = document.createElement('button');
+      btn.type = 'button'; btn.className = 'btn';
+      if (fs === 'accepted') {
+        if (on && mySt.code && mySt.g !== 'menu' && on.c !== mySt.code) {
+          btn.className = 'btn primary'; btn.textContent = 'Einladen';
+          btn.addEventListener('click', function () { if (F && F.invite && F.invite(p.code)) { btn.textContent = 'Eingeladen'; btn.disabled = true; } });
+        } else { btn.textContent = 'Freund ✓'; btn.disabled = true; }
+      } else if (fs === 'out') { btn.textContent = 'Angefragt'; btn.disabled = true; }
+      else {
+        btn.className = 'btn primary'; btn.textContent = fs === 'in' ? 'Annehmen' : 'Hinzufügen';
+        btn.addEventListener('click', function () {
+          btn.disabled = true;
+          var err = F && F.add ? F.add(p.code) : 'x';   // Freundesliste (PeerJS) und ueber den Haken auch die Datenbank
+          if (err) rpc('befriend', { other: p.id }).then(syncFriends);
+          toast(fs === 'in' ? p.name + ' ist jetzt dein Freund' : 'Anfrage an ' + p.name + ' geschickt');
+        });
+      }
+      r.appendChild(btn);
+    }
+    el.appendChild(r);
+    return el;
+  }
+  $('#hallQ').addEventListener('input', hallRender);
+  $('#hallQ').addEventListener('keydown', function (e) { e.stopPropagation(); });
+  $('#hallClose').addEventListener('click', function () { $('#hall').hidden = true; });
+  $('#hall').addEventListener('click', function (e) { if (e.target === this) this.hidden = true; });
+  $('#frHall').addEventListener('click', openHall);
+  $('#acctHall').addEventListener('click', openHall);
+  setInterval(function () { if (!$('#hall').hidden) hallRender(); }, 5000);
+
+  /* ---------- Anzeige im Profil und in "Mit Freunden spielen" ---------- */
+  function renderBox() {
+    var box = $('#acctBox'); if (!box) return;
+    box.hidden = false;
+    var ok = S.st === 'ok';
+    $('#acctTxt').textContent = ok ? 'Angemeldet als ' + S.me.name + ' · dein Spielstand wird automatisch gesichert.'
+      : S.st === 'notbetrieb' ? 'Server gerade nicht erreichbar. Du spielst im Notbetrieb, dein Spielstand bleibt auf diesem Gerät.'
+        : S.st === 'anmelden' ? 'Nicht angemeldet.' : 'Verbinde …';
+    $('#acctHall').hidden = !ok; $('#acctOut').hidden = !ok;
+    $('#frHall').hidden = !ok;
+  }
+  renderBox();
+  boot();
 })();
 </script>
 
