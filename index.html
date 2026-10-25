@@ -2001,7 +2001,8 @@ input.bprange[type=range]::-moz-range-thumb { width: 20px; height: 20px; border-
 .crmult small { font: 700 11px var(--ui); letter-spacing: .14em; text-transform: uppercase; color: rgba(236,231,218,.78); text-shadow: 0 1px 6px rgba(0,0,0,.7); }
 .crmult.bet b { font-size: clamp(30px, 11cqw, 46px); }
 .crmult.hot b { color: #ffe08a; text-shadow: 0 2px 16px rgba(0,0,0,.6), 0 0 28px rgba(255,190,80,.55); }
-.crmult.low b { color: #ffb0a8; text-shadow: 0 2px 16px rgba(0,0,0,.6), 0 0 22px rgba(255,90,90,.35); }
+.crmult.boost b { color: #c4ecff; text-shadow: 0 2px 16px rgba(0,0,0,.6), 0 0 30px rgba(90,180,255,.85); }
+.crmult.boost small { color: #9fe2ff; letter-spacing: .3em; }
 .crmult.boom b { color: #ff5c5c; text-shadow: 0 2px 16px rgba(0,0,0,.6), 0 0 26px rgba(255,60,60,.6); animation: crshake .45s; }
 .crmult.boom small { color: #ffb0b0; }
 .crbar { display: block; width: 130px; height: 4px; margin-top: 7px; border-radius: 999px; background: rgba(236,231,218,.16); overflow: hidden; }
@@ -15963,14 +15964,16 @@ input.bprange[type=range]::-moz-range-thumb { width: 20px; height: 20px; border-
 </script>
 
 <script>
-/* Crash: eine Rakete startet senkrecht, der Multiplikator steigt von 1x gleichmaessig bis hoechstens 5x, bis sie zufaellig explodiert.
+/* Crash: eine Rakete startet senkrecht, der Multiplikator steigt von 1x, ab 2,5x zuendet der Booster, hoechstens bis 8x
+   (dann kracht sie in die Sonne), bis sie zufaellig explodiert.
    Wer vorher auszahlt, bekommt Einsatz x Multiplikator, wer zu lange wartet, verliert alles.
-   Kurve fuer alle gleich: m(t) = e^(K t) mit K = 0,15 pro s (1,5x nach 2,7 s, 2x nach 4,6 s, 3x nach 7,3 s, 5x nach 10,7 s).
+   Kurve fuer alle gleich: m(t) = e^(K t) mit K = 0,15 pro s bis BOOST = 2,5x (nach 6,1 s), danach Booster mit K2 = 0,45 pro s
+   (1,5x nach 2,7 s, 2x nach 4,6 s, 2,5x nach 6,1 s, 4x nach 7,2 s, 8x nach 8,7 s).
    Absturzpunkt (geheim, nur beim Ersteller) aus der Tabelle SURV (Anteil der Runden, die ueber x kommen): 8 % sofort beim Start,
-   sonst am haeufigsten zwischen 1,1x und 1,8x (Mitte etwa 1,6x), Ausreisser: 12 % ab 3x, 6 % ab 4x, knapp 2 % bis ganz rauf auf 5x.
-   Rueckfluss beim Auszahlen bei a: a x Anteil ueber a, also 1,2x: 95 %, 1,5x: 90 %, 2x: 66 %, 3x: 38 %, 4x: 23 % (Chip-Senke).
+   sonst am haeufigsten zwischen 1,1x und 1,8x (Mitte etwa 1,6x), Ausreisser: 12 % ab 3x, 6 % ab 4x, 2 % ab 6x, knapp 1 % bis 8x.
+   Rueckfluss beim Auszahlen bei a: a x Anteil ueber a, also 1,2x: 95 %, 1,5x: 87 %, 2x: 66 %, 3x: 38 %, 5x: 18 %, 7x: 10 % (Chip-Senke).
    Bild: Countdown auf der Startrampe (die Rakete brodelt immer staerker, Dampf unten raus), dann gerade nach oben:
-   blauer Himmel, Wolken (1,5x darueber), dunkler, Ozonschicht bei 2x, Sterne, ab etwa 3x Planeten.
+   blauer Himmel, Wolken (1,5x darueber), dunkler, Ozonschicht bei 2x, Sterne, ab 2,5x Booster, ab etwa 3x Planeten, bei 8x die Sonne.
    Ablauf: 7 s Countdown fuer Einsaetze (hat kein Mensch gesetzt, laeuft er neu, die Rakete wartet), Flug, Explosion, 3 s Pause. Halb auszahlen (die andere Haelfte fliegt weiter),
    Auto-Auszahlen bei frei waehlbarem Multiplikator (eine Aenderung im Flug gilt ab der naechsten Runde).
    Auto (und Bots) zahlen bei a aus, sobald die Kurve a erreicht.
@@ -15985,7 +15988,7 @@ input.bprange[type=range]::-moz-range-thumb { width: 20px; height: 20px; border-
    Protokoll (Version CR_V, Ersteller und Mitspieler muessen gleich sein, sonst { t: 'old' }):
      Mitspieler -> Ersteller: hello { g: 'cr', v, p }, bet { a, au }, out { e, h }, react { e }, chat { q }, tom, bye
      Ersteller -> alle: snap { v, s: { ph, rd, el, sd, ct, dl, crash, hist, pl } }, closed, full, old, react/chat/tom mit id
-     (Version 3: gerade steigende Kurve e^(K t) bis 5x mit Countdown-Neustart; 2 war die schwankende Kurve aus sd; 1 die steigende Kurve mit k und out { m }).
+     (Version 4: Booster ab 2,5x, bis 8x; 3: gerade steigende Kurve e^(K t) bis 5x mit Countdown-Neustart; 2 war die schwankende Kurve aus sd; 1 die steigende Kurve mit k und out { m }).
    Speicher: pr-crstats { n, w, net, hi, best, half }, pr-crlog [[Runde, Saldo]], pr-crbet (Einsatz), pr-crauto { on, v }, pr-crrun.
    Ereignisse: 'bet' { game: 'crash', amount }, 'win' { game: 'crash', amount, net } (einmal pro Runde, bei Gewinn),
    'crash:round' { bet, cashout (Multiplikator oder 0), half (Multiplikator der Haelfte oder 0), crash, inst (sofort abgestuerzt), net, online },
@@ -15999,16 +16002,16 @@ input.bprange[type=range]::-moz-range-thumb { width: 20px; height: 20px; border-
   function $(s) { return document.querySelector(s); }
   function all(s) { return [].slice.call(document.querySelectorAll(s)); }
 
-  var CR_V = 3;   // Version des Raum-Protokolls: Ersteller und Mitspieler muessen gleich sein
-  var PEER_PREFIX = 'pokerrunde-cr-', MAX_PL = 6, BET_MS = 7000, BOOM_MS = 3000, MINM = 1, MAXC = 5, AU_MAX = 4.9;
-  /* Kurve und Absturz (siehe Kopf): K Steigung pro s, T_MAX laengster Flug in s (bis 5x),
-     SURV [x, Anteil der Runden ueber x], dazwischen geradlinig */
-  var K = 0.15, T_MAX = Math.log(MAXC) / K;
-  var SURV = [[1, 0.92], [1.1, 0.855], [1.2, 0.79], [1.3, 0.725], [1.5, 0.6], [1.75, 0.45], [2, 0.33], [2.5, 0.2], [3, 0.125],
-              [3.5, 0.085], [4, 0.058], [4.5, 0.035], [5, 0.018]];
+  var CR_V = 4;   // Version des Raum-Protokolls: Ersteller und Mitspieler muessen gleich sein
+  var PEER_PREFIX = 'pokerrunde-cr-', MAX_PL = 6, BET_MS = 7000, BOOM_MS = 3000, MINM = 1, MAXC = 8, AU_MAX = 7.9;
+  /* Kurve und Absturz (siehe Kopf): K Steigung pro s bis BOOST, ab da K2 (Booster), TB Zeit bis zum Booster in s,
+     T_MAX laengster Flug in s (bis 8x), SURV [x, Anteil der Runden ueber x], dazwischen geradlinig */
+  var K = 0.15, BOOST = 2.5, K2 = 0.45, TB = Math.log(BOOST) / K, T_MAX = TB + Math.log(MAXC / BOOST) / K2;
+  var SURV = [[1, 0.92], [1.1, 0.855], [1.2, 0.79], [1.3, 0.725], [1.5, 0.58], [1.75, 0.42], [2, 0.33], [2.5, 0.2], [3, 0.125],
+              [3.5, 0.085], [4, 0.06], [5, 0.035], [6, 0.021], [7, 0.013], [8, 0.008]];
   var LATE_MS = 400, TOL_MS = 250, GIFT = 50, FIN_MS = 800;
   var CHIPS = [10, 50, 100, 500, 1000, 5000];
-  var STEPS = [1.1, 1.2, 1.3, 1.5, 1.75, 2, 2.5, 3, 4, 4.5, 4.9];
+  var STEPS = [1.1, 1.2, 1.3, 1.5, 1.75, 2, 2.5, 3, 4, 5, 6, 7, 7.9];
   var BOTS = [
     { name: 'Svenja', color: '#c0634f', s: 'v' }, { name: 'Tarek', color: '#4a86a8', s: 'n' }, { name: 'Olga', color: '#8a5fb0', s: 'm' },
     { name: 'Bruno', color: '#5b8f4e', s: 'n' }, { name: 'Mia', color: '#c98a2e', s: 'v' }, { name: 'Kemal', color: '#3f8f8a', s: 'm' },
@@ -16019,18 +16022,23 @@ input.bprange[type=range]::-moz-range-thumb { width: 20px; height: 20px; border-
 
   /* ---------- Rechnen ---------- */
   /* Multiplikator nach ms Flug, auf allen Handys gleich */
-  function mAt(ms) { return Math.min(MAXC, Math.exp(K * Math.max(0, ms) / 1000)); }
+  function mAt(ms) {
+    var t = Math.max(0, ms) / 1000;
+    return Math.min(MAXC, t <= TB ? Math.exp(K * t) : BOOST * Math.exp(K2 * (t - TB)));
+  }
+  /* umgekehrt: so viele s, bis die Rakete x erreicht */
+  function tOf(x) { return x <= BOOST ? Math.log(x) / K : TB + Math.log(x / BOOST) / K2; }
   function rnd01() {
     try { var a = new Uint32Array(2); window.crypto.getRandomValues(a); return (a[0] * 2097152 + (a[1] >>> 11)) / 9007199254740992; }
     catch (e) { return Math.random(); }
   }
   function drawSeed() { return Math.max(1, Math.floor(rnd01() * 4294967295)); }
-  /* Absturzzeit in ms aus der Tabelle SURV (0 = sofort beim Start, hoechstens T_MAX s = 5x) */
+  /* Absturzzeit in ms aus der Tabelle SURV (0 = sofort beim Start, hoechstens T_MAX s = 8x, die Sonne) */
   function drawT() {
     var u = rnd01(), x = MAXC;
     if (u >= SURV[0][1]) return 0;
     for (var i = 1; i < SURV.length; i++) if (u >= SURV[i][1]) { var a = SURV[i - 1], b = SURV[i]; x = a[0] + (a[1] - u) / (a[1] - b[1]) * (b[0] - a[0]); break; }
-    return Math.round(Math.min(T_MAX, Math.log(x) / K) * 1000);
+    return Math.round(Math.min(T_MAX, tOf(x)) * 1000);
   }
   function m2(m) { return Math.floor(m * 100 + 1e-7) / 100; }
   function fmtM(m) { return m2(m).toFixed(2).replace('.', ',') + '×'; }
@@ -16552,10 +16560,10 @@ input.bprange[type=range]::-moz-range-thumb { width: 20px; height: 20px; border-
       bar.hidden = false; var f = Math.max(0, Math.min(1, sec * 1000 / BET_MS)), tf = 'scaleX(' + f.toFixed(3) + ')';
       if (bar.firstChild.style.transform !== tf) bar.firstChild.style.transform = tf;
     } else if (R.ph === 'fly') {
-      bar.hidden = true; setTxt(sm, ''); setTxt(b, fmtM(m));
-      if (m >= 2) cls += ' hot'; else if (m < 1) cls += ' low';
+      bar.hidden = true; setTxt(sm, m >= BOOST ? 'Booster' : ''); setTxt(b, fmtM(m));
+      if (m >= BOOST) cls += ' boost'; else if (m >= 2) cls += ' hot';
     } else {
-      cls += ' boom'; bar.hidden = true; setTxt(sm, 'Abgestürzt'); setTxt(b, fmtM(R.crash || 1));
+      cls += ' boom'; bar.hidden = true; setTxt(sm, R.crash >= MAXC ? 'In die Sonne gekracht' : 'Abgestürzt'); setTxt(b, fmtM(R.crash || 1));
     }
     if (el.className !== cls) el.className = cls;
   }
@@ -16567,19 +16575,23 @@ input.bprange[type=range]::-moz-range-thumb { width: 20px; height: 20px; border-
 
   /* ---------- Bild: Startrampe, Himmel, Wolken, Ozonschicht, Sterne, Planeten, Rakete, Explosion (Canvas, laeuft nur, solange
      Crash offen ist). Die Hoehe kommt aus dem Multiplikator: Stufe lvl(m) = 2 (m - 1) bis 2x, danach m; eine Stufe ist eine
-     Bildhoehe LV (1,5x = Stufe 1 knapp ueber den Wolken, 2x Ozonschicht, ab etwa 3x Planeten). Weltkoordinate w = Pixel ueber
+     Bildhoehe LV (1,5x = Stufe 1 knapp ueber den Wolken, 2x Ozonschicht, ab 2,5x Booster, ab etwa 3x Planeten, bei 8x stoesst
+     die Spitze an die Sonne). Weltkoordinate w = Pixel ueber
      dem Boden, auf dem Bildschirm y = G + cam - w; die Kamera folgt der Rakete, sobald sie bei FLY_Y steht. ---------- */
   var A = (function () {
     var cv = $('#crCv'), ctx = cv.getContext('2d'), sky = $('#crSky'), fly = $('#crFly');
     var W = 0, Hh = 0, dpr = 1, raf = 0, last = 0, tx = 0, ty = 0, cam = 0, lastCam = 0, fade = 0, acc = 0, font = '600 10px sans-serif';
+    var bst = 0, bstT = 0, streaks = [];   // Booster: an (1) seit bstT ms, Tempo-Streifen
     var G = 0, LV = 0, S = 1, RX = 0, PAD = 5, FLY_Y = 0.62;
     var stars = [], clouds = [], deck = [], parts = [], boomFx = null;
-    var PLAN = [{ k: 'moon', l: 3.75, x: 0.17, r: 0.075 }, { k: 'mars', l: 4.2, x: 0.55, r: 0.04 }, { k: 'sat', l: 4.75, x: 0.28, r: 0.065 }, { k: 'jup', l: 5.35, x: 0.06, r: 0.16 }];
+    var PLAN = [{ k: 'moon', l: 3.6, x: 0.17, r: 0.075 }, { k: 'mars', l: 4.5, x: 0.55, r: 0.045 }, { k: 'sat', l: 5.5, x: 0.26, r: 0.07 },
+                { k: 'jup', l: 6.6, x: 0.08, r: 0.17 }, { k: 'nep', l: 7.5, x: 0.5, r: 0.06 }];
     var SKY = [[-0.3, 196, 228, 250], [0.4, 118, 186, 242], [1, 64, 138, 222], [1.6, 30, 74, 168], [2, 15, 28, 92], [2.5, 8, 10, 40], [3.2, 4, 4, 16], [9, 3, 3, 12]];
-    var MARKS = [1.5, 2, 2.5, 3, 3.5, 4, 4.5, 5];
+    var MARKS = [1.5, 2, 2.5, 3, 3.5, 4, 5, 6, 7, 8];
     function reduced() { return !!(window.PRFx && window.PRFx.reduced && window.PRFx.reduced()); }
     function lvl(m) { return m < 2 ? 2 * (m - 1) : m; }
     function clamp01(v) { return v < 0 ? 0 : v > 1 ? 1 : v; }
+    for (var si = 0; si < 16; si++) streaks.push({ x: Math.random(), y: Math.random(), l: rnd(0.08, 0.22) });
     for (var i = 0; i < 110; i++) stars.push({ x: Math.random(), y: Math.random(), r: Math.random() < 0.12 ? 1.5 : Math.random() < 0.5 ? 1 : 0.6, z: 0.25 + Math.random() * 0.75, p: Math.random() * 6.28 });
     /* Wolken fuer eine Runde: einzelne Wolken zwischen Stufe 0,3 und 1, darueber die Wolkendecke (0,75 bis 0,95) */
     function scenery() {
@@ -16628,7 +16640,7 @@ input.bprange[type=range]::-moz-range-thumb { width: 20px; height: 20px; border-
     function planet(p, a) {
       var r = p.r * W, x = p.x * W, y = Hh * 0.5 - (p.l * LV - (G + cam - Hh * 0.5)) * 0.7;
       if (a <= 0 || y < -r * 2.5 || y > Hh + r * 2.5) return;
-      var C = { moon: ['#f1efe8', '#b9b6ae', '#6f6c68'], mars: ['#ffb08a', '#d2603a', '#6e2614'], sat: ['#fbe7b8', '#d9b36d', '#7d5a2a'], jup: ['#ffe9cf', '#d9a77a', '#7c5135'] }[p.k];
+      var C = { moon: ['#f1efe8', '#b9b6ae', '#6f6c68'], mars: ['#ffb08a', '#d2603a', '#6e2614'], sat: ['#fbe7b8', '#d9b36d', '#7d5a2a'], jup: ['#ffe9cf', '#d9a77a', '#7c5135'], nep: ['#d6f4ff', '#5fb3e0', '#1d4f7a'] }[p.k];
       ctx.save(); ctx.globalAlpha = a;
       ctx.lineWidth = r * 0.24;
       if (p.k === 'sat') { ctx.strokeStyle = 'rgba(232,208,150,.8)'; ctx.beginPath(); ctx.ellipse(x, y, r * 2, r * 0.5, -0.35, 0, 6.283); ctx.stroke(); }
@@ -16645,7 +16657,7 @@ input.bprange[type=range]::-moz-range-thumb { width: 20px; height: 20px; border-
         ctx.beginPath(); ctx.ellipse(x - r * 0.2, y + r * 0.1, r * 0.5, r * 0.22, 0.4, 0, 6.283); ctx.fill();
         ctx.fillStyle = 'rgba(255,255,255,.75)'; ctx.beginPath(); ctx.ellipse(x, y - r * 0.92, r * 0.42, r * 0.16, 0, 0, 6.283); ctx.fill();
       } else {
-        for (var k = -5; k <= 5; k++) { ctx.fillStyle = k % 2 ? 'rgba(130,75,40,.28)' : 'rgba(255,240,215,.16)'; ctx.fillRect(x - r, y + k * r * 0.19, r * 2, r * 0.11); }
+        for (var k = -5; k <= 5; k++) { ctx.fillStyle = p.k === 'nep' ? (k % 2 ? 'rgba(20,60,120,.16)' : 'rgba(230,250,255,.1)') : k % 2 ? 'rgba(130,75,40,.28)' : 'rgba(255,240,215,.16)'; ctx.fillRect(x - r, y + k * r * 0.19, r * 2, r * 0.11); }
         if (p.k === 'jup') { ctx.fillStyle = 'rgba(190,80,50,.7)'; ctx.beginPath(); ctx.ellipse(x + r * 0.3, y + r * 0.36, r * 0.2, r * 0.11, 0, 0, 6.283); ctx.fill(); }
       }
       var sh = ctx.createRadialGradient(x - r * 0.35, y - r * 0.35, r * 0.3, x, y, r * 1.1);
@@ -16664,6 +16676,39 @@ input.bprange[type=range]::-moz-range-thumb { width: 20px; height: 20px; border-
       ctx.fillStyle = 'rgba(175,240,255,.55)'; ctx.fillRect(-8, y - 0.75, W + 16, 1.5);
       ctx.font = font; ctx.textAlign = 'left'; ctx.textBaseline = 'alphabetic'; ctx.fillStyle = 'rgba(200,245,255,.75)';
       ctx.fillText('Ozonschicht', 8, y - 5);
+    }
+    /* Riesensonne: ihr unterer Rand liegt genau an der Raketenspitze bei 8x */
+    function sunR() { return Math.max(W, Hh) * 0.8; }
+    function drawSun(now, rm) {
+      var R0 = sunR(), x = W * 0.5, y = sy(PAD * S + lvl(MAXC) * LV + 100 * S + R0);
+      if (y - R0 * 1.7 > Hh) return;
+      var co = ctx.createRadialGradient(x, y, R0 * 0.9, x, y, R0 * 1.7);
+      co.addColorStop(0, 'rgba(255,190,80,.55)'); co.addColorStop(1, 'rgba(255,120,40,0)');
+      ctx.fillStyle = co; ctx.beginPath(); ctx.arc(x, y, R0 * 1.7, 0, 6.283); ctx.fill();
+      var g = ctx.createRadialGradient(x, y, 0, x, y, R0);
+      g.addColorStop(0, '#fffbe6'); g.addColorStop(0.6, '#ffe07a'); g.addColorStop(0.9, '#ffb03a'); g.addColorStop(1, '#ff7a1f');
+      ctx.fillStyle = g; ctx.beginPath(); ctx.arc(x, y, R0, 0, 6.283); ctx.fill();
+      /* Flecken und Flammenboegen am Rand */
+      ctx.save(); ctx.beginPath(); ctx.arc(x, y, R0, 0, 6.283); ctx.clip();
+      ctx.fillStyle = 'rgba(255,140,30,.25)';
+      for (var i = 0; i < 9; i++) { var a = 1.9 + i * 0.6, d = R0 * (0.82 + 0.12 * Math.sin(i * 2.3)); ctx.beginPath(); ctx.arc(x + Math.cos(a) * d, y + Math.sin(a) * d, R0 * (0.04 + 0.03 * Math.sin(i + now / (rm ? 1e9 : 900))), 0, 6.283); ctx.fill(); }
+      ctx.restore();
+      ctx.strokeStyle = 'rgba(255,170,60,.7)'; ctx.lineWidth = Math.max(2, R0 * 0.012);
+      for (var j = 0; j < 5; j++) {
+        var b = 3.6 + j * 0.55 + (rm ? 0 : 0.04 * Math.sin(now / 500 + j)), h = R0 * (0.06 + 0.03 * Math.sin(now / (rm ? 1e9 : 700) + j * 1.7));
+        ctx.beginPath(); ctx.arc(x + Math.cos(b) * (R0 + h * 0.2), y + Math.sin(b) * (R0 + h * 0.2), h, b - 1.9, b + 1.9); ctx.stroke();
+      }
+    }
+    function drawStreaks(a, v, dt) {
+      if (a <= 0) return;
+      ctx.strokeStyle = 'rgba(220,235,255,' + (0.35 * a).toFixed(3) + ')'; ctx.lineWidth = 1.2;
+      ctx.beginPath();
+      for (var i = 0; i < streaks.length; i++) {
+        var s2 = streaks[i]; s2.y += v * dt / 1000 / Hh * (0.6 + s2.l * 3);
+        if (s2.y > 1.2) { s2.y -= 1.4; s2.x = Math.random(); }
+        ctx.moveTo(s2.x * W, s2.y * Hh); ctx.lineTo(s2.x * W, (s2.y - s2.l) * Hh);
+      }
+      ctx.stroke();
     }
     function cloud(c) {
       var wp = c.w * W, cx = c.x * W, cy = sy(c.l * LV);
@@ -16723,19 +16768,28 @@ input.bprange[type=range]::-moz-range-thumb { width: 20px; height: 20px; border-
       }
     }
     /* Rakete senkrecht, Fuss der Duese bei (x, yb), Hoehe 100 Einheiten * S */
-    function rocket(x, yb, flame, now) {
+    function rocket(x, yb, flame, now, boost) {
       ctx.save(); ctx.translate(x, yb); ctx.scale(S, S);
+      if (boost > 0) {   // Booster: zwei Seitenflammen an den Flossen, blau-weiss
+        for (var sdx = -1; sdx <= 1; sdx += 2) {
+          var bl = (26 + 18 * Math.random()) * boost, bx = sdx * 19;
+          var bg2 = ctx.createLinearGradient(0, 0, 0, bl);
+          bg2.addColorStop(0, '#ffffff'); bg2.addColorStop(0.3, '#8fd8ff'); bg2.addColorStop(1, 'rgba(80,140,255,0)');
+          ctx.fillStyle = bg2; ctx.beginPath(); ctx.moveTo(bx - 3.5, 0); ctx.quadraticCurveTo(bx - 4.5, bl * 0.5, bx, bl); ctx.quadraticCurveTo(bx + 4.5, bl * 0.5, bx + 3.5, 0); ctx.closePath(); ctx.fill();
+        }
+      }
       if (flame > 0) {
-        var f = 0.8 + 0.2 * Math.sin(now / 40) + Math.random() * 0.15, Ln = (16 + 36 * f) * flame;
+        var f = 0.8 + 0.2 * Math.sin(now / 40) + Math.random() * 0.15, Ln = (16 + 36 * f) * flame * (1 + 0.9 * boost);
         var gl = ctx.createRadialGradient(0, 4, 0, 0, 4, 10 + Ln * 0.6);
         gl.addColorStop(0, 'rgba(255,200,110,.55)'); gl.addColorStop(1, 'rgba(255,140,60,0)');
         ctx.fillStyle = gl; ctx.beginPath(); ctx.arc(0, 4, 10 + Ln * 0.6, 0, 6.283); ctx.fill();
         var fg = ctx.createLinearGradient(0, 0, 0, Ln);
-        fg.addColorStop(0, '#fff6c4'); fg.addColorStop(0.35, '#ffb347'); fg.addColorStop(1, 'rgba(255,80,50,0)');
+        fg.addColorStop(0, '#fff6c4'); fg.addColorStop(0.35, boost > 0 ? '#9fdcff' : '#ffb347'); fg.addColorStop(1, boost > 0 ? 'rgba(90,120,255,0)' : 'rgba(255,80,50,0)');
         ctx.fillStyle = fg; ctx.beginPath(); ctx.moveTo(-6.5, 0); ctx.quadraticCurveTo(-8.5, Ln * 0.45, 0, Ln); ctx.quadraticCurveTo(8.5, Ln * 0.45, 6.5, 0); ctx.closePath(); ctx.fill();
         ctx.fillStyle = 'rgba(255,255,240,.92)'; ctx.beginPath(); ctx.moveTo(-3.4, 0); ctx.quadraticCurveTo(-3.8, Ln * 0.3, 0, Ln * 0.5); ctx.quadraticCurveTo(3.8, Ln * 0.3, 3.4, 0); ctx.closePath(); ctx.fill();
       }
-      ctx.fillStyle = '#4b5366';   // Duese
+      ctx.fillStyle = '#4b5366';   // Booster an den Seiten und Duese
+      ctx.fillRect(-21.5, -16, 5, 14); ctx.fillRect(16.5, -16, 5, 14);
       ctx.beginPath(); ctx.moveTo(-5, -9); ctx.lineTo(5, -9); ctx.lineTo(7.5, 0); ctx.lineTo(-7.5, 0); ctx.closePath(); ctx.fill();
       ctx.fillStyle = '#e5483a';   // Flossen
       ctx.beginPath(); ctx.moveTo(-11.5, -34); ctx.lineTo(-22, -11); ctx.lineTo(-22, 0); ctx.lineTo(-11.5, -9); ctx.closePath(); ctx.fill();
@@ -16806,14 +16860,23 @@ input.bprange[type=range]::-moz-range-thumb { width: 20px; height: 20px; border-
       if (dc) for (i = 0; i < parts.length; i++) parts[i].y += dc;
       if (boomFx) boomFx.y += dc;
       /* Wackeln: in der letzten Sekunde des Countdowns und beim Abheben */
-      var shk = rm ? 0 : ph === 'bet' ? Math.max(0, u - 0.82) * 6 : ph === 'fly' ? Math.max(0, 1 - tf / 1500) * 1.6 : 0;
+      var shk = rm ? 0 : ph === 'bet' ? Math.max(0, u - 0.82) * 6 : ph === 'fly' ? Math.max(0, 1 - tf / 1500) * 1.6 + (m >= BOOST ? Math.max(0.6, 2.5 - (tf / 1000 - TB) * 2) : 0) : 0;
       ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
       if (shk) ctx.translate(rnd(-shk, shk), rnd(-shk, shk));
       var lc = (G + cam - Hh * 0.5) / LV, space = clamp01((lc - 1.5) / 1);
       drawSky();
       drawStars(space, now, rm);
       for (i = 0; i < PLAN.length; i++) planet(PLAN[i], space);
+      drawSun(now, rm);
       drawOzone();
+      /* Booster ab 2,5x: einmal Zuenden (Ton, Einblendung), dann Tempo-Streifen */
+      if (ph === 'fly' && m >= BOOST && !bst) {
+        bst = 1; bstT = 0;
+        Snd.fx(function (a) { a.noise(a.t, 0.8, 'bandpass', 900, 0.6, 0.22, 0.02); a.tone(a.t, 180, 0.6, 0.06, 'sawtooth', 900); });
+        try { if (navigator.vibrate && Snd.vibOn && Snd.vibOn()) navigator.vibrate(60); } catch (e) {}
+      }
+      var boost = bst && air ? Math.min(1, (bstT += dt) / 400) : 0;
+      if (!rm) drawStreaks(ph === 'fly' ? boost : 0, ph === 'fly' ? LV * K2 * m * 0.9 : 0, dt);
       for (i = 0; i < clouds.length; i++) if (!clouds[i].fg) cloud(clouds[i]);
       drawDeck();
       drawGround(ph === 'bet' ? -1.3 * clamp01((u - 0.7) / 0.15) : -1.3, now);
@@ -16838,10 +16901,23 @@ input.bprange[type=range]::-moz-range-thumb { width: 20px; height: 20px; border-
       stepParts(dt);
       if (show) {
         var fl = ph === 'fly' ? 1 : ph === 'bet' && u > 0.86 ? 0.15 + 0.5 * (u - 0.86) / 0.14 : 0;
-        rocket(rx, yb, fl, now);
+        rocket(rx, yb, fl, now, ph === 'fly' ? boost : 0);
       }
       tx = RX; ty = yb - 50 * S;
+      if (air && m >= MAXC - 0.005) ty = yb - 92 * S;   // in die Sonne gekracht: an der Spitze
       for (i = 0; i < clouds.length; i++) if (clouds[i].fg) cloud(clouds[i]);
+      /* Einblendung beim Zuenden des Boosters */
+      if (bst && ph === 'fly' && bstT < 1400) {
+        var ba = bstT < 200 ? bstT / 200 : 1 - (bstT - 200) / 1200;
+        ctx.save(); ctx.globalAlpha = Math.max(0, ba); ctx.textAlign = 'center'; ctx.textBaseline = 'middle';
+        ctx.font = '900 ' + Math.round(Math.min(34, W * 0.085)) + 'px ' + font.replace(/^600 10px /, '');
+        ctx.fillStyle = '#9fe2ff'; ctx.shadowColor = 'rgba(80,170,255,.9)'; ctx.shadowBlur = 18;
+        ctx.fillText('BOOSTER!', W * 0.43, Hh * 0.3 - bstT * 0.02);
+        ctx.restore();
+      }
+      /* nah an der Sonne wird alles hell und warm */
+      var heat = air ? clamp01((L - 6.6) / 1.4) : 0;
+      if (heat > 0) { ctx.globalCompositeOperation = 'screen'; ctx.fillStyle = 'rgba(255,150,60,' + (0.35 * heat).toFixed(3) + ')'; ctx.fillRect(-8, -8, W + 16, Hh + 16); ctx.globalCompositeOperation = 'source-over'; }
       if (boomFx) {
         boomFx.t += dt;
         var q = boomFx.t / 700;
@@ -16862,9 +16938,9 @@ input.bprange[type=range]::-moz-range-thumb { width: 20px; height: 20px; border-
     var tickM = 0;
     return {
       size: size, start: start, stop: stop,
-      reset: function () { boomFx = null; parts.length = 0; fly.innerHTML = ''; tickM = 0; fade = 1; cam = lastCam = 0; scenery(); },
+      reset: function () { boomFx = null; parts.length = 0; fly.innerHTML = ''; tickM = 0; fade = 1; cam = lastCam = 0; bst = 0; scenery(); },
       launch: function () {
-        boomFx = null; tickM = 2;
+        boomFx = null; tickM = 2; bst = 0;
         if (W) for (var i = 0; i < (reduced() ? 10 : 36); i++) { var sd = Math.random() < 0.5 ? -1 : 1; puff(RX + sd * rnd(2, 12) * S, sy(0) - PAD * S, sd * rnd(60, 220), -rnd(0, 30), rnd(4, 8) * S, rnd(16, 30), rnd(1200, 2200), 0.6); }
         Snd.fx(function (a) { a.noise(a.t, 0.9, 'lowpass', 700, 0.8, 0.16, 0.08); a.tone(a.t, 120, 0.7, 0.05, 'sawtooth', 320); });
       },
@@ -16873,7 +16949,7 @@ input.bprange[type=range]::-moz-range-thumb { width: 20px; height: 20px; border-
         Snd.fx(function (a) { a.noise(a.t, 1.1, 'lowpass', 520, 0.6, 0.5, 0.005); a.noise(a.t, 0.35, 'bandpass', 2400, 0.8, 0.18, 0.003); a.tone(a.t, 110, 0.6, 0.12, 'sine', 38); });
         try { if (navigator.vibrate && Snd.vibOn && Snd.vibOn() && V.cur && V.cur.rd === R.rd && !V.cur.co) navigator.vibrate(120); } catch (e) {}
       },
-      /* bei jedem vollen Multiplikator (2x, 3x, 4x) ein kurzer Ton */
+      /* bei jedem vollen Multiplikator (2x, 3x … 7x) ein kurzer Ton */
       tick: function (m) {
         if (!tickM || m < tickM) return;
         var f = 440 * Math.pow(2, Math.min(24, tickM - 2) / 12);
