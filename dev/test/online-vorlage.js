@@ -62,37 +62,36 @@ const srv = http.createServer((q, r) => {
     await A.click('#abYes'); await B.waitForTimeout(3500);
     console.log('B im Raum:', await B.evaluate(() => JSON.stringify(CR.state())), '| A:', await A.evaluate(() => JSON.stringify(CR.state())));
     await B.click('#bFriends').catch(() => {});
-    /* Runde: beide setzen, Absturz bei 2,2; B zahlt bei ~1,5 aus, A Auto bei 2,0 */
+    /* Runde: beide setzen, Absturz nach 6 s (H.next = Absturzzeit in ms); B zahlt nach ~2,5 s Flug aus, A Auto bei 2,0 (falls die Kurve so hoch kommt) */
     await waitPh(A, 'bet', 12000); await A.waitForTimeout(300);
-    await A.evaluate(() => { CR._dbg.H().next = 2.2; });
+    await A.evaluate(() => { CR._dbg.H().next = 6000; });
     await A.click('#crAutoSw'); await A.fill('#crAutoIn', '2'); await A.press('#crAutoIn', 'Enter');
     await A.click('#crGo'); await B.click('#crGo'); await A.waitForTimeout(300);
     console.log('Einsaetze bei A:', JSON.stringify((await R(A)).pl));
     await waitPh(B, 'fly', 9000);
-    const t0 = Date.now();
-    while (Date.now() - t0 < 15000) { const m = await B.evaluate(() => +document.querySelector('#crMultB').textContent.replace(',', '.').replace('×', '')); if (m >= 1.5) break; await B.waitForTimeout(30); }
+    await B.waitForTimeout(2500);
     await B.click('#crGo'); await B.waitForTimeout(500);
     await A.screenshot({ path: OUT + 'on-fly-A.png' }); await B.screenshot({ path: OUT + 'on-fly-B.png' });
     await waitPh(A, 'boom', 15000); await A.waitForTimeout(1200);
     await A.screenshot({ path: OUT + 'on-boom-A.png' }); await B.screenshot({ path: OUT + 'on-boom-B.png' });
     for (const p of [A, B]) console.log(p._n, 'Runde', JSON.stringify(await ev(p, 'crash:round')), 'online:round', (await ev(p, 'online:round')).length, 'Bank', await p.evaluate(() => PR.prof().bank));
-    /* Auszahlen nach dem Absturz: knapp (innerhalb 0,4 s) wird angenommen, spaeter abgelehnt, ueber dem Absturzpunkt abgelehnt */
+    /* Auszahlen nach dem Absturz: knapp (innerhalb 0,4 s) wird angenommen, spaeter abgelehnt, Flugzeit nach dem Absturz abgelehnt */
     for (const p of [A, B]) await p.evaluate(() => { window.EV.length = 0; });
-    async function lateRound(crash, mReq, delay) {
+    async function lateRound(crashMs, eReq, delay) {
       await waitPh(A, 'bet', 12000); await A.waitForTimeout(200);
-      await A.evaluate(c => { CR._dbg.H().next = c; }, crash);
+      await A.evaluate(c => { CR._dbg.H().next = c; }, crashMs);
       await B.click('#crGo'); await A.waitForTimeout(200);
       // B selbst nicht auszahlen lassen: Nachricht erst nach dem Absturz direkt schicken
       await waitPh(A, 'boom', 20000);
       await A.waitForTimeout(delay);
-      await B.evaluate(m => { CR._dbg.send({ t: 'out', m: m, h: 0 }); }, mReq);
+      await B.evaluate(e => { CR._dbg.send({ t: 'out', e: e, h: 0 }); }, eReq);
       await A.waitForTimeout(1300);
       const r = await R(A), bb = r.pl.find(p => p[0] === 'Ben');
-      console.log('Absturz', crash, 'B schickt', mReq, 'nach', delay, 'ms -> beim Ersteller co =', bb && bb[3], '| B Runde', JSON.stringify((await ev(B, 'crash:round')).slice(-1)[0]));
+      console.log('Absturz nach', crashMs, 'ms, B schickt e =', eReq, 'nach', delay, 'ms -> beim Ersteller co =', bb && bb[3], '| B Runde', JSON.stringify((await ev(B, 'crash:round')).slice(-1)[0]));
     }
-    await lateRound(1.6, 1.55, 0);
-    await lateRound(1.6, 1.55, 900);
-    await lateRound(1.6, 1.65, 0);
+    await lateRound(4000, 3900, 0);
+    await lateRound(4000, 3900, 900);
+    await lateRound(4000, 4100, 0);
     /* Reaktion */
     await B.evaluate(() => { document.querySelector('#crReact').click(); document.querySelector('#crRPanel button[data-e="🚀"]').click(); }); await A.waitForTimeout(600);
     console.log('Reaktion bei A sichtbar:', await A.evaluate(() => !!document.querySelector('#crFr .crfa') && document.body.innerHTML.indexOf('🚀') >= 0));

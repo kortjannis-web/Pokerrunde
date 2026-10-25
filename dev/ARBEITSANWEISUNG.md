@@ -93,14 +93,14 @@ Wenn du eine Schnittstelle baust, dokumentiere sie mit einem kurzen Kommentar an
   Münzregen der Slots – bei Bedarf in PRTn nachsehen und wiederverwenden.
 - Schritt 26 (Crash): Menü ist datengetrieben: `window.PRMenu { games, page(), idx(g), go(g, anim) }`, Seiten aus
   `.mpage[data-g]`, `.mgrp[data-g]`, Hintergrund-Klasse `.mbg-<spiel>` (Punkte/Hintergründe entstehen von selbst).
-  Crash: `window.CR`, `window.CRT` (Würfe), PRChat-Liste 'cr', Protokoll `CR_V = 1`, Freunde-Status g:'cr'
+  Crash: `window.CR`, `window.CRT` (Würfe), PRChat-Liste 'cr', Protokoll `CR_V = 2`, Freunde-Status g:'cr'
   (myStatus/cleanSt/stText/Anfrage/Annehmen/Einladen in Skript 7). Besserer fakepeer (puffert Nachrichten vor open,
   nötig für Freundes-Tests): `dev/test/fakepeer.js`,
   Vorlage `dev/test/online-vorlage.js` (Seiten vor goto in pages eintragen).
 - Schritt 27 (Reaktion): siebte Menüseite, `window.RX` { on(), state(), host(done), join(code), friends(done) },
   Protokoll `RX_V = 1`, Freunde-Nachrichten duel/duelok/duelno, Status g:'rx', PRChat-Liste 'rx'.
   Menü-Reihenfolge jetzt: lock · slots · poker · bj · rl · crash · rx (Seiten-Id von Crash ist `crash`; Video-Poker wurde wieder entfernt).
-- Versionen jetzt: Poker `PK_V = 10` (Ersteller nimmt ab 10, schickt älteren {t:'old'}), `BJ_V = 9`, `RL_V = 6`, `CR_V = 1`, `RX_V = 1`.
+- Versionen jetzt: Poker `PK_V = 10` (Ersteller nimmt ab 10, schickt älteren {t:'old'}), `BJ_V = 9`, `RL_V = 6`, `CR_V = 2`, `RX_V = 1`.
   Öffentliches Profil hat Feld `st` (Sterne). Immer die AKTUELLEN Werte im Code nachsehen.
 - Online-Test ohne echtes PeerJS: `dev/test/fakepeer.js`
   und `online.js` (zwei getrennte Browser über einen PeerJS-Ersatz) – als Vorlage kopieren und nutzen.

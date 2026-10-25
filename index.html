@@ -2010,6 +2010,7 @@ input.bprange[type=range]::-moz-range-thumb { width: 20px; height: 20px; border-
 .crmult small { font: 700 11px var(--ui); letter-spacing: .14em; text-transform: uppercase; color: rgba(236,231,218,.78); text-shadow: 0 1px 6px rgba(0,0,0,.7); }
 .crmult.bet b { font-size: clamp(30px, 11cqw, 46px); }
 .crmult.hot b { color: #ffe08a; text-shadow: 0 2px 16px rgba(0,0,0,.6), 0 0 28px rgba(255,190,80,.55); }
+.crmult.low b { color: #ffb0a8; text-shadow: 0 2px 16px rgba(0,0,0,.6), 0 0 22px rgba(255,90,90,.35); }
 .crmult.boom b { color: #ff5c5c; text-shadow: 0 2px 16px rgba(0,0,0,.6), 0 0 26px rgba(255,60,60,.6); animation: crshake .45s; }
 .crmult.boom small { color: #ffb0b0; }
 .crbar { display: block; width: 130px; height: 4px; margin-top: 7px; border-radius: 999px; background: rgba(236,231,218,.16); overflow: hidden; }
@@ -2756,10 +2757,10 @@ input.bprange[type=range]::-moz-range-thumb { width: 20px; height: 20px; border-
         <button class="btn primary wide" id="crResume" type="button" style="margin-top:12px">Weiterspielen</button>
         <button class="btn wide" id="crHelpBtn" type="button" style="margin-top:10px" aria-expanded="false">Spielerklärung</button>
         <div id="crHelp" hidden>
-          <p>Die Rakete startet bei <b>1,00×</b>, und der Multiplikator steigt immer schneller (2× nach etwa 9 Sekunden, 10× nach etwa 29). Irgendwann stürzt sie zufällig ab – manchmal schon beim Start.</p>
-          <p>Vor dem Start hast du 7 Sekunden: Chips antippen und <b>Setzen</b>. Tippst du im Flug auf <b>Auszahlen</b>, bekommst du Einsatz × Multiplikator. Wer beim Absturz noch drin ist, verliert den Einsatz.</p>
+          <p>Die Rakete startet bei <b>1,00×</b>. Dann schwankt der Multiplikator: mal sackt sie bis auf <b>0,5×</b> ab, mal schießt sie bis <b>5×</b> hoch. Irgendwann stürzt sie zufällig ab, manchmal schon beim Start.</p>
+          <p>Vor dem Start hast du 7 Sekunden: Chips antippen und <b>Setzen</b>. Tippst du im Flug auf <b>Auszahlen</b>, bekommst du Einsatz × Multiplikator, unter 1× also weniger als deinen Einsatz. Wer beim Absturz noch drin ist, verliert alles.</p>
           <p><b>Halb auszahlen</b> nimmt die Hälfte deines Einsatzes mit, der Rest fliegt weiter. <b>Auto</b> zahlt von selbst bei deinem Wunsch-Multiplikator aus (eine Änderung im Flug gilt ab der nächsten Runde).</p>
-          <p>Die Leiste oben zeigt die letzten 20 Absturzpunkte. Auf lange Sicht kommen etwa 97 % der Einsätze zurück. Mit Freunden spielt jeder mit seinem eigenen Guthaben; Bots erkennst du am Schild „Bot“.</p>
+          <p>Die Leiste oben zeigt die letzten 20 Absturzpunkte. Die Bank gewinnt auf Dauer: Wer früh und vorsichtig aussteigt, bekommt am meisten zurück. Mit Freunden spielt jeder mit seinem eigenen Guthaben; Bots erkennst du am Schild „Bot“.</p>
         </div>
         <button class="btn wide" id="crMenu" type="button" style="margin-top:10px">Zum Hauptmenü</button>
       </div>
@@ -15786,27 +15787,31 @@ input.bprange[type=range]::-moz-range-thumb { width: 20px; height: 20px; border-
 </script>
 
 <script>
-/* Crash: eine Rakete steigt, der Multiplikator waechst m(t) = e^(0,08 t) (t in Sekunden: 2x nach ca. 9 s, 10x nach ca. 29 s),
-   bis sie zufaellig abstuerzt. Wer vorher auszahlt, bekommt Einsatz x Multiplikator, wer zu lange wartet, verliert den Einsatz.
-   Absturzpunkt pro Runde: max(1,00; floor(100 * 0,97 / (1 - U)) / 100), U aus crypto.getRandomValues, hoechstens 1.000x.
-   Das ergibt rund 3 % Hausvorteil (Chip-Senke) und in 3 % der Runden einen Absturz gleich bei 1,00x.
+/* Crash: eine Rakete fliegt, der Multiplikator schwankt rauf und runter zwischen 0,5x und 5x, bis sie zufaellig abstuerzt.
+   Wer vorher auszahlt, bekommt Einsatz x Multiplikator (unter 1x also weniger als den Einsatz), wer zu lange wartet, verliert alles.
+   Kurve aus dem Rundensamen sd (oeffentlich, jeder rechnet sie selbst): x(t) = d t + Summe von 3 Sinuswellen (Periode 2,5-8 s,
+   Ausschlag 0,05-0,22, bei t = 0 genau 0), m(t) = e^x weich in [0,5; 5] gedrueckt (tanh), d pro Runde zwischen -0,02 und 0,14.
+   Absturzzeit (geheim, nur beim Ersteller): in 4 % der Runden sofort beim Start, sonst exponentiell mit Mittel 7 s, hoechstens 40 s.
+   Simulation (40.000 Runden): Absturzpunkte im Schnitt ca. 1,55x, 24 % unter 1x, 8 % ab 3x; Auto bei 1,2x trifft 65 % und bringt
+   78 % zurueck, sofort nach 1 s aussteigen 90 %, auch ein Hellseher mit bekannter Kurve kommt nur auf ca. 102 % (Chip-Senke).
    Ablauf: 7 s Einsaetze, Flug, Absturz mit Explosion, 3 s Pause. Halb auszahlen (die andere Haelfte fliegt weiter),
    Auto-Auszahlen bei frei waehlbarem Multiplikator (eine Aenderung im Flug gilt ab der naechsten Runde).
-   Auto (und Bots) zahlen bei a aus, wenn a <= Absturzpunkt; von Hand muss der Multiplikator darunter liegen.
+   Auto (und Bots) zahlen bei a aus, sobald die Kurve a erreicht; manche Bots steigen auch beim Absacken aus.
    Allein: 3 bis 4 Bots (Schild „Bot“) setzen und steigen aus. Freunde koennen wie beim Roulette dazukommen (Einladung oder
    Anfrage in der Freundesliste, „Mitspielen nur per Anfrage“): erst dann wird der Raum zum Online-Raum. Der Ersteller
-   rechnet die Runde: er lost den Absturzpunkt aus und verraet ihn erst beim Absturz, schickt mit jedem Stand el (so viele
-   ms fliegt die Rakete schon) und k (Takt: Wachstum pro Sekunde), jeder rechnet die Kurve selbst. Auszahlen: der Mitspieler
-   schickt seinen Multiplikator, der Ersteller nimmt ihn, wenn er unter dem Absturzpunkt und hoechstens leicht (1 %) ueber
-   seiner eigenen Kurve liegt; kommt die Nachricht knapp nach dem Absturz an (bis 0,4 s), zaehlt sie noch, wenn der Wert darunter lag.
+   rechnet die Runde: er lost Samen sd und Absturzzeit aus, verraet die Absturzzeit ct und den Absturzpunkt crash erst beim
+   Absturz, schickt mit jedem Stand el (so viele ms fliegt die Rakete schon) und sd, jeder rechnet die Kurve selbst. Auszahlen:
+   der Mitspieler schickt seine Flugzeit e (ms), der Ersteller nimmt sie, wenn sie vor dem Absturz und hoechstens 0,25 s ueber
+   seiner eigenen liegt, und zahlt m(e); kommt die Nachricht knapp nach dem Absturz an (bis 0,4 s), zaehlt sie noch, wenn e davor lag.
    Guthaben: der Einsatz wird beim Start abgebucht, jeder Gewinn sofort gutgeschrieben (Neuladen mitten im Flug: der Einsatz
    ist weg, schon Ausgezahltes bleibt; die Runde kommt beim naechsten Start in die Statistik, pr-crrun).
    Protokoll (Version CR_V, Ersteller und Mitspieler muessen gleich sein, sonst { t: 'old' }):
-     Mitspieler -> Ersteller: hello { g: 'cr', v, p }, bet { a, au }, out { m, h }, react { e }, chat { q }, tom, bye
-     Ersteller -> alle: snap { v, s: { ph, rd, el, k, dl, crash, hist, pl } }, closed, full, old, react/chat/tom mit id
+     Mitspieler -> Ersteller: hello { g: 'cr', v, p }, bet { a, au }, out { e, h }, react { e }, chat { q }, tom, bye
+     Ersteller -> alle: snap { v, s: { ph, rd, el, sd, ct, dl, crash, hist, pl } }, closed, full, old, react/chat/tom mit id
+     (Version 2: schwankende Kurve mit sd/ct und out { e }; Version 1 war die steigende Kurve mit k und out { m }).
    Speicher: pr-crstats { n, w, net, hi, best, half }, pr-crlog [[Runde, Saldo]], pr-crbet (Einsatz), pr-crauto { on, v }, pr-crrun.
    Ereignisse: 'bet' { game: 'crash', amount }, 'win' { game: 'crash', amount, net } (einmal pro Runde, bei Gewinn),
-   'crash:round' { bet, cashout (Multiplikator oder 0), half (Multiplikator der Haelfte oder 0), crash, net, online },
+   'crash:round' { bet, cashout (Multiplikator oder 0), half (Multiplikator der Haelfte oder 0), crash, inst (sofort abgestuerzt), net, online },
    'game:open' { game: 'crash' }, 'online:round' { game: 'crash' } (mit echten Mitspielern).
    Schnittstelle window.CR: on(), state() { on, role, code, free }, host(done), join(code) fuer die Freundesliste. */
 (function () {
@@ -15817,11 +15822,14 @@ input.bprange[type=range]::-moz-range-thumb { width: 20px; height: 20px; border-
   function $(s) { return document.querySelector(s); }
   function all(s) { return [].slice.call(document.querySelectorAll(s)); }
 
-  var CR_V = 1;   // Version des Raum-Protokolls: Ersteller und Mitspieler muessen gleich sein
-  var PEER_PREFIX = 'pokerrunde-cr-', MAX_PL = 6, BET_MS = 7000, BOOM_MS = 3000, K = 0.08, MAXC = 1000, EDGE = 0.97;
-  var LATE_MS = 400, TOL = 0.01, GIFT = 50, FIN_MS = 800;
+  var CR_V = 2;   // Version des Raum-Protokolls: Ersteller und Mitspieler muessen gleich sein
+  var PEER_PREFIX = 'pokerrunde-cr-', MAX_PL = 6, BET_MS = 7000, BOOM_MS = 3000, MINM = 0.5, MAXC = 5;
+  /* Kurve und Absturz (siehe Kopf): Drift D_LO..D_HI pro s, 3 Wellen mit Periode P_LO..P_HI s und Ausschlag A_LO..A_HI,
+     P0 Anteil Sofort-Abstuerze, MU mittlere Flugzeit in s, T_MAX laengster Flug in s */
+  var D_LO = -0.02, D_HI = 0.14, P_LO = 2.5, P_HI = 8, A_LO = 0.05, A_HI = 0.22, P0 = 0.04, MU = 7, T_MAX = 40;
+  var LATE_MS = 400, TOL_MS = 250, GIFT = 50, FIN_MS = 800;
   var CHIPS = [10, 50, 100, 500, 1000, 5000];
-  var STEPS = [1.1, 1.2, 1.3, 1.5, 1.75, 2, 2.5, 3, 4, 5, 7.5, 10, 15, 20, 25, 50, 100, 250, 500, 1000];
+  var STEPS = [1.1, 1.2, 1.3, 1.5, 1.75, 2, 2.5, 3, 4, 5];
   var BOTS = [
     { name: 'Svenja', color: '#c0634f', s: 'v' }, { name: 'Tarek', color: '#4a86a8', s: 'n' }, { name: 'Olga', color: '#8a5fb0', s: 'm' },
     { name: 'Bruno', color: '#5b8f4e', s: 'n' }, { name: 'Mia', color: '#c98a2e', s: 'v' }, { name: 'Kemal', color: '#3f8f8a', s: 'm' },
@@ -15831,16 +15839,33 @@ input.bprange[type=range]::-moz-range-thumb { width: 20px; height: 20px; border-
   if (!cr) return;
 
   /* ---------- Rechnen ---------- */
-  function mAt(ms) { return Math.exp(K * Math.max(0, ms) / 1000); }
-  function m2(m) { return Math.floor(m * 100 + 1e-7) / 100; }
-  function fmtM(m) { return (m >= 100 ? (Math.floor(m * 10 + 1e-7) / 10).toFixed(1) : m2(m).toFixed(2)).replace('.', ',') + '×'; }
-  function drawCrash() {
-    var u;
-    try { var a = new Uint32Array(2); window.crypto.getRandomValues(a); u = (a[0] * 2097152 + (a[1] >>> 11)) / 9007199254740992; }
-    catch (e) { u = Math.random(); }
-    return Math.max(1, Math.min(MAXC, Math.floor(100 * EDGE / (1 - u)) / 100));
+  /* Kurve einer Runde aus dem Samen sd (ganze Zahl 1 bis 2^32-1): gibt ms -> Multiplikator zurueck, auf allen Handys gleich */
+  var LN_LO = Math.log(MINM), LN_HI = Math.log(MAXC), curveCache = { sd: 0, f: null };
+  function curve(sd) {
+    sd = sd >>> 0;
+    if (curveCache.sd === sd && curveCache.f) return curveCache.f;
+    var s = sd;
+    function r() { s = (s + 0x6D2B79F5) >>> 0; var t = s; t = Math.imul(t ^ (t >>> 15), t | 1); t ^= t + Math.imul(t ^ (t >>> 7), t | 61); return ((t ^ (t >>> 14)) >>> 0) / 4294967296; }
+    var d = D_LO + r() * (D_HI - D_LO), w = [], a = [], f = [], f0 = 0;
+    for (var i = 0; i < 3; i++) { w.push(2 * Math.PI / (P_LO + r() * (P_HI - P_LO))); a.push(A_LO + r() * (A_HI - A_LO)); f.push(r() * 2 * Math.PI); f0 += a[i] * Math.sin(f[i]); }
+    var fn = function (ms) {
+      var t = Math.max(0, ms) / 1000, x = d * t - f0;
+      for (var j = 0; j < 3; j++) x += a[j] * Math.sin(w[j] * t + f[j]);
+      return Math.exp(x >= 0 ? LN_HI * Math.tanh(x / LN_HI) : LN_LO * Math.tanh(x / LN_LO));
+    };
+    curveCache = { sd: sd, f: fn };
+    return fn;
   }
-  function cleanM(v) { v = +v; return isFinite(v) && v >= 1 ? Math.min(MAXC, m2(v)) : 0; }
+  function rnd01() {
+    try { var a = new Uint32Array(2); window.crypto.getRandomValues(a); return (a[0] * 2097152 + (a[1] >>> 11)) / 9007199254740992; }
+    catch (e) { return Math.random(); }
+  }
+  function drawSeed() { return Math.max(1, Math.floor(rnd01() * 4294967295)); }
+  /* Absturzzeit in ms: P0 sofort, sonst exponentiell mit Mittel MU s, hoechstens T_MAX s */
+  function drawT() { return rnd01() < P0 ? 0 : Math.round(Math.min(T_MAX, -Math.log(1 - rnd01()) * MU) * 1000); }
+  function m2(m) { return Math.floor(m * 100 + 1e-7) / 100; }
+  function fmtM(m) { return m2(m).toFixed(2).replace('.', ',') + '×'; }
+  function cleanM(v) { v = +v; return isFinite(v) && v >= MINM - 1e-9 ? Math.max(MINM, Math.min(MAXC, m2(v))) : 0; }
   function cleanAuto(v) { v = +v; return isFinite(v) && v >= 1.01 ? Math.min(MAXC, Math.round(v * 100) / 100) : 0; }
   function readJ(k) { try { return JSON.parse(localStorage.getItem(k) || 'null'); } catch (e) { return null; } }
   function writeJ(k, v) { try { if (v == null) localStorage.removeItem(k); else localStorage.setItem(k, JSON.stringify(v)); } catch (e) {} }
@@ -15872,7 +15897,7 @@ input.bprange[type=range]::-moz-range-thumb { width: 20px; height: 20px; border-
     addStats(b, w, Math.max(co, h), !!h);
     if (net > 0 && window.JAR) window.JAR.add(net);
     if (w > 0) PR.emit('win', { game: 'crash', amount: w, net: net });
-    PR.emit('crash:round', { bet: b, cashout: co, half: h, crash: cleanM(r.crash), net: net, online: !!r.online });
+    PR.emit('crash:round', { bet: b, cashout: co, half: h, crash: cleanM(r.crash), inst: !!r.inst, net: net, online: !!r.online });
     if (r.online) PR.emit('online:round', { game: 'crash' });
   }
   /* App mitten im Flug geschlossen: Einsatz ist weg, Ausgezahltes blieb im Guthaben; die Runde zaehlt jetzt */
@@ -15883,10 +15908,11 @@ input.bprange[type=range]::-moz-range-thumb { width: 20px; height: 20px; border-
   })();
 
   /* ---------- Zustand ----------
-     R: was alle sehen. ph 'bet' (Einsaetze), 'fly' (Rakete steigt), 'boom' (abgestuerzt, Pause); rd Runde, el ms im Flug,
-     k Wachstum pro Sekunde, dl ms bis zum naechsten Abschnitt, crash Absturzpunkt (erst ab 'boom', sonst 0), hist letzte 20,
+     R: was alle sehen. ph 'bet' (Einsaetze), 'fly' (Rakete fliegt), 'boom' (abgestuerzt, Pause); rd Runde, el ms im Flug,
+     sd Samen der Kurve (ab 'fly'), ct Absturzzeit in ms und crash Absturzpunkt (beide erst ab 'boom', sonst 0),
+     dl ms bis zum naechsten Abschnitt, hist letzte 20,
      pl Spieler { id, name, color, st, cos, bot, b Einsatz, au Auto, co ausgezahlt bei (Rest), h Haelfte ausgezahlt bei }.
-     H: nur beim Ersteller (Zeitgeber, Absturzpunkt, Plaene der Bots). */
+     H: nur beim Ersteller (Zeitgeber, Absturzzeit T, Plaene der Bots). */
   var R = null, H = null, ME = 'me';
   var NB = { peer: null, role: '', code: '', conns: [], conn: null, gen: 0 };
   var V = { betRd: -1, flyRd: -1, boomRd: -1, f0: 0, dlAt: 0, placed: false, q: false, cur: null, pend: null, finT: 0, seen: {}, botSet: [], nBots: 4, au: 0, lastTick: 0 };
@@ -15907,14 +15933,17 @@ input.bprange[type=range]::-moz-range-thumb { width: 20px; height: 20px; border-
   function myStars() { return window.PRStars ? Math.min(1e9, window.PRStars.count()) : 0; }
   function meEntry() { var P = PR.prof(); return { id: ME, name: PR.profName(), color: P.color, st: myStars(), cos: window.PRLook.mine(), bot: 0, b: 0, au: 0, co: 0, h: 0 }; }
   function myAuto() { return auOn ? auV : 0; }
-  /* gerade angezeigter Multiplikator (Ersteller nie ueber dem Absturzpunkt) */
+  /* so viele ms fliegt die Rakete auf meinem Bildschirm (Ersteller nie ueber die Absturzzeit hinaus) */
+  function flyMs() {
+    var e = Math.max(0, performance.now() - V.f0);
+    return H && R && R.sd && H.sd === R.sd ? Math.min(e, H.T) : e;
+  }
+  /* gerade angezeigter Multiplikator */
   function curM() {
     if (!R) return 1;
     if (R.ph === 'boom') return R.crash || 1;
-    if (R.ph !== 'fly') return 1;
-    var m = mAt(performance.now() - V.f0);
-    if (H && H.crash) m = Math.min(m, H.crash);
-    return m;
+    if (R.ph !== 'fly' || !R.sd) return 1;
+    return curve(R.sd)(flyMs());
   }
   function inRound() { return !!(V.cur && R && V.cur.rd === R.rd && R.ph === 'fly' && !V.cur.co); }
 
@@ -15926,25 +15955,27 @@ input.bprange[type=range]::-moz-range-thumb { width: 20px; height: 20px; border-
   function hostStart() {
     clearHost();
     var hist = R && Array.isArray(R.hist) ? R.hist.slice() : [], rd = R ? R.rd : 0;
-    H = { bt: 0, tk: 0, bts: [], t0: 0, crash: 0, boomAt: 0, dl: 0, bots: {}, n: 0 };
+    H = { bt: 0, tk: 0, bts: [], t0: 0, sd: 0, T: 0, crash: 0, boomAt: 0, dl: 0, bots: {}, n: 0 };
     ME = 'me';
-    R = { ph: 'boom', rd: Math.max(rd, V.betRd, V.flyRd), el: 0, k: K, dl: 0, crash: 0, hist: hist, pl: [meEntry()] };
+    R = { ph: 'boom', rd: Math.max(rd, V.betRd, V.flyRd), el: 0, sd: 0, ct: 0, dl: 0, crash: 0, hist: hist, pl: [meEntry()] };
     hBet();
   }
   function botBet(s) {
     var l = s === 'v' ? [10, 20, 50, 50, 100, 100, 200] : s === 'm' ? [50, 100, 200, 500, 500, 1000] : [20, 50, 100, 100, 200, 500];
     return pick(l);
   }
-  /* Ziel eines Bots: vorsichtig 1,1-2x, normal 1,4-4,5x, mutig 2-30x (selten bis 200x); manche nehmen erst die Haelfte mit */
+  /* Ziel eines Bots: vorsichtig 1,05-1,5x, normal 1,2-2,6x, mutig 1,8-4,6x; manche nehmen erst die Haelfte mit,
+     manche steigen aus, wenn die Kurve unter ihre Schmerzgrenze sl faellt (vorsichtig oefter) */
   function botPlan(s) {
-    var t = s === 'v' ? rnd(1.1, 2) : s === 'm' ? (Math.random() < 0.08 ? rnd(50, 200) : 2 + Math.pow(Math.random(), 2.4) * 28) : 1.4 + Math.pow(Math.random(), 1.7) * 3.1;
+    var t = s === 'v' ? rnd(1.05, 1.5) : s === 'm' ? 1.8 + Math.pow(Math.random(), 1.6) * 2.8 : 1.2 + Math.pow(Math.random(), 1.5) * 1.4;
     t = Math.max(1.05, m2(t));
-    var h = s !== 'v' && Math.random() < 0.25 ? m2(rnd(1.2, Math.min(1.9, t))) : 0;
-    return { t: t, h: h && h < t ? h : 0 };
+    var h = s !== 'v' && Math.random() < 0.25 ? m2(rnd(1.1, Math.min(1.6, t))) : 0;
+    var sl = Math.random() < (s === 'v' ? 0.5 : s === 'm' ? 0.1 : 0.3) ? m2(s === 'v' ? rnd(0.75, 0.92) : s === 'm' ? rnd(0.55, 0.7) : rnd(0.65, 0.85)) : 0;
+    return { t: t, h: h && h < t ? h : 0, sl: sl };
   }
   function hBet() {
     clearHost(); H.bts = [];
-    R.ph = 'bet'; R.rd++; R.crash = 0; H.crash = 0;
+    R.ph = 'bet'; R.rd++; R.crash = 0; R.sd = 0; R.ct = 0; H.crash = 0; H.sd = 0; H.T = 0;
     R.pl = R.pl.filter(function (p) { return !p.bot; });
     R.pl.forEach(function (p) { p.b = 0; p.au = 0; p.co = 0; p.h = 0; });
     var nb = Math.max(1, V.nBots - (R.pl.length - 1));
@@ -15965,7 +15996,8 @@ input.bprange[type=range]::-moz-range-thumb { width: 20px; height: 20px; border-
   }
   function hFly() {
     clearTimeout(H.bt); H.bts.forEach(clearTimeout); H.bts = [];
-    R.ph = 'fly'; H.crash = H.next || drawCrash(); H.next = 0; H.t0 = Date.now(); H.dl = 0; H.n = 0;
+    H.sd = drawSeed(); H.T = H.next != null ? Math.max(0, +H.next || 0) : drawT(); H.next = null;
+    R.ph = 'fly'; R.sd = H.sd; H.crash = 0; H.t0 = Date.now(); H.dl = 0; H.n = 0;
     R.pl.forEach(function (p) { if (!(p.b > 0)) { p.b = 0; p.au = 0; } });
     var h = H;
     H.tk = setInterval(function () { if (H === h) hTick(); }, 33);
@@ -15974,21 +16006,24 @@ input.bprange[type=range]::-moz-range-thumb { width: 20px; height: 20px; border-
   }
   function hTick() {
     if (!R || !H || R.ph !== 'fly') return;
-    var m = mAt(Date.now() - H.t0), lim = Math.min(m, H.crash), ch = false;
+    var e = Date.now() - H.t0, ch = false;
+    if (e >= H.T) { hBoom(); return; }
+    var m = curve(H.sd)(e);
     R.pl.forEach(function (p) {
       if (!(p.b > 0) || p.co) return;
       if (p.bot) {
         var B = H.bots[p.id]; if (!B) return;
-        if (B.h && !p.h && B.h <= lim) { p.h = B.h; ch = true; }
-        if (B.t <= lim) { p.co = B.t; ch = true; }
-      } else if (p.au && p.au <= lim) { p.co = p.au; ch = true; }
+        if (B.h && !p.h && B.h <= m) { p.h = B.h; ch = true; }
+        if (B.t <= m) { p.co = B.t; ch = true; }
+        else if (B.sl && m <= B.sl) { p.co = cleanM(m); ch = true; }
+      } else if (p.au && p.au <= m) { p.co = p.au; ch = true; }
     });
-    if (m >= H.crash) { hBoom(); return; }
     if (ch || ++H.n % 30 === 0) push();   // sonst etwa jede Sekunde ein Stand fuer den Gleichlauf
   }
   function hBoom() {
     clearInterval(H.tk); H.tk = 0;
-    R.ph = 'boom'; R.crash = H.crash; H.boomAt = Date.now();
+    H.crash = cleanM(curve(H.sd)(H.T)) || 1;
+    R.ph = 'boom'; R.crash = H.crash; R.ct = H.T; H.boomAt = Date.now();
     R.hist.unshift(H.crash); if (R.hist.length > 20) R.hist.length = 20;
     H.dl = Date.now() + BOOM_MS;
     var h = H;
@@ -15999,7 +16034,6 @@ input.bprange[type=range]::-moz-range-thumb { width: 20px; height: 20px; border-
     if (!H || !R) return;
     R.el = R.ph === 'fly' ? Date.now() - H.t0 : 0;
     R.dl = H.dl ? Math.max(0, H.dl - Date.now()) : 0;
-    R.k = K;
     var msg = { t: 'snap', s: R, v: CR_V };
     NB.conns.forEach(function (c) { if (c._cr) { try { c.send(msg); } catch (e) {} } });
     got();
@@ -16013,17 +16047,19 @@ input.bprange[type=range]::-moz-range-thumb { width: 20px; height: 20px; border-
     push();
     return true;
   }
-  /* Auszahlen: id, gewuenschter Multiplikator (nur Mitspieler), half */
-  function hOut(id, mReq, half) {
+  /* Auszahlen: id, Flugzeit in ms beim Tippen (nur Mitspieler), half */
+  function hOut(id, eReq, half) {
     var p = plOf(id);
     if (!R || !H || !p || p.bot || !(p.b > 0) || p.co) return false;
     if (half && (p.h || p.b < 2)) return false;
-    var now = Date.now(), mh;
-    if (R.ph === 'fly') mh = mAt(now - H.t0);
-    else if (R.ph === 'boom' && id !== ME && now - H.boomAt <= LATE_MS) mh = H.crash;   // knapp zu spaet angekommen
+    var now = Date.now(), eh;
+    if (R.ph === 'fly') eh = now - H.t0;
+    else if (R.ph === 'boom' && id !== ME && now - H.boomAt <= LATE_MS) eh = H.T;   // knapp zu spaet angekommen
     else return false;
-    var m = id === ME ? m2(mh) : cleanM(mReq);
-    if (!m || m >= H.crash || m > mh * (1 + TOL) + TOL) { push(); return false; }
+    var e = id === ME ? eh : +eReq;
+    if (!isFinite(e) || e < 0 || e >= H.T || e > eh + TOL_MS) { push(); return false; }
+    var m = cleanM(curve(H.sd)(e));
+    if (!m) { push(); return false; }
     if (half) p.h = m; else p.co = m;
     push();
     return true;
@@ -16082,8 +16118,8 @@ input.bprange[type=range]::-moz-range-thumb { width: 20px; height: 20px; border-
     c.w += w;
     writeJ('pr-crrun', { b: c.b, w: c.w, co: c.co, h: c.h, on: c.on ? 1 : 0, at: Date.now() });
     Snd.chip(3, 0);
-    if (!half || m >= 2) Snd.win();
-    if (m >= 10) {
+    if (m >= 1 && (!half || m >= 2)) Snd.win();
+    if (m >= 3) {
       if (window.PRFx) window.PRFx.big('crash', $('#crMultB'));
       if (window.PRF && w >= 100) window.PRF.brag('big', w, 'Crash ' + fmtM(m));
     }
@@ -16100,9 +16136,9 @@ input.bprange[type=range]::-moz-range-thumb { width: 20px; height: 20px; border-
     var c = V.cur;
     if (!c || c.fin) return;
     c.fin = true;
-    var crash = R && R.rd === c.rd && R.ph === 'boom' ? R.crash : (H && H.crash) || 0;
+    var here = R && R.rd === c.rd && R.ph === 'boom', crash = here ? R.crash : (H && H.crash) || 0;
     if (V.pend && !c.co) { toast('Zu spät – abgestürzt bei ' + fmtM(crash || 1)); V.pend = null; }
-    record({ b: c.b, w: c.w, co: c.co, h: c.h, crash: crash, online: c.on || others() });
+    record({ b: c.b, w: c.w, co: c.co, h: c.h, crash: crash, inst: here && !R.ct, online: c.on || others() });
     broke();
   }
   /* pleite: wie an den Slots gibt es ein paar Chips zum Weiterspielen */
@@ -16139,9 +16175,9 @@ input.bprange[type=range]::-moz-range-thumb { width: 20px; height: 20px; border-
     if (!inRound() || V.pend) return;
     if (half && (c.h || c.b < 2)) return;
     if (NB.role === 'guest') {
-      var m = m2(mAt(performance.now() - V.f0));
+      var e = Math.round(flyMs());
       V.pend = { h: !!half, at: Date.now() };
-      try { NB.conn.send({ t: 'out', m: m, h: half ? 1 : 0 }); } catch (e) {}
+      try { NB.conn.send({ t: 'out', e: e, h: half ? 1 : 0 }); } catch (e2) {}
       view();
     } else if (!hOut(ME, 0, half)) toast('Zu spät – abgestürzt');
   }
@@ -16224,7 +16260,7 @@ input.bprange[type=range]::-moz-range-thumb { width: 20px; height: 20px; border-
     if (!h.length) { var s = document.createElement('small'); s.textContent = 'Noch kein Absturz'; el.appendChild(s); return; }
     h.slice(0, 20).forEach(function (c, i) {
       var b = document.createElement('i');
-      b.className = (c >= 100 ? 'top' : c >= 10 ? 'hi' : c >= 2 ? 'mid' : 'lo') + (i === 0 && fresh ? ' new' : '');
+      b.className = (c >= 3 ? 'top' : c >= 2 ? 'hi' : c >= 1 ? 'mid' : 'lo') + (i === 0 && fresh ? ' new' : '');
       b.textContent = fmtM(c); el.appendChild(b);
     });
   }
@@ -16342,7 +16378,7 @@ input.bprange[type=range]::-moz-range-thumb { width: 20px; height: 20px; border-
       if (bar.firstChild.style.transform !== tf) bar.firstChild.style.transform = tf;
     } else if (R.ph === 'fly') {
       bar.hidden = true; setTxt(sm, ''); setTxt(b, fmtM(m));
-      if (m >= 2) cls += ' hot';
+      if (m >= 2) cls += ' hot'; else if (m < 1) cls += ' low';
     } else {
       cls += ' boom'; bar.hidden = true; setTxt(sm, 'Abgestürzt'); setTxt(b, fmtM(R.crash || 1));
     }
@@ -16357,7 +16393,7 @@ input.bprange[type=range]::-moz-range-thumb { width: 20px; height: 20px; border-
   /* ---------- Bild: Sternenhimmel, Kurve, Rakete, Explosion (Canvas, laeuft nur, solange Crash offen ist) ---------- */
   var A = (function () {
     var cv = $('#crCv'), ctx = cv.getContext('2d'), sky = $('#crSky'), fly = $('#crFly');
-    var W = 0, Hh = 0, dpr = 1, raf = 0, bg = null, stars = [], parts = [], boomFx = null, xs = 10, ys = 2, last = 0, tx = 0, ty = 0, ang = 0, drift = 0;
+    var W = 0, Hh = 0, dpr = 1, raf = 0, bg = null, stars = [], parts = [], boomFx = null, xs = 10, ys = 2, yl = 1, last = 0, tx = 0, ty = 0, ang = 0, drift = 0;
     var L = 40, Rm = 18, T = 14, B = 24, font = '600 10px sans-serif';
     function reduced() { return !!(window.PRFx && window.PRFx.reduced && window.PRFx.reduced()); }
     for (var i = 0; i < 90; i++) stars.push({ x: Math.random(), y: Math.random(), r: Math.random() < 0.12 ? 1.4 : Math.random() < 0.5 ? 0.9 : 0.6, z: 0.25 + Math.random() * 0.75, p: Math.random() * 6.28 });
@@ -16380,17 +16416,17 @@ input.bprange[type=range]::-moz-range-thumb { width: 20px; height: 20px; border-
       return true;
     }
     function X(t) { return L + t / xs * (W - L - Rm); }
-    function Y(m) { return Hh - B - (m - 1) / (ys - 1) * (Hh - B - T); }
+    /* senkrecht von yl (unten, hoechstens 1x) bis ys (oben) */
+    function Y(m) { return Hh - B - (m - yl) / (ys - yl) * (Hh - B - T); }
     function nice(range, n, list) { for (var i = 0; i < list.length; i++) if (range / list[i] <= n) return list[i]; return list[list.length - 1]; }
     function drawGrid() {
       ctx.lineWidth = 1; ctx.font = font; ctx.textBaseline = 'middle'; ctx.textAlign = 'right';
-      var st = nice(ys - 1, 4, [0.2, 0.5, 1, 2, 5, 10, 20, 50, 100, 200, 500]), k, v, y;
-      for (k = 0; k < 40; k++) {
-        v = k === 0 ? 1 : st < 1 ? 1 + k * st : k * st;
-        if (k > 0 && v <= 1 + 1e-9) continue;
+      var st = nice(ys - yl, 4, [0.1, 0.25, 0.5, 1, 2]), k, v, y;
+      for (k = Math.ceil(yl / st - 1e-9); k < 80; k++) {
+        v = Math.round(k * st * 100) / 100;
         if (v > ys + 1e-9) break;
         y = Math.round(Y(v)) + 0.5;
-        ctx.strokeStyle = k === 0 ? 'rgba(236,231,218,.22)' : 'rgba(236,231,218,.07)';
+        ctx.strokeStyle = Math.abs(v - 1) < 1e-9 ? 'rgba(236,231,218,.22)' : 'rgba(236,231,218,.07)';
         ctx.beginPath(); ctx.moveTo(L, y); ctx.lineTo(W - Rm, y); ctx.stroke();
         ctx.fillStyle = 'rgba(236,231,218,.45)'; ctx.fillText(String(Math.round(v * 10) / 10).replace('.', ',') + '×', L - 6, y);
       }
@@ -16481,22 +16517,25 @@ input.bprange[type=range]::-moz-range-thumb { width: 20px; height: 20px; border-
       ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
       ctx.clearRect(0, 0, W, Hh);
       if (bg) ctx.drawImage(bg, 0, 0, W, Hh);
-      var ph = R ? R.ph : 'bet', t = 0, m = 1;
-      if (ph === 'fly') { t = Math.max(0, (performance.now() - V.f0) / 1000); m = curM(); if (H && H.crash && m >= H.crash) t = Math.log(m) / K; }
-      else if (ph === 'boom' && V.flyRd === R.rd) { m = R.crash || 1; t = Math.log(m) / K; }
-      /* Massstab: die Spitze bleibt im Bild, waechst weich mit */
-      var txs = Math.max(5, t / 0.8), tys = Math.max(2, 1 + (m - 1) / 0.74);
-      if (ph === 'bet') { txs = 5; tys = 2; }
+      var ph = R ? R.ph : 'bet', t = 0, m = 1, fc = R && R.sd ? curve(R.sd) : null;
+      if (ph === 'fly' && fc) { t = flyMs() / 1000; m = curM(); }
+      else if (ph === 'boom' && fc && V.flyRd === R.rd) { t = (R.ct || 0) / 1000; m = R.crash || 1; }
+      /* Kurve abtasten: Hoch- und Tiefpunkt bestimmen den Massstab */
+      var N = 90, ms = [], lo = 1, hi = 1;
+      if (t > 0) for (var i = 0; i <= N; i++) { var mi = fc(t * i / N * 1000); ms.push(mi); if (mi < lo) lo = mi; if (mi > hi) hi = mi; }
+      /* Massstab: die Spitze bleibt im Bild, waechst weich mit; unter 1x geht es nur so weit runter wie noetig */
+      var txs = Math.max(5, t / 0.8), tys = Math.min(MAXC + 0.4, Math.max(2, 1 + (hi - 1) / 0.74)), tyl = Math.min(1, Math.max(0.4, lo - 0.08));
+      if (ph === 'bet') { txs = 5; tys = 2; tyl = 1; }
       var ease = 1 - Math.pow(0.0015, dt / 1000);
-      xs += (txs - xs) * ease; ys += (tys - ys) * ease;
-      if (Math.abs(txs - xs) < 0.002) xs = txs; if (Math.abs(tys - ys) < 0.002) ys = tys;
-      drawStars(dt, ph === 'fly' ? Math.min(6, 1 + K * m * 6) : 0, now);
+      xs += (txs - xs) * ease; ys += (tys - ys) * ease; yl += (tyl - yl) * ease;
+      if (Math.abs(txs - xs) < 0.002) xs = txs; if (Math.abs(tys - ys) < 0.002) ys = tys; if (Math.abs(tyl - yl) < 0.002) yl = tyl;
+      drawStars(dt, ph === 'fly' ? Math.min(6, 0.6 + m) : 0, now);
       drawGrid();
       var showCurve = (ph === 'fly' || (ph === 'boom' && V.flyRd === R.rd)) && t > 0;
       var x0 = X(0), y0 = Y(1);
       if (showCurve) {
-        var N = 70, pts = [];
-        for (var i = 0; i <= N; i++) { var ti = t * i / N; pts.push([X(ti), Y(Math.exp(K * ti))]); }
+        var pts = [];
+        for (var i2 = 0; i2 <= N; i2++) pts.push([X(t * i2 / N), Y(ms[i2])]);
         var dead = ph === 'boom';
         ctx.beginPath(); ctx.moveTo(pts[0][0], pts[0][1]);
         for (var j = 1; j < pts.length; j++) ctx.lineTo(pts[j][0], pts[j][1]);
@@ -16516,7 +16555,8 @@ input.bprange[type=range]::-moz-range-thumb { width: 20px; height: 20px; border-
         else { sg.addColorStop(0, '#7d6bff'); sg.addColorStop(0.6, '#ff5fa8'); sg.addColorStop(1, '#ffd36b'); }
         ctx.strokeStyle = sg; ctx.lineWidth = 3.5; ctx.stroke();
         /* Richtung der Rakete = Steigung der Kurve auf dem Bildschirm */
-        var dX = (W - L - Rm) / xs, dY = -(K * m) / (ys - 1) * (Hh - B - T);
+        var dm = (fc(t * 1000 + 60) - fc(Math.max(0, t * 1000 - 60))) / 0.12;
+        var dX = (W - L - Rm) / xs, dY = -dm / (ys - yl) * (Hh - B - T);
         ang = Math.atan2(dY, dX); tx = ex; ty = ey;
         if (ph === 'fly') {
           if (!reduced()) emitSmoke(ex, ey, ang, dt > 30 ? 2 : 1);
@@ -16546,7 +16586,7 @@ input.bprange[type=range]::-moz-range-thumb { width: 20px; height: 20px; border-
       renderMult();
       if (ph === 'fly' || ph === 'bet' || V.dlAt) renderCtl();
     }
-    function start() { if (!raf) { last = 0; xs = 5; ys = 2; raf = requestAnimationFrame(frame); } }
+    function start() { if (!raf) { last = 0; xs = 5; ys = 2; yl = 1; raf = requestAnimationFrame(frame); } }
     function stop() { if (raf) cancelAnimationFrame(raf); raf = 0; }
     var tickM = 0;
     return {
@@ -16795,7 +16835,7 @@ input.bprange[type=range]::-moz-range-thumb { width: 20px; height: 20px; border-
       if (g !== NB.gen || !R || !H || !d || typeof d !== 'object') return;
       if (conn._cr) {
         if (d.t === 'bet') hBetOf(conn.peer, d.a, d.au);
-        else if (d.t === 'out') hOut(conn.peer, d.m, !!d.h);
+        else if (d.t === 'out') hOut(conn.peer, d.e, !!d.h);
         else if (d.t === 'react') hTalk(conn.peer, String(d.e));
         else if (d.t === 'chat') hTalk(conn.peer, '', +d.q);
         else if (d.t === 'tom') hCrTom(conn.peer, d);
@@ -16834,10 +16874,12 @@ input.bprange[type=range]::-moz-range-thumb { width: 20px; height: 20px; border-
   function cleanSnap(s) {
     if (!s || typeof s !== 'object' || !Array.isArray(s.pl) || !Array.isArray(s.hist)) return null;
     var ph = s.ph === 'fly' ? 'fly' : s.ph === 'boom' ? 'boom' : 'bet', crash = cleanM(s.crash);
+    var sd = Math.round(+s.sd) >>> 0, ct = Math.max(0, Math.min(T_MAX * 1000, Math.round(+s.ct) || 0));
     if (ph === 'boom' && !crash) return null;
-    if (Math.abs((+s.k || K) - K) > 1e-9) return null;   // anderer Takt: gleiche Version rechnet gleich
+    if (ph !== 'bet' && !sd) return null;   // ohne Samen keine Kurve
     return {
-      ph: ph, rd: Math.max(0, Math.round(+s.rd) || 0), el: Math.max(0, Math.min(150000, +s.el || 0)), k: K,
+      ph: ph, rd: Math.max(0, Math.round(+s.rd) || 0), el: Math.max(0, Math.min(T_MAX * 1000 + 5000, +s.el || 0)),
+      sd: ph === 'bet' ? 0 : sd, ct: ph === 'boom' ? ct : 0,
       dl: Math.max(0, Math.min(60000, +s.dl || 0)), crash: ph === 'boom' ? crash : 0,
       hist: s.hist.map(cleanM).filter(Boolean).slice(0, 20),
       pl: s.pl.slice(0, MAX_PL + 8).filter(function (p) { return p && typeof p.id === 'string'; }).map(function (p) {
@@ -16911,16 +16953,16 @@ input.bprange[type=range]::-moz-range-thumb { width: 20px; height: 20px; border-
   /* ---------- Erfolge und Aufgaben ---------- */
   function topM(d) { return Math.max(+d.cashout || 0, +d.half || 0); }
   if (window.PRAch) [
-    { id: 'crash-10x', icon: '🌙', name: 'Mondlandung', desc: 'Zahle bei Crash bei 10× oder mehr aus', ev: 'crash:round', f: function (d) { return topM(d) >= 10; } },
-    { id: 'crash-mutig', icon: '🧊', name: 'Nerven aus Stahl', desc: 'Zahle bei Crash erst über 50× aus', ev: 'crash:round', f: function (d) { return topM(d) > 50; } },
-    { id: 'crash-100x', icon: '🪐', name: 'Ins All', desc: 'Zahle bei Crash bei 100× oder mehr aus', title: 'Astronaut', ev: 'crash:round', f: function (d) { return topM(d) >= 100; } },
+    { id: 'crash-10x', icon: '🌙', name: 'Mondlandung', desc: 'Zahle bei Crash bei 3× oder mehr aus', ev: 'crash:round', f: function (d) { return topM(d) >= 3; } },
+    { id: 'crash-mutig', icon: '🧊', name: 'Nerven aus Stahl', desc: 'Zahle bei Crash erst über 4× aus', ev: 'crash:round', f: function (d) { return topM(d) > 4; } },
+    { id: 'crash-100x', icon: '🪐', name: 'Ins All', desc: 'Zahle bei Crash bei 4,5× oder mehr aus', title: 'Astronaut', ev: 'crash:round', f: function (d) { return topM(d) >= 4.5; } },
     { id: 'crash-halb', icon: '✂️', name: 'Halbe-Halbe', desc: 'Nutze bei Crash „Halb auszahlen“', ev: 'crash:round', f: function (d) { return +d.half > 0; } },
-    { id: 'crash-sofort', icon: '💥', name: 'Fehlstart', desc: 'Sei mit Einsatz dabei, wenn die Rakete schon bei 1,00× abstürzt', ev: 'crash:round', f: function (d) { return d.crash > 0 && d.crash <= 1; } }
+    { id: 'crash-sofort', icon: '💥', name: 'Fehlstart', desc: 'Sei mit Einsatz dabei, wenn die Rakete gleich beim Start abstürzt', ev: 'crash:round', f: function (d) { return !!d.inst; } }
   ].forEach(function (d) { window.PRAch.add(d); });
   if (window.PRQ && window.PRQ.addQuest) {
     window.PRQ.addQuest({ id: 'cr10', d: 'e', t: 'Spiele 10 Crash-Runden', n: 10, ev: 'crash:round', f: function () { return 1; } });
     window.PRQ.addQuest({ id: 'cr2x', d: 'm', t: 'Zahle bei Crash 3 Mal bei 2× oder mehr aus', n: 3, ev: 'crash:round', f: function (d) { return topM(d) >= 2 ? 1 : 0; } });
-    window.PRQ.addQuest({ id: 'cr5x', d: 'h', t: 'Zahle bei Crash bei 5× oder mehr aus', n: 1, ev: 'crash:round', f: function (d) { return topM(d) >= 5 ? 1 : 0; } });
+    window.PRQ.addQuest({ id: 'cr5x', d: 'h', t: 'Zahle bei Crash bei 3× oder mehr aus', n: 1, ev: 'crash:round', f: function (d) { return topM(d) >= 3 ? 1 : 0; } });
   }
 
   /* fuer die Freundesliste: wo bin ich, darf man dazukommen (nach einer angenommenen Anfrage); Tests: _dbg */
@@ -16930,7 +16972,7 @@ input.bprange[type=range]::-moz-range-thumb { width: 20px; height: 20px; border-
     host: hostNow,
     join: join
   };
-  if (window.PR_TESTHOOKS) window.CR._dbg = { R: function () { return R; }, H: function () { return H; }, V: V, force: function (c) { if (H && R && R.ph === 'fly') { H.crash = c; } else if (H) H.next = c; }, fly: function () { if (H && R && R.ph === 'bet') hFly(); }, send: function (m) { if (NB.conn) NB.conn.send(m); } };
+  if (window.PR_TESTHOOKS) window.CR._dbg = { R: function () { return R; }, H: function () { return H; }, V: V, force: function (ms) { if (H && R && R.ph === 'fly') { H.T = ms; } else if (H) H.next = ms; }, curve: curve, fly: function () { if (H && R && R.ph === 'bet') hFly(); }, send: function (m) { if (NB.conn) NB.conn.send(m); } };
 })();
 </script>
 
