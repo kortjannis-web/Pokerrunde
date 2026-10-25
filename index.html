@@ -2608,7 +2608,7 @@ input.bprange[type=range]::-moz-range-thumb { width: 20px; height: 20px; border-
           <p style="margin-top:14px">Der rote Balken läuft im Kreis. Drück den grünen Knopf unten genau dann, wenn er über dem gelben Punkt ist. Es zählt nur der grüne Knopf. Nach jedem Treffer dreht er die Richtung um und wird etwas schneller. Mit der Zeit liegen die Punkte enger, manchmal direkt hintereinander – dann schnell nachdrücken.</p>
           <p>Knackst du das Schloss, bekommst du den ganzen Jackpot aus den Gläsern, danach fängt es wieder bei 0 an. Für einzelne Treffer gibt es nichts – entweder Jackpot oder nichts. Liegt bis 300 im Glas, brauchst du 50 Treffer, bis 500 sind es 60, darüber 70.</p>
           <p>Im Shop (Hauptmenü, Knopf unter dem Profil) gibt es unter „Pop the Lock“ Upgrades: einen größeren Knopf (10.000 Chips pro Stufe), 5 Treffer weniger (8.000 Chips pro Stufe) und einen langsameren Balken (8.000 Chips pro Stufe, je 10 % langsamer).</p>
-          <p>Das Glas füllt sich, wenn du in den anderen Spielen gewinnst (Slots, Blackjack, Roulette, Poker): 5 % von jedem Gewinn kommen obendrauf ins Glas, dein Gewinn bleibt ganz bei dir. Bis 300 zählt jeder Gewinn. Danach nur noch große Gewinne am Stück: bis 500 ab 500 Gewinn, bis 800 ab 1.000 Gewinn und bis 1.200 ab 2.000 Gewinn. Das große Glas fasst 300, ab 300 kommt davor ein mittleres Glas dazu (bis 500), ab 500 ein kleines (bis 600), danach läuft alles drumherum über. Auch was überläuft, gehört weiter zum Jackpot. Neue Münzen fallen ins Glas, sobald du wieder hier bist.</p>
+          <p>Das Glas füllt sich, wenn du in den anderen Spielen gewinnst (Slots, Blackjack, Roulette, Poker): 2 % von jedem Gewinn kommen obendrauf ins Glas, dein Gewinn bleibt ganz bei dir. Bis 300 zählt jeder Gewinn. Danach nur noch große Gewinne am Stück: bis 500 ab 500 Gewinn, bis 800 ab 1.000 Gewinn und bis 1.200 ab 2.000 Gewinn. Das große Glas fasst 300, ab 300 kommt davor ein mittleres Glas dazu (bis 500), ab 500 ein kleines (bis 600), danach läuft alles drumherum über. Auch was überläuft, gehört weiter zum Jackpot. Neue Münzen fallen ins Glas, sobald du wieder hier bist.</p>
           <p>Drückst du daneben oder lässt du den Punkt vorbeiziehen, ist die Runde vorbei. Der Jackpot bleibt im Glas, und spielen kostet nichts.</p>
         </div>
         <button class="btn wide" id="lkMenu" type="button" style="margin-top:10px">Zum Hauptmenü</button>
@@ -10621,12 +10621,12 @@ input.bprange[type=range]::-moz-range-thumb { width: 20px; height: 20px; border-
   function stats() { var o = null; try { o = JSON.parse(localStorage.getItem('pr-lkstats') || 'null'); } catch (e) {} o = o || {}; return { best: +o.best || 0, jp: +o.jp || 0, won: +o.won || 0 }; }
   function saveStats(st) { try { localStorage.setItem('pr-lkstats', JSON.stringify(st)); } catch (e) {} }
 
-  /* ---------- Jackpot-Glas: 5 % von jedem Gewinn in den anderen Spielen kommen obendrauf ins Glas ----------
+  /* ---------- Jackpot-Glas: 2 % von jedem Gewinn in den anderen Spielen kommen obendrauf ins Glas ----------
      Bis 300 zaehlt jeder Gewinn, darueber nur grosse Gewinne am Stueck: bis 500 ab 500 Gewinn, bis 800 ab 1.000,
      bis 1.200 ab 2.000. Gespeichert: v Jackpot (mit Nachkommastellen, damit auch kleine Gewinne zaehlen), c Lage der
      Muenzen, die schon im Glas liegen, s der Jackpot, den man zuletzt gesehen hat. Neue Muenzen fallen erst hinein,
      wenn man wieder hier ist. Was ueber den Rand laeuft, ist nur Anzeige und gehoert weiter zum Jackpot. */
-  var TIERS = [[300, 0], [500, 500], [800, 1000], [1200, 2000]], RATE = 0.05, JMAX = 1200;
+  var TIERS = [[300, 0], [500, 500], [800, 1000], [1200, 2000]], RATE = 0.02, JMAX = 1200;
   /* [ab, wie viel, Muenzen]: das grosse Glas fasst 0 bis 300, das mittlere davor 300 bis 500, das kleine 500 bis 600
      (so viele Muenzen fuellen sie genau bis zum Rand, ausprobiert); 600 bis 1.200 laeuft nur noch drumherum ueber,
      das ist bloss Anzeige. JGEO aendern, wenn sich die Glaeser aendern */
@@ -11149,7 +11149,7 @@ input.bprange[type=range]::-moz-range-thumb { width: 20px; height: 20px; border-
   window.prIdle = function () { return (!idle || idle()) && lk.hidden; };
   window.LK = { on: function () { return !lk.hidden; } };
   window.LKUP = { get: ups, buy: buyUp, def: UPS };
-  /* fuer die anderen Spiele: Gewinn einer Runde (Auszahlung minus Einsatz) melden, 5 % davon kommen ins Glas */
+  /* fuer die anderen Spiele: Gewinn einer Runde (Auszahlung minus Einsatz) melden, 2 % davon kommen ins Glas */
   window.JAR = { add: jarAdd };
 })();
 </script>
