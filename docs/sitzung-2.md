@@ -45,7 +45,7 @@ Alles ist live auf `main`. Die Schritte beziehen sich auf `docs/plan-neue-featur
      nicht erreichbaren URL muss die App ohne Fehler auf PeerJS zurückfallen; die Supabase-Aufrufe gegen
      einen kleinen Ersatz (Mock von supabase-js) prüfen, so gut es geht. SQL wenn möglich mit einem
      SQL-Parser prüfen.
-   - **`docs/supabase-anleitung.md` anpassen**, wenn sich an den Schritten für den Nutzer etwas ändert
+   - **`docs/supabase-anleitung.txt` anpassen**, wenn sich an den Schritten für den Nutzer etwas ändert
      (Dateinamen, Secrets, Webhooks, Einstellungen), und es ihm am Ende ausdrücklich sagen.
    - Am Ende eine kurze Liste für den Nutzer: „Wenn du Supabase eingerichtet hast, schick mir URL + Key, dann
      trage ich sie ein und wir testen live“.
@@ -81,6 +81,6 @@ leeren Platzhaltern (ohne Schlüssel läuft alles wie bisher). Arbeite Schritt f
 jeden Schritt sofort nach main.
 
 Wenn Fragen da sind, stell sie ganz am Anfang. Falls sich an meinen Supabase-Schritten
-(docs/supabase-anleitung.md) etwas ändert, pass die Anleitung an und sag es mir am Ende ausdrücklich.
+(docs/supabase-anleitung.txt) etwas ändert, pass die Anleitung an und sag es mir am Ende ausdrücklich.
 Am Ende: kurzer Bericht, was reingekommen ist und wozu, und was ich als Nächstes tun muss.
 ```

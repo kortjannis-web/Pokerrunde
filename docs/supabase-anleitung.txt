@@ -1,0 +1,155 @@
+SUPABASE FÜR POKERRUNDE EINRICHTEN
+==================================
+
+Was kostet Supabase? (pro Monat, Stand Oktober 2026, supabase.com/pricing)
+
+  Gratis:        2 Projekte pro Person, 0 €
+  Pro-Tarif:     25 $ Grundpreis, das erste Projekt ist dabei, jedes weitere ca. 10 $
+                  5 Projekte  ≈  65 $
+                 10 Projekte  ≈ 115 $
+                 20 Projekte  ≈ 215 $
+                 50 Projekte  ≈ 515 $
+  (Preise in US-Dollar, ggf. zzgl. Steuer. Mehrere kleine Apps können sich auch ein Projekt teilen.)
+
+Für Pokerrunde reicht der Gratis-Tarif. Einziger Haken: Ein Gratis-Projekt schläft nach 7 Tagen
+ohne Nutzung ein. Dagegen klopft die App automatisch zweimal pro Woche an.
+
+
+Was du brauchst
+---------------
+- einen Computer (am Handy geht es auch, ist aber fummeliger)
+- eine E-Mail-Adresse
+- etwa 15 Minuten
+
+Programmieren musst du nichts. Du klickst nur und schickst am Ende zwei Werte an Jannis.
+
+
+SCHRITT 1: Konto anlegen
+------------------------
+1. Öffne  https://supabase.com
+2. Klicke oben rechts auf "Start your project".
+3. Klicke auf "Sign up" (steht dort "Sign in", klicke unten auf "Sign up").
+4. Gib deine E-Mail-Adresse und ein Passwort ein und klicke auf "Sign up".
+5. Öffne dein Postfach. Supabase schickt eine Mail "Confirm your signup".
+   Klicke darin auf den Link. (Keine Mail? Im Spam-Ordner nachsehen.)
+
+Fertig, wenn du im Supabase-Dashboard bist.
+
+
+SCHRITT 2: Organisation anlegen
+-------------------------------
+Supabase fragt beim ersten Mal nach einer "Organization" (das ist nur ein Ordner).
+
+1. Name: Pokerrunde
+2. Type: Personal
+3. Plan: Free ($0/month)
+4. Klicke auf "Create organization".
+
+
+SCHRITT 3: Projekt anlegen
+--------------------------
+1. Klicke auf "New project".
+2. Fülle aus:
+   Project name:       pokerrunde
+   Database Password:  Klicke auf "Generate a password", dann auf "Copy".
+                       Speichere das Passwort in einer Notiz.
+                       WICHTIG: Dieses Passwort schickst du niemandem. Es wird nicht gebraucht.
+   Region:             Central EU (Frankfurt)
+   Falls da Schalter "Enable Data API" und "Enable automatic RLS" sind: beide an lassen.
+3. Klicke auf "Create new project".
+4. Warte 1 bis 2 Minuten, bis oben nicht mehr "Setting up project" steht.
+
+Fertig, wenn links ein Menü mit "Table Editor", "SQL Editor", "Authentication" erscheint.
+
+
+SCHRITT 4: Anmeldung ohne E-Mail einstellen  (der wichtigste Schritt)
+---------------------------------------------
+Die Spieler melden sich in der App nur mit Name und Passwort an. Deshalb darf Supabase
+keine Bestätigungs-Mail verlangen.
+
+1. Klicke links auf "Authentication".
+2. Klicke auf "Sign In / Providers".
+3. Ganz oben:
+   "Allow new users to sign up"   → AN
+   "Allow anonymous sign-ins"     → AUS
+   Klicke auf "Save changes".
+4. Weiter unten in der Liste auf "Email" klicken:
+   "Enable Email provider"        → AN
+   "Confirm email"                → AUS   ← genau dieser Schalter
+   Klicke auf "Save".
+
+Fertig, wenn bei "Email" der Schalter "Confirm email" aus ist.
+
+
+SCHRITT 5: Datenbank einrichten
+-------------------------------
+Variante A (am einfachsten): Jannis einladen, dann macht Claude das selbst.
+1. Klicke ganz oben links auf "Pokerrunde" und dann auf "Organization settings"
+   (oder links unten auf das Zahnrad).
+2. Klicke auf "Team" und dann auf "Invite member".
+3. E-Mail: die Adresse, mit der Jannis bei Supabase angemeldet ist (frag ihn).
+4. Role: Developer
+5. Klicke auf "Invite". Fertig, weiter mit Schritt 6.
+
+Variante B (falls die Einladung nicht geht): selbst ausführen, dauert 2 Minuten.
+1. Öffne im Browser:
+   https://github.com/kortjannis-web/Pokerrunde/blob/main/supabase/pokerrunde.sql
+2. Klicke oben rechts über dem Text auf das Symbol mit den zwei Kästchen ("Copy raw file").
+3. In Supabase links auf "SQL Editor" klicken, dann oben auf "+ New query".
+4. In das große Feld klicken und einfügen (Strg+V, am Mac Cmd+V).
+5. Unten rechts auf "Run" klicken.
+6. Kommt die Frage "This query has destructive operations": auf "Run this query" klicken.
+   Das ist richtig so.
+7. Steht unten "Success. No rows returned": fertig.
+   Rote Fehlermeldung: Screenshot an Jannis schicken, nichts selbst ändern.
+   (Zweimal ausführen schadet nicht.)
+
+
+SCHRITT 6: Zwei Werte an Jannis schicken
+----------------------------------------
+1. Klicke links unten auf das Zahnrad "Project Settings".
+2. Klicke auf "Data API". Kopiere die "Project URL".
+   Sieht so aus:  https://abcdefghijkl.supabase.co
+3. Klicke auf "API Keys". Kopiere den "Publishable key".
+   Beginnt mit:   sb_publishable_
+   (Gibt es nur "Legacy API keys": den Schlüssel "anon public" nehmen, beginnt mit eyJ.)
+4. Schick beide an Jannis, z. B. per WhatsApp:
+   URL: https://abcdefghijkl.supabase.co
+   KEY: sb_publishable_xxxxxxxxxxxxxxxx
+
+Diese zwei Werte dürfen öffentlich sein. Sie stehen später sowieso in der App.
+
+NIEMALS schicken oder irgendwo eintragen:
+- "Secret key" (beginnt mit sb_secret_) oder "service_role"
+- das Database Password aus Schritt 3
+- das "JWT Secret"
+
+
+DAS WAR'S
+---------
+Jannis trägt die zwei Werte ein, danach gilt in der App:
+- Jeder Spieler hat ein Konto mit Name und Passwort.
+- Wer schon spielt, wird beim nächsten Öffnen gebeten, ein Passwort festzulegen.
+- Unter "Mit Freunden spielen" → "Alle Spieler" sieht man alle Spieler und wer online ist.
+- Der Spielstand ist gesichert und auf jedem Handy gleich (einfach anmelden).
+
+
+WENN ETWAS NICHT KLAPPT
+-----------------------
+"Project is paused" / App meldet "Server gerade nicht erreichbar"
+  → Supabase öffnen, Projekt anklicken, "Restore project", 2 bis 5 Minuten warten.
+    Nichts geht verloren. Bis dahin läuft die App ohne Konten weiter.
+
+App meldet "Supabase verlangt noch eine E-Mail-Bestätigung"
+  → Schritt 4: "Confirm email" muss AUS sein.
+
+Registrieren geht nicht ("Signups not allowed")
+  → Schritt 4: "Allow new users to sign up" muss AN sein.
+
+Ein Spieler hat sein Passwort vergessen
+  → Jannis Bescheid sagen. In Supabase unter "Authentication" → "Users" kann man den
+    Spieler löschen, dann legt er sich mit demselben Namen neu an (sein Spielstand ist dann weg).
+
+Einmal im Monat (1 Minute)
+  → In Supabase oben auf die Organisation klicken, "Usage" öffnen.
+    Alles unter 80 %: nichts zu tun. Darüber: Jannis Bescheid sagen.

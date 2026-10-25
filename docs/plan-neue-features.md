@@ -213,7 +213,7 @@ automatischen „Wachhalter“.
 ## Schritt 5: Supabase-Projekt anlegen (das machst du, ca. 10 Minuten)
 
 Die ausführliche Anleitung mit allen Klicks, Push, Wachhalter und Problemlösungen steht in
-**`docs/supabase-anleitung.md`**. Hier die Kurzfassung:
+**`docs/supabase-anleitung.txt`**. Hier die Kurzfassung:
 
 **A. Konto und Projekt**
 1. Öffne https://supabase.com und tippe oben rechts auf **Start your project** (oder **Sign in**).

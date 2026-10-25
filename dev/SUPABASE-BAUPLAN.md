@@ -76,7 +76,7 @@ Deshalb kein Umbau der Spiele, sondern ein **PeerJS-kompatibler Ersatz**:
 - Tägliche Serien-Erinnerung 19 Uhr Berlin: pg_cron + `net.http_post` an die Function oder GitHub-Action –
   Helfer entscheidet, Hauptsache der Nutzer muss nur wenige, klar beschriebene Schritte tun.
 - VAPID: öffentlicher Schlüssel in die App (Konstante, leer = Push aus), privater NIE ins Repo.
-- Wenn sich dadurch an `docs/supabase-anleitung.md` etwas ändert (z. B. Teil 7.3 entfällt, Verify JWT aus),
+- Wenn sich dadurch an `docs/supabase-anleitung.txt` etwas ändert (z. B. Teil 7.3 entfällt, Verify JWT aus),
   Anleitung anpassen und im Bericht ausdrücklich sagen.
 
 ## Testen in der App
