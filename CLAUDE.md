@@ -28,8 +28,9 @@ Immer den bisherigen Weg als Rückfall im Code behalten.
 
 Ersteller und Mitspieler müssen dieselbe App-Version haben, sonst rechnen sie verschieden. Wer die Nachrichten
 zwischen den Handys ändert (neue Felder/Nachrichtentypen, andere Bedeutung), erhöht die Versionsnummer:
-Poker `hello`-Feld `v` = Konstante `PK_V` (aktuell 10; der Ersteller nimmt nur Mitspieler ab `PK_V` und schickt
-älteren `{ t: 'old' }`; 10 bringt die Turniere Sit & Go und Spin & Go: `cfg.tn { m, b, e }` im Stand, `start.tn { m, b, e, x }`
+Poker `hello`-Feld `v` = Konstante `PK_V` (aktuell 11; der Ersteller nimmt nur Mitspieler ab `PK_V` und schickt
+älteren `{ t: 'old' }`; 11 ersetzt Sit & Go und Spin & Go durch einen Turniermodus: `cfg.tn { m: 'tn', b, n }` und `start.tn { m: 'tn', b, n }`
+(Einsatz 100 bis 10.000, 2 bis 5 Spieler, Bots füllen auf, Sieger nimmt alles); 10 brachte die Turniere: `cfg.tn { m, b, e }` im Stand, `start.tn { m, b, e, x }`
 mit dem Glücksrad-Ergebnis `x`, die Plätze `tq` im `snap`, `{ t: 'tnp', p, z }` (Platz und Preis, die der Ersteller dem
 Mitspieler zuteilt) und die Ergebnisliste `end.tr`; 9 bringt im `cos` die Siegesanimation `win`, das Profilbild `av` und den Regenschirm `um` sowie
 Wurfgegenstände `{ t: 'tom', k }` (k fehlt = Tomate, `k: 'schirm'` = Abprall-Meldung mit `n`), 8 Profilrahmen und Titel

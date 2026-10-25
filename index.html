@@ -1898,7 +1898,7 @@ input.bprange[type=range]::-moz-range-thumb { width: 20px; height: 20px; border-
 #aeBuy.sure { background: #e07a5f; color: #1d0d07; }
 #avEdit .btn.wide { margin: 0; }
 
-/* ---------- Turniere: Sit & Go und Spin & Go ---------- */
+/* ---------- Turnier am Pokertisch ---------- */
 .btn.wide.tnbtn { flex-direction: row; gap: 8px; height: 52px; }
 .tnbtn small { color: var(--muted); font: 600 12px var(--ui); opacity: 1; }
 .tnbtn small::before { content: '·'; margin-right: 8px; }
@@ -1919,38 +1919,11 @@ input.bprange[type=range]::-moz-range-thumb { width: 20px; height: 20px; border-
 .tnbig { font-size: 44px; line-height: 1; margin-bottom: 8px; }
 #tnToast { position: absolute; left: 50%; bottom: max(24px, env(safe-area-inset-bottom)); z-index: 97; transform: translate(-50%, 12px); width: max-content; max-width: calc(100% - 32px); padding: 10px 16px; border-radius: 16px; background: var(--brass); color: var(--brass-ink); font: 800 13px/1.35 var(--ui); text-align: center; opacity: 0; pointer-events: none; transition: opacity .3s, transform .3s; box-shadow: 0 6px 18px rgba(0,0,0,.5); }
 #tnToast.on { opacity: 1; transform: translate(-50%, 0); }
-/* Gluecksrad (Stil wie das Slots-Rad); ab 25x Lichtshow mit den Animationen von Pop the Lock */
-#tnWheel { z-index: 85; background: radial-gradient(ellipse at 50% 42%, rgba(40,26,70,.92), rgba(8,8,12,.95)); overflow: hidden; }
-.tnwbox { position: relative; width: min(330px, 100%); display: flex; flex-direction: column; align-items: center; gap: 14px; text-align: center; }
-.tnwk { font: 800 13px var(--ui); letter-spacing: .2em; text-transform: uppercase; color: #f4d67f; }
-.tnw { position: relative; width: min(84vw, 300px); aspect-ratio: 1; }
-.tnw::before { content: ''; position: absolute; inset: -22%; z-index: -1; border-radius: 50%; background: repeating-conic-gradient(rgba(255,224,138,.22) 0 9deg, transparent 9deg 18deg);
-  -webkit-mask-image: radial-gradient(closest-side, #000 40%, transparent); mask-image: radial-gradient(closest-side, #000 40%, transparent); animation: slrays 9s linear infinite; }
-.tnw svg { position: absolute; inset: 0; width: 100%; height: 100%; display: block; overflow: visible; }
-.tnwrim { filter: drop-shadow(0 0 20px rgba(244,214,127,.5)) drop-shadow(0 10px 16px rgba(0,0,0,.6)); }
-#tnwDisc text { font: 900 12px var(--ui); fill: #fff; paint-order: stroke; stroke: rgba(0,0,0,.55); stroke-width: 3px; stroke-linejoin: round; }
-#tnwDisc text.hi { fill: #fff3c4; font-size: 13.5px; }
-.tnwrim text.hub { font: 800 18px var(--display); fill: #f4d67f; }
-.tnwrim .bl { animation: slbl 1.2s linear infinite; animation-delay: calc(var(--i) * -.05s); }
-#tnWheel.run .tnwrim .bl { animation-duration: .5s; animation-delay: calc(var(--i) * -.02s); }
-#tnWheel.hit .tnwrim .bl { animation: slbl2 .3s steps(1) infinite; }
-.tnwrim .ptr { transform-box: fill-box; transform-origin: 50% 0; }
-.tnwrim .ptr.kick { animation: tnkick .12s ease-out; }
-@keyframes tnkick { 40% { transform: rotate(-14deg); } }
-#tnwRes { position: absolute; left: 50%; top: 50%; transform: translate(-50%, -50%) scale(.3); opacity: 0; padding: 6px 16px; border-radius: 14px; background: rgba(16,10,26,.92); box-shadow: 0 0 0 2px var(--brass), 0 0 30px rgba(224,170,74,.8); font: 800 42px var(--display); color: #ffe08a; white-space: nowrap; transition: transform .35s cubic-bezier(.2,.9,.3,1.4), opacity .2s; }
-#tnwRes.on { opacity: 1; transform: translate(-50%, -50%); }
-.tnwpot { margin: 0; min-height: 22px; color: var(--muted); font: 700 15px var(--ui); transition: color .3s, transform .3s; }
-.tnwpot.on { color: #ffe08a; font-size: 18px; transform: scale(1.06); }
-.tnwjp { position: absolute; top: -9px; left: 50%; transform: translateX(-50%); padding: 4px 16px; border-radius: 10px; font: 900 22px var(--display); letter-spacing: .12em; color: #ffe08a; opacity: 0; pointer-events: none; box-shadow: inset 0 0 0 2px rgba(255,224,138,.4); }
-#tnWheel.jp .tnwjp { opacity: 1; animation: lkmq .44s steps(2, jump-none) infinite; }
-#tnWheel.jp .tnwk { visibility: hidden; }
-#tnWheel.jp .tnwrim .bl { animation: lkblink .3s steps(2, jump-none) infinite; }
-#tnWheel.jp .tnwrim .bl:nth-child(even) { animation-delay: -.15s; }
-#tnWheel.jp .tnw::after { content: ''; position: absolute; inset: -8%; z-index: -1; border-radius: 50%; background: radial-gradient(closest-side, rgba(255,210,90,.55), transparent); animation: lkhalo .55s ease-in-out infinite alternate; }
-#tnWheel.jp #tnwRes { animation: tnjp .55s ease-in-out 6; color: #fff3c4; }
-@keyframes tnjp { 50% { transform: translate(-50%, -50%) scale(1.14); } }
-#tnWheel .slcoin { top: -30px; z-index: 3; }
 #tnPick { z-index: 80; padding: 12px; }
+/* Einsatz-Schieber (Turnier allein und beim Tisch erstellen) */
+.tnrange { display: flex; align-items: center; gap: 12px; }
+.tnrange input { flex: 1; min-width: 0; }
+.tnrange b { min-width: 76px; text-align: right; font: 800 20px var(--display); color: var(--brass); font-variant-numeric: tabular-nums; }
 #tnBust, #tnEnd { z-index: 82; }
 #tnQuit { z-index: 84; }
 /* Siegertreppchen */
@@ -1974,7 +1947,7 @@ input.bprange[type=range]::-moz-range-thumb { width: 20px; height: 20px; border-
 @keyframes tnrise { from { transform: scaleY(0); } }
 #tnEnd.won .endcard { box-shadow: 0 24px 60px rgba(0,0,0,.6), 0 0 0 2px rgba(224,170,74,.5), 0 0 40px rgba(224,170,74,.25); }
 #tnEnd p { margin-bottom: 18px; }
-@media (prefers-reduced-motion: reduce) { .tnstep i, .tnstep em, #tnWheel.jp .tnwjp, #tnWheel.jp .tnw::after { animation: none; } }
+@media (prefers-reduced-motion: reduce) { .tnstep i, .tnstep em { animation: none; } }
 /* ---------- Crash: sechste Menueseite (rechts neben Roulette), Nachtblau/Violett mit Sternen ---------- */
 :root { --cr1: #3b2f86; --cr2: #231b5e; --cr3: #0c0a26; }
 .mbg-crash { background:
@@ -2338,7 +2311,7 @@ input.bprange[type=range]::-moz-range-thumb { width: 20px; height: 20px; border-
         <div data-g="poker" class="mgrp" id="mPoker">
           <button class="btn primary wide" id="bPlay" type="button">Gegen Bots spielen</button>
           <button class="btn wide" id="bFriends" type="button">Mit Freunden spielen<i class="odot" hidden aria-hidden="true"></i></button>
-          <button class="btn wide tnbtn" id="bTourney" type="button"><span aria-hidden="true">🏆</span> Turnier <small>Sit &amp; Go · Spin &amp; Go</small></button>
+          <button class="btn wide tnbtn" id="bTourney" type="button"><span aria-hidden="true">🏆</span> Turnier <small>2 bis 5 Spieler · Sieger nimmt alles</small></button>
         </div>
         <div data-g="bj" class="mgrp off" id="mBj">
           <button class="btn primary wide" id="bjPlay" type="button">Gegen den Dealer spielen</button>
@@ -2918,14 +2891,9 @@ input.bprange[type=range]::-moz-range-thumb { width: 20px; height: 20px; border-
           <div class="frhint" id="modeHint"></div>
         </div>
         <div id="frcTb" hidden>
-          <div class="psec">Einsatz</div>
-          <div class="seg" id="segTb" role="radiogroup" aria-label="Einsatz"></div>
+          <div class="psec">Einsatz pro Spieler</div>
+          <div class="tnrange"><input class="bprange" type="range" id="tbRange" min="100" max="10000" step="100" aria-label="Einsatz pro Spieler"><b id="tbVal"></b></div>
           <div class="frhint" id="tbHint"></div>
-        </div>
-        <div id="frcTsp" hidden>
-          <div class="psec">Tempo</div>
-          <div class="seg" id="segTsp" role="radiogroup" aria-label="Tempo"></div>
-          <div class="frhint" id="tspHint"></div>
         </div>
         <div id="frcSb">
           <div class="psec">Small Blind</div>
@@ -2938,7 +2906,7 @@ input.bprange[type=range]::-moz-range-thumb { width: 20px; height: 20px; border-
           <div class="frhint" id="everyHint"></div>
         </div>
         <div id="frcSeats">
-          <div class="psec">Plätze</div>
+          <div class="psec" id="seatsT">Plätze</div>
           <div class="seg" id="segSeats" role="radiogroup" aria-label="Anzahl Plätze"></div>
           <div class="frhint" id="seatsHint"></div>
         </div>
@@ -3092,20 +3060,12 @@ input.bprange[type=range]::-moz-range-thumb { width: 20px; height: 20px; border-
       </div>
       <div>
         <div class="psec">Turniere</div>
-        <div class="tnpst"><b>Sit &amp; Go</b></div>
         <div class="pstats">
           <div class="pstat"><b id="tnSnN">0</b><span>gespielt</span></div>
           <div class="pstat"><b id="tnSnW">0</b><span>Siege</span></div>
-          <div class="pstat"><b id="tnSnI">–</b><span>Geldplätze</span></div>
+          <div class="pstat"><b id="tnSnI">–</b><span>Siegquote</span></div>
         </div>
         <div class="frhint" id="tnSnX" style="text-align:center"></div>
-        <div class="tnpst"><b>Spin &amp; Go</b></div>
-        <div class="pstats">
-          <div class="pstat"><b id="tnSpN">0</b><span>gespielt</span></div>
-          <div class="pstat"><b id="tnSpW">0</b><span>gewonnen</span></div>
-          <div class="pstat"><b id="tnSpH">–</b><span>höchster Multiplikator</span></div>
-        </div>
-        <div class="frhint" id="tnSpX" style="text-align:center"></div>
       </div>
       <div>
         <div class="psec" style="margin-bottom:8px">Einstellungen</div>
@@ -3308,24 +3268,15 @@ input.bprange[type=range]::-moz-range-thumb { width: 20px; height: 20px; border-
   <div id="tnPick" class="overlay" hidden>
     <div class="endcard tncard">
       <h2>Turnier</h2>
-      <div class="seg" id="tnMode" role="radiogroup" aria-label="Turnierart"></div>
       <p class="tndesc" id="tnDesc"></p>
-      <div class="psec">Einsatz</div>
-      <div class="seg" id="tnBuy" role="radiogroup" aria-label="Einsatz"></div>
-      <div id="tnSpdBox"><div class="psec">Tempo</div><div class="seg" id="tnSpd" role="radiogroup" aria-label="Tempo"></div></div>
+      <div class="psec">Spieler am Tisch</div>
+      <div class="seg" id="tnSeats" role="radiogroup" aria-label="Spieler am Tisch"></div>
+      <div class="psec">Einsatz pro Spieler</div>
+      <div class="tnrange"><input class="bprange" type="range" id="tnRange" min="100" max="10000" step="100" aria-label="Einsatz pro Spieler"><b id="tnBuyV"></b></div>
       <div class="ov" id="tnSum"></div>
       <button class="btn primary wide" id="tnGo" type="button">Starten</button>
       <button class="btn wide" id="tnCancel" type="button">Abbrechen</button>
-      <button class="tnlink" id="tnFr" type="button">Mit Freunden? Tisch erstellen → Spielart wählen</button>
-    </div>
-  </div>
-  <div id="tnWheel" class="overlay" hidden>
-    <div class="tnwbox">
-      <div class="tnwk">Spin &amp; Go</div>
-      <div class="tnw"><svg id="tnwDisc" viewBox="-100 -100 200 200" aria-hidden="true"></svg><svg class="tnwrim" id="tnwRim" viewBox="-100 -100 200 200" aria-hidden="true"></svg><b id="tnwRes"></b></div>
-      <div class="tnwjp" aria-hidden="true">JACKPOT</div>
-      <p class="tnwpot" id="tnwPot"></p>
-      <button class="tnlink" id="tnwSkip" type="button" hidden>Überspringen</button>
+      <button class="tnlink" id="tnFr" type="button">Mit Freunden? Tisch erstellen → Spielart Turnier</button>
     </div>
   </div>
   <div id="tnBust" class="overlay" hidden>
@@ -3819,7 +3770,7 @@ input.bprange[type=range]::-moz-range-thumb { width: 20px; height: 20px; border-
   var BLINDS = [[10, 20], [20, 40], [30, 60], [50, 100], [100, 200], [200, 400]];
   var HANDS_PER_LEVEL = 8;
   var START_CHIPS = 1000, REBUY = 100;
-  /* Turniere (Sit & Go, Spin & Go): feste Blind-Leiter, nach der letzten Stufe weiter verdoppelnd */
+  /* Turnier: feste Blind-Leiter, nach der letzten Stufe weiter verdoppelnd */
   var TLADDER = [[10, 20], [15, 30], [25, 50], [50, 100], [75, 150], [100, 200], [150, 300], [200, 400], [300, 600], [500, 1000]];
   function ladderAt(lv) {
     lv = Math.max(0, lv | 0);
@@ -5116,7 +5067,7 @@ input.bprange[type=range]::-moz-range-thumb { width: 20px; height: 20px; border-
   }
 
   var MP = { on: false };   // laufendes Online-Spiel (siehe unten)
-  var TN = null;            // laufendes Turnier (Sit & Go, Spin & Go), siehe Abschnitt „Turniere“ unten
+  var TN = null;            // laufendes Turnier, siehe Abschnitt „Turniere“ unten
   var gen = 0;   // zaehlt Spielstarts: aeltere, abgebrochene Spiele laufen nicht weiter
   /* nur fuer Tests: window.PR_PKSPEED = 0.05 laesst alle Pausen am Pokertisch 20-mal schneller laufen */
   function spd(ms) { var f = +window.PR_PKSPEED; return f > 0 && f < 1 ? Math.round(ms * f) : ms; }
@@ -6269,8 +6220,8 @@ input.bprange[type=range]::-moz-range-thumb { width: 20px; height: 20px; border-
   var CODE_CHARS = 'ABCDEFGHJKMNPQRSTUVWXYZ23456789';
   var SB_OPTS = [5, 10, 20, 25, 50, 100], EVERY_OPTS = [5, 8, 10, 15, 20, 0], SEAT_OPTS = [2, 3, 4, 5], BOT_OPTS = [0, 1, 2, 3, 4];
   var BOT_NAMES = ['Svenja', 'Tarek', 'Olga', 'Bruno'];
-  /* mode: '' normaler Tisch, 'sng' Sit & Go, 'spin' Spin & Go; tb: Turnier-Einsatz, tsp: 'n' normal / 't' Turbo */
-  var ROOM = { code: '', sb: 10, every: 8, seats: 5, bots: 0, mode: '', tb: 500, tsp: 'n' };
+  /* mode: '' normaler Tisch, 'tn' Turnier (seats = Spieler am Tisch); tb: Turnier-Einsatz */
+  var ROOM = { code: '', sb: 10, every: 8, seats: 5, bots: 0, mode: '', tb: 500 };
   var NET = { peer: null, role: '', code: '', cfg: null, conns: [], players: [], gen: 0, shown: 0, rids: {}, rid: '' };
   try {
     var rawR = JSON.parse(localStorage.getItem('pr-room') || 'null');
@@ -6280,9 +6231,8 @@ input.bprange[type=range]::-moz-range-thumb { width: 20px; height: 20px; border-
       if (EVERY_OPTS.indexOf(rawR.every) >= 0) ROOM.every = rawR.every;
       if (SEAT_OPTS.indexOf(rawR.seats) >= 0) ROOM.seats = rawR.seats;
       if (BOT_OPTS.indexOf(rawR.bots) >= 0) ROOM.bots = Math.min(rawR.bots, ROOM.seats - 1);
-      if (rawR.mode === 'sng' || rawR.mode === 'spin') ROOM.mode = rawR.mode;
-      if ([100, 500, 2000, 10000].indexOf(rawR.tb) >= 0) ROOM.tb = rawR.tb;
-      if (rawR.tsp === 't') ROOM.tsp = 't';
+      if (rawR.mode === 'tn' || rawR.mode === 'sng' || rawR.mode === 'spin') ROOM.mode = 'tn';
+      if (tnBuy(rawR.tb)) ROOM.tb = tnBuy(rawR.tb);
     }
   } catch (e) {}
   function saveRoom() { try { localStorage.setItem('pr-room', JSON.stringify(ROOM)); } catch (e) {} }
@@ -6312,26 +6262,26 @@ input.bprange[type=range]::-moz-range-thumb { width: 20px; height: 20px; border-
   }
   function renderRoom() {
     $('#frCode').textContent = ROOM.code;
-    var MODES = ['', 'sng', 'spin'], tn = !!ROOM.mode;
-    seg($('#segMode'), MODES, ROOM.mode, function (v) { return v === 'sng' ? 'Sit & Go' : v === 'spin' ? 'Spin & Go' : 'Normal'; }, function (v) { ROOM.mode = v; saveRoom(); renderRoom(); });
-    $('#modeHint').textContent = ROOM.mode === 'sng' ? 'Turnier zu fünft: jeder zahlt den Einsatz, bekommt 1.500 Turnierchips, die Blinds steigen. Platz 1 bekommt 65 %, Platz 2 35 % vom Topf (5 × Einsatz). Freie Plätze spielen Bots.'
-      : ROOM.mode === 'spin' ? 'Turnier zu dritt mit 500 Turnierchips und schnellen Blinds. Vor dem Start bestimmt das Glücksrad den Topf: 2× bis 1.000× Einsatz. Freie Plätze spielen Bots.'
+    var MODES = ['', 'tn'], tn = !!ROOM.mode;
+    seg($('#segMode'), MODES, ROOM.mode, function (v) { return v === 'tn' ? 'Turnier' : 'Normal'; }, function (v) { ROOM.mode = v; saveRoom(); renderRoom(); });
+    $('#segMode').style.gridTemplateColumns = 'repeat(2, 1fr)';
+    $('#modeHint').textContent = tn ? 'Turnier: Du legst fest, wie viele Spieler am Tisch sitzen. Plätze, die keiner deiner Freunde belegt, spielen beim Start Bots. Jeder zahlt den Einsatz und bekommt 1.500 Turnierchips, die Blinds steigen alle 5 Hände. Wer keine Chips mehr hat, ist raus. Der Sieger bekommt den ganzen Topf.'
       : 'Normaler Tisch: Chips mitbringen, nachladen, jederzeit gehen.';
-    ['#frcSb', '#frcEvery', '#frcSeats', '#frcBots', '#frcChips'].forEach(function (id) { $(id).hidden = tn; });
-    $('#frcTb').hidden = !tn; $('#frcTsp').hidden = ROOM.mode !== 'sng';
-    seg($('#segTb'), TN_BUY, ROOM.tb, function (v) { return fmt(v); }, function (v) { ROOM.tb = v; saveRoom(); renderRoom(); }, function (v) { return (PROF.bank | 0) < v; });
-    var tpot = ROOM.mode === 'spin' ? 'Topf ' + fmt(2 * ROOM.tb) + ' bis ' + fmt(1000 * ROOM.tb) + ' Chips (Glücksrad)' : 'Topf ' + fmt(5 * ROOM.tb) + ' Chips';
+    ['#frcSb', '#frcEvery', '#frcBots', '#frcChips'].forEach(function (id) { $(id).hidden = tn; });
+    $('#frcTb').hidden = !tn;
+    $('#seatsT').textContent = tn ? 'Spieler am Tisch' : 'Plätze';
+    var tr = $('#tbRange'); tr.min = TN_MIN; tr.max = TN_MAX; tr.step = TN_STEP;
+    if (+tr.value !== ROOM.tb) tr.value = ROOM.tb;
+    $('#tbVal').textContent = fmt(ROOM.tb);
+    var tpot = 'Topf ' + fmt(ROOM.tb * ROOM.seats) + ' Chips für den Sieger';
     $('#tbHint').textContent = (PROF.bank | 0) < ROOM.tb ? 'Dein Guthaben reicht nicht für diesen Einsatz.' : 'Jeder zahlt ' + fmt(ROOM.tb) + ' Chips aus seinem Guthaben · ' + tpot;
-    seg($('#segTsp'), ['n', 't'], ROOM.tsp, function (v) { return v === 't' ? 'Turbo' : 'Normal'; }, function (v) { ROOM.tsp = v; saveRoom(); renderRoom(); });
-    $('#segTsp').style.gridTemplateColumns = 'repeat(2, 1fr)';
-    $('#tspHint').textContent = ROOM.tsp === 't' ? 'Blinds steigen alle 3 Hände.' : 'Blinds steigen alle 6 Hände.';
     seg($('#segSb'), SB_OPTS, ROOM.sb, function (v) { return fmt(v); }, function (v) { ROOM.sb = v; saveRoom(); renderRoom(); });
     seg($('#segEvery'), EVERY_OPTS, ROOM.every, function (v) { return v ? v + ' Hände' : 'Nie'; }, function (v) { ROOM.every = v; saveRoom(); renderRoom(); });
     if (ROOM.bots > ROOM.seats - 1) ROOM.bots = ROOM.seats - 1;
     seg($('#segSeats'), SEAT_OPTS, ROOM.seats, function (v) { return String(v); }, function (v) { ROOM.seats = v; if (ROOM.bots > v - 1) ROOM.bots = v - 1; saveRoom(); renderRoom(); });
     seg($('#segBots'), BOT_OPTS, ROOM.bots, function (v) { return v ? String(v) : 'Keine'; }, function (v) { ROOM.bots = v; saveRoom(); renderRoom(); }, function (v) { return v > ROOM.seats - 1; });
     var humanSeats = ROOM.seats - ROOM.bots;
-    $('#seatsHint').textContent = ROOM.seats + ' Plätze am Tisch. Gestartet werden kann schon ab 2 Spielern.';
+    $('#seatsHint').textContent = tn ? ROOM.seats + ' Spieler. Wer von deinen Freunden nicht dabei ist, wird beim Start durch einen Bot ersetzt. Mit so vielen Spielern, wie Freunde da sind, spielt ihr ohne Bots.' : ROOM.seats + ' Plätze am Tisch. Gestartet werden kann schon ab 2 Spielern.';
     $('#botsHint').textContent = ROOM.bots ? ROOM.bots + (ROOM.bots === 1 ? ' Bot spielt' : ' Bots spielen') + ' mit. Für dich und Freunde bleiben ' + humanSeats + (humanSeats === 1 ? ' Platz.' : ' Plätze.') : 'Nur echte Spieler. Alle ' + ROOM.seats + ' Plätze sind für dich und Freunde.';
     $('#sbHint').textContent = 'Small Blind ' + fmt(ROOM.sb) + ' · Big Blind ' + fmt(ROOM.sb * 2);
     $('#everyHint').textContent = ROOM.every ? 'Nach jeweils ' + ROOM.every + ' Händen steigen die Blinds.' : 'Die Blinds bleiben während des ganzen Spiels gleich.';
@@ -6361,6 +6311,7 @@ input.bprange[type=range]::-moz-range-thumb { width: 20px; height: 20px; border-
   $('#frCreate').addEventListener('click', openCreate);
   $('#frJoin').addEventListener('click', function () { openJoin(''); });
   $('#frNew').addEventListener('click', function () { ROOM.code = newCode(); saveRoom(); renderRoom(); });
+  $('#tbRange').addEventListener('input', function () { var v = tnBuy(this.value); if (v && v !== ROOM.tb) { ROOM.tb = v; saveRoom(); renderRoom(); } });
   $('#frCopy').addEventListener('click', function () {
     var b = $('#frCopy'), done = function (t) { b.textContent = t; setTimeout(function () { b.textContent = 'Code kopieren'; }, 1600); };
     try { navigator.clipboard.writeText(ROOM.code).then(function () { done('Kopiert'); }, function () { selectCode(); done('Zum Kopieren markiert'); }); }
@@ -6378,9 +6329,10 @@ input.bprange[type=range]::-moz-range-thumb { width: 20px; height: 20px; border-
      8: Profilrahmen und Titel cos { frame, title } im oeffentlichen Profil und im Stand (siehe PRLook; spaetere Felder
         darin werden von aelteren Apps einfach ignoriert),
      9: cos.win (Siegesanimation), cos.av (Profilbild), cos.um (Regenschirm) und Wurfgegenstaende { t: 'tom', k },
+     11: ein Turniermodus statt Sit & Go / Spin & Go: cfg.tn { m: 'tn', b, n } im Stand, start.tn { m: 'tn', b, n }, Sieger nimmt alles;
      10: Turniere (Sit & Go, Spin & Go): cfg.tn { m, b, e } im Stand, start.tn { m, b, e, x } (x = Gluecksrad), snap.tq (Plaetze),
          { t: 'tnp', p, z } (mein Platz und Preis) und end.tr (Ergebnisliste) */
-  var PK_V = 10;
+  var PK_V = 11;
   var MSG_NOLIB = 'Online-Tische gehen nur über den Link zum Spiel (kortjannis-web.github.io/Pokerrunde), nicht in dieser Vorschau.';
   function peerOpts() { return window.PR_PEER_OPTS || {}; }
   function netAvail() { return typeof window.Peer === 'function'; }
@@ -6434,8 +6386,8 @@ input.bprange[type=range]::-moz-range-thumb { width: 20px; height: 20px; border-
         if (g !== NET.gen) { try { peer.destroy(); } catch (e) {} return; }
         done = true; clearTimeout(to);
         NET.peer = peer; NET.role = 'host'; NET.code = ROOM.code; NET.cfg = { sb: ROOM.sb, every: ROOM.every, seats: ROOM.seats, bots: Math.min(ROOM.bots, ROOM.seats - 1) };
-        /* Turnier: feste Platzzahl, Bots fuellen beim Start die freien Plaetze auf; cfg.tn = { m, b, e } */
-        if (ROOM.mode) { var tc = tnCfg(ROOM.mode, ROOM.tb, ROOM.tsp); NET.cfg = { sb: 10, every: tc.e, seats: tc.n, bots: 0, tn: { m: tc.m, b: tc.b, e: tc.e } }; }
+        /* Turnier: feste Spielerzahl, Bots fuellen beim Start die freien Plaetze auf; cfg.tn = { m: 'tn', b, n } */
+        if (ROOM.mode) { var tc = tnCfg(ROOM.tb, ROOM.seats); NET.cfg = { sb: 10, every: tc.e, seats: tc.n, bots: 0, tn: { m: 'tn', b: tc.b, n: tc.n } }; }
         NET.players = [Object.assign({ id: 'host', host: true }, cleanProf(myPublic(pkCreate.get())))]; NET.conns = []; NET.shown = 1;
         peer.on('connection', hostAccept);
         showLobby();
@@ -6535,7 +6487,7 @@ input.bprange[type=range]::-moz-range-thumb { width: 20px; height: 20px; border-
                       seats: SEAT_OPTS.indexOf(d.cfg.seats) >= 0 ? d.cfg.seats : 5, bots: BOT_OPTS.indexOf(d.cfg.bots) >= 0 ? d.cfg.bots : 0 };
           cfg.bots = Math.min(cfg.bots, cfg.seats - 1);
           var tcl = tnClean(d.cfg.tn);
-          if (tcl) { cfg.tn = { m: tcl.m, b: tcl.b, e: tcl.e }; cfg.seats = tcl.n; cfg.bots = 0; cfg.every = tcl.e; }
+          if (tcl) { cfg.tn = { m: 'tn', b: tcl.b, n: tcl.n }; cfg.seats = tcl.n; cfg.bots = 0; cfg.every = tcl.e; }
           if (!finished && tcl && (PROF.bank | 0) < tcl.b) { fail('Für dieses Turnier brauchst du ' + fmt(tcl.b) + ' Chips Einsatz – so viel hast du gerade nicht.'); return; }
           var list = d.players.slice(0, humanCap(cfg)).map(function (p, i) { return Object.assign({ id: String(p && p.id || i), host: !!(p && p.host) }, cleanProf(p)); });
           NET.cfg = cfg; NET.players = list; NET.late = d.t === 'wait';
@@ -6638,8 +6590,8 @@ input.bprange[type=range]::-moz-range-thumb { width: 20px; height: 20px; border-
     if (NET.role !== 'host' || !NET.cfg || MP.on) return;
     var cfg = NET.cfg;
     var hum = NET.players.filter(function (p) { return p.host || NET.conns.some(function (c) { return c.peer === p.id && c.open !== false; }); });
-    var tc = cfg.tn ? tnCfg(cfg.tn.m, cfg.tn.b, cfg.tn.e === 3 ? 't' : 'n') : null;
-    if (tc && !tnUI()) return;
+    var tc = cfg.tn ? tnClean(cfg.tn) : null;
+    if (cfg.tn && (!tc || !tnUI())) return;
     if (tc) hum = hum.slice(0, tc.n);
     var nBots = tc ? tc.n - hum.length : cfg.bots;   // Turnier: freie Plaetze spielen Bots
     var n = hum.length + nBots;
@@ -6668,8 +6620,7 @@ input.bprange[type=range]::-moz-range-thumb { width: 20px; height: 20px; border-
     else { if (TN) tnReset(); wallet = bank - buys[0]; PROF.buyin = buys[0]; saveProf(); sessBank = bank; }
     MP = { on: true, role: 'host', n: n, seats: seatsArr, wait: null, brokes: [], joins: [], ended: false };
     NET.players = hum.slice();
-    var tx = tc && tc.m === 'spin' ? tnUI().pickMult() : 0;   // Spin & Go: der Ersteller dreht das Rad und schickt das Ergebnis
-    if (tc) tnMake(tc, tx, true);
+    if (tc) tnMake(tc, true);
     game.resetMulti({
       seats: seatsArr.map(function (st, i) { return { name: i === 0 ? 'Du' : st.name, color: i === 0 ? null : st.color, kind: st.kind, chips: st.chips }; }),
       sb: tc ? 10 : cfg.sb, every: tc ? tc.e : cfg.every, tourney: !!tc
@@ -6678,14 +6629,12 @@ input.bprange[type=range]::-moz-range-thumb { width: 20px; height: 20px; border-
     pkOpen();
     snap.hand = -1;
     seatsArr.forEach(function (st, g) {
-      if (g > 0 && st.conn) { try { st.conn.send({ t: 'start', seat: g, n: n, chips: st.chips, tn: tc ? { m: tc.m, b: tc.b, e: tc.e, x: tx } : undefined }); } catch (e) {} }
+      if (g > 0 && st.conn) { try { st.conn.send({ t: 'start', seat: g, n: n, chips: st.chips, tn: tc ? { m: 'tn', b: tc.b, n: tc.n } : undefined }); } catch (e) {} }
     });
     $('#friends').hidden = true; $('#pview').hidden = true;
     wantWake();
     render();
-    var rg = gen;
-    if (tc) tnWheelThen(function () { if (rg === gen && MP.on && TN) game.run(); });
-    else game.run();
+    game.run();
     setTimeout(function () {
       if (!MP.on || MP.role !== 'host') return;
       MP.seats.forEach(function (st, i) { if (i > 0 && st.kind === 'human' && !st.gone && !st.ready) { toastMsg(st.name + ' ist nicht eingestiegen'); mpDrop(i); } });
@@ -7024,7 +6973,7 @@ input.bprange[type=range]::-moz-range-thumb { width: 20px; height: 20px; border-
     if (tc) { bi = Math.max(1, Math.min(1e9, Math.round(+d.chips) || tc.chips)); tnPay(tc.b); }   // Turnier: Einsatz bezahlen, Turnierchips vom Ersteller
     else { if (TN) tnReset(); wallet = bank - bi; PROF.buyin = bi; saveProf(); sessBank = bank; }
     MP = { on: true, role: 'guest', n: n, seat: seat, conn: NET.conn, unacked: 0, pend: 0, doneTk: -1, dead: false };
-    if (tc) tnMake(tc, tc.x, true);
+    if (tc) tnMake(tc, true);
     var G = guestGame.S;
     G.players = []; for (var i = 0; i < n; i++) G.players.push({ id: i, name: i === 0 ? 'Du' : '', color: null, chips: 0, bet: 0, total: 0, folded: false, allIn: false, inHand: false, label: '', win: 0, revealed: false, hole: [] });
     G.board = []; G.handNo = 0; G.phase = 'idle'; G.toAct = -1; G.glow = -1; G.result = null; G.sbIdx = -1; G.bbIdx = -1; G.dealer = 0; G.humanStart = bi; G.pendingAdd = 0;
@@ -7036,7 +6985,6 @@ input.bprange[type=range]::-moz-range-thumb { width: 20px; height: 20px; border-
     wantWake();
     try { MP.conn.send({ t: 'ready' }); } catch (e) {}
     render();
-    if (TN && TN.m === 'spin') tnUI().wheel(TN.x, TN.pz, function () {});   // nur Anzeige, der Ersteller startet nach dem Rad
   }
   function mpApplySnap(d) {
     if (!d || !Array.isArray(d.pl) || d.pl.length < 2 || d.pl.length > 5) return;
@@ -7103,9 +7051,8 @@ input.bprange[type=range]::-moz-range-thumb { width: 20px; height: 20px; border-
                 ['Blinds steigen', cfg.every ? 'alle ' + cfg.every + ' Hände' : 'nie'], ['Plätze', String(cfg.seats)],
                 ['Bots', cfg.bots ? String(cfg.bots) : 'keine']];
     var tcf = cfg.tn;
-    if (tcf) rows = [['Spiel', tcf.m === 'spin' ? 'Spin & Go' : 'Sit & Go' + (tcf.e === 3 ? ' Turbo' : '')], ['Einsatz', fmt(tcf.b) + ' Chips'],
-                     ['Topf', tcf.m === 'spin' ? 'Glücksrad: ' + fmt(2 * tcf.b) + ' bis ' + fmt(1000 * tcf.b) : fmt(5 * tcf.b) + ' (65 % / 35 %)'],
-                     ['Turnierchips', tcf.m === 'spin' ? '500' : '1.500'], ['Blinds', '10/20, steigen alle ' + tcf.e + ' Hände'], ['Plätze', cfg.seats + ' · freie spielen Bots']];
+    if (tcf) rows = [['Spiel', 'Turnier'], ['Einsatz', fmt(tcf.b) + ' Chips'], ['Topf', fmt(tcf.b * tcf.n) + ' · alles für den Sieger'],
+                     ['Turnierchips', fmt(TN_CHIPS)], ['Blinds', '10/20, steigen alle ' + TN_EVERY + ' Hände'], ['Spieler', tcf.n + ' · freie Plätze spielen Bots']];
     var ov = $('#lbOv'); ov.innerHTML = '';
     rows.forEach(function (r) {
       var d = document.createElement('div'); d.className = 'ovrow';
@@ -7888,41 +7835,35 @@ input.bprange[type=range]::-moz-range-thumb { width: 20px; height: 20px; border-
     stage.appendChild(el);
   })();
 
-  /* ---------- Turniere: Sit & Go und Spin & Go am Pokertisch ----------
-     Hier laeuft nur der Ablauf am Tisch (Start, Plaetze, Preise, Online). Auswahlfenster, Gluecksrad, „Platz 4 von 5“,
+  /* ---------- Turnier am Pokertisch ----------
+     Hier laeuft nur der Ablauf am Tisch (Start, Plaetze, Preise, Online). Auswahlfenster, „Platz 4 von 5“,
      Siegertreppchen, Statistik und Erfolge stehen im Skript „Turniere“ weiter unten (window.PRTn).
-     Einsatz wird beim Start abgebucht, die Turnierchips (1.500 bzw. 500) zaehlen nie zum Guthaben, der Preis kommt
-     sofort beim Ausscheiden bzw. am Ende dazu. Online rechnet der Ersteller, jeder zahlt seinen Einsatz selbst und
-     bekommt seinen Preis auf dem eigenen Handy gutgeschrieben ({ t: 'tnp', p: Platz, z: Preis }).
-     TN = { m: 'sng'|'spin', b: Einsatz, sp: 'n'|'t', x: Multiplikator (Spin), n: Spieler, e: Haende pro Stufe,
-            pz: Preise je Platz, my: { place, prize } sobald ich fertig bin, tq: Plaetze aus Sicht des Mitspielers,
-            watch: zuschauen, over: Turnier zu Ende, on: online } */
-  var TN_BUY = [100, 500, 2000, 10000];
+     Ein Turniermodus: 2 bis 5 Spieler am Tisch (was Freunde nicht belegen, spielen beim Start Bots), Einsatz 100 bis 10.000
+     in Hunderterschritten, 1.500 Turnierchips, Blinds 10/20 steigen alle 5 Haende, der Sieger bekommt den ganzen Topf
+     (Spieler x Einsatz, auch die Bots zahlen ein). Wer geht, gibt auf.
+     Einsatz wird beim Start abgebucht, die Turnierchips zaehlen nie zum Guthaben, der Preis kommt am Ende dazu.
+     Online rechnet der Ersteller, jeder zahlt seinen Einsatz selbst und bekommt seinen Preis auf dem eigenen Handy
+     gutgeschrieben ({ t: 'tnp', p: Platz, z: Preis }).
+     TN = { m: 'tn', b: Einsatz, n: Spieler, e: Haende pro Stufe, pz: Preise je Platz, my: { place, prize } sobald ich
+            fertig bin, tq: Plaetze aus Sicht des Mitspielers, watch: zuschauen, over: Turnier zu Ende, on: online } */
+  var TN_MIN = 100, TN_MAX = 10000, TN_STEP = 100, TN_SEATS = [2, 3, 4, 5], TN_CHIPS = 1500, TN_EVERY = 5;
   function tnUI() { return window.PRTn; }
-  /* Preis je Platz: Sit & Go 5 x Einsatz (65 % / 35 %), Spin & Go Multiplikator x Einsatz (bis 10x alles an Platz 1,
-     ab 25x 80 / 12 / 8 %) */
-  function tnPrizes(m, x, b, n) {
-    var pool = (m === 'spin' ? x : n) * b, sh = m === 'spin' ? (x >= 25 ? [0.8, 0.12, 0.08] : [1]) : [0.65, 0.35];
-    var out = sh.map(function (f) { return Math.floor(pool * f); });
-    out[0] += pool - out.reduce(function (a, v) { return a + v; }, 0);
-    return out;
+  function tnBuy(b) { b = Math.round(+b / TN_STEP) * TN_STEP; return isFinite(b) && b >= TN_MIN && b <= TN_MAX ? b : 0; }
+  /* Preis je Platz: der Sieger bekommt alles */
+  function tnPrizes(b, n) { return [b * n]; }
+  function tnCfg(b, n) {
+    n = Math.round(+n);
+    return { m: 'tn', b: tnBuy(b), n: TN_SEATS.indexOf(n) >= 0 ? n : 0, chips: TN_CHIPS, e: TN_EVERY };
   }
-  function tnCfg(m, b, sp) {
-    m = m === 'spin' ? 'spin' : 'sng';
-    var t = m === 'spin' || sp === 't';
-    return { m: m, b: TN_BUY.indexOf(b) >= 0 ? b : 0, sp: t ? 't' : 'n', n: m === 'spin' ? 3 : 5, chips: m === 'spin' ? 500 : 1500, e: t ? 3 : 6 };
-  }
-  /* aus Netzdaten: { m, b, e, x } */
+  /* aus Netzdaten: { m: 'tn', b, n } */
   function tnClean(d) {
-    if (!d || typeof d !== 'object') return null;
-    var c = tnCfg(d.m, d.b, d.e === 3 ? 't' : 'n');
-    if (!c.b) return null;
-    c.x = c.m === 'spin' ? (tnUI() ? tnUI().cleanMult(d.x) : 2) : 0;
-    return c;
+    if (!d || typeof d !== 'object' || d.m !== 'tn') return null;
+    var c = tnCfg(d.b, d.n);
+    return c.b && c.n ? c : null;
   }
-  function tnTitle(t) { return t.m === 'spin' ? 'Spin & Go' + (t.x ? ' ×' + fmt(t.x) : '') : 'Sit & Go' + (t.sp === 't' ? ' Turbo' : ''); }
-  function tnMake(c, x, on) {
-    TN = { m: c.m, b: c.b, sp: c.sp, x: x || 0, n: c.n, e: c.e, pz: tnPrizes(c.m, x, c.b, c.n), my: null, tq: null, watch: false, over: false, on: !!on };
+  function tnTitle(t) { return 'Turnier · ' + t.n + ' Spieler'; }
+  function tnMake(c, on) {
+    TN = { m: 'tn', b: c.b, n: c.n, e: c.e, pz: tnPrizes(c.b, c.n), my: null, tq: null, watch: false, over: false, on: !!on };
     $('#bar .brand').textContent = tnTitle(TN);
     $('#topBtn').hidden = true;
     tnUI().started(TN);   // merkt sich das laufende Turnier (App-Neustart = aufgegeben) und meldet den Einsatz
@@ -7932,14 +7873,13 @@ input.bprange[type=range]::-moz-range-thumb { width: 20px; height: 20px; border-
     PROF.bank = (PROF.bank | 0) - pay; saveProf(); renderBank();
     wallet = PROF.bank; sessBank = PROF.bank;
   }
-  function tnWheelThen(fn) { if (TN && TN.m === 'spin') tnUI().wheel(TN.x, TN.pz, fn); else fn(); }
-  /* offline gegen Bots: o = { m, b, sp } */
+  /* offline gegen Bots: o = { b, n } */
   function tnBegin(o) {
-    var c = tnCfg(o && o.m, o && o.b, o && o.sp);
-    if (playing || MP.on || NET.peer || !c.b || (PROF.bank | 0) < c.b || !tnUI()) return false;
+    var c = tnCfg(o && o.b, o && o.n);
+    if (playing || MP.on || NET.peer || !c.b || !c.n || (PROF.bank | 0) < c.b || !tnUI()) return false;
     prepTable();
     tnPay(c.b);
-    tnMake(c, c.m === 'spin' ? tnUI().pickMult() : 0, false);
+    tnMake(c, false);
     var seatsArr = [{ name: 'Du', color: null, kind: 'human', chips: c.chips }];
     for (var i = 1; i < c.n; i++) seatsArr.push({ name: BOT_NAMES[i - 1], color: null, kind: 'bot', chips: c.chips });
     game.resetMulti({ seats: seatsArr, sb: 10, every: c.e, tourney: true });
@@ -7947,8 +7887,7 @@ input.bprange[type=range]::-moz-range-thumb { width: 20px; height: 20px; border-
     pkOpen();
     snap.hand = -1;
     render();
-    var g = gen;
-    tnWheelThen(function () { if (g === gen && TN) game.run(); });
+    game.run();
     return true;
   }
   function tnPlaceOf(i) {
@@ -7984,7 +7923,7 @@ input.bprange[type=range]::-moz-range-thumb { width: 20px; height: 20px; border-
     if (!Array.isArray(PROF.log)) PROF.log = [];
     PROF.log.push([PROF.hands, PROF.wins, PROF.bank, PROF.pnet]); saveProf();
     if (prize > TN.b && window.JAR) window.JAR.add(prize - TN.b);
-    tnUI().record({ mode: TN.m, place: place, of: TN.n, buyin: TN.b, prize: prize, mult: TN.x, speed: TN.sp, online: !!MP.on, forfeit: !!quiet });
+    tnUI().record({ place: place, of: TN.n, buyin: TN.b, prize: prize, online: !!MP.on, forfeit: !!quiet });
     if (quiet || place === 1) return;
     /* kurz warten: endet das Turnier im selben Moment (Platz 2 im Heads-up), kommt gleich das Treppchen */
     var t = TN, g = gen;
@@ -8011,8 +7950,8 @@ input.bprange[type=range]::-moz-range-thumb { width: 20px; height: 20px; border-
   }
   function tnShowEnd() {
     TN.over = true;
-    tnUI().podium({ m: TN.m, x: TN.x, b: TN.b, n: TN.n, sp: TN.sp, list: tnList(), my: TN.my, online: !!MP.on }, function (again) {
-      var c = TN ? { m: TN.m, b: TN.b, sp: TN.sp } : null, off = !MP.on;
+    tnUI().podium({ b: TN.b, n: TN.n, list: tnList(), my: TN.my, online: !!MP.on }, function (again) {
+      var c = TN ? { b: TN.b, n: TN.n } : null, off = !MP.on;
       toMenu();
       if (again && off && c) tnUI().open(c);
     });
@@ -8136,9 +8075,9 @@ input.bprange[type=range]::-moz-range-thumb { width: 20px; height: 20px; border-
     /* Ereignis-Zentrale (siehe window.PRBus ganz oben): on(name, fn), off(name, fn), emit(name, daten) */
     on: window.PRBus.on, off: window.PRBus.off, emit: window.PRBus.emit,
     prof: function () { return PROF; }, saveProf: saveProf, renderBank: renderBank, profName: profName,
-    /* Turniere (Skript „Turniere“): begin({ m: 'sng'|'spin', b, sp: 'n'|'t' }) startet offline gegen Bots (false = geht nicht),
-       prizes(m, x, b, n) Preise je Platz, BUY Einsaetze, active() laufendes Turnier oder null */
-    tn: { begin: tnBegin, prizes: tnPrizes, BUY: TN_BUY, active: function () { return TN; } },
+    /* Turnier (Skript „Turniere“): begin({ b, n }) startet offline gegen Bots (false = geht nicht), prizes(b, n) Preise je Platz,
+       buy(b) Einsatz pruefen (0 = ungueltig), MIN/MAX/STEP Einsatz, SEATS Spielerzahlen, active() laufendes Turnier oder null */
+    tn: { begin: tnBegin, prizes: tnPrizes, buy: tnBuy, MIN: TN_MIN, MAX: TN_MAX, STEP: TN_STEP, SEATS: TN_SEATS, active: function () { return TN; } },
     cardEl: cardEl, setFace: setFace, chipStack: chipStack, seg: seg, Picker: Picker,
     newCode: newCode, cleanCode: cleanCode, netAvail: netAvail, peerOpts: peerOpts, MSG_NOLIB: MSG_NOLIB,
     /* fuer die Freundesliste: wo bin ich gerade (Menue, Bots, Online-Tisch mit Code) */
@@ -15427,75 +15366,51 @@ input.bprange[type=range]::-moz-range-thumb { width: 20px; height: 20px; border-
 </script>
 
 <script>
-/* Turniere: Sit & Go und Spin & Go (Auswahl im Menue, Gluecksrad, „Platz 4 von 5“, Siegertreppchen, Statistik, Erfolge).
+/* Turnier am Pokertisch (Auswahl im Menue, „Platz 4 von 5“, Siegertreppchen, Statistik, Erfolge).
    Der Ablauf am Tisch (Start, Plaetze, Preise, online) steckt im Poker-Skript (PR.tn). Schnittstelle window.PRTn:
-     open(cfg?)            Auswahlfenster oeffnen (cfg = { m, b, sp } vorgewaehlt)
-     pickMult()            Gluecksrad-Ergebnis ziehen (crypto.getRandomValues, Tabelle SPIN unten)
-     cleanMult(x)          Multiplikator aus Netzdaten pruefen (unbekannt = 2)
-     wheel(x, pz, done)    Gluecksrad drehen lassen, das auf x landet (ab 25x mit Lichtshow), danach done()
+     open(cfg?)            Auswahlfenster oeffnen (cfg = { b, n } vorgewaehlt)
      started(tn)           Turnier laeuft (Einsatz abgebucht): merkt es sich in pr-tnrun und meldet 'bet'
-     record(r)             eigenes Ergebnis { mode, place, of, buyin, prize, mult, speed, online, forfeit }: Statistik,
+     record(r)             eigenes Ergebnis { place, of, buyin, prize, online, forfeit }: Statistik,
                            'poker:sng' und bei Preis 'win' (net = Preis - Einsatz, zaehlt nur positiv fuer Sterne)
      voided()              Turnier ohne Wertung abgebrochen (Einsatz kam zurueck)
      bust(info, cb)        Karte „Platz 4 von 5“ (cb(true) = zuschauen, cb(false) = zum Menue)
      podium(info, cb)      Siegertreppchen (cb(true) = nochmal, cb(false) = Menue)
      quit(info, cb)        Rueckfrage „Turnier aufgeben?“ (cb nur bei Ja)
      closeAll()            alle Turnierfenster zu
-     stats()               { sng: { n, w, itm, best, net }, spin: { n, w, hi, net } }
-   Speicher: pr-sngstats, pr-spinstats, pr-tnrun (laufendes Turnier; beim App-Neustart = aufgegeben, letzter Platz),
-   pr-tnsel (letzte Auswahl). App-Neustart mitten im Turnier: Einsatz ist weg, es zaehlt als aufgegeben (letzter Platz). */
+     stats()               { n, w, best, net } ueber alle Turniere (die alten Sit & Go und Spin & Go zaehlen mit)
+   Speicher: pr-sngstats (Turniere), pr-spinstats (alte Spin & Go, nur noch gelesen), pr-tnrun (laufendes Turnier; beim
+   App-Neustart = aufgegeben, letzter Platz, Einsatz weg), pr-tnsel (letzte Auswahl { b, n }). */
 (function () {
   'use strict';
   var PR = window.PR;
   if (!PR || !PR.tn) return;
-  var Snd = PR.Snd, fmt = PR.fmt;
+  var Snd = PR.Snd, fmt = PR.fmt, T = PR.tn;
   function $(s) { return document.querySelector(s); }
   function readJ(k) { try { return JSON.parse(localStorage.getItem(k) || 'null'); } catch (e) { return null; } }
   function writeJ(k, v) { try { if (v == null) localStorage.removeItem(k); else localStorage.setItem(k, JSON.stringify(v)); } catch (e) {} }
   function num(v) { v = +v; return isFinite(v) ? v : 0; }
 
-  /* ---------- Gluecksrad: Multiplikator und Wahrscheinlichkeit (p von 100.000) ----------
-     2x 80 % · 3x 12 % · 5x 5 % · 10x 2,5 % · 25x 0,4 % · 100x 0,09 % · 1.000x 0,01 % (Erwartungswert 2,75) */
-  var SPIN = [
-    { m: 2, p: 80000 }, { m: 3, p: 12000 }, { m: 5, p: 5000 }, { m: 10, p: 2500 },
-    { m: 25, p: 400 }, { m: 100, p: 90 }, { m: 1000, p: 10 }
-  ];
-  var SPIN_TOT = SPIN.reduce(function (a, s) { return a + s.p; }, 0);
-  function rnd(n) {
-    var a = new Uint32Array(1), lim = Math.floor(4294967296 / n) * n;
-    try { do { window.crypto.getRandomValues(a); } while (a[0] >= lim); return a[0] % n; }
-    catch (e) { return Math.floor(Math.random() * n); }
-  }
-  function pickMult() {
-    var r = rnd(SPIN_TOT), acc = 0;
-    for (var i = 0; i < SPIN.length; i++) { acc += SPIN[i].p; if (r < acc) return SPIN[i].m; }
-    return 2;
-  }
-  function cleanMult(x) { x = Math.round(+x); return SPIN.some(function (s) { return s.m === x; }) ? x : 2; }
-
   /* ---------- Statistik ---------- */
   function sngStats() { var o = readJ('pr-sngstats') || {}; return { n: Math.max(0, o.n | 0), w: Math.max(0, o.w | 0), itm: Math.max(0, o.itm | 0), best: Math.max(0, o.best | 0), net: Math.round(num(o.net)) }; }
-  function spinStats() { var o = readJ('pr-spinstats') || {}; return { n: Math.max(0, o.n | 0), w: Math.max(0, o.w | 0), hi: Math.max(0, o.hi | 0), net: Math.round(num(o.net)) }; }
-  function stats() { return { sng: sngStats(), spin: spinStats() }; }
+  function spinStats() { var o = readJ('pr-spinstats') || {}; return { n: Math.max(0, o.n | 0), w: Math.max(0, o.w | 0), net: Math.round(num(o.net)) }; }
+  function stats() {
+    var s = sngStats(), p = spinStats();
+    return { n: s.n + p.n, w: s.w + p.w, best: p.w ? 1 : s.best, net: s.net + p.net };
+  }
   function addStats(r) {
-    var net = r.prize - r.buyin;
-    if (r.mode === 'spin') {
-      var p = spinStats(); p.n++; if (r.place === 1) p.w++; p.hi = Math.max(p.hi, r.mult | 0); p.net += net; writeJ('pr-spinstats', p);
-    } else {
-      var s = sngStats(); s.n++; if (r.place === 1) s.w++; if (r.prize > 0) s.itm++; s.best = s.best ? Math.min(s.best, r.place) : r.place; s.net += net; writeJ('pr-sngstats', s);
-    }
+    var s = sngStats(); s.n++; if (r.place === 1) s.w++; if (r.prize > 0) s.itm++; s.best = s.best ? Math.min(s.best, r.place) : r.place; s.net += r.prize - r.buyin;
+    writeJ('pr-sngstats', s);
   }
   function started(t) {
-    writeJ('pr-tnrun', { m: t.m, b: t.b, sp: t.sp, x: t.x, n: t.n, at: Date.now() });
+    writeJ('pr-tnrun', { m: 'tn', b: t.b, n: t.n, at: Date.now() });
     PR.emit('bet', { game: 'poker', amount: t.b, tourney: true });   // der Einsatz ist echtes Guthaben
   }
   function record(r) {
     writeJ('pr-tnrun', null);
-    r = { mode: r.mode === 'spin' ? 'spin' : 'sng', place: Math.max(1, r.place | 0), of: Math.max(2, r.of | 0), buyin: Math.max(0, r.buyin | 0),
-          prize: Math.max(0, Math.round(num(r.prize))), mult: r.mult | 0, speed: r.speed === 't' ? 't' : 'n', online: !!r.online, forfeit: !!r.forfeit };
+    r = { place: Math.max(1, r.place | 0), of: Math.max(2, r.of | 0), buyin: Math.max(0, r.buyin | 0),
+          prize: Math.max(0, Math.round(num(r.prize))), online: !!r.online, forfeit: !!r.forfeit };
     addStats(r);
-    PR.emit('poker:sng', { mode: r.mode, place: r.place, of: r.of, buyin: r.buyin, prize: r.prize, mult: r.mode === 'spin' ? r.mult : 0,
-                           speed: r.speed, online: r.online, forfeit: r.forfeit });
+    PR.emit('poker:sng', { mode: 'tn', place: r.place, of: r.of, buyin: r.buyin, prize: r.prize, online: r.online, forfeit: r.forfeit });
     if (r.prize > 0) PR.emit('win', { game: 'poker', amount: r.prize, net: r.prize - r.buyin, tourney: true });
     renderProfile();
   }
@@ -15504,161 +15419,50 @@ input.bprange[type=range]::-moz-range-thumb { width: 20px; height: 20px; border-
   var lost = (function () {
     var o = readJ('pr-tnrun');
     if (!o || typeof o !== 'object') return null;
-    var b = Math.max(0, o.b | 0), m = o.m === 'spin' ? 'spin' : 'sng', n = m === 'spin' ? 3 : 5;
+    var b = Math.max(0, o.b | 0), n = T.SEATS.indexOf(o.n | 0) >= 0 ? o.n | 0 : o.m === 'spin' ? 3 : 5;
     var P = PR.prof(); P.pnet = (P.pnet || 0) - b; PR.saveProf();
-    record({ mode: m, place: n, of: n, buyin: b, prize: 0, mult: cleanMult(o.x), speed: o.sp, forfeit: true });
-    return { m: m, b: b };
+    record({ place: n, of: n, buyin: b, prize: 0, forfeit: true });
+    return { b: b };
   })();
 
-  /* ---------- Auswahl im Menue ---------- */
+  /* ---------- Auswahl im Menue: Spieler am Tisch (die anderen sind Bots) und Einsatz ---------- */
   var SEL = (function () {
     var o = readJ('pr-tnsel') || {};
-    return { m: o.m === 'spin' ? 'spin' : 'sng', b: PR.tn.BUY.indexOf(o.b) >= 0 ? o.b : 100, sp: o.sp === 't' ? 't' : 'n' };
+    return { b: T.buy(o.b) || 500, n: T.SEATS.indexOf(o.n) >= 0 ? o.n : 5 };
   })();
   function saveSel() { writeJ('pr-tnsel', SEL); }
   function bank() { return PR.prof().bank | 0; }
   function renderPick() {
-    var spin = SEL.m === 'spin';
-    if (bank() < SEL.b) { var fit = PR.tn.BUY.filter(function (v) { return v <= bank(); }); if (fit.length) SEL.b = fit[fit.length - 1]; }
-    PR.seg($('#tnMode'), ['sng', 'spin'], SEL.m, function (v) { return v === 'spin' ? 'Spin & Go' : 'Sit & Go'; }, function (v) { SEL.m = v; saveSel(); renderPick(); });
-    $('#tnMode').style.gridTemplateColumns = 'repeat(2, 1fr)';
-    $('#tnDesc').textContent = spin
-      ? 'Zu dritt gegen 2 Bots, 500 Turnierchips, Blinds steigen alle 3 Hände. Vor dem Start dreht das Glücksrad: Der Topf ist 2× bis 1.000× dein Einsatz.'
-      : 'Zu fünft gegen 4 Bots, 1.500 Turnierchips, die Blinds steigen. Wer keine Chips mehr hat, ist raus. Die zwei Besten teilen sich den Topf.';
-    PR.seg($('#tnBuy'), PR.tn.BUY, SEL.b, function (v) { return fmt(v); }, function (v) { SEL.b = v; saveSel(); renderPick(); }, function (v) { return bank() < v; });
-    $('#tnSpdBox').hidden = spin;
-    PR.seg($('#tnSpd'), ['n', 't'], SEL.sp, function (v) { return v === 't' ? 'Turbo' : 'Normal'; }, function (v) { SEL.sp = v; saveSel(); renderPick(); });
-    $('#tnSpd').style.gridTemplateColumns = 'repeat(2, 1fr)';
-    var b = SEL.b, rows;
-    if (spin) rows = [['Topf', fmt(2 * b) + ' bis ' + fmt(1000 * b)], ['Auszahlung', 'bis 10×: alles an Platz 1'], ['ab 25×', 'Platz 1–3: 80 / 12 / 8 %'], ['Blinds', '10/20, alle 3 Hände höher']];
-    else rows = [['Topf', fmt(5 * b) + ' Chips'], ['Platz 1 / 2', fmt(Math.round(5 * b * 0.65)) + ' / ' + fmt(Math.round(5 * b * 0.35)) + ' (65/35 %)'], ['Blinds', '10/20, alle ' + (SEL.sp === 't' ? 3 : 6) + ' Hände höher']];
+    if (bank() < SEL.b) SEL.b = Math.max(T.MIN, Math.floor(bank() / T.STEP) * T.STEP);   // so viel, wie das Guthaben hergibt
+    $('#tnDesc').textContent = 'Du gegen Bots: Jeder zahlt den Einsatz und bekommt 1.500 Turnierchips, die Blinds steigen alle 5 Hände. Wer keine Chips mehr hat, ist raus. Der Sieger bekommt den ganzen Topf.';
+    PR.seg($('#tnSeats'), T.SEATS, SEL.n, function (v) { return String(v); }, function (v) { SEL.n = v; saveSel(); renderPick(); });
+    var r = $('#tnRange'); r.min = T.MIN; r.max = T.MAX; r.step = T.STEP;
+    if (+r.value !== SEL.b) r.value = SEL.b;
+    $('#tnBuyV').textContent = fmt(SEL.b);
+    var b = SEL.b, rows = [['Gegner', (SEL.n - 1) + (SEL.n === 2 ? ' Bot' : ' Bots')], ['Topf', fmt(b * SEL.n) + ' Chips für den Sieger'], ['Blinds', '10/20, alle 5 Hände höher']];
     var h = '';
-    rows.forEach(function (r) { h += '<div class="ovrow"><span>' + r[0] + '</span><b>' + r[1] + '</b></div>'; });
+    rows.forEach(function (x) { h += '<div class="ovrow"><span>' + x[0] + '</span><b>' + x[1] + '</b></div>'; });
     $('#tnSum').innerHTML = h;
     var ok = bank() >= b;
     $('#tnGo').disabled = !ok;
     $('#tnGo').textContent = ok ? 'Starten · ' + fmt(b) + ' Chips Einsatz' : 'Zu wenig Guthaben';
   }
   function open(cfg) {
-    if (cfg) { SEL.m = cfg.m === 'spin' ? 'spin' : 'sng'; if (PR.tn.BUY.indexOf(cfg.b) >= 0) SEL.b = cfg.b; SEL.sp = cfg.sp === 't' ? 't' : 'n'; saveSel(); }
+    if (cfg) { if (T.buy(cfg.b)) SEL.b = T.buy(cfg.b); if (T.SEATS.indexOf(cfg.n) >= 0) SEL.n = cfg.n; saveSel(); }
     Snd.unlock();
     renderPick();
     $('#tnPick').hidden = false;
   }
+  $('#tnRange').addEventListener('input', function () { var v = T.buy(this.value); if (v && v !== SEL.b) { SEL.b = v; saveSel(); renderPick(); } });
   $('#bTourney').addEventListener('click', function () { open(); });
   $('#tnCancel').addEventListener('click', function () { $('#tnPick').hidden = true; });
   $('#tnPick').addEventListener('click', function (e) { if (e.target === this) this.hidden = true; });
   $('#tnGo').addEventListener('click', function () {
     if (bank() < SEL.b) return;
     $('#tnPick').hidden = true;
-    if (!PR.tn.begin({ m: SEL.m, b: SEL.b, sp: SEL.sp })) $('#tnPick').hidden = false;
+    if (!T.begin({ b: SEL.b, n: SEL.n })) $('#tnPick').hidden = false;
   });
   $('#tnFr').addEventListener('click', function () { $('#tnPick').hidden = true; $('#bFriends').click(); setTimeout(function () { $('#frCreate').click(); }, 30); });
-
-  /* ---------- Gluecksrad ---------- */
-  /* Felder auf dem Rad (nur Optik, das Ergebnis kommt aus pickMult): jeder Wert mindestens einmal */
-  var FIELDS = [2, 3, 2, 5, 2, 10, 2, 3, 25, 2, 5, 2, 100, 3, 2, 1000];
-  var COL = { 2: ['#a77bff', '#4b1fa6'], 3: ['#4cc8f4', '#0f5a85'], 5: ['#ffbd5c', '#b4580c'], 10: ['#ff6a6a', '#8c1420'],
-              25: ['#6cf09a', '#13763a'], 100: ['#ff7ad9', '#8a1466'], 1000: ['#fff0a0', '#b07d22'] };
-  var SPAN = 360 / FIELDS.length;
-  (function drawWheel() {
-    var R = 84, a = -90, h = '', tx = '', pg = '', defs = '<defs>';
-    function pt(r, ang) { return (r * Math.cos(ang * Math.PI / 180)).toFixed(2) + ' ' + (r * Math.sin(ang * Math.PI / 180)).toFixed(2); }
-    Object.keys(COL).forEach(function (m) {
-      defs += '<radialGradient id="tnwg' + m + '" cx="0" cy="0" r="' + R + '" gradientUnits="userSpaceOnUse"><stop offset=".2" stop-color="' + COL[m][1] + '"/><stop offset=".72" stop-color="' + COL[m][0] + '"/><stop offset="1" stop-color="' + COL[m][1] + '"/></radialGradient>';
-    });
-    FIELDS.forEach(function (m) {
-      h += '<path d="M0 0 L' + pt(R, a) + ' A' + R + ' ' + R + ' 0 0 1 ' + pt(R, a + SPAN) + ' Z" fill="url(#tnwg' + m + ')"/>';
-      pg += '<line x1="' + pt(22, a).replace(' ', '" y1="') + '" x2="' + pt(R, a).replace(' ', '" y2="') + '" stroke="#f4d67f" stroke-width="1.6"/>';
-      /* Schrift entlang des Halbmessers (16 schmale Felder) */
-      tx += '<text' + (m >= 25 ? ' class="hi"' : '') + ' transform="rotate(' + (a + SPAN / 2).toFixed(2) + ') translate(57 0)" text-anchor="middle" dy="4.5">' + m + '×</text>';
-      a += SPAN;
-    });
-    $('#tnwDisc').innerHTML = defs + '</defs>' + h + pg + tx;
-    var rim = '<defs><linearGradient id="tnwr" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#fff3c4"/><stop offset=".45" stop-color="#e0aa4a"/><stop offset=".55" stop-color="#b07d22"/><stop offset="1" stop-color="#f4d67f"/></linearGradient>' +
-      '<radialGradient id="tnwhub" cx=".35" cy=".3" r=".8"><stop offset="0" stop-color="#fff3c4"/><stop offset=".5" stop-color="#e0aa4a"/><stop offset="1" stop-color="#7a5418"/></radialGradient></defs>';
-    rim += '<circle r="91" fill="none" stroke="url(#tnwr)" stroke-width="14"/><circle r="84" fill="none" stroke="#5a3a0c" stroke-width="1.6"/><circle r="98" fill="none" stroke="#5a3a0c" stroke-width="1.6"/>';
-    for (var i = 0; i < 24; i++) {
-      var c = pt(91, i * 15 - 90).split(' ');
-      rim += '<circle class="bl" style="--i:' + i + '" cx="' + c[0] + '" cy="' + c[1] + '" r="3.4" fill="#fffbea"/>';
-    }
-    rim += '<circle r="22" fill="url(#tnwhub)" stroke="#5a3a0c" stroke-width="1.6"/><circle r="16" fill="#1d4f8a" stroke="#0b2a4f" stroke-width="1"/><text class="hub" text-anchor="middle" dy="6">♠</text>';
-    rim += '<g class="ptr"><path d="M-11 -107 L11 -107 L0 -77 Z" fill="url(#tnwhub)" stroke="#5a3a0c" stroke-width="1.6" stroke-linejoin="round"/><circle cy="-99" r="4.4" fill="#e0352f" stroke="#fff3c4" stroke-width="1.2"/></g>';
-    $('#tnwRim').innerHTML = rim;
-  })();
-  var wRot = 0, wRaf = 0, wT = [], wGen = 0;
-  function tick(k) {
-    Snd.fx(function (a) { a.noise(a.t, 0.016, 'bandpass', 3000 + (k % 3) * 300, 2.4, 0.16, 0.001); a.tone(a.t, 1700, 0.022, 0.04, 'triangle'); });
-    var p = $('#tnwRim .ptr'); if (p) { p.classList.remove('kick'); void p.getBoundingClientRect(); p.classList.add('kick'); }
-  }
-  function coins(n) {
-    var stg = $('#tnWheel'), h = stg.clientHeight + 60, w = stg.clientWidth;
-    for (var i = 0; i < n; i++) {
-      var c = document.createElement('i');
-      c.className = 'slcoin';
-      c.style.left = Math.round(Math.random() * (w - 22)) + 'px';
-      c.style.setProperty('--h', h + 'px');
-      c.style.setProperty('--dx', Math.round((Math.random() - 0.5) * 80) + 'px');
-      c.style.setProperty('--r', (Math.random() < 0.5 ? -1 : 1) * (540 + Math.round(Math.random() * 720)) + 'deg');
-      c.style.setProperty('--t', (1.4 + Math.random() * 1.0).toFixed(2) + 's');
-      c.style.setProperty('--d', (Math.random() * 1.6).toFixed(2) + 's');
-      c.addEventListener('animationend', function () { this.remove(); });
-      stg.appendChild(c);
-    }
-  }
-  function wheelStop() {
-    wGen++; if (wRaf) cancelAnimationFrame(wRaf); wRaf = 0;
-    wT.forEach(clearTimeout); wT = [];
-    var w = $('#tnWheel'); w.hidden = true; w.classList.remove('jp', 'run', 'hit');
-    [].forEach.call(w.querySelectorAll('.slcoin'), function (c) { c.remove(); });
-  }
-  function wheel(x, pz, done) {
-    wheelStop();
-    var g = wGen, box = $('#tnWheel'), disc = $('#tnwDisc'), res = $('#tnwRes'), pot = $('#tnwPot');
-    x = cleanMult(x);
-    var idx = [];
-    FIELDS.forEach(function (m, i) { if (m === x) idx.push(i); });
-    var fi = idx[rnd(idx.length)];
-    /* Feld fi soll unter dem Zeiger oben stehen: Feldmitte bei (fi + .5) * SPAN, gemessen ab oben im Uhrzeigersinn */
-    var jitter = (rnd(1000) / 1000 - 0.5) * SPAN * 0.6;
-    var base = wRot - (wRot % 360);
-    var target = base + 360 * 6 + (360 - (fi + 0.5) * SPAN) + jitter;
-    var from = wRot, dur = 5600, t0 = 0, last = Math.floor((from % 360) / SPAN);
-    var pool = pz.reduce(function (a, v) { return a + v; }, 0);
-    res.textContent = ''; res.classList.remove('on'); pot.textContent = 'Das Glücksrad bestimmt den Preistopf'; pot.classList.remove('on');
-    box.classList.remove('jp', 'hit'); box.hidden = false; box.classList.add('run');
-    $('#tnwSkip').hidden = true;
-    Snd.unlock();
-    function ease(t) { return 1 - Math.pow(1 - t, 3.6); }
-    function frame(now) {
-      if (g !== wGen) return;
-      if (!t0) t0 = now;
-      var t = Math.min(1, (now - t0) / dur), a = from + (target - from) * ease(t);
-      disc.style.transform = 'rotate(' + a.toFixed(2) + 'deg)';
-      /* Ticken: jedes Mal, wenn eine Feldgrenze am Zeiger vorbeikommt */
-      var k = Math.floor(a / SPAN);
-      if (k !== last) { last = k; tick(k); }
-      if (t < 1) { wRaf = requestAnimationFrame(frame); return; }
-      wRaf = 0; wRot = target;
-      landed();
-    }
-    function landed() {
-      box.classList.remove('run'); box.classList.add('hit');
-      res.textContent = '×' + fmt(x); res.classList.add('on');
-      pot.textContent = 'Preistopf ' + fmt(pool) + ' Chips'; pot.classList.add('on');
-      var jp = x >= 25;
-      if (jp) {
-        /* Jackpot-Lichtshow wie bei Pop the Lock: Lampen blinken, Halo pulsiert, Goldregen */
-        box.classList.add('jp');
-        Snd.win(); wT.push(setTimeout(function () { Snd.pot(); }, 450)); wT.push(setTimeout(function () { Snd.win(); }, 1100));
-        try { if (Snd.vibOn() && navigator.vibrate) navigator.vibrate([70, 50, 140, 50, 200]); } catch (e) {}
-        if (!(window.PRFx && window.PRFx.reduced && window.PRFx.reduced())) coins(x >= 100 ? 60 : 40);
-      } else { Snd.pot(); if (x >= 5) wT.push(setTimeout(function () { Snd.win(); }, 250)); }
-      var fin = function () { if (g !== wGen) return; wheelStop(); done && done(); };
-      wT.push(setTimeout(fin, jp ? 4600 : 1900));
-    }
-    wT.push(setTimeout(function () { if (g === wGen) wRaf = requestAnimationFrame(frame); }, 350));
-  }
 
   /* ---------- Karte „Platz 4 von 5“ ---------- */
   var bustCb = null;
@@ -15689,7 +15493,7 @@ input.bprange[type=range]::-moz-range-thumb { width: 20px; height: 20px; border-
     podCb = cb;
     $('#tnBust').hidden = true; bustCb = null;
     var me = info.my || { place: 0, prize: 0 }, win = me.place === 1;
-    $('#tnEndK').textContent = info.m === 'spin' ? 'Spin & Go · ×' + fmt(info.x) + ' · Topf ' + fmt(info.list.reduce(function (a, r) { return a + r.prize; }, 0) || 0) : 'Sit & Go' + (info.sp === 't' ? ' Turbo' : '') + ' · Einsatz ' + fmt(info.b);
+    $('#tnEndK').textContent = 'Turnier · ' + info.n + ' Spieler · Topf ' + fmt(info.b * info.n);
     $('#tnEndT').textContent = win ? 'Du hast gewonnen!' : 'Turnier vorbei';
     var steps = $('#tnPod'); steps.innerHTML = '';
     [2, 1, 3].forEach(function (pl) {
@@ -15736,18 +15540,16 @@ input.bprange[type=range]::-moz-range-thumb { width: 20px; height: 20px; border-
   $('#tnQuitNo').addEventListener('click', function () { quitCb = null; $('#tnQuit').hidden = true; });
 
   function closeAll() {
-    wheelStop(); bustCb = null; quitCb = null; podCb = null;
+    bustCb = null; quitCb = null; podCb = null;
     ['#tnBust', '#tnQuit', '#tnEnd'].forEach(function (s) { $(s).hidden = true; });
   }
 
   /* ---------- Profil: Abschnitt „Turniere“ ---------- */
   function signed(v) { v = Math.round(v); return (v > 0 ? '+' : v < 0 ? '−' : '±') + fmt(Math.abs(v)); }
   function renderProfile() {
-    var s = sngStats(), p = spinStats();
-    $('#tnSnN').textContent = fmt(s.n); $('#tnSnW').textContent = fmt(s.w); $('#tnSnI').textContent = s.n ? Math.round(s.itm / s.n * 100) + ' %' : '–';
-    $('#tnSnX').textContent = s.n ? 'Bester Platz ' + (s.best || '–') + ' · Netto ' + signed(s.net) + ' Chips' : 'Noch kein Sit & Go gespielt.';
-    $('#tnSpN').textContent = fmt(p.n); $('#tnSpW').textContent = fmt(p.w); $('#tnSpH').textContent = p.hi ? '×' + fmt(p.hi) : '–';
-    $('#tnSpX').textContent = p.n ? 'Netto ' + signed(p.net) + ' Chips' : 'Noch kein Spin & Go gespielt.';
+    var s = stats();
+    $('#tnSnN').textContent = fmt(s.n); $('#tnSnW').textContent = fmt(s.w); $('#tnSnI').textContent = s.n ? Math.round(s.w / s.n * 100) + ' %' : '–';
+    $('#tnSnX').textContent = s.n ? 'Bester Platz ' + (s.best || '–') + ' · Netto ' + signed(s.net) + ' Chips' : 'Noch kein Turnier gespielt.';
   }
   $('#profBtn').addEventListener('click', renderProfile);
   renderProfile();
@@ -15755,18 +15557,17 @@ input.bprange[type=range]::-moz-range-thumb { width: 20px; height: 20px; border-
   /* ---------- Erfolge ---------- */
   if (window.PRAch) {
     [
-      { id: 'turnier-debuet', icon: '🎟️', name: 'Turnier-Debüt', desc: 'Spiele dein erstes Turnier (Sit & Go oder Spin & Go)', ev: 'poker:sng', f: function () { return 1; } },
-      { id: 'kartenhai', icon: '🦈', name: 'Kartenhai', desc: 'Gewinne ein Sit & Go', title: 'Kartenhai', ev: 'poker:sng', f: function (d) { return d.mode === 'sng' && d.place === 1; } },
-      { id: 'vollgas', icon: '🏎️', name: 'Vollgas', desc: 'Gewinne ein Sit & Go im Turbo', ev: 'poker:sng', f: function (d) { return d.mode === 'sng' && d.speed === 't' && d.place === 1; } },
+      { id: 'turnier-debuet', icon: '🎟️', name: 'Turnier-Debüt', desc: 'Spiele dein erstes Pokerturnier', ev: 'poker:sng', f: function () { return 1; } },
+      { id: 'kartenhai', icon: '🦈', name: 'Kartenhai', desc: 'Gewinne ein Pokerturnier', title: 'Kartenhai', ev: 'poker:sng', f: function (d) { return d.place === 1; } },
+      { id: 'vollgas', icon: '🏎️', name: 'Vollgas', desc: 'Gewinne ein Pokerturnier mit 5 Spielern', ev: 'poker:sng', f: function (d) { return d.of === 5 && d.place === 1; } },
       { id: 'turnierkoenig', icon: '🏅', name: 'Turnierkönig', desc: 'Gewinne 3 Turniere', goal: 3, title: 'Turnierkönig', ev: 'poker:sng', f: function (d) { return d.place === 1; } },
-      { id: 'glueckspilz', icon: '🍄', name: 'Glückspilz', desc: 'Spiele ein Spin & Go mit 25× oder mehr', title: 'Glückspilz', ev: 'poker:sng', f: function (d) { return d.mode === 'spin' && d.mult >= 25; } }
+      { id: 'glueckspilz', icon: '💎', name: 'High Roller', desc: 'Gewinne ein Pokerturnier mit mindestens 5.000 Chips Einsatz', title: 'High Roller', ev: 'poker:sng', f: function (d) { return d.place === 1 && d.buyin >= 5000; } }
     ].forEach(function (d) { window.PRAch.add(d); });
     /* schon gespielte Turniere (z. B. vor diesem Update aufgezeichnet) nachtragen */
     var st = stats();
-    if (st.sng.n + st.spin.n > 0) window.PRAch.unlock('turnier-debuet');
-    if (st.sng.w > 0) window.PRAch.unlock('kartenhai');
-    if (st.spin.hi >= 25) window.PRAch.unlock('glueckspilz');
-    window.PRAch.progress('turnierkoenig', st.sng.w + st.spin.w);
+    if (st.n > 0) window.PRAch.unlock('turnier-debuet');
+    if (st.w > 0) window.PRAch.unlock('kartenhai');
+    window.PRAch.progress('turnierkoenig', st.w);
   }
 
   /* Meldung im Menue, wenn ein Turnier durch einen App-Neustart aufgegeben wurde */
@@ -15776,13 +15577,13 @@ input.bprange[type=range]::-moz-range-thumb { width: 20px; height: 20px; border-
       var free = !$('#menu').hidden && $('#splash').hidden;
       if (!free && ++tries < 40) { setTimeout(say, 500); return; }
       var t = document.createElement('div'); t.id = 'tnToast'; t.setAttribute('role', 'status'); $('#app').appendChild(t);
-      t.textContent = 'Dein letztes ' + (lost.m === 'spin' ? 'Spin & Go' : 'Sit & Go') + ' wurde durch den Neustart abgebrochen und zählt als aufgegeben';
+      t.textContent = 'Dein letztes Turnier wurde durch den Neustart abgebrochen und zählt als aufgegeben';
       void t.offsetWidth; t.classList.add('on'); setTimeout(function () { t.classList.remove('on'); }, 5200);
     })();
   }
 
-  window.PRTn = { open: open, pickMult: pickMult, cleanMult: cleanMult, wheel: wheel, started: started, record: record, voided: voided,
-                  bust: bust, podium: podium, quit: quit, closeAll: closeAll, stats: stats, SPIN: SPIN };
+  window.PRTn = { open: open, started: started, record: record, voided: voided,
+                  bust: bust, podium: podium, quit: quit, closeAll: closeAll, stats: stats };
 })();
 </script>
 
