@@ -13447,7 +13447,7 @@ input.bprange[type=range]::-moz-range-thumb { width: 20px; height: 20px; border-
 <script>
 /* Taegliche Aufgaben: jeden Tag drei (leicht, mittel, schwer), fuer alle gleich, weil die Auswahl aus dem Datum
    (Europe/Berlin) berechnet wird. Neu um Mitternacht (Berlin). Fortschritt kommt nur ueber die Ereignis-Zentrale (PR.on).
-   Belohnung nur Chips (leicht 300, mittel 800, schwer 2.000), alle drei geschafft: Bonus-Truhe mit 1.500 Chips.
+   Belohnung nur Chips (leicht 100, mittel 150, schwer 200), alle drei geschafft: Bonus-Truhe mit 300 Chips.
    Gutgeschrieben wird erst beim Antippen von „Abholen“ im Menue (dort rechnet kein Tisch das Guthaben neu).
    Eine Aufgabe pro Tag kostenlos neu wuerfeln. Online-Aufgaben (Freund, Geschenk) nur leicht/mittel und nur mit Freunden.
    Wird eine Aufgabe fertig, kommt die Meldung erst, wenn man wieder im Menue ist (nie mitten in einer Hand).
@@ -13470,8 +13470,8 @@ input.bprange[type=range]::-moz-range-thumb { width: 20px; height: 20px; border-
   if (!PR || !PR.on) return;
   var Snd = PR.Snd, fmt = PR.fmt, KEY = 'pr-quests';
   function $(s) { return document.querySelector(s); }
-  var REW = { e: { chips: 300, name: 'Leicht' }, m: { chips: 800, name: 'Mittel' }, h: { chips: 2000, name: 'Schwer' } };
-  var CHEST = 1500;
+  var REW = { e: { chips: 100, name: 'Leicht' }, m: { chips: 150, name: 'Mittel' }, h: { chips: 200, name: 'Schwer' } };
+  var CHEST = 300;
 
   /* ---------- Aufgaben-Pool ---------- */
   var GAMEEV = { 'poker:hand': 'poker', 'bj:round': 'bj', 'slots:spin': 'slots', 'rl:spin': 'rl', 'lock:round': 'lock', 'crash:round': 'crash', 'rx:duel': 'reaction' };
