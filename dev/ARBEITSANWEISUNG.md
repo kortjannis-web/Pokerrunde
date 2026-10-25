@@ -99,15 +99,7 @@ Wenn du eine Schnittstelle baust, dokumentiere sie mit einem kurzen Kommentar an
   Vorlage `dev/test/online-vorlage.js` (Seiten vor goto in pages eintragen).
 - Schritt 27 (Reaktion): siebte Menüseite, `window.RX` { on(), state(), host(done), join(code), friends(done) },
   Protokoll `RX_V = 1`, Freunde-Nachrichten duel/duelok/duelno, Status g:'rx', PRChat-Liste 'rx'.
-  Menü-Reihenfolge jetzt: lock · slots · poker · bj · rl · vp · crash · rx (Seiten-Id von Crash ist `crash`).
-- Schritt 24 (Video-Poker „Jacks or Better“, nur allein, kein Protokoll): Menüseite `vp` zwischen Roulette und Crash,
-  `window.VP` { on(), state() { on, ph, open }, rate(karten) -> { k, v }, tip(karten) -> { h: [5 x bool], say },
-  PAY, NAMES, SHORT } (k: 0 nichts, 1 Buben oder besser … 9 Royal Flush). Ereignisse 'vp:hand' { bet, win, net, cat,
-  hand, dbl, dblLost } (für Aufgaben/Erfolge, auch in GAMEEV der Aufgaben), 'win' { game: 'vp' } einmal pro Spiel,
-  'bet', 'game:open' { game: 'vp' }, PRFx.big('vp') ab Vierling. Speicher pr-vpstats, pr-vplog, pr-vpset { co, cv },
-  pr-vprun (offene Hand: wird vor jeder Animation geschrieben und beim nächsten Öffnen fortgesetzt). Freunde-Status
-  g:'vp' („Spielt Video-Poker“, ohne Code). Erfolge vp-royal, vp-dbl5, vp-500 (Titel Automatenkönig), Aufgaben vp10, vp3k.
-  Tests: mit `window.PR_TESTHOOKS = 1` gibt es `VP._dbg.force({ deal, draw, d, pick })` für feste Karten.
+  Menü-Reihenfolge jetzt: lock · slots · poker · bj · rl · crash · rx (Seiten-Id von Crash ist `crash`; Video-Poker wurde wieder entfernt).
 - Versionen jetzt: Poker `PK_V = 10` (Ersteller nimmt ab 10, schickt älteren {t:'old'}), `BJ_V = 9`, `RL_V = 6`, `CR_V = 1`, `RX_V = 1`.
   Öffentliches Profil hat Feld `st` (Sterne). Immer die AKTUELLEN Werte im Code nachsehen.
 - Online-Test ohne echtes PeerJS: `dev/test/fakepeer.js`
