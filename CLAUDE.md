@@ -44,9 +44,10 @@ Wurfgegenstände `{ t: 'tom', k }` (k fehlt = Tomate, `k: 'schirm'` = Abprall-Me
 mit den Feldern `sh`/`sb` im Stand, 6 ersetzt das Level `lv` durch die Sternzahl `st` im öffentlichen Profil, 5 brachte `lv`,
 4 das Feld `rid` zum Wiederverbinden), Blackjack `BJ_V` (aktuell 10: Turnier `T.tn { b, n, bots, st, of, pot, lv, res, over, win }`, Phasen `wait`/`tnend`, Bot-Plätze `bot: 1`, `full { run }`; 9: `cos.win/av/um` und Würfe mit `k`, 8 `cos` im Profil,
 7 Schnellsätze), Roulette `RL_V` (aktuell 6: `cos.win/av/um` und Würfe `{ t: 'tom' }`, 5 `cos` im Profil,
-4 Reaktionen und Schnellsätze), Crash `CR_V` (eigenes Raum-Protokoll, aktuell 2: `snap { s: { ph, rd, el, sd, ct, dl, crash,
-hist, pl } }`, `bet { a, au }`, `out { e, h }` mit Flugzeit `e` in ms, Reaktionen/Sätze/Würfe wie beim Roulette; `sd` ist der Samen
-der schwankenden Kurve, Absturzzeit `ct` und Absturzpunkt `crash` schickt der Ersteller erst beim Absturz; 1 war die steigende Kurve), Reaktion `RX_V` (eigenes Raum-Protokoll, aktuell 1: `st { s: { ph, dn, bet, pl, ids, sc, rd, dec, act, win } }`,
+4 Reaktionen und Schnellsätze), Crash `CR_V` (eigenes Raum-Protokoll, aktuell 3: `snap { s: { ph, rd, el, sd, ct, dl, crash,
+hist, pl } }`, `bet { a, au }`, `out { e, h }` mit Flugzeit `e` in ms, Reaktionen/Sätze/Würfe wie beim Roulette; 3 ist die gerade
+steigende Kurve `e^(0,15 t)` von 1x bis 5x (`sd` nur noch Kennung des Flugs) und der Countdown läuft neu (`dl` springt), solange kein
+Mensch gesetzt hat; Absturzzeit `ct` und Absturzpunkt `crash` schickt der Ersteller erst beim Absturz; 2 war die schwankende Kurve aus `sd`, 1 die erste steigende Kurve), Reaktion `RX_V` (eigenes Raum-Protokoll, aktuell 1: `st { s: { ph, dn, bet, pl, ids, sc, rd, dec, act, win } }`,
 `go { rd, w, f, act }` (nur Wartezeit und Falle, jedes Handy misst selbst), `res { rd, ms, k }`, `rr { rd, res, win, sc }`, `can { ok }`,
 Reaktionen/Sätze; Herausforderung in der Freundesliste `{ t: 'duel', code, b }` mit Antwort `duelok`/`duelno`); bei Blackjack, Roulette, Crash und Reaktion müssen beide Seiten genau gleich sein. Alte Versionen werden dann mit einer Meldung „App einmal ganz schließen und neu öffnen“ abgewiesen.
 Das Feld `cos` (siehe `window.PRLook` in index.html) ist erweiterbar: neue Unterfelder mit `PRLook.field(name, clean, mine)`
