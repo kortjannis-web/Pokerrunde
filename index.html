@@ -1919,7 +1919,7 @@ input.bprange[type=range]::-moz-range-thumb { width: 20px; height: 20px; border-
 .tnbig { font-size: 44px; line-height: 1; margin-bottom: 8px; }
 #tnToast { position: absolute; left: 50%; bottom: max(24px, env(safe-area-inset-bottom)); z-index: 97; transform: translate(-50%, 12px); width: max-content; max-width: calc(100% - 32px); padding: 10px 16px; border-radius: 16px; background: var(--brass); color: var(--brass-ink); font: 800 13px/1.35 var(--ui); text-align: center; opacity: 0; pointer-events: none; transition: opacity .3s, transform .3s; box-shadow: 0 6px 18px rgba(0,0,0,.5); }
 #tnToast.on { opacity: 1; transform: translate(-50%, 0); }
-#tnPick { z-index: 80; padding: 12px; }
+#tnPick, #bjtPick { z-index: 80; padding: 12px; }
 /* Einsatz-Schieber (Turnier allein und beim Tisch erstellen) */
 .tnrange { display: flex; align-items: center; gap: 12px; }
 .tnrange input { flex: 1; min-width: 0; }
@@ -2316,6 +2316,7 @@ input.bprange[type=range]::-moz-range-thumb { width: 20px; height: 20px; border-
         <div data-g="bj" class="mgrp off" id="mBj">
           <button class="btn primary wide" id="bjPlay" type="button">Gegen den Dealer spielen</button>
           <button class="btn wide" id="bjFriends" type="button">Mit Freunden spielen<i class="odot" hidden aria-hidden="true"></i></button>
+          <button class="btn wide tnbtn" id="bjTourney" type="button"><span aria-hidden="true">🏆</span> Turnier <small>2 bis 5 Spieler · bis einer übrig ist</small></button>
         </div>
         <div data-g="slots" class="mgrp off" id="mSl">
           <button class="btn primary wide" id="slPlay" type="button">Spielen</button>
@@ -2831,16 +2832,31 @@ input.bprange[type=range]::-moz-range-thumb { width: 20px; height: 20px; border-
           </div>
         </div>
         <div>
+          <div class="psec">Spielart</div>
+          <div class="seg" id="bjfMode" role="radiogroup" aria-label="Spielart"></div>
+          <div class="frhint" id="bjfModeHint"></div>
+        </div>
+        <div id="bjfTbBox" hidden>
+          <div class="psec">Einsatz pro Spieler</div>
+          <div class="tnrange"><input class="bprange" type="range" id="bjfTb" min="100" max="10000" step="100" aria-label="Einsatz pro Spieler"><b id="bjfTbV"></b></div>
+          <div class="frhint" id="bjfTbHint"></div>
+        </div>
+        <div id="bjfMinBox">
           <div class="psec">Mindesteinsatz</div>
           <div class="seg" id="bjfMin" role="radiogroup" aria-label="Mindesteinsatz"></div>
           <div class="frhint" id="bjfMinHint"></div>
         </div>
         <div>
-          <div class="psec">Plätze</div>
+          <div class="psec" id="bjfSeatsT">Plätze</div>
           <div class="seg" id="bjfSeats" role="radiogroup" aria-label="Anzahl Plätze"></div>
           <div class="frhint" id="bjfSeatsHint"></div>
         </div>
-        <div>
+        <div id="bjfBotsBox" hidden>
+          <div class="psec">Bots</div>
+          <div class="seg" id="bjfBots" role="radiogroup" aria-label="Freie Plätze mit Bots auffüllen"></div>
+          <div class="frhint" id="bjfBotsHint"></div>
+        </div>
+        <div id="bjfBuyBox">
           <div class="psec">Chips mitbringen</div>
           <div id="bjkCreate" style="margin-top:8px"></div>
         </div>
@@ -3277,6 +3293,20 @@ input.bprange[type=range]::-moz-range-thumb { width: 20px; height: 20px; border-
       <button class="btn primary wide" id="tnGo" type="button">Starten</button>
       <button class="btn wide" id="tnCancel" type="button">Abbrechen</button>
       <button class="tnlink" id="tnFr" type="button">Mit Freunden? Tisch erstellen → Spielart Turnier</button>
+    </div>
+  </div>
+  <div id="bjtPick" class="overlay" hidden>
+    <div class="endcard tncard">
+      <h2>Blackjack-Turnier</h2>
+      <p class="tndesc" id="bjtDesc"></p>
+      <div class="psec">Spieler am Tisch</div>
+      <div class="seg" id="bjtSeats" role="radiogroup" aria-label="Spieler am Tisch"></div>
+      <div class="psec">Einsatz pro Spieler</div>
+      <div class="tnrange"><input class="bprange" type="range" id="bjtRange" min="100" max="10000" step="100" aria-label="Einsatz pro Spieler"><b id="bjtBuyV"></b></div>
+      <div class="ov" id="bjtSum"></div>
+      <button class="btn primary wide" id="bjtGo" type="button">Starten</button>
+      <button class="btn wide" id="bjtCancel" type="button">Abbrechen</button>
+      <button class="tnlink" id="bjtFr" type="button">Mit Freunden? Tisch eröffnen → Spielart Turnier</button>
     </div>
   </div>
   <div id="tnBust" class="overlay" hidden>
@@ -8110,10 +8140,15 @@ input.bprange[type=range]::-moz-range-thumb { width: 20px; height: 20px; border-
 
   var DECKS = 6, CUT = 78, MAX_HANDS = 4, MAX_SEATS = 5, TURN_MS = 25000, BET_MS = 15000;
   var MAX_BET = 1000;   // Hoechsteinsatz pro Runde (Verdoppeln und Teilen duerfen darueber gehen)
+  /* Turnier: jeder zahlt den Einsatz und bekommt TN_CH Turnierchips, der Mindesteinsatz steigt alle TN_EVERY Runden (TN_LADDER,
+     danach verdoppelnd), einen Hoechsteinsatz gibt es nicht. Wer keine Chips mehr hat (oder geht), scheidet aus, der Letzte
+     bekommt den ganzen Topf (Einsatz x Teilnehmer, Bots zahlen mit ein). Bots spielen nach der Grundstrategie (advise). */
+  var TN_CH = 1000, TN_EVERY = 5, TN_LADDER = [10, 20, 30, 50, 75, 100, 150, 200, 300, 400, 500, 750, 1000], TN_BET_MS = 20000;
+  var BOTS = [{ name: 'Svenja', color: '#c0634f' }, { name: 'Tarek', color: '#4a86a8' }, { name: 'Olga', color: '#8a5fb0' }, { name: 'Bruno', color: '#5b8f4e' }];
   var GIFT = 50;   // so viele Chips gibt es, wenn man pleite ist und auch im Guthaben nichts mehr hat
   var MIN_OPTS = [10, 25, 50], SEAT_OPTS = [2, 3, 4, 5];
   var PEER_PREFIX = 'pokerrunde-bj-';
-  var BJ_V = 9;   // Version des Tisch-Protokolls: Ersteller und Mitspieler muessen gleich sein (6: Sterne st statt Level lv im Profil, 7: Schnellsaetze t 'chat', 8: Rahmen und Titel cos im Profil, 9: cos.win/av/um und Wurfgegenstaende t 'tom' mit k)
+  var BJ_V = 10;   // Version des Tisch-Protokolls: Ersteller und Mitspieler muessen gleich sein (6: Sterne st statt Level lv im Profil, 7: Schnellsaetze t 'chat', 8: Rahmen und Titel cos im Profil, 9: cos.win/av/um und Wurfgegenstaende t 'tom' mit k, 10: Turnier T.tn, Phasen 'wait'/'tnend', Bots, full { run })
 
   /* ---------- Karten und Werte ---------- */
   function randInt(n) {
@@ -8146,6 +8181,10 @@ input.bprange[type=range]::-moz-range-thumb { width: 20px; height: 20px; border-
   function multi() { return NB.role !== ''; }
 
   function seatOf(id) { if (!T) return null; for (var i = 0; i < T.seats.length; i++) if (T.seats[i].id === id) return T.seats[i]; return null; }
+  /* Einsatzgrenzen: im Turnier bis zu allen Chips, und wer weniger als den Mindesteinsatz hat, setzt alles */
+  function minB(s) { return T.tn ? Math.max(1, Math.min(T.min, s.chips)) : T.min; }
+  function maxB(s) { return T.tn ? s.chips : Math.min(s.chips, MAX_BET); }
+  function tnMin(lv) { var n = TN_LADDER.length; return lv < n ? TN_LADDER[lv] : TN_LADDER[n - 1] * Math.pow(2, lv - n + 1); }
   function later(fn, ms) { var h = H; return setTimeout(function () { if (H === h) fn(); }, ms); }
   function draw() {
     if (!H.shoe.length) { H.shoe = newShoe(); T.shuf++; }
@@ -8167,6 +8206,51 @@ input.bprange[type=range]::-moz-range-thumb { width: 20px; height: 20px; border-
     addSeat(me, { name: PR.profName(), color: PR.prof().color, chips: chips, res: BW, st: myStars(), cos: window.PRLook.mine() });
     betPhase();
   }
+  /* Turnier eroeffnen: cfg = { b, n, bots }. T.tn = { b Einsatz, n Spieler, bots Auffuellen, st gestartet, of Teilnehmer, pot,
+     lv Stufe, res [[id, name, Platz]], over, win }. Online wartet der Tisch (Phase 'wait'), bis der Ersteller startet. */
+  function hostStartTn(cfg, me, online) {
+    H = { shoe: newShoe(), hole: null, cid: 0, dl: 0, tt: 0, bt: 0, busy: false, rid: {} };
+    T = { phase: 'wait', round: 0, min: TN_LADDER[0], cap: cfg.n, seats: [], dealer: [], turn: -1, left: 0, shuf: 0, shoe: H.shoe.length, say: '', sayN: 0,
+          tn: { b: cfg.b, n: cfg.n, bots: cfg.bots ? 1 : 0, st: 0, of: 0, pot: 0, lv: 0, res: [], over: 0, win: '' } };
+    ME = me;
+    addSeat(me, { name: PR.profName(), color: PR.prof().color, chips: 0, st: myStars(), cos: window.PRLook.mine() });
+    if (online) push(); else hTnStart();
+  }
+  /* Start: freie Plaetze mit Bots auffuellen (wenn gewuenscht), alle bekommen Turnierchips */
+  function hTnStart() {
+    if (!T || !T.tn || T.tn.st || T.phase !== 'wait') return;
+    T.seats = T.seats.filter(function (s) { return !s.gone; });
+    for (var k = 0; T.tn.bots && T.seats.length < T.tn.n && k < BOTS.length; k++) {
+      addSeat('bot' + k, { name: BOTS[k].name, color: BOTS[k].color, chips: 0 });
+      T.seats[T.seats.length - 1].bot = 1;
+    }
+    if (T.seats.length < 2) return;
+    T.seats.forEach(function (s) { s.chips = TN_CH; s.last = 0; });
+    T.tn.st = 1; T.tn.of = T.seats.length; T.tn.pot = T.tn.b * T.tn.of;
+    say('Das Turnier beginnt · ' + T.tn.of + ' Spieler · Topf ' + fmt(T.tn.pot));
+    betPhase();
+  }
+  /* Bot-Einsatz: meist der Mindesteinsatz, manchmal das Doppelte oder Vierfache, knapp bei Kasse alles */
+  function botBet(s) {
+    var m = minB(s);
+    if (s.chips <= m * 2) return s.chips;
+    var r = Math.random(), b = r < 0.6 ? T.min : r < 0.9 ? T.min * 2 : T.min * 4;
+    return Math.max(m, Math.min(b, s.chips));
+  }
+  function tnOut(s, place) { s.out = 1; s.place = place; s.chips = 0; s.ready = false; T.tn.res.push([s.id, s.name, place]); }
+  function tnWin(s) { if (s) { s.place = 1; T.tn.res.push([s.id, s.name, 1]); } T.tn.over = 1; T.tn.win = s ? s.id : ''; }
+  /* nach jeder Runde: wer keine Chips mehr hat, scheidet aus. Scheiden mehrere gleichzeitig aus, landet weiter vorn, wer vor der
+     Runde mehr hatte. Bleibt einer (oder keiner, dann der Beste der Ausgeschiedenen), ist das Turnier vorbei. */
+  function tnCheck() {
+    var alive = T.seats.filter(function (s) { return !s.out; });
+    var bust = alive.filter(function (s) { return s.gone || s.chips <= 0; });
+    var stay = alive.length - bust.length, win = null, place = alive.length;
+    bust.sort(function (a, b) { return (a.pre | 0) - (b.pre | 0); });
+    if (!stay && bust.length) win = bust.pop();
+    bust.forEach(function (s) { tnOut(s, place--); });
+    var rest = T.seats.filter(function (s) { return !s.out; });
+    if (win) tnWin(win); else if (rest.length <= 1) tnWin(rest[0]);
+  }
   function addSeat(id, p) {
     /* res: was der Spieler noch im Guthaben hat (nicht am Tisch), add: so viel hat er schon nachgeladen, st: Sterne */
     T.seats.push({ id: id, name: p.name, color: p.color, chips: p.chips, res: p.res || 0, add: 0, bet: 0, pend: 0, last: 0, ready: false, hands: [], cur: 0, inR: false, gone: false, gift: 0, st: p.st | 0, cos: window.PRLook.clean(p.cos) });
@@ -8183,47 +8267,61 @@ input.bprange[type=range]::-moz-range-thumb { width: 20px; height: 20px; border-
     clearTimeout(H.tt); clearTimeout(H.bt); H.dl = 0; H.busy = false;
     T.seats = T.seats.filter(function (s) { return !s.gone; });
     T.phase = 'bet'; T.turn = -1; T.dealer = []; H.hole = null;
+    if (T.tn) {
+      var lv = Math.floor(T.round / TN_EVERY);
+      if (lv !== T.tn.lv) { T.tn.lv = lv; say('Neue Stufe: Mindesteinsatz ' + fmt(tnMin(lv))); }
+      T.min = tnMin(lv);
+    }
     T.seats.forEach(function (s) {
       s.hands = []; s.cur = 0; s.inR = false; s.ready = false; s.gift = 0;
+      if (T.tn) {
+        s.bet = s.out ? 0 : Math.max(minB(s), Math.min(s.last || T.min, s.chips)); s.pend = s.bet;
+        if (s.bot && !s.out) { s.bet = botBet(s); s.pend = s.bet; s.ready = true; }
+        return;
+      }
       /* pleite und auch im Guthaben nichts mehr: wie beim Poker gibt es wieder Chips zum Weiterspielen */
       if (s.chips < T.min && s.chips + s.res < T.min) { s.gift = Math.max(GIFT, T.min) - s.chips; s.chips += s.gift; }
       s.bet = Math.min(s.last || T.min, s.chips, MAX_BET);
       s.pend = s.bet >= T.min ? s.bet : 0;   // so belegt jeder seinen Einsatz vor, die anderen sehen ihn gleich
     });
+    if (T.tn) checkDeal();
     push();
   }
   /* Einsatz, den jemand gerade zusammenlegt (noch nicht bereit): fuer die Anzeige bei den anderen */
   function hBet(id, a) {
     var s = seatOf(id);
-    if (!s || s.gone || T.phase !== 'bet' || s.ready) return;
-    a = Math.max(0, Math.min(s.chips, MAX_BET, Math.round(+a || 0)));
+    if (!s || s.gone || s.out || T.phase !== 'bet' || s.ready) return;
+    a = Math.max(0, Math.min(maxB(s), Math.round(+a || 0)));
     if (s.pend === a) return;
     s.pend = a; push();
   }
   function hReady(id, amt) {
     var s = seatOf(id);
-    if (!s || s.gone || T.phase !== 'bet' || s.ready) return;
+    if (!s || s.gone || s.out || T.phase !== 'bet' || s.ready) return;
     amt = Math.round(+amt || 0);
-    if (!(amt >= T.min) || amt > s.chips || amt > MAX_BET) { push(); return; }
+    if (!(amt >= minB(s)) || amt > maxB(s)) { push(); return; }
     s.bet = amt; s.pend = amt; s.ready = true;
     checkDeal(); push();
   }
   /* alle bereit: sofort austeilen. Sonst warten die Bereiten hoechstens 15 Sekunden auf den Rest. */
   function checkDeal() {
     if (T.phase !== 'bet') return;
-    var act = T.seats.filter(function (s) { return !s.gone; }), rd = act.filter(function (s) { return s.ready; });
+    var act = T.seats.filter(function (s) { return !s.gone && !s.out; }), rd = act.filter(function (s) { return s.ready; });
     if (!rd.length) { clearTimeout(H.bt); H.dl = 0; return; }
     if (rd.length === act.length) { clearTimeout(H.bt); H.dl = 0; startRound(); return; }
-    if (!H.dl) { H.dl = Date.now() + BET_MS; H.bt = later(function () { startRound(); push(); }, BET_MS); }
+    var ms = T.tn ? TN_BET_MS : BET_MS;
+    if (!H.dl) { H.dl = Date.now() + ms; H.bt = later(function () { startRound(); push(); }, ms); }
   }
   function startRound() {
     clearTimeout(H.bt); H.dl = 0;
-    var play = T.seats.filter(function (s) { return !s.gone && s.ready && s.bet >= T.min && s.bet <= s.chips && s.bet <= MAX_BET; });
+    /* Turnier: wer nicht rechtzeitig gesetzt hat, spielt mit dem Mindesteinsatz (aussetzen gibt es nicht) */
+    if (T.tn) T.seats.forEach(function (s) { if (!s.gone && !s.out && !s.ready && s.chips > 0) { s.bet = minB(s); s.ready = true; } });
+    var play = T.seats.filter(function (s) { return !s.gone && !s.out && s.ready && s.bet >= minB(s) && s.bet <= maxB(s); });
     if (!play.length) return;
     T.round++; T.phase = 'deal'; T.dealer = []; T.turn = -1;
     T.seats.forEach(function (s) { s.hands = []; s.cur = 0; s.inR = false; });
     play.forEach(function (s) {
-      s.chips -= s.bet; s.last = s.bet; s.inR = true;
+      s.pre = s.chips; s.chips -= s.bet; s.last = s.bet; s.inR = true;
       s.hands = [{ cards: [], bet: s.bet, dbl: false, split: false, ace: false, done: false, res: '', pay: 0 }];
     });
     T.seats.forEach(function (s) { s.ready = false; });
@@ -8265,6 +8363,7 @@ input.bprange[type=range]::-moz-range-thumb { width: 20px; height: 20px; border-
           later(function () { secondCard(h); }, 450);
           return;
         }
+        if (s.bot) { H.tt = later(function () { hAct(s.id, advise(s, h, T.dealer[0])); }, 650 + Math.random() * 600); push(); return; }
         if (multi()) { H.dl = Date.now() + TURN_MS; H.tt = later(function () { hAct(s.id, 'stand'); }, TURN_MS); }
         push();
         return;
@@ -8331,13 +8430,21 @@ input.bprange[type=range]::-moz-range-thumb { width: 20px; height: 20px; border-
         h.res = res; h.pay = pay; h.done = true; s.chips += pay;
       });
     });
+    if (T.tn) tnCheck();
     T.phase = 'done'; T.turn = -1; push();
-    later(betPhase, multi() ? 3600 : 2600);
+    later(function () { if (T.tn && T.tn.over) { T.phase = 'tnend'; push(); } else betPhase(); }, multi() ? 3600 : 2600);
   }
   function hostGone(id) {
     var s = seatOf(id);
     if (!s) return;
     s.gone = true;
+    if (T.phase === 'wait') { T.seats = T.seats.filter(function (x) { return x !== s; }); push(); return; }
+    /* Turnier: wer geht, scheidet sofort aus; bleibt nur einer, hat er gewonnen */
+    if (T.tn && T.tn.st && !T.tn.over) {
+      if (!s.out) tnOut(s, T.seats.filter(function (x) { return !x.out; }).length);
+      var rest = T.seats.filter(function (x) { return !x.out; });
+      if (rest.length <= 1) { tnWin(rest[0]); clearTimeout(H.tt); clearTimeout(H.bt); H.dl = 0; T.phase = 'tnend'; T.turn = -1; push(); return; }
+    }
     if (T.phase === 'bet') { T.seats = T.seats.filter(function (x) { return x !== s; }); checkDeal(); push(); return; }
     if (T.phase === 'play' && T.seats[T.turn] === s && !H.busy) { s.hands.forEach(function (h) { h.done = true; }); nextTurn(); return; }
     push();
@@ -8450,7 +8557,7 @@ input.bprange[type=range]::-moz-range-thumb { width: 20px; height: 20px; border-
     var my = seatOf(me);
     /* eigenes Guthaben = Chips im Beutel + am Tisch + Nachgeladenes, das beim Ersteller noch nicht angekommen ist
        (ein laufender Einsatz verfaellt beim Verlassen) */
-    if (my) {
+    if (my && !t.tn) {
       var P = PR.prof(), nb = Math.max(0, Math.round(BW + my.chips + Math.max(0, ADD - (my.add | 0))));
       if (P.bank !== nb) { P.bank = nb; PR.saveProf(); PR.renderBank(); }
       var gk = t.round + ':' + my.gift;
@@ -8458,11 +8565,12 @@ input.bprange[type=range]::-moz-range-thumb { width: 20px; height: 20px; border-
     }
     $('#bjChips').textContent = fmt(my ? my.chips : PR.prof().bank);
     /* keine Chips mehr am Tisch, aber noch im Guthaben: wie beim Poker gleich zum Nachladen fragen */
-    if (my && t.phase === 'bet' && !my.ready && my.chips < t.min && BW > 0 && ADD <= (my.add | 0) && !dlg
+    if (my && !t.tn && t.phase === 'bet' && !my.ready && my.chips < t.min && BW > 0 && ADD <= (my.add | 0) && !dlg
         && V.brokeKey !== String(t.round) && $('#bjPause').hidden && $('#bjInvDlg').hidden && $('#bjEnd').hidden) { V.brokeKey = String(t.round); openDlg('broke'); }
     /* Einsatz vorbelegen, sobald eine neue Setzrunde beginnt */
     var bk = t.round + ':' + (my ? 1 : 0);
-    if (t.phase === 'bet' && V.betKey !== bk) { V.betKey = bk; myBet = my ? Math.min(my.bet, my.chips, MAX_BET) : 0; if (myBet < t.min) myBet = 0; }
+    if (t.phase === 'bet' && V.betKey !== bk) { V.betKey = bk; myBet = my && !my.out ? Math.min(my.bet, maxB(my)) : 0; if (my && myBet < minB(my)) myBet = 0; }
+    $('#bjTopBtn').hidden = !!t.tn;
 
     /* Dealer */
     syncCards($('#bjDealer .bjc'), t.dealer);
@@ -8494,9 +8602,9 @@ input.bprange[type=range]::-moz-range-thumb { width: 20px; height: 20px; border-
       window.PRAv.paint(av, s.name, s.color, sc.av);
       window.PRStarBadge(av, s.st); window.PRLook.frame(av, sc.frame); window.PRLook.title(el.querySelector('.bjwho'), sc.title);
       el._nm = s.name; window.PRChat.badge(av, s.name);
-      el.querySelector('.bjwho span:last-child').textContent = s.name;
+      el.querySelector('.bjwho span:last-child').textContent = s.name + (s.bot ? ' 🤖' : '');
       el.classList.toggle('turn', turn);
-      el.classList.toggle('out', s.gone || (t.phase !== 'bet' && !s.inR));
+      el.classList.toggle('out', s.gone || !!s.out || (t.phase !== 'bet' && t.phase !== 'wait' && !s.inR));
       /* Einsatz: beim Setzen live, danach was auf seinen Haenden liegt */
       var amt = t.phase === 'bet' ? (s.ready ? s.bet : (s.pend | 0)) : s.inR ? s.hands.reduce(function (a, h) { return a + h.bet; }, 0) : 0;
       var bt = el.querySelector('.bjbet'), key = s.id + ':' + amt;
@@ -8510,7 +8618,9 @@ input.bprange[type=range]::-moz-range-thumb { width: 20px; height: 20px; border-
         bt.querySelector('b').textContent = amt ? fmt(amt) : '';
       }
       var sub = el.querySelector('.bjsub'), st = '';
-      if (s.gone) st = 'weg';
+      if (s.out) st = 'raus · Platz ' + s.place;
+      else if (t.phase === 'wait') st = 'wartet';
+      else if (s.gone) st = 'weg';
       else if (s.away) st = 'Verbindung weg …';
       else if (t.phase === 'bet') st = s.ready ? 'Bereit' : amt ? 'setzt …' : fmt(s.chips) + ' Chips';
       else if (!s.inR) st = 'setzt aus';
@@ -8550,9 +8660,11 @@ input.bprange[type=range]::-moz-range-thumb { width: 20px; height: 20px; border-
       var net = my.hands.reduce(function (a, h) { return a + h.pay - h.bet; }, 0);
       if (!V.quiet) {
         if (net > 0) Snd.win(); else if (net === 0) Snd.knock();
-        if (net > 0 && window.JAR) window.JAR.add(net);
-        bjStat(net, my.hands.filter(function (h) { return h.res === 'bj'; }).length);
-        bjEvents(t, my, net);
+        if (!t.tn) {   // Turnierchips zaehlen nicht fuer Statistik, Glas und Sterne
+          if (net > 0 && window.JAR) window.JAR.add(net);
+          bjStat(net, my.hands.filter(function (h) { return h.res === 'bj'; }).length);
+          bjEvents(t, my, net);
+        }
         showDevs(t.round);
       }
     }
@@ -8567,7 +8679,85 @@ input.bprange[type=range]::-moz-range-thumb { width: 20px; height: 20px; border-
     }
     Object.keys(CEL).forEach(function (id) { if (!CEL[id].isConnected) delete CEL[id]; });
     V.phase = t.phase; V.round = t.round; V.quiet = false;
+    tnMine(t, my);
     renderCtl();
+  }
+  /* ---------- Turnier aus meiner Sicht (Ersteller, Mitspieler, allein) ----------
+     TNC = { b, paid, fin, end }: Einsatz beim Start aus dem Guthaben, am Ende der Preis; Karte „Platz 4 von 5“ und Treppchen
+     aus dem Poker-Turnier (window.PRTn). pr-bjtnrun merkt sich ein laufendes Turnier (App-Neustart = aufgegeben),
+     pr-bjtnstats { n, w, net }. Ereignisse 'bet' und 'win' mit tourney: true, 'bj:tourney' { place, of, buyin, prize }. */
+  var TNC = null;
+  function tnStat(place, of, b, prize) {
+    var st = { n: 0, w: 0, net: 0 };
+    try { var o = JSON.parse(localStorage.getItem('pr-bjtnstats') || 'null'); if (o && typeof o === 'object') { st.n = o.n | 0; st.w = o.w | 0; st.net = Math.round(+o.net || 0); } } catch (e) {}
+    st.n++; if (place === 1) st.w++; st.net += prize - b;
+    try { localStorage.setItem('pr-bjtnstats', JSON.stringify(st)); localStorage.removeItem('pr-bjtnrun'); } catch (e) {}
+    PR.emit('bj:tourney', { place: place, of: of, buyin: b, prize: prize });
+    if (prize > 0) PR.emit('win', { game: 'bj', amount: prize, net: prize - b, tourney: true });
+  }
+  (function () {   /* App mitten im Turnier geschlossen: zaehlt als aufgegeben, der Einsatz ist schon weg */
+    var o = null; try { o = JSON.parse(localStorage.getItem('pr-bjtnrun') || 'null'); } catch (e) {}
+    if (o && typeof o === 'object') tnStat(Math.max(2, o.of | 0), Math.max(2, o.of | 0), Math.max(0, o.b | 0), 0);
+  })();
+  function tnMine(t, my) {
+    var tn = t.tn;
+    if (!tn) { TNC = null; return; }
+    if (!TNC) TNC = { b: tn.b, of: 0, paid: false, fin: false, end: false };
+    if (tn.st && !TNC.paid && my) {
+      TNC.paid = true; TNC.of = tn.of;
+      var P = PR.prof(); P.bank = Math.max(0, (P.bank | 0) - tn.b); PR.saveProf(); PR.renderBank();
+      try { localStorage.setItem('pr-bjtnrun', JSON.stringify({ b: tn.b, of: tn.of })); } catch (e) {}
+      PR.emit('bet', { game: 'bj', amount: tn.b, tourney: true });
+    }
+    if (!TNC.paid) return;
+    var mine = tn.res.filter(function (r) { return r[0] === ME; })[0];
+    if (mine && !TNC.fin) {
+      TNC.fin = true;
+      var place = mine[2] | 0, prize = place === 1 ? tn.pot : 0;
+      if (prize > 0) { var Q = PR.prof(); Q.bank = (Q.bank | 0) + prize; PR.saveProf(); PR.renderBank(); }
+      tnStat(place, tn.of, tn.b, prize);
+      if (place > 1 && !tn.over && window.PRTn) {
+        var host = NB.role === 'host' && t.seats.some(function (s) { return !s.bot && !s.out && !s.gone && s.id !== ME; });
+        setTimeout(function () {
+          if (!TNC || TNC.end) return;
+          window.PRTn.bust({ place: place, of: tn.of, prize: 0, buyin: tn.b, host: host, online: multi(), note: 'Das Turnier läuft auf deinem Handy: Gehst du, ist es für alle vorbei und die anderen bekommen ihren Einsatz zurück.' }, function (watch) { if (!watch) leave(); });
+        }, 900);
+      }
+    }
+    if (tn.over && t.phase === 'tnend' && !TNC.end && window.PRTn) {
+      TNC.end = true;
+      var list = tn.res.map(function (r) {
+        var s = seatOf(r[0]) || {};
+        return { place: r[2], prize: r[2] === 1 ? tn.pot : 0, name: r[1], color: s.color, cos: s.bot ? null : s.cos, me: r[0] === ME };
+      });
+      var myR = tn.res.filter(function (r) { return r[0] === ME; })[0];
+      window.PRTn.podium({ b: tn.b, n: tn.of, list: list, my: myR ? { place: myR[2], prize: myR[2] === 1 ? tn.pot : 0 } : null, online: multi() }, function (again) {
+        leave();
+        if (again) openTPick();
+      });
+    }
+  }
+  /* Ersteller hat den Tisch mitten im Turnier geschlossen: Mitspieler bekommen ihren Einsatz zurueck */
+  function tnRefund() {
+    if (!TNC || !TNC.paid || TNC.fin || TNC.end) return false;
+    TNC.fin = true;
+    var P = PR.prof(); P.bank = (P.bank | 0) + TNC.b; PR.saveProf(); PR.renderBank();
+    try { localStorage.removeItem('pr-bjtnrun'); } catch (e) {}
+    return true;
+  }
+  /* Verlassen mitten im Turnier: zaehlt als aufgegeben (schlechtester Platz der Verbliebenen), vorher nachfragen */
+  function tnAbandon() {
+    if (!TNC || !TNC.paid || TNC.fin || TNC.end || !T || !T.tn) return;
+    TNC.fin = true;
+    tnStat(Math.max(2, T.seats.filter(function (s) { return !s.out; }).length), T.tn.of, T.tn.b, 0);
+  }
+  function tryLeave() {
+    if (TNC && TNC.paid && !TNC.fin && T && T.tn && !T.tn.over && window.PRTn) {
+      var host = NB.role === 'host' && T.seats.some(function (s) { return !s.bot && !s.out && !s.gone && s.id !== ME; });
+      window.PRTn.quit({ place: T.seats.filter(function (s) { return !s.out; }).length, of: T.tn.of, buyin: T.tn.b, prize: 0, host: host, note: 'Das Turnier läuft auf deinem Handy: Gehst du, ist es für alle vorbei und die anderen bekommen ihren Einsatz zurück.' }, leave);
+      return;
+    }
+    leave();
   }
   /* Ereignis-Zentrale: Einsatz der Runde (inkl. Verdoppeln und Teilen), Auszahlung und Ergebnis */
   function bjEvents(t, my, net) {
@@ -8597,17 +8787,28 @@ input.bprange[type=range]::-moz-range-thumb { width: 20px; height: 20px; border-
   function renderCtl() {
     if (!T) return;
     var t = T, my = seatOf(ME), st = '', sec = secs();
-    var betting = t.phase === 'bet' && !!my;
-    $('#bjBetUI').hidden = !betting; $('#bjActUI').hidden = betting;
-    if (betting) {
-      var rd = my.ready;
-      [].forEach.call(document.querySelectorAll('.bjchip'), function (b) { b.disabled = rd || myBet + (+b.dataset.v) > Math.min(my.chips, MAX_BET); });
+    var betting = t.phase === 'bet' && !!my && !my.out, waiting = t.phase === 'wait';
+    $('#bjBetUI').hidden = !(betting || waiting); $('#bjActUI').hidden = betting || waiting;
+    if (waiting) {
+      /* Turnier vor dem Start: der Ersteller startet, wenn genug da sind */
+      var tn = t.tn, hum = t.seats.filter(function (s) { return !s.gone; }).length, will = tn.bots ? tn.n : hum;
+      [].forEach.call(document.querySelectorAll('.bjchip'), function (b) { b.disabled = true; });
+      $('#bjClear').disabled = true;
+      var gw = $('#bjDeal'), host = NB.role !== 'guest';
+      gw.disabled = !host || will < 2;
+      gw.querySelector('span').textContent = host ? 'Turnier starten' : 'Warte auf den Start';
+      gw.querySelector('small').textContent = 'Topf ' + fmt(tn.b * Math.max(2, will));
+      st = 'Turnier · Einsatz <b>' + fmt(tn.b) + '</b> · ' + hum + ' von ' + tn.n + ' Spielern da' + (tn.bots && hum < tn.n ? ' · der Rest spielt als Bots' : '');
+    } else if (betting) {
+      var rd = my.ready, mx = maxB(my), mn = minB(my);
+      [].forEach.call(document.querySelectorAll('.bjchip'), function (b) { b.disabled = rd || myBet + (+b.dataset.v) > mx; });
       $('#bjClear').disabled = rd || !myBet;
       var go = $('#bjDeal');
-      go.disabled = rd || myBet < t.min || myBet > my.chips || myBet > MAX_BET;
-      go.querySelector('span').textContent = rd ? 'Bereit' : multi() ? 'Bereit' : 'Austeilen';
-      go.querySelector('small').textContent = rd ? 'warte auf die anderen' : myBet ? 'Einsatz ' + fmt(myBet) : 'mindestens ' + fmt(t.min);
+      go.disabled = rd || myBet < mn || myBet > mx;
+      go.querySelector('span').textContent = rd ? 'Bereit' : multi() || t.tn ? 'Bereit' : 'Austeilen';
+      go.querySelector('small').textContent = rd ? 'warte auf die anderen' : myBet ? 'Einsatz ' + fmt(myBet) : 'mindestens ' + fmt(mn);
       if (rd) st = 'Du bist bereit' + (sec ? ' · es geht in <b>' + sec + ' s</b> los' : ' · warte auf die anderen');
+      else if (t.tn) st = 'Mindesteinsatz <b>' + fmt(mn) + '</b>' + (my.chips <= t.min ? ' (alles)' : '') + (sec ? ' · sonst Mindesteinsatz in <b>' + sec + ' s</b>' : '');
       else if (sec) st = 'Setz deinen Einsatz · Austeilen in <b>' + sec + ' s</b>';
       else if (my.chips < t.min && BW > 0) st = 'Lade Chips nach (+ oben), um weiterzuspielen';
       else if (myBet >= MAX_BET) st = 'Höchsteinsatz <b>' + fmt(MAX_BET) + '</b> erreicht';
@@ -8645,6 +8846,8 @@ input.bprange[type=range]::-moz-range-thumb { width: 20px; height: 20px; border-
       }
       if (ph && pre) st += (st ? ' · ' : '') + 'vorgemerkt: <b>' + TIP_TXT[pre.a] + '</b>';
       if (my && !my.inR && (t.phase === 'deal' || t.phase === 'play' || t.phase === 'dealer')) st = 'Du setzt diese Runde aus und bist ab der nächsten dabei';
+      if (t.tn && my && my.out) st = 'Du bist raus · Platz ' + my.place + ' von ' + t.tn.of + (t.tn.over ? '' : ' · du schaust zu');
+      if (t.phase === 'tnend') st = 'Turnier vorbei';
     }
     $('#bjStatus').innerHTML = st;
   }
@@ -8736,7 +8939,7 @@ input.bprange[type=range]::-moz-range-thumb { width: 20px; height: 20px; border-
     var my = seatOf(ME);
     if (!T || T.phase !== 'bet' || !my || my.ready) return false;
     if (myBet + v > my.chips) return false;
-    if (myBet + v > MAX_BET) { bjToast('Höchsteinsatz ist ' + fmt(MAX_BET) + ' Chips'); return false; }
+    if (myBet + v > maxB(my)) { bjToast('Höchsteinsatz ist ' + fmt(MAX_BET) + ' Chips'); return false; }
     myBet += v; Snd.chip(1, 0); view(T, ME); betChanged(); return true;
   }
   /* Chips antippen oder ins Einsatzfeld ziehen */
@@ -8787,7 +8990,10 @@ input.bprange[type=range]::-moz-range-thumb { width: 20px; height: 20px; border-
     });
   });
   $('#bjClear').addEventListener('click', function () { myBet = 0; if (T) { view(T, ME); betChanged(); } });
-  $('#bjDeal').addEventListener('click', function () { Snd.chip(2, 0); sendReady(); });
+  $('#bjDeal').addEventListener('click', function () {
+    if (T && T.phase === 'wait') { if (NB.role !== 'guest') hTnStart(); return; }
+    Snd.chip(2, 0); sendReady();
+  });
   function doAct(a) {
     if (a === 'stand') Snd.knock(); else if (a !== 'hit') Snd.chip(2, 0);
     sendAct(a);
@@ -9004,6 +9210,7 @@ input.bprange[type=range]::-moz-range-thumb { width: 20px; height: 20px; border-
     CEL = {}; fly.innerHTML = '';
     $('#bjDealer .bjc').innerHTML = ''; $('#bjOthers .l').innerHTML = ''; $('#bjOthers .r').innerHTML = ''; $('#bjMe .bjhands').innerHTML = '';
     V = { phase: '', round: -1, shuf: -1, sayN: -1, turnKey: '', doneKey: '', giftKey: '', betKey: '', brokeKey: '', quiet: true };
+    TNC = null; if (window.PRTn) window.PRTn.closeAll();
     myBet = 0; dlg = null; $('#bjChipDlg').hidden = true; $('#bjPause').hidden = true; $('#bjInvDlg').hidden = true; $('#bjEnd').hidden = true; $('#bjToast').classList.remove('on');
   }
   function openTable() {
@@ -9027,6 +9234,7 @@ input.bprange[type=range]::-moz-range-thumb { width: 20px; height: 20px; border-
     setTimeout(function () { try { peer.destroy(); } catch (e) {} }, bye ? 250 : 0);
   }
   function leave() {
+    tnAbandon();
     if (NB.role === 'guest' && NB.conn) { try { NB.conn.send({ t: 'bye' }); } catch (e) {} }
     $('#bjRe').hidden = true;
     wipe(true); resetView();
@@ -9043,6 +9251,39 @@ input.bprange[type=range]::-moz-range-thumb { width: 20px; height: 20px; border-
   }
   $('#bjEndGo').addEventListener('click', leave);
   $('#bjPlay').addEventListener('click', playSolo);
+  /* Turnier allein gegen Bots: Spieler am Tisch und Einsatz wählen (pr-bjtnsel { b, n }) */
+  var TSEL = (function () {
+    var o = null; try { o = JSON.parse(localStorage.getItem('pr-bjtnsel') || 'null'); } catch (e) {} o = o || {};
+    return { b: PR.tn.buy(o.b) || 500, n: SEAT_OPTS.indexOf(o.n) >= 0 ? o.n : 4 };
+  })();
+  function saveTSel() { try { localStorage.setItem('pr-bjtnsel', JSON.stringify(TSEL)); } catch (e) {} }
+  function renderTPick() {
+    var bank = PR.prof().bank | 0;
+    if (bank < TSEL.b) TSEL.b = Math.max(PR.tn.MIN, Math.floor(bank / PR.tn.STEP) * PR.tn.STEP);
+    $('#bjtDesc').textContent = 'Du gegen Bots: Jeder zahlt den Einsatz und bekommt ' + fmt(TN_CH) + ' Turnierchips. Der Mindesteinsatz steigt alle ' + TN_EVERY + ' Runden. Wer keine Chips mehr hat, ist raus. Der Letzte bekommt den ganzen Topf.';
+    PR.seg($('#bjtSeats'), SEAT_OPTS, TSEL.n, function (v) { return String(v); }, function (v) { TSEL.n = v; saveTSel(); renderTPick(); });
+    var r = $('#bjtRange'); r.min = PR.tn.MIN; r.max = PR.tn.MAX; r.step = PR.tn.STEP; if (+r.value !== TSEL.b) r.value = TSEL.b;
+    $('#bjtBuyV').textContent = fmt(TSEL.b);
+    var rows = [['Gegner', (TSEL.n - 1) + (TSEL.n === 2 ? ' Bot' : ' Bots')], ['Topf', fmt(TSEL.b * TSEL.n) + ' Chips für den Letzten'], ['Mindesteinsatz', fmt(TN_LADDER[0]) + ', alle ' + TN_EVERY + ' Runden höher']], h = '';
+    rows.forEach(function (x) { h += '<div class="ovrow"><span>' + x[0] + '</span><b>' + x[1] + '</b></div>'; });
+    $('#bjtSum').innerHTML = h;
+    var ok = bank >= TSEL.b;
+    $('#bjtGo').disabled = !ok;
+    $('#bjtGo').textContent = ok ? 'Starten · ' + fmt(TSEL.b) + ' Chips Einsatz' : 'Zu wenig Guthaben';
+  }
+  function openTPick() { Snd.unlock(); renderTPick(); $('#bjtPick').hidden = false; }
+  $('#bjTourney').addEventListener('click', openTPick);
+  $('#bjtRange').addEventListener('input', function () { var v = PR.tn.buy(this.value); if (v && v !== TSEL.b) { TSEL.b = v; saveTSel(); renderTPick(); } });
+  $('#bjtCancel').addEventListener('click', function () { $('#bjtPick').hidden = true; });
+  $('#bjtPick').addEventListener('click', function (e) { if (e.target === this) this.hidden = true; });
+  $('#bjtGo').addEventListener('click', function () {
+    if ((PR.prof().bank | 0) < TSEL.b) return;
+    $('#bjtPick').hidden = true;
+    wipe(false); resetView(); openTable();
+    BW = PR.prof().bank | 0; ADD = 0;
+    hostStartTn({ b: TSEL.b, n: TSEL.n, bots: 1 }, 'me', false);
+  });
+  $('#bjtFr').addEventListener('click', function () { $('#bjtPick').hidden = true; ROOM.mode = 'tn'; saveRoom(); openFriends(); setTimeout(function () { $('#bjfCreate').click(); }, 30); });
   function inRound() { var my = seatOf(ME); return !!(T && my && my.inR && T.phase !== 'done' && T.phase !== 'bet'); }
   function openPause() {
     $('#bjPauseTxt').textContent = inRound()
@@ -9078,7 +9319,7 @@ input.bprange[type=range]::-moz-range-thumb { width: 20px; height: 20px; border-
   (function () { var g = $('#guideBj').cloneNode(true); g.removeAttribute('id'); $('#bjGuide').appendChild(g); })();
   $('#bjCodeBtn').addEventListener('click', openPause);
   $('#bjResume').addEventListener('click', function () { $('#bjPause').hidden = true; });
-  $('#bjMenu').addEventListener('click', leave);
+  $('#bjMenu').addEventListener('click', tryLeave);
   $('#bjPCopy').addEventListener('click', function () {
     var b = $('#bjPCopy'), done = function (t) { b.textContent = t; setTimeout(function () { b.textContent = 'Code kopieren'; }, 1600); };
     try { navigator.clipboard.writeText(NB.code).then(function () { done('Kopiert'); }, function () { done('Code oben markieren'); }); }
@@ -9086,7 +9327,7 @@ input.bprange[type=range]::-moz-range-thumb { width: 20px; height: 20px; border-
   });
 
   /* ---------- Mit Freunden: Tisch eroeffnen / beitreten ---------- */
-  var ROOM = { code: '', min: 10, buy: 1000, seats: MAX_SEATS };
+  var ROOM = { code: '', min: 10, buy: 1000, seats: MAX_SEATS, mode: '', tb: 500, bots: 1 };   // mode '' normal, 'tn' Turnier
   try {
     var rr = JSON.parse(localStorage.getItem('pr-bjroom') || 'null');
     if (rr) {
@@ -9094,6 +9335,9 @@ input.bprange[type=range]::-moz-range-thumb { width: 20px; height: 20px; border-
       if (MIN_OPTS.indexOf(rr.min) >= 0) ROOM.min = rr.min;
       if (SEAT_OPTS.indexOf(rr.seats) >= 0) ROOM.seats = rr.seats;
       if (typeof rr.buy === 'number' && isFinite(rr.buy) && rr.buy > 0) ROOM.buy = Math.round(rr.buy);
+      if (rr.mode === 'tn') ROOM.mode = 'tn';
+      if (PR.tn.buy(rr.tb)) ROOM.tb = PR.tn.buy(rr.tb);
+      if (rr.bots === 0) ROOM.bots = 0;
     }
   } catch (e) {}
   function saveRoom() { try { localStorage.setItem('pr-bjroom', JSON.stringify(ROOM)); } catch (e) {} }
@@ -9156,11 +9400,25 @@ input.bprange[type=range]::-moz-range-thumb { width: 20px; height: 20px; border-
   }
   function renderRoom() {
     $('#bjfCode').textContent = ROOM.code;
+    var tn = ROOM.mode === 'tn';
+    PR.seg($('#bjfMode'), ['', 'tn'], ROOM.mode, function (v) { return v ? 'Turnier' : 'Normal'; }, function (v) { ROOM.mode = v; saveRoom(); renderRoom(); });
+    $('#bjfMode').style.gridTemplateColumns = 'repeat(2, 1fr)';
+    $('#bjfModeHint').textContent = tn ? 'Turnier: Jeder zahlt den Einsatz und bekommt ' + fmt(TN_CH) + ' Turnierchips. Der Mindesteinsatz steigt alle ' + TN_EVERY + ' Runden. Wer keine Chips mehr hat, ist raus. Der Letzte bekommt den ganzen Topf. Du startest, sobald alle da sind.'
+      : 'Normaler Tisch: Chips mitbringen, nachladen, jederzeit gehen.';
+    $('#bjfTbBox').hidden = !tn; $('#bjfBotsBox').hidden = !tn; $('#bjfMinBox').hidden = tn; $('#bjfBuyBox').hidden = tn;
+    $('#bjfSeatsT').textContent = tn ? 'Spieler am Tisch' : 'Plätze';
+    var tr = $('#bjfTb'); tr.min = PR.tn.MIN; tr.max = PR.tn.MAX; tr.step = PR.tn.STEP; if (+tr.value !== ROOM.tb) tr.value = ROOM.tb;
+    $('#bjfTbV').textContent = fmt(ROOM.tb);
+    $('#bjfTbHint').textContent = (PR.prof().bank | 0) < ROOM.tb ? 'Dein Guthaben reicht nicht für diesen Einsatz.' : 'Jeder zahlt ' + fmt(ROOM.tb) + ' Chips aus seinem Guthaben · Topf bis ' + fmt(ROOM.tb * ROOM.seats) + ' Chips';
+    PR.seg($('#bjfBots'), [1, 0], ROOM.bots, function (v) { return v ? 'Auffüllen' : 'Ohne Bots'; }, function (v) { ROOM.bots = v; saveRoom(); renderRoom(); });
+    $('#bjfBots').style.gridTemplateColumns = 'repeat(2, 1fr)';
+    $('#bjfBotsHint').textContent = ROOM.bots ? 'Plätze, die beim Start noch frei sind, spielen Bots.' : 'Nur echte Spieler. Der Tisch muss nicht voll sein, ab 2 Spielern geht es los.';
     PR.seg($('#bjfMin'), MIN_OPTS, ROOM.min, function (v) { return fmt(v); }, function (v) { ROOM.min = v; saveRoom(); renderRoom(); });
     $('#bjfMinHint').textContent = 'Jeder setzt pro Runde mindestens ' + fmt(ROOM.min) + ' Chips.';
     PR.seg($('#bjfSeats'), SEAT_OPTS, ROOM.seats, function (v) { return String(v); }, function (v) { ROOM.seats = v; saveRoom(); renderRoom(); });
     var fr = ROOM.seats - 1;
-    $('#bjfSeatsHint').textContent = ROOM.seats + ' Plätze am Tisch: du und ' + (fr === 1 ? 'ein Freund.' : 'bis zu ' + fr + ' Freunde.');
+    $('#bjfSeatsHint').textContent = tn ? ROOM.seats + ' Spieler: du und ' + (fr === 1 ? 'ein Freund' : 'bis zu ' + fr + ' Freunde') + (ROOM.bots ? ', der Rest Bots.' : '.')
+      : ROOM.seats + ' Plätze am Tisch: du und ' + (fr === 1 ? 'ein Freund.' : 'bis zu ' + fr + ' Freunde.');
     makeMsg(makeTxt(), false);
     floorBank(); kCreate.set(ROOM.buy);
   }
@@ -9191,6 +9449,7 @@ input.bprange[type=range]::-moz-range-thumb { width: 20px; height: 20px; border-
   });
   $('#bjfJoin').addEventListener('click', function () { openJoin(''); });
   $('#bjfNew').addEventListener('click', function () { ROOM.code = PR.newCode(); saveRoom(); renderRoom(); });
+  $('#bjfTb').addEventListener('input', function () { var v = PR.tn.buy(this.value); if (v && v !== ROOM.tb) { ROOM.tb = v; saveRoom(); renderRoom(); } });
   $('#bjfCopy').addEventListener('click', function () {
     var b = $('#bjfCopy'), done = function (t) { b.textContent = t; setTimeout(function () { b.textContent = 'Code kopieren'; }, 1600); };
     try { navigator.clipboard.writeText(ROOM.code).then(function () { done('Kopiert'); }, function () { done('Code oben markieren'); }); }
@@ -9214,6 +9473,7 @@ input.bprange[type=range]::-moz-range-thumb { width: 20px; height: 20px; border-
   $('#bjfMake').addEventListener('click', function () {
     makeMsg(makeTxt(), false);
     if (!PR.netAvail()) { makeMsg(PR.MSG_NOLIB, true); return; }
+    if (ROOM.mode === 'tn' && (PR.prof().bank | 0) < ROOM.tb) { makeMsg('Für diesen Einsatz reicht dein Guthaben nicht. Wähl einen kleineren.', true); return; }
     var b = $('#bjfMake'); b.disabled = true; b.textContent = 'Eröffne …';
     wipe(false);
     var g = ++NB.gen, tries = 0;
@@ -9232,7 +9492,8 @@ input.bprange[type=range]::-moz-range-thumb { width: 20px; height: 20px; border-
         NB.peer = peer; NB.role = 'host'; NB.code = ROOM.code; NB.conns = [];
         peer.on('connection', function (c) { hostAccept(c, g); });
         resetJoinBtns(); resetView();
-        hostStart(ROOM.min, 'host', takeBuy(kCreate.get()), ROOM.seats);
+        if (ROOM.mode === 'tn') { BW = PR.prof().bank | 0; ADD = 0; hostStartTn({ b: ROOM.tb, n: ROOM.seats, bots: ROOM.bots }, 'host', true); }
+        else hostStart(ROOM.min, 'host', takeBuy(kCreate.get()), ROOM.seats);
         openTable();
       });
       peer.on('disconnected', function () { if (g === NB.gen && done) { try { peer.reconnect(); } catch (e) {} } });
@@ -9277,12 +9538,13 @@ input.bprange[type=range]::-moz-range-thumb { width: 20px; height: 20px; border-
         push();
         return;
       }
-      if (T.seats.filter(function (s) { return !s.gone; }).length >= (T.cap || MAX_SEATS)) {
-        try { conn.send({ t: 'full', n: T.cap || MAX_SEATS }); } catch (e) {} setTimeout(function () { try { conn.close(); } catch (e) {} }, 400); return;
+      if ((T.tn && T.tn.st) || T.seats.filter(function (s) { return !s.gone; }).length >= (T.cap || MAX_SEATS)) {
+        try { conn.send({ t: 'full', n: T.cap || MAX_SEATS, run: T.tn && T.tn.st ? 1 : 0 }); } catch (e) {} setTimeout(function () { try { conn.close(); } catch (e) {} }, 400); return;
       }
       var old = seatOf(conn.peer); if (old) T.seats = T.seats.filter(function (s) { return s !== old; });
       conn._bj = true; NB.conns.push(conn);
-      addSeat(conn.peer, cleanProf(d.p));
+      var cp = cleanProf(d.p); if (T.tn) { cp.chips = 0; cp.res = 0; }   // im Turnier gibt es die Turnierchips erst beim Start
+      addSeat(conn.peer, cp);
       if (rid) H.rid[rid] = T.seats[T.seats.length - 1];
       bjToast(T.seats[T.seats.length - 1].name + ' sitzt mit am Tisch');
       Snd.ping();
@@ -9337,9 +9599,10 @@ input.bprange[type=range]::-moz-range-thumb { width: 20px; height: 20px; border-
       });
       conn.on('data', function (d) {
         if (g !== NB.gen || !d || typeof d !== 'object') return;
-        if (d.t === 'full') { fail('Der Tisch ist voll' + (d.n >= 2 && d.n <= MAX_SEATS ? ' (' + d.n + ' Plätze).' : '.')); return; }
+        if (d.t === 'full') { fail(d.run ? 'Das Turnier an diesem Tisch läuft schon.' : 'Der Tisch ist voll' + (d.n >= 2 && d.n <= MAX_SEATS ? ' (' + d.n + ' Plätze).' : '.')); return; }
         if (d.t === 'closed') {
           if (!finished) fail('Der Tisch wurde geschlossen.');
+          else if (tnRefund()) endCard('Turnier abgebrochen', 'Der Ersteller hat den Tisch verlassen. Du bekommst deinen Einsatz zurück.');
           else endCard('Tisch geschlossen', 'Der Ersteller hat den Tisch verlassen. Deine Chips bleiben in deinem Guthaben.');
           return;
         }
@@ -9356,6 +9619,11 @@ input.bprange[type=range]::-moz-range-thumb { width: 20px; height: 20px; border-
           return;
         }
         if (d.t === 'snap' && d.s && Array.isArray(d.s.seats)) {
+          if (!finished && d.s.tn && (PR.prof().bank | 0) < (d.s.tn.b | 0)) {
+            try { conn.send({ t: 'bye' }); } catch (e) {}
+            fail('Für dieses Turnier brauchst du ' + fmt(d.s.tn.b | 0) + ' Chips Einsatz, so viel hast du gerade nicht.');
+            return;
+          }
           if (!finished) {
             finished = true; clearTimeout(to);
             NB.peer = peer; NB.role = 'guest'; NB.code = code; NB.conn = conn;
@@ -9534,7 +9802,7 @@ input.bprange[type=range]::-moz-range-thumb { width: 20px; height: 20px; border-
   /* fuer die Freundesliste */
   /* Ein Freund fragt, ob er dazukommen darf: der Tisch, an dem man allein spielt, wird zum Online-Tisch.
      Der Freund setzt sich in der naechsten Setzrunde dazu. done(code) bzw. done('') */
-  function free() { return !!T && T.seats.filter(function (s) { return !s.gone; }).length < (T.cap || MAX_SEATS); }
+  function free() { return !!T && !(T.tn && T.tn.st) && T.seats.filter(function (s) { return !s.gone; }).length < (T.cap || MAX_SEATS); }
   function hostNow(done) {
     if (NB.role === 'host' && NB.code) { done(free() ? NB.code : ''); return; }
     if (NB.role || NB.peer || !T || !H || bj.hidden || !PR.netAvail() || !free()) { done(''); return; }
@@ -9569,6 +9837,8 @@ input.bprange[type=range]::-moz-range-thumb { width: 20px; height: 20px; border-
       if (auto) setTimeout(function () { if (!$('#bjfGo').disabled) $('#bjfGo').click(); }, 60);
     }
   };
+  /* nur fuer automatische Tests (window.PR_TESTHOOKS vor dem Laden setzen): Spielstand am Blackjack-Tisch */
+  if (window.PR_TESTHOOKS) window.BJ._dbg = function () { return { T: T, H: H, ME: ME, TNC: TNC }; };
 })();
 </script>
 
@@ -15375,7 +15645,7 @@ input.bprange[type=range]::-moz-range-thumb { width: 20px; height: 20px; border-
      voided()              Turnier ohne Wertung abgebrochen (Einsatz kam zurueck)
      bust(info, cb)        Karte „Platz 4 von 5“ (cb(true) = zuschauen, cb(false) = zum Menue)
      podium(info, cb)      Siegertreppchen (cb(true) = nochmal, cb(false) = Menue)
-     quit(info, cb)        Rueckfrage „Turnier aufgeben?“ (cb nur bei Ja)
+     quit(info, cb)        Rueckfrage „Turnier aufgeben?“ (cb nur bei Ja); info.note ersetzt den Hinweis fuer den Ersteller (auch bei bust)
      closeAll()            alle Turnierfenster zu
      stats()               { n, w, best, net } ueber alle Turniere (die alten Sit & Go und Spin & Go zaehlen mit)
    Speicher: pr-sngstats (Turniere), pr-spinstats (alte Spin & Go, nur noch gelesen), pr-tnrun (laufendes Turnier; beim
@@ -15473,6 +15743,7 @@ input.bprange[type=range]::-moz-range-thumb { width: 20px; height: 20px; border-
       ? 'Du bist im Geld: +' + fmt(info.prize) + ' Chips (Einsatz ' + fmt(info.buyin) + ') kommen in dein Guthaben.'
       : 'Keine Chips mehr – du bist raus. Dein Einsatz von ' + fmt(info.buyin) + ' Chips ist weg.';
     $('#tnBustW').hidden = !info.host;
+    $('#tnBustW').textContent = info.note || 'Das Turnier läuft auf deinem Handy. Verlässt du den Tisch, ist es für alle vorbei und die anderen werden nach Chips gewertet.';
     $('#tnBustMenu').textContent = info.host ? 'Tisch verlassen' : 'Zum Hauptmenü';
     $('#tnBustI').textContent = info.prize > 0 ? '💰' : '🃏';
     $('#tnBust').hidden = false;
@@ -15530,7 +15801,7 @@ input.bprange[type=range]::-moz-range-thumb { width: 20px; height: 20px; border-
   function quit(info, cb) {
     quitCb = cb;
     var t = info.place ? 'Du landest auf Platz ' + info.place + ' von ' + info.of + (info.prize > 0 ? ' und bekommst ' + fmt(info.prize) + ' Chips.' : ', dein Einsatz von ' + fmt(info.buyin) + ' Chips ist weg.') : '';
-    if (info.host) t += (t ? ' ' : '') + 'Das Turnier läuft auf deinem Handy: Gehst du, ist es für alle vorbei und die anderen werden nach ihren Chips gewertet.';
+    if (info.host) t += (t ? ' ' : '') + (info.note || 'Das Turnier läuft auf deinem Handy: Gehst du, ist es für alle vorbei und die anderen werden nach ihren Chips gewertet.');
     $('#tnQuitT').textContent = info.place ? 'Turnier aufgeben?' : 'Tisch verlassen?';
     $('#tnQuitX').textContent = t;
     $('#tnQuitGo').textContent = info.place ? 'Aufgeben' : 'Verlassen';

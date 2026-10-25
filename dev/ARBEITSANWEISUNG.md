@@ -100,7 +100,7 @@ Wenn du eine Schnittstelle baust, dokumentiere sie mit einem kurzen Kommentar an
 - Schritt 27 (Reaktion): siebte Menüseite, `window.RX` { on(), state(), host(done), join(code), friends(done) },
   Protokoll `RX_V = 1`, Freunde-Nachrichten duel/duelok/duelno, Status g:'rx', PRChat-Liste 'rx'.
   Menü-Reihenfolge jetzt: lock · slots · poker · bj · rl · crash · rx (Seiten-Id von Crash ist `crash`; Video-Poker wurde wieder entfernt).
-- Versionen jetzt: Poker `PK_V = 11` (Ersteller nimmt ab 11, schickt älteren {t:'old'}), `BJ_V = 9`, `RL_V = 6`, `CR_V = 2`, `RX_V = 1`.
+- Versionen jetzt: Poker `PK_V = 11` (Ersteller nimmt ab 11, schickt älteren {t:'old'}), `BJ_V = 10`, `RL_V = 6`, `CR_V = 2`, `RX_V = 1`.
   Öffentliches Profil hat Feld `st` (Sterne). Immer die AKTUELLEN Werte im Code nachsehen.
 - Online-Test ohne echtes PeerJS: `dev/test/fakepeer.js`
   und `online.js` (zwei getrennte Browser über einen PeerJS-Ersatz) – als Vorlage kopieren und nutzen.

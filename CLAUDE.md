@@ -36,7 +36,7 @@ Mitspieler zuteilt) und die Ergebnisliste `end.tr`; 9 bringt im `cos` die Sieges
 Wurfgegenstände `{ t: 'tom', k }` (k fehlt = Tomate, `k: 'schirm'` = Abprall-Meldung mit `n`), 8 Profilrahmen und Titel
 `cos { frame, title }` im öffentlichen Profil und im Stand, 7 Schnellsätze `{ t: 'chat', q }` und Karten zeigen `{ t: 'show', c }`
 mit den Feldern `sh`/`sb` im Stand, 6 ersetzt das Level `lv` durch die Sternzahl `st` im öffentlichen Profil, 5 brachte `lv`,
-4 das Feld `rid` zum Wiederverbinden), Blackjack `BJ_V` (aktuell 9: `cos.win/av/um` und Würfe mit `k`, 8 `cos` im Profil,
+4 das Feld `rid` zum Wiederverbinden), Blackjack `BJ_V` (aktuell 10: Turnier `T.tn { b, n, bots, st, of, pot, lv, res, over, win }`, Phasen `wait`/`tnend`, Bot-Plätze `bot: 1`, `full { run }`; 9: `cos.win/av/um` und Würfe mit `k`, 8 `cos` im Profil,
 7 Schnellsätze), Roulette `RL_V` (aktuell 6: `cos.win/av/um` und Würfe `{ t: 'tom' }`, 5 `cos` im Profil,
 4 Reaktionen und Schnellsätze), Crash `CR_V` (eigenes Raum-Protokoll, aktuell 2: `snap { s: { ph, rd, el, sd, ct, dl, crash,
 hist, pl } }`, `bet { a, au }`, `out { e, h }` mit Flugzeit `e` in ms, Reaktionen/Sätze/Würfe wie beim Roulette; `sd` ist der Samen
