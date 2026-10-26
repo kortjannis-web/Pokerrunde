@@ -2601,7 +2601,7 @@ input.bprange[type=range]::-moz-range-thumb { width: 20px; height: 20px; border-
           <p style="margin-top:14px">Der rote Balken läuft im Kreis. Drück den grünen Knopf unten genau dann, wenn er über dem gelben Punkt ist. Es zählt nur der grüne Knopf. Nach jedem Treffer dreht er die Richtung um und wird etwas schneller. Mit der Zeit liegen die Punkte enger, manchmal direkt hintereinander – dann schnell nachdrücken.</p>
           <p>Knackst du das Schloss, bekommst du den ganzen Jackpot aus den Gläsern, danach fängt es wieder bei 0 an. Für einzelne Treffer gibt es nichts – entweder Jackpot oder nichts. Liegt bis 300 im Glas, brauchst du 50 Treffer, bis 500 sind es 60, darüber 70.</p>
           <p>Im Shop (Hauptmenü, Knopf unter dem Profil) gibt es unter „Pop the Lock“ Upgrades: einen größeren Knopf (10.000 Chips pro Stufe), 5 Treffer weniger (8.000 Chips pro Stufe) und einen langsameren Balken (8.000 Chips pro Stufe, je 10 % langsamer).</p>
-          <p>Das Glas füllt sich, wenn du in den anderen Spielen gewinnst (Slots, Blackjack, Roulette, Poker): 2 % von jedem Gewinn kommen obendrauf ins Glas, dein Gewinn bleibt ganz bei dir. Bis 300 zählt jeder Gewinn. Danach nur noch große Gewinne am Stück: bis 500 ab 500 Gewinn, bis 800 ab 1.000 Gewinn und bis 1.200 ab 2.000 Gewinn. Das große Glas fasst 300, ab 300 kommt davor ein mittleres Glas dazu (bis 500), ab 500 ein kleines (bis 600), danach läuft alles drumherum über. Auch was überläuft, gehört weiter zum Jackpot. Neue Münzen fallen ins Glas, sobald du wieder hier bist.</p>
+          <p>Das Glas füllt sich, wenn du in den anderen Spielen gewinnst (Slots, Blackjack, Roulette, Poker): 2 % von jedem Gewinn kommen obendrauf ins Glas, dein Gewinn bleibt ganz bei dir. Bis 300 zählt jeder Gewinn. Danach nur noch große Gewinne am Stück: bis 800 zählen Gewinne ab 500, bis 1.000 Gewinne ab 1.000 (jeweils 2 %), und bis 1.500 nur noch Gewinne ab 5.000, davon 1 %. Bei 1.500 ist der Jackpot voll. Das große Glas fasst 300, ab 300 kommt davor ein mittleres Glas dazu (bis 500), ab 500 ein kleines (bis 600), danach läuft alles drumherum über. Auch was überläuft, gehört weiter zum Jackpot. Neue Münzen fallen ins Glas, sobald du wieder hier bist.</p>
           <p>Drückst du daneben oder lässt du den Punkt vorbeiziehen, ist die Runde vorbei. Der Jackpot bleibt im Glas, und spielen kostet nichts.</p>
         </div>
         <button class="btn wide" id="lkMenu" type="button" style="margin-top:10px">Zum Hauptmenü</button>
@@ -2698,7 +2698,7 @@ input.bprange[type=range]::-moz-range-thumb { width: 20px; height: 20px; border-
       <div class="crsky" id="crSky">
         <canvas id="crCv" aria-hidden="true"></canvas>
         <div class="crpl" id="crPl" aria-label="Spieler in dieser Runde"></div>
-        <div class="crmult" id="crMult"><small id="crMultS"></small><b id="crMultB">1,00×</b><span class="crbar" id="crBar" hidden><i></i></span></div>
+        <div class="crmult" id="crMult"><small id="crMultS"></small><b id="crMultB">0,00×</b><span class="crbar" id="crBar" hidden><i></i></span></div>
         <div class="crfly" id="crFly"></div>
         <div id="crMe"></div>
       </div>
@@ -2750,7 +2750,7 @@ input.bprange[type=range]::-moz-range-thumb { width: 20px; height: 20px; border-
         <button class="btn primary wide" id="crResume" type="button" style="margin-top:12px">Weiterspielen</button>
         <button class="btn wide" id="crHelpBtn" type="button" style="margin-top:10px" aria-expanded="false">Spielerklärung</button>
         <div id="crHelp" hidden>
-          <p>Die Rakete startet bei <b>1,00×</b>. Dann schwankt der Multiplikator: mal sackt sie bis auf <b>0,5×</b> ab, mal schießt sie bis <b>5×</b> hoch. Irgendwann stürzt sie zufällig ab, manchmal schon beim Start.</p>
+          <p>Die Rakete startet bei <b>0,00×</b> und steigt erst langsam, nach gut 5 Sekunden ist sie bei <b>1×</b>, ab <b>2,5×</b> zündet der Booster, bei <b>8×</b> kracht sie in die Sonne. Irgendwann stürzt sie zufällig ab: im Schnitt bei <b>1,8×</b>, gut jede vierte Runde schon unter 1×, ab und zu schießt sie richtig hoch.</p>
           <p>Vor dem Start hast du 7 Sekunden: Chips antippen und <b>Setzen</b>. Tippst du im Flug auf <b>Auszahlen</b>, bekommst du Einsatz × Multiplikator, unter 1× also weniger als deinen Einsatz. Wer beim Absturz noch drin ist, verliert alles.</p>
           <p><b>Halb auszahlen</b> nimmt die Hälfte deines Einsatzes mit, der Rest fliegt weiter. <b>Auto</b> zahlt von selbst bei deinem Wunsch-Multiplikator aus (eine Änderung im Flug gilt ab der nächsten Runde).</p>
           <p>Die Leiste oben zeigt die letzten 20 Absturzpunkte. Die Bank gewinnt auf Dauer: Wer früh und vorsichtig aussteigt, bekommt am meisten zurück. Mit Freunden spielt jeder mit seinem eigenen Guthaben; Bots erkennst du am Schild „Bot“.</p>
@@ -10883,16 +10883,17 @@ input.bprange[type=range]::-moz-range-thumb { width: 20px; height: 20px; border-
   function stats() { var o = null; try { o = JSON.parse(localStorage.getItem('pr-lkstats') || 'null'); } catch (e) {} o = o || {}; return { best: +o.best || 0, jp: +o.jp || 0, won: +o.won || 0 }; }
   function saveStats(st) { try { localStorage.setItem('pr-lkstats', JSON.stringify(st)); } catch (e) {} }
 
-  /* ---------- Jackpot-Glas: 2 % von jedem Gewinn in den anderen Spielen kommen obendrauf ins Glas ----------
-     Bis 300 zaehlt jeder Gewinn, darueber nur grosse Gewinne am Stueck: bis 500 ab 500 Gewinn, bis 800 ab 1.000,
-     bis 1.200 ab 2.000. Gespeichert: v Jackpot (mit Nachkommastellen, damit auch kleine Gewinne zaehlen), c Lage der
+  /* ---------- Jackpot-Glas: ein Teil von jedem Gewinn in den anderen Spielen kommt obendrauf ins Glas ----------
+     Bis 300 zaehlen 2 % von jedem Gewinn, darueber nur grosse Gewinne am Stueck: bis 800 2 % von Gewinnen ab 500,
+     bis 1.000 2 % von Gewinnen ab 1.000, bis 1.500 (voll) nur noch 1 % von Gewinnen ab 5.000. Gespeichert: v Jackpot (mit Nachkommastellen, damit auch kleine Gewinne zaehlen), c Lage der
      Muenzen, die schon im Glas liegen, s der Jackpot, den man zuletzt gesehen hat. Neue Muenzen fallen erst hinein,
      wenn man wieder hier ist. Was ueber den Rand laeuft, ist nur Anzeige und gehoert weiter zum Jackpot. */
-  var TIERS = [[300, 0], [500, 500], [800, 1000], [1200, 2000]], RATE = 0.02, JMAX = 1200;
+  /* [bis, ab welchem Gewinn, Anteil] */
+  var TIERS = [[300, 0, 0.02], [800, 500, 0.02], [1000, 1000, 0.02], [1500, 5000, 0.01]], JMAX = 1500;
   /* [ab, wie viel, Muenzen]: das grosse Glas fasst 0 bis 300, das mittlere davor 300 bis 500, das kleine 500 bis 600
-     (so viele Muenzen fuellen sie genau bis zum Rand, ausprobiert); 600 bis 1.200 laeuft nur noch drumherum ueber,
+     (so viele Muenzen fuellen sie genau bis zum Rand, ausprobiert); 600 bis 1.500 laeuft nur noch drumherum ueber,
      das ist bloss Anzeige. JGEO aendern, wenn sich die Glaeser aendern */
-  var PARTS = [[0, 300, 100], [300, 200, 47], [500, 100, 22], [600, 600, 78]], JGEO = 5;
+  var PARTS = [[0, 300, 100], [300, 200, 47], [500, 100, 22], [600, 900, 78]], JGEO = 5;
   function jarLoad() {
     var o = null; try { o = JSON.parse(localStorage.getItem('pr-jar') || 'null'); } catch (e) {} o = o || {};
     var v = +o.v, s = +o.s;
@@ -10943,7 +10944,7 @@ input.bprange[type=range]::-moz-range-thumb { width: 20px; height: 20px; border-
     if (!(win > 0)) return 0;
     var d = jarLoad(), t = tierOf(d.v);
     if (t < 0 || win < TIERS[t][1]) return 0;
-    var a = Math.min(TIERS[t][0] - d.v, win * RATE);
+    var a = Math.min(TIERS[t][0] - d.v, win * TIERS[t][2]);
     if (!(a > 0)) return 0;
     d.v += a; jarSave(d);
     pop(a); renderSub(d.v);
@@ -10967,7 +10968,7 @@ input.bprange[type=range]::-moz-range-thumb { width: 20px; height: 20px; border-
   function tierMsg(v) {
     var t = tierOf(v);
     if (t < 0) return 'Das Glas ist randvoll – knack das Schloss!';
-    return 'Glas voll! Es füllt sich weiter ab ' + fmt(TIERS[t][1]) + ' Gewinn am Stück';
+    return 'Glas voll! Es füllt sich weiter ab ' + fmt(TIERS[t][1]) + ' Gewinn am Stück (' + Math.round(TIERS[t][2] * 100) + ' % davon)';
   }
 
   /* ---------- Glaeser: Muenzen mit einfacher Physik (Schwerkraft, Glaswand, Boden, andere Muenzen) ----------
@@ -15964,14 +15965,15 @@ input.bprange[type=range]::-moz-range-thumb { width: 20px; height: 20px; border-
 </script>
 
 <script>
-/* Crash: eine Rakete startet senkrecht, der Multiplikator steigt von 1x, ab 2,5x zuendet der Booster, hoechstens bis 8x
+/* Crash: eine Rakete startet senkrecht, der Multiplikator steigt von 0x, ab 2,5x zuendet der Booster, hoechstens bis 8x
    (dann kracht sie in die Sonne), bis sie zufaellig explodiert.
-   Wer vorher auszahlt, bekommt Einsatz x Multiplikator, wer zu lange wartet, verliert alles.
-   Kurve fuer alle gleich: m(t) = e^(K t) mit K = 0,15 pro s bis BOOST = 2,5x (nach 6,1 s), danach Booster mit K2 = 0,45 pro s
-   (1,5x nach 2,7 s, 2x nach 4,6 s, 2,5x nach 6,1 s, 4x nach 7,2 s, 8x nach 8,7 s).
-   Absturzpunkt (geheim, nur beim Ersteller) aus der Tabelle SURV (Anteil der Runden, die ueber x kommen): 8 % sofort beim Start,
-   sonst am haeufigsten zwischen 1,1x und 1,8x (Mitte etwa 1,6x), Ausreisser: 12 % ab 3x, 6 % ab 4x, 2 % ab 6x, knapp 1 % bis 8x.
-   Rueckfluss beim Auszahlen bei a: a x Anteil ueber a, also 1,2x: 95 %, 1,5x: 87 %, 2x: 66 %, 3x: 38 %, 5x: 18 %, 7x: 10 % (Chip-Senke).
+   Wer vorher auszahlt, bekommt Einsatz x Multiplikator (unter 1x also weniger als den Einsatz), wer zu lange wartet, verliert alles.
+   Kurve fuer alle gleich: m(t) = A (e^(K t) - 1) mit A = 4,06 und K = 0,04 pro s bis BOOST = 2,5x (nach 12 s), danach Booster
+   mit K2 = 0,3 pro s (1x nach 5,5 s, 1,8x nach 9,2 s, 2x nach 10 s, 2,5x nach 12 s, 4x nach 13,6 s, 8x nach 15,9 s).
+   Absturzpunkt (geheim, nur beim Ersteller) aus der Tabelle SURV (Anteil der Runden, die ueber x kommen): Durchschnitt 1,8x,
+   am haeufigsten zwischen 0,9x und 1,8x (Mitte etwa 1,5x), 1,5 % sofort beim Start, gut ein Viertel unter 1x,
+   Ausreisser: 12 % ab 3x, 4 % ab 5x, knapp 1 % bis 8x.
+   Rueckfluss beim Auszahlen bei a: a x Anteil ueber a, also 1x: 74 %, 1,25x: 77 %, 1,5x: 74 %, 2x: 60 %, 3x: 37 %, 5x: 20 % (Chip-Senke).
    Bild: Countdown auf der Startrampe (die Rakete brodelt immer staerker, Dampf unten raus), dann gerade nach oben:
    blauer Himmel, Wolken (1,5x darueber), dunkler, Ozonschicht bei 2x, Sterne, ab 2,5x Booster, ab etwa 3x Planeten, bei 8x die Sonne.
    Ablauf: 7 s Countdown fuer Einsaetze (hat kein Mensch gesetzt, laeuft er neu, die Rakete wartet), Flug, Explosion, 3 s Pause. Halb auszahlen (die andere Haelfte fliegt weiter),
@@ -15988,7 +15990,7 @@ input.bprange[type=range]::-moz-range-thumb { width: 20px; height: 20px; border-
    Protokoll (Version CR_V, Ersteller und Mitspieler muessen gleich sein, sonst { t: 'old' }):
      Mitspieler -> Ersteller: hello { g: 'cr', v, p }, bet { a, au }, out { e, h }, react { e }, chat { q }, tom, bye
      Ersteller -> alle: snap { v, s: { ph, rd, el, sd, ct, dl, crash, hist, pl } }, closed, full, old, react/chat/tom mit id
-     (Version 4: Booster ab 2,5x, bis 8x; 3: gerade steigende Kurve e^(K t) bis 5x mit Countdown-Neustart; 2 war die schwankende Kurve aus sd; 1 die steigende Kurve mit k und out { m }).
+     (Version 5: Start bei 0x, langsamer, Durchschnitt 1,8x; 4: Booster ab 2,5x, bis 8x; 3: gerade steigende Kurve e^(K t) bis 5x mit Countdown-Neustart; 2 war die schwankende Kurve aus sd; 1 die steigende Kurve mit k und out { m }).
    Speicher: pr-crstats { n, w, net, hi, best, half }, pr-crlog [[Runde, Saldo]], pr-crbet (Einsatz), pr-crauto { on, v }, pr-crrun.
    Ereignisse: 'bet' { game: 'crash', amount }, 'win' { game: 'crash', amount, net } (einmal pro Runde, bei Gewinn),
    'crash:round' { bet, cashout (Multiplikator oder 0), half (Multiplikator der Haelfte oder 0), crash, inst (sofort abgestuerzt), net, online },
@@ -16002,13 +16004,13 @@ input.bprange[type=range]::-moz-range-thumb { width: 20px; height: 20px; border-
   function $(s) { return document.querySelector(s); }
   function all(s) { return [].slice.call(document.querySelectorAll(s)); }
 
-  var CR_V = 4;   // Version des Raum-Protokolls: Ersteller und Mitspieler muessen gleich sein
-  var PEER_PREFIX = 'pokerrunde-cr-', MAX_PL = 6, BET_MS = 7000, BOOM_MS = 3000, MINM = 1, MAXC = 8, AU_MAX = 7.9;
-  /* Kurve und Absturz (siehe Kopf): K Steigung pro s bis BOOST, ab da K2 (Booster), TB Zeit bis zum Booster in s,
+  var CR_V = 5;   // Version des Raum-Protokolls: Ersteller und Mitspieler muessen gleich sein
+  var PEER_PREFIX = 'pokerrunde-cr-', MAX_PL = 6, BET_MS = 7000, BOOM_MS = 3000, MINM = 0.01, MAXC = 8, AU_MAX = 7.9;
+  /* Kurve und Absturz (siehe Kopf): A und K Kurve bis BOOST, ab da K2 (Booster), TB Zeit bis zum Booster in s,
      T_MAX laengster Flug in s (bis 8x), SURV [x, Anteil der Runden ueber x], dazwischen geradlinig */
-  var K = 0.15, BOOST = 2.5, K2 = 0.45, TB = Math.log(BOOST) / K, T_MAX = TB + Math.log(MAXC / BOOST) / K2;
-  var SURV = [[1, 0.92], [1.1, 0.855], [1.2, 0.79], [1.3, 0.725], [1.5, 0.58], [1.75, 0.42], [2, 0.33], [2.5, 0.2], [3, 0.125],
-              [3.5, 0.085], [4, 0.06], [5, 0.035], [6, 0.021], [7, 0.013], [8, 0.008]];
+  var A0 = 4.06, K = 0.04, BOOST = 2.5, K2 = 0.3, TB = Math.log(1 + BOOST / A0) / K, T_MAX = TB + Math.log(MAXC / BOOST) / K2;
+  var SURV = [[0, 0.985], [0.25, 0.966], [0.5, 0.925], [0.75, 0.848], [1, 0.738], [1.25, 0.614], [1.5, 0.49], [1.75, 0.382],
+              [2, 0.298], [2.5, 0.186], [3, 0.124], [4, 0.066], [5, 0.039], [6, 0.024], [7, 0.015], [8, 0.009]];
   var LATE_MS = 400, TOL_MS = 250, GIFT = 50, FIN_MS = 800;
   var CHIPS = [10, 50, 100, 500, 1000, 5000];
   var STEPS = [1.1, 1.2, 1.3, 1.5, 1.75, 2, 2.5, 3, 4, 5, 6, 7, 7.9];
@@ -16024,10 +16026,10 @@ input.bprange[type=range]::-moz-range-thumb { width: 20px; height: 20px; border-
   /* Multiplikator nach ms Flug, auf allen Handys gleich */
   function mAt(ms) {
     var t = Math.max(0, ms) / 1000;
-    return Math.min(MAXC, t <= TB ? Math.exp(K * t) : BOOST * Math.exp(K2 * (t - TB)));
+    return Math.min(MAXC, t <= TB ? A0 * (Math.exp(K * t) - 1) : BOOST * Math.exp(K2 * (t - TB)));
   }
   /* umgekehrt: so viele s, bis die Rakete x erreicht */
-  function tOf(x) { return x <= BOOST ? Math.log(x) / K : TB + Math.log(x / BOOST) / K2; }
+  function tOf(x) { return x <= BOOST ? Math.log(1 + x / A0) / K : TB + Math.log(x / BOOST) / K2; }
   function rnd01() {
     try { var a = new Uint32Array(2); window.crypto.getRandomValues(a); return (a[0] * 2097152 + (a[1] >>> 11)) / 9007199254740992; }
     catch (e) { return Math.random(); }
@@ -16073,7 +16075,7 @@ input.bprange[type=range]::-moz-range-thumb { width: 20px; height: 20px; border-
     if (!b) return;
     addStats(b, w, Math.max(co, h), !!h);
     if (net > 0 && window.JAR) window.JAR.add(net);
-    if (w > 0) PR.emit('win', { game: 'crash', amount: w, net: net });
+    if (net > 0) PR.emit('win', { game: 'crash', amount: w, net: net });
     PR.emit('crash:round', { bet: b, cashout: co, half: h, crash: cleanM(r.crash), inst: !!r.inst, net: net, online: !!r.online });
     if (r.online) PR.emit('online:round', { game: 'crash' });
   }
@@ -16117,9 +16119,9 @@ input.bprange[type=range]::-moz-range-thumb { width: 20px; height: 20px; border-
   }
   /* gerade angezeigter Multiplikator */
   function curM() {
-    if (!R) return 1;
-    if (R.ph === 'boom') return R.crash || 1;
-    if (R.ph !== 'fly' || !R.sd) return 1;
+    if (!R) return 0;
+    if (R.ph === 'boom') return R.crash || 0;
+    if (R.ph !== 'fly' || !R.sd) return 0;
     return mAt(flyMs());
   }
   function inRound() { return !!(V.cur && R && V.cur.rd === R.rd && R.ph === 'fly' && !V.cur.co); }
@@ -16203,7 +16205,7 @@ input.bprange[type=range]::-moz-range-thumb { width: 20px; height: 20px; border-
   }
   function hBoom() {
     clearInterval(H.tk); H.tk = 0;
-    H.crash = cleanM(mAt(H.T)) || 1;
+    H.crash = cleanM(mAt(H.T));
     R.ph = 'boom'; R.crash = H.crash; R.ct = H.T; H.boomAt = Date.now();
     R.hist.unshift(H.crash); if (R.hist.length > 20) R.hist.length = 20;
     H.dl = Date.now() + BOOM_MS;
@@ -16320,7 +16322,7 @@ input.bprange[type=range]::-moz-range-thumb { width: 20px; height: 20px; border-
     if (!c || c.fin) return;
     c.fin = true;
     var here = R && R.rd === c.rd && R.ph === 'boom', crash = here ? R.crash : (H && H.crash) || 0;
-    if (V.pend && !c.co) { toast('Zu spät – abgestürzt bei ' + fmtM(crash || 1)); V.pend = null; }
+    if (V.pend && !c.co) { toast('Zu spät – abgestürzt bei ' + fmtM(crash || 0)); V.pend = null; }
     record({ b: c.b, w: c.w, co: c.co, h: c.h, crash: crash, inst: here && !R.ct, online: c.on || others() });
     broke();
   }
@@ -16443,7 +16445,7 @@ input.bprange[type=range]::-moz-range-thumb { width: 20px; height: 20px; border-
     if (!h.length) { var s = document.createElement('small'); s.textContent = 'Noch kein Absturz'; el.appendChild(s); return; }
     h.slice(0, 20).forEach(function (c, i) {
       var b = document.createElement('i');
-      b.className = (c >= 3 ? 'top' : c >= 2 ? 'hi' : c >= 1.3 ? 'mid' : 'lo') + (i === 0 && fresh ? ' new' : '');
+      b.className = (c >= 3 ? 'top' : c >= 2 ? 'hi' : c >= 1 ? 'mid' : 'lo') + (i === 0 && fresh ? ' new' : '');
       b.textContent = fmtM(c); el.appendChild(b);
     });
   }
@@ -16545,7 +16547,7 @@ input.bprange[type=range]::-moz-range-thumb { width: 20px; height: 20px; border-
       else s = 'Die Rakete fliegt – nächste Runde kannst du setzen';
     } else {
       var lostNow = c && c.rd === R.rd && !c.co, won = c && c.rd === R.rd ? c.w - c.b : 0;
-      s = 'Abgestürzt bei <b class="r">' + fmtM(R.crash || 1) + '</b>' + (c && c.rd === R.rd ? (won >= 0 ? ' · <b class="g">+' + fmt(won) + '</b>' : lostNow && !c.h ? ' · Einsatz weg' : ' · <b class="r">−' + fmt(-won) + '</b>') : '') + (sec ? ' · weiter in ' + Math.ceil(sec) + ' s' : '');
+      s = 'Abgestürzt bei <b class="r">' + fmtM(R.crash || 0) + '</b>' + (c && c.rd === R.rd ? (won >= 0 ? ' · <b class="g">+' + fmt(won) + '</b>' : lostNow && !c.h ? ' · Einsatz weg' : ' · <b class="r">−' + fmt(-won) + '</b>') : '') + (sec ? ' · weiter in ' + Math.ceil(sec) + ' s' : '');
     }
     setHtml($('#crStatus'), s);
     $('#crInvBtn').hidden = NB.role === 'guest';
@@ -16560,10 +16562,10 @@ input.bprange[type=range]::-moz-range-thumb { width: 20px; height: 20px; border-
       bar.hidden = false; var f = Math.max(0, Math.min(1, sec * 1000 / BET_MS)), tf = 'scaleX(' + f.toFixed(3) + ')';
       if (bar.firstChild.style.transform !== tf) bar.firstChild.style.transform = tf;
     } else if (R.ph === 'fly') {
-      bar.hidden = true; setTxt(sm, m >= BOOST ? 'Booster' : ''); setTxt(b, fmtM(m));
+      bar.hidden = true; setTxt(sm, m >= BOOST ? 'Booster' : m < 1 ? 'unter Einsatz' : ''); setTxt(b, fmtM(m));
       if (m >= BOOST) cls += ' boost'; else if (m >= 2) cls += ' hot';
     } else {
-      cls += ' boom'; bar.hidden = true; setTxt(sm, R.crash >= MAXC ? 'In die Sonne gekracht' : 'Abgestürzt'); setTxt(b, fmtM(R.crash || 1));
+      cls += ' boom'; bar.hidden = true; setTxt(sm, R.crash >= MAXC ? 'In die Sonne gekracht' : 'Abgestürzt'); setTxt(b, fmtM(R.crash || 0));
     }
     if (el.className !== cls) el.className = cls;
   }
@@ -16574,8 +16576,8 @@ input.bprange[type=range]::-moz-range-thumb { width: 20px; height: 20px; border-
   window.addEventListener('resize', function () { if (!cr.hidden) { A.size(); plKey = ''; view(); } });
 
   /* ---------- Bild: Startrampe, Himmel, Wolken, Ozonschicht, Sterne, Planeten, Rakete, Explosion (Canvas, laeuft nur, solange
-     Crash offen ist). Die Hoehe kommt aus dem Multiplikator: Stufe lvl(m) = 2 (m - 1) bis 2x, danach m; eine Stufe ist eine
-     Bildhoehe LV (1,5x = Stufe 1 knapp ueber den Wolken, 2x Ozonschicht, ab 2,5x Booster, ab etwa 3x Planeten, bei 8x stoesst
+     Crash offen ist). Die Hoehe kommt aus dem Multiplikator: Stufe lvl(m) = m; eine Stufe ist eine
+     Bildhoehe LV (1x = Stufe 1 knapp ueber den Wolken, 2x Ozonschicht, ab 2,5x Booster, ab etwa 3x Planeten, bei 8x stoesst
      die Spitze an die Sonne). Weltkoordinate w = Pixel ueber
      dem Boden, auf dem Bildschirm y = G + cam - w; die Kamera folgt der Rakete, sobald sie bei FLY_Y steht. ---------- */
   var A = (function () {
@@ -16587,9 +16589,9 @@ input.bprange[type=range]::-moz-range-thumb { width: 20px; height: 20px; border-
     var PLAN = [{ k: 'moon', l: 3.6, x: 0.17, r: 0.075 }, { k: 'mars', l: 4.5, x: 0.55, r: 0.045 }, { k: 'sat', l: 5.5, x: 0.26, r: 0.07 },
                 { k: 'jup', l: 6.6, x: 0.08, r: 0.17 }, { k: 'nep', l: 7.5, x: 0.5, r: 0.06 }];
     var SKY = [[-0.3, 196, 228, 250], [0.4, 118, 186, 242], [1, 64, 138, 222], [1.6, 30, 74, 168], [2, 15, 28, 92], [2.5, 8, 10, 40], [3.2, 4, 4, 16], [9, 3, 3, 12]];
-    var MARKS = [1.5, 2, 2.5, 3, 3.5, 4, 5, 6, 7, 8];
+    var MARKS = [0.5, 1, 1.5, 2, 2.5, 3, 3.5, 4, 5, 6, 7, 8];
     function reduced() { return !!(window.PRFx && window.PRFx.reduced && window.PRFx.reduced()); }
-    function lvl(m) { return m < 2 ? 2 * (m - 1) : m; }
+    function lvl(m) { return Math.max(0, m); }
     function clamp01(v) { return v < 0 ? 0 : v > 1 ? 1 : v; }
     for (var si = 0; si < 16; si++) streaks.push({ x: Math.random(), y: Math.random(), l: rnd(0.08, 0.22) });
     for (var i = 0; i < 110; i++) stars.push({ x: Math.random(), y: Math.random(), r: Math.random() < 0.12 ? 1.5 : Math.random() < 0.5 ? 1 : 0.6, z: 0.25 + Math.random() * 0.75, p: Math.random() * 6.28 });
@@ -16850,9 +16852,9 @@ input.bprange[type=range]::-moz-range-thumb { width: 20px; height: 20px; border-
       raf = requestAnimationFrame(frame);
       if (!size()) return;
       var dt = last ? Math.min(50, now - last) : 16; last = now;
-      var rm = reduced(), ph = R ? R.ph : 'bet', seen = !!(R && V.flyRd === R.rd), m = 1, u = 0, tf = 0, i;
+      var rm = reduced(), ph = R ? R.ph : 'bet', seen = !!(R && V.flyRd === R.rd), m = 0, u = 0, tf = 0, i;
       if (ph === 'fly') { tf = flyMs(); m = curM(); }
-      else if (ph === 'boom' && seen) { tf = R.ct || 0; m = R.crash || 1; }
+      else if (ph === 'boom' && seen) { tf = R.ct || 0; m = R.crash || 0; }
       if (ph === 'bet') u = clamp01(1 - secs() * 1000 / BET_MS);
       var air = ph === 'fly' || (ph === 'boom' && seen), L = air ? lvl(m) : 0, wr = PAD * S + L * LV;
       cam = Math.max(0, wr - (G - FLY_Y * Hh));
@@ -16940,7 +16942,7 @@ input.bprange[type=range]::-moz-range-thumb { width: 20px; height: 20px; border-
       size: size, start: start, stop: stop,
       reset: function () { boomFx = null; parts.length = 0; fly.innerHTML = ''; tickM = 0; fade = 1; cam = lastCam = 0; bst = 0; scenery(); },
       launch: function () {
-        boomFx = null; tickM = 2; bst = 0;
+        boomFx = null; tickM = 1; bst = 0;
         if (W) for (var i = 0; i < (reduced() ? 10 : 36); i++) { var sd = Math.random() < 0.5 ? -1 : 1; puff(RX + sd * rnd(2, 12) * S, sy(0) - PAD * S, sd * rnd(60, 220), -rnd(0, 30), rnd(4, 8) * S, rnd(16, 30), rnd(1200, 2200), 0.6); }
         Snd.fx(function (a) { a.noise(a.t, 0.9, 'lowpass', 700, 0.8, 0.16, 0.08); a.tone(a.t, 120, 0.7, 0.05, 'sawtooth', 320); });
       },
@@ -16949,7 +16951,7 @@ input.bprange[type=range]::-moz-range-thumb { width: 20px; height: 20px; border-
         Snd.fx(function (a) { a.noise(a.t, 1.1, 'lowpass', 520, 0.6, 0.5, 0.005); a.noise(a.t, 0.35, 'bandpass', 2400, 0.8, 0.18, 0.003); a.tone(a.t, 110, 0.6, 0.12, 'sine', 38); });
         try { if (navigator.vibrate && Snd.vibOn && Snd.vibOn() && V.cur && V.cur.rd === R.rd && !V.cur.co) navigator.vibrate(120); } catch (e) {}
       },
-      /* bei jedem vollen Multiplikator (2x, 3x … 7x) ein kurzer Ton */
+      /* bei jedem vollen Multiplikator (1x, 2x … 7x) ein kurzer Ton */
       tick: function (m) {
         if (!tickM || m < tickM) return;
         var f = 440 * Math.pow(2, Math.min(24, tickM - 2) / 12);
@@ -17233,7 +17235,7 @@ input.bprange[type=range]::-moz-range-thumb { width: 20px; height: 20px; border-
       ph: ph, rd: Math.max(0, Math.round(+s.rd) || 0), el: Math.max(0, Math.min(T_MAX * 1000 + 5000, +s.el || 0)),
       sd: ph === 'bet' ? 0 : sd, ct: ph === 'boom' ? ct : 0,
       dl: Math.max(0, Math.min(60000, +s.dl || 0)), crash: ph === 'boom' ? crash : 0,
-      hist: s.hist.map(cleanM).filter(Boolean).slice(0, 20),
+      hist: s.hist.map(function (v) { v = +v; return isFinite(v) && v >= 0 ? Math.min(MAXC, m2(v)) : -1; }).filter(function (v) { return v >= 0; }).slice(0, 20),
       pl: s.pl.slice(0, MAX_PL + 8).filter(function (p) { return p && typeof p.id === 'string'; }).map(function (p) {
         var c = cleanProf(p), b = Math.round(+p.b);
         return { id: p.id.slice(0, 64), name: c.name, color: c.color, st: c.st, cos: p.bot ? null : c.cos, bot: p.bot ? 1 : 0,

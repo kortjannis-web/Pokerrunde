@@ -44,8 +44,9 @@ Wurfgegenstände `{ t: 'tom', k }` (k fehlt = Tomate, `k: 'schirm'` = Abprall-Me
 mit den Feldern `sh`/`sb` im Stand, 6 ersetzt das Level `lv` durch die Sternzahl `st` im öffentlichen Profil, 5 brachte `lv`,
 4 das Feld `rid` zum Wiederverbinden), Blackjack `BJ_V` (aktuell 10: Turnier `T.tn { b, n, bots, st, of, pot, lv, res, over, win }`, Phasen `wait`/`tnend`, Bot-Plätze `bot: 1`, `full { run }`; 9: `cos.win/av/um` und Würfe mit `k`, 8 `cos` im Profil,
 7 Schnellsätze), Roulette `RL_V` (aktuell 6: `cos.win/av/um` und Würfe `{ t: 'tom' }`, 5 `cos` im Profil,
-4 Reaktionen und Schnellsätze), Crash `CR_V` (eigenes Raum-Protokoll, aktuell 4: `snap { s: { ph, rd, el, sd, ct, dl, crash,
-hist, pl } }`, `bet { a, au }`, `out { e, h }` mit Flugzeit `e` in ms, Reaktionen/Sätze/Würfe wie beim Roulette; 4 bringt den Booster
+4 Reaktionen und Schnellsätze), Crash `CR_V` (eigenes Raum-Protokoll, aktuell 5: `snap { s: { ph, rd, el, sd, ct, dl, crash,
+hist, pl } }`, `bet { a, au }`, `out { e, h }` mit Flugzeit `e` in ms, Reaktionen/Sätze/Würfe wie beim Roulette; 5 startet bei 0x
+(Kurve `4,06 (e^(0,04 t) - 1)` bis 2,5x nach 12 s, danach Booster `e^(0,3 t)`, Absturzpunkte im Schnitt 1,8x, auch unter 1x, `crash` 0 = Fehlstart); 4 bringt den Booster
 ab 2,5x (danach `e^(0,45 t)`) und das Ende bei 8x (Sonne); 3 ist die gerade steigende Kurve `e^(0,15 t)` von 1x bis 5x (`sd` nur noch Kennung des Flugs) und der Countdown läuft neu (`dl` springt), solange kein
 Mensch gesetzt hat; Absturzzeit `ct` und Absturzpunkt `crash` schickt der Ersteller erst beim Absturz; 2 war die schwankende Kurve aus `sd`, 1 die erste steigende Kurve), Reaktion `RX_V` (eigenes Raum-Protokoll, aktuell 1: `st { s: { ph, dn, bet, pl, ids, sc, rd, dec, act, win } }`,
 `go { rd, w, f, act }` (nur Wartezeit und Falle, jedes Handy misst selbst), `res { rd, ms, k }`, `rr { rd, res, win, sc }`, `can { ok }`,
