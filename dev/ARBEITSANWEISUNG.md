@@ -93,7 +93,7 @@ Wenn du eine Schnittstelle baust, dokumentiere sie mit einem kurzen Kommentar an
   Münzregen der Slots – bei Bedarf in PRTn nachsehen und wiederverwenden.
 - Schritt 26 (Crash): Menü ist datengetrieben: `window.PRMenu { games, page(), idx(g), go(g, anim) }`, Seiten aus
   `.mpage[data-g]`, `.mgrp[data-g]`, Hintergrund-Klasse `.mbg-<spiel>` (Punkte/Hintergründe entstehen von selbst).
-  Crash: `window.CR`, `window.CRT` (Würfe), PRChat-Liste 'cr', Protokoll `CR_V = 5`, Freunde-Status g:'cr'
+  Crash: `window.CR`, `window.CRT` (Würfe), PRChat-Liste 'cr', Protokoll `CR_V = 6`, Freunde-Status g:'cr'
   (myStatus/cleanSt/stText/Anfrage/Annehmen/Einladen in Skript 7). Besserer fakepeer (puffert Nachrichten vor open,
   nötig für Freundes-Tests): `dev/test/fakepeer.js`,
   Vorlage `dev/test/online-vorlage.js` (Seiten vor goto in pages eintragen).

@@ -2001,8 +2001,12 @@ input.bprange[type=range]::-moz-range-thumb { width: 20px; height: 20px; border-
 .crmult small { font: 700 11px var(--ui); letter-spacing: .14em; text-transform: uppercase; color: rgba(236,231,218,.78); text-shadow: 0 1px 6px rgba(0,0,0,.7); }
 .crmult.bet b { font-size: clamp(30px, 11cqw, 46px); }
 .crmult.hot b { color: #ffe08a; text-shadow: 0 2px 16px rgba(0,0,0,.6), 0 0 28px rgba(255,190,80,.55); }
-.crmult.boost b { color: #c4ecff; text-shadow: 0 2px 16px rgba(0,0,0,.6), 0 0 30px rgba(90,180,255,.85); }
-.crmult.boost small { color: #9fe2ff; letter-spacing: .3em; }
+.crmult.fall b { color: #ffb36b; text-shadow: 0 2px 16px rgba(0,0,0,.6), 0 0 26px rgba(255,140,60,.6); }
+.crmult.fall small { color: #ffd2a8; letter-spacing: .18em; font-size: 12px; }
+.crmult.saved b { color: #8fe6a0; text-shadow: 0 2px 16px rgba(0,0,0,.6), 0 0 26px rgba(90,220,120,.6); }
+.crmult.saved small { color: #bff3c9; }
+.crmult.moon b { color: #ffe9a8; text-shadow: 0 2px 16px rgba(0,0,0,.6), 0 0 30px rgba(255,220,120,.85); }
+.crmult.moon small { color: #ffe08a; letter-spacing: .18em; }
 .crmult.boom b { color: #ff5c5c; text-shadow: 0 2px 16px rgba(0,0,0,.6), 0 0 26px rgba(255,60,60,.6); animation: crshake .45s; }
 .crmult.boom small { color: #ffb0b0; }
 .crbar { display: block; width: 130px; height: 4px; margin-top: 7px; border-radius: 999px; background: rgba(236,231,218,.16); overflow: hidden; }
@@ -2750,7 +2754,9 @@ input.bprange[type=range]::-moz-range-thumb { width: 20px; height: 20px; border-
         <button class="btn primary wide" id="crResume" type="button" style="margin-top:12px">Weiterspielen</button>
         <button class="btn wide" id="crHelpBtn" type="button" style="margin-top:10px" aria-expanded="false">Spielerklärung</button>
         <div id="crHelp" hidden>
-          <p>Die Rakete startet bei <b>0,00×</b> und steigt erst langsam, nach gut 5 Sekunden ist sie bei <b>1×</b>, ab <b>2,5×</b> zündet der Booster, bei <b>8×</b> kracht sie in die Sonne. Irgendwann stürzt sie zufällig ab: im Schnitt bei <b>1,8×</b>, gut jede vierte Runde schon unter 1×, ab und zu schießt sie richtig hoch.</p>
+          <p>Die Rakete startet bei <b>0,00×</b> und steigt gleichmäßig langsam: nach gut 5 Sekunden ist sie bei <b>1×</b>, nach 10 Sekunden bei <b>2×</b>. Irgendwann stürzt sie zufällig ab: im Schnitt bei <b>2×</b>, etwa jede fünfte Runde schon unter 1×, ab und zu schießt sie richtig hoch.</p>
+          <p><b>Mondlandung:</b> Ganz selten (etwa jede 100. Runde) schafft sie es bis <b>8×</b>. Dann öffnet sich im Mond eine Klappe, die Rakete fliegt hinein, und wer noch drin ist, bekommt den Jackpot: <b>8× mal 3 = 24×</b> seines Einsatzes.</p>
+          <p><b>Rückfall:</b> Manchmal explodiert sie ab <b>3×</b> nicht, sondern kippt und fällt mit der Spitze voran zurück. Wer noch drin ist, tippt genau in dem Moment, in dem sie den Boden berührt. Klappt das, bleibt sie heil liegen und du bekommst den Multiplikator, bei dem sie gekippt ist. Du hast nur einen Versuch, zu früh oder zu spät und sie explodiert.</p>
           <p>Vor dem Start hast du 7 Sekunden: Chips antippen und <b>Setzen</b>. Tippst du im Flug auf <b>Auszahlen</b>, bekommst du Einsatz × Multiplikator, unter 1× also weniger als deinen Einsatz. Wer beim Absturz noch drin ist, verliert alles.</p>
           <p><b>Halb auszahlen</b> nimmt die Hälfte deines Einsatzes mit, der Rest fliegt weiter. <b>Auto</b> zahlt von selbst bei deinem Wunsch-Multiplikator aus (eine Änderung im Flug gilt ab der nächsten Runde).</p>
           <p>Die Leiste oben zeigt die letzten 20 Absturzpunkte. Die Bank gewinnt auf Dauer: Wer früh und vorsichtig aussteigt, bekommt am meisten zurück. Mit Freunden spielt jeder mit seinem eigenen Guthaben; Bots erkennst du am Schild „Bot“.</p>
@@ -15965,17 +15971,19 @@ input.bprange[type=range]::-moz-range-thumb { width: 20px; height: 20px; border-
 </script>
 
 <script>
-/* Crash: eine Rakete startet senkrecht, der Multiplikator steigt von 0x, ab 2,5x zuendet der Booster, hoechstens bis 8x
-   (dann kracht sie in die Sonne), bis sie zufaellig explodiert.
+/* Crash: eine Rakete startet senkrecht, der Multiplikator steigt gleichmaessig langsam von 0x bis hoechstens 8x (dann fliegt sie
+   durch eine Klappe in den Mond), bis sie zufaellig explodiert.
    Wer vorher auszahlt, bekommt Einsatz x Multiplikator (unter 1x also weniger als den Einsatz), wer zu lange wartet, verliert alles.
-   Kurve fuer alle gleich: m(t) = A (e^(K t) - 1) mit A = 4,06 und K = 0,04 pro s bis BOOST = 2,5x (nach 12 s), danach Booster
-   mit K2 = 0,3 pro s (1x nach 5,5 s, 1,8x nach 9,2 s, 2x nach 10 s, 2,5x nach 12 s, 4x nach 13,6 s, 8x nach 15,9 s).
-   Absturzpunkt (geheim, nur beim Ersteller) aus der Tabelle SURV (Anteil der Runden, die ueber x kommen): Durchschnitt 1,8x,
-   am haeufigsten zwischen 0,9x und 1,8x (Mitte etwa 1,5x), 1,5 % sofort beim Start, gut ein Viertel unter 1x,
-   Ausreisser: 12 % ab 3x, 4 % ab 5x, knapp 1 % bis 8x.
-   Rueckfluss beim Auszahlen bei a: a x Anteil ueber a, also 1x: 74 %, 1,25x: 77 %, 1,5x: 74 %, 2x: 60 %, 3x: 37 %, 5x: 20 % (Chip-Senke).
+   Kurve fuer alle gleich, ohne Booster: m(t) = A0 (e^(K t) - 1) mit A0 = 4,06 und K = 0,04 pro s
+   (1x nach 5,5 s, 2x nach 10 s, 3x nach 13,8 s, 5x nach 20 s, 8x nach 27 s).
+   Absturzpunkt (geheim, nur beim Ersteller): 1 % der Runden fliegen bis in den Mond (MOON_P), wer dann noch drin ist, bekommt
+   8x mal MOONX = 24x. Alle anderen aus der Tabelle SURV (Anteil der Runden, die ueber x kommen): Durchschnitt 2,0x (ohne Mond),
+   am haeufigsten zwischen 1x und 2x (Mitte etwa 1,7x), 1,5 % sofort beim Start, etwa jede fuenfte Runde unter 1x,
+   Ausreisser: 17 % ab 3x, 4 % ab 5x. Ab 3x faellt die Rakete in 5 % der Abstuerze zurueck statt zu explodieren (FALL_P, Phase
+   'fall'): wer noch drin ist, tippt beim Aufprall (LAND_E ms zu frueh bis LAND_L ms zu spaet) und bekommt den Absturzpunkt.
+   Rueckfluss beim Auszahlen bei a: etwa 1x: 80 %, 1,5x: 88 %, 2x: 78 %, 3x: 51 %, 5x: 25 %, bis zum Mond: 24 % (Chip-Senke).
    Bild: Countdown auf der Startrampe (die Rakete brodelt immer staerker, Dampf unten raus), dann gerade nach oben:
-   blauer Himmel, Wolken (1,5x darueber), dunkler, Ozonschicht bei 2x, Sterne, ab 2,5x Booster, ab etwa 3x Planeten, bei 8x die Sonne.
+   blauer Himmel, Wolken (1x darueber), dunkler, Ozonschicht bei 2x, Sterne, ab etwa 3x Planeten, bei 8x der Mond mit Klappe.
    Ablauf: 7 s Countdown fuer Einsaetze (hat kein Mensch gesetzt, laeuft er neu, die Rakete wartet), Flug, Explosion, 3 s Pause. Halb auszahlen (die andere Haelfte fliegt weiter),
    Auto-Auszahlen bei frei waehlbarem Multiplikator (eine Aenderung im Flug gilt ab der naechsten Runde).
    Auto (und Bots) zahlen bei a aus, sobald die Kurve a erreicht.
@@ -15988,12 +15996,13 @@ input.bprange[type=range]::-moz-range-thumb { width: 20px; height: 20px; border-
    Guthaben: der Einsatz wird beim Start abgebucht, jeder Gewinn sofort gutgeschrieben (Neuladen mitten im Flug: der Einsatz
    ist weg, schon Ausgezahltes bleibt; die Runde kommt beim naechsten Start in die Statistik, pr-crrun).
    Protokoll (Version CR_V, Ersteller und Mitspieler muessen gleich sein, sonst { t: 'old' }):
-     Mitspieler -> Ersteller: hello { g: 'cr', v, p }, bet { a, au }, out { e, h }, react { e }, chat { q }, tom, bye
-     Ersteller -> alle: snap { v, s: { ph, rd, el, sd, ct, dl, crash, hist, pl } }, closed, full, old, react/chat/tom mit id
-     (Version 5: Start bei 0x, langsamer, Durchschnitt 1,8x; 4: Booster ab 2,5x, bis 8x; 3: gerade steigende Kurve e^(K t) bis 5x mit Countdown-Neustart; 2 war die schwankende Kurve aus sd; 1 die steigende Kurve mit k und out { m }).
+     Mitspieler -> Ersteller: hello { g: 'cr', v, p }, bet { a, au }, out { e, h }, land { d }, react { e }, chat { q }, tom, bye
+     Ersteller -> alle: snap { v, s: { ph, rd, el, sd, ct, dl, crash, fl, mo, hist, pl } }, closed, full, old, react/chat/tom mit id
+     (Version 6: ohne Booster, Durchschnitt 2,0x, Mondlandung mo mit Jackpot, Rueckfall ph 'fall' mit land { d }, pl.ld/pl.mo; 5: Start bei 0x, langsamer, Durchschnitt 1,8x; 4: Booster ab 2,5x, bis 8x; 3: gerade steigende Kurve e^(K t) bis 5x mit Countdown-Neustart; 2 war die schwankende Kurve aus sd; 1 die steigende Kurve mit k und out { m }).
    Speicher: pr-crstats { n, w, net, hi, best, half }, pr-crlog [[Runde, Saldo]], pr-crbet (Einsatz), pr-crauto { on, v }, pr-crrun.
    Ereignisse: 'bet' { game: 'crash', amount }, 'win' { game: 'crash', amount, net } (einmal pro Runde, bei Gewinn),
-   'crash:round' { bet, cashout (Multiplikator oder 0), half (Multiplikator der Haelfte oder 0), crash, inst (sofort abgestuerzt), net, online },
+   'crash:round' { bet, cashout (Multiplikator oder 0, Mond 24), half (Multiplikator der Haelfte oder 0), crash, inst (sofort abgestuerzt),
+     moon (bis in den Mond), land (Rueckfall gerettet), net, online },
    'game:open' { game: 'crash' }, 'online:round' { game: 'crash' } (mit echten Mitspielern).
    Schnittstelle window.CR: on(), state() { on, role, code, free }, host(done), join(code) fuer die Freundesliste. */
 (function () {
@@ -16004,13 +16013,19 @@ input.bprange[type=range]::-moz-range-thumb { width: 20px; height: 20px; border-
   function $(s) { return document.querySelector(s); }
   function all(s) { return [].slice.call(document.querySelectorAll(s)); }
 
-  var CR_V = 5;   // Version des Raum-Protokolls: Ersteller und Mitspieler muessen gleich sein
+  var CR_V = 6;   // Version des Raum-Protokolls: Ersteller und Mitspieler muessen gleich sein
   var PEER_PREFIX = 'pokerrunde-cr-', MAX_PL = 6, BET_MS = 7000, BOOM_MS = 3000, MINM = 0.01, MAXC = 8, AU_MAX = 7.9;
-  /* Kurve und Absturz (siehe Kopf): A und K Kurve bis BOOST, ab da K2 (Booster), TB Zeit bis zum Booster in s,
-     T_MAX laengster Flug in s (bis 8x), SURV [x, Anteil der Runden ueber x], dazwischen geradlinig */
-  var A0 = 4.06, K = 0.04, BOOST = 2.5, K2 = 0.3, TB = Math.log(1 + BOOST / A0) / K, T_MAX = TB + Math.log(MAXC / BOOST) / K2;
-  var SURV = [[0, 0.985], [0.25, 0.966], [0.5, 0.925], [0.75, 0.848], [1, 0.738], [1.25, 0.614], [1.5, 0.49], [1.75, 0.382],
-              [2, 0.298], [2.5, 0.186], [3, 0.124], [4, 0.066], [5, 0.039], [6, 0.024], [7, 0.015], [8, 0.009]];
+  /* Kurve und Absturz (siehe Kopf): m(t) = A0 (e^(K t) - 1) durchgehend bis MAXC, T_MAX laengster Flug in s (8x, Mond),
+     SURV [x, Anteil der Runden ueber x] fuer alle Runden ohne Mond, dazwischen geradlinig.
+     MOON_P Anteil der Mondlandungen (zahlen MOONX x 8x = PAYMAX), FALL_P Anteil der Abstuerze ab FALL_MIN, bei denen die
+     Rakete zurueckfaellt. Rueckfall: FLIP ms Kippen, FA ms schnell nach unten bis FH Bildhoehen ueber dem Boden, dann
+     gleichmaessig FV Bildhoehen/s bis zum Aufprall nach FALL_MS; Landung zaehlt LAND_E ms zu frueh bis LAND_L ms zu spaet,
+     der Ersteller wartet danach noch LAND_WAIT ms auf Nachrichten */
+  var A0 = 4.06, K = 0.04, T_MAX = Math.log(1 + MAXC / A0) / K, T_END = Math.round(T_MAX * 1000);
+  var SURV = [[0, 0.985], [0.25, 0.971], [0.5, 0.94], [0.75, 0.88], [1, 0.795], [1.25, 0.694], [1.5, 0.584], [1.75, 0.48],
+              [2, 0.39], [2.5, 0.255], [3, 0.168], [4, 0.081], [5, 0.042], [6, 0.02], [7, 0.008], [8, 0]];
+  var MOON_P = 0.01, MOONX = 3, PAYMAX = MAXC * MOONX, FALL_P = 0.05, FALL_MIN = 3;
+  var FLIP = 500, FA = 1100, FH = 1.2, FV = 1.3, FALL_MS = FLIP + FA + Math.round(FH / FV * 1000), LAND_E = 60, LAND_L = 90, LAND_WAIT = 900;
   var LATE_MS = 400, TOL_MS = 250, GIFT = 50, FIN_MS = 800;
   var CHIPS = [10, 50, 100, 500, 1000, 5000];
   var STEPS = [1.1, 1.2, 1.3, 1.5, 1.75, 2, 2.5, 3, 4, 5, 6, 7, 7.9];
@@ -16026,25 +16041,26 @@ input.bprange[type=range]::-moz-range-thumb { width: 20px; height: 20px; border-
   /* Multiplikator nach ms Flug, auf allen Handys gleich */
   function mAt(ms) {
     var t = Math.max(0, ms) / 1000;
-    return Math.min(MAXC, t <= TB ? A0 * (Math.exp(K * t) - 1) : BOOST * Math.exp(K2 * (t - TB)));
+    return Math.min(MAXC, A0 * (Math.exp(K * t) - 1));
   }
   /* umgekehrt: so viele s, bis die Rakete x erreicht */
-  function tOf(x) { return x <= BOOST ? Math.log(1 + x / A0) / K : TB + Math.log(x / BOOST) / K2; }
+  function tOf(x) { return Math.log(1 + x / A0) / K; }
   function rnd01() {
     try { var a = new Uint32Array(2); window.crypto.getRandomValues(a); return (a[0] * 2097152 + (a[1] >>> 11)) / 9007199254740992; }
     catch (e) { return Math.random(); }
   }
   function drawSeed() { return Math.max(1, Math.floor(rnd01() * 4294967295)); }
-  /* Absturzzeit in ms aus der Tabelle SURV (0 = sofort beim Start, hoechstens T_MAX s = 8x, die Sonne) */
+  /* Absturzzeit in ms: MOON_P der Runden fliegen bis in den Mond (T_END), sonst aus der Tabelle SURV (0 = sofort beim Start) */
   function drawT() {
+    if (rnd01() < MOON_P) return T_END;
     var u = rnd01(), x = MAXC;
     if (u >= SURV[0][1]) return 0;
     for (var i = 1; i < SURV.length; i++) if (u >= SURV[i][1]) { var a = SURV[i - 1], b = SURV[i]; x = a[0] + (a[1] - u) / (a[1] - b[1]) * (b[0] - a[0]); break; }
-    return Math.round(Math.min(T_MAX, tOf(x)) * 1000);
+    return Math.min(T_END - 1, Math.round(tOf(x) * 1000));
   }
   function m2(m) { return Math.floor(m * 100 + 1e-7) / 100; }
   function fmtM(m) { return m2(m).toFixed(2).replace('.', ',') + '×'; }
-  function cleanM(v) { v = +v; return isFinite(v) && v >= MINM - 1e-9 ? Math.max(MINM, Math.min(MAXC, m2(v))) : 0; }
+  function cleanM(v) { v = +v; return isFinite(v) && v >= MINM - 1e-9 ? Math.max(MINM, Math.min(PAYMAX, m2(v))) : 0; }
   function cleanAuto(v) { v = +v; return isFinite(v) && v >= 1.01 ? Math.min(AU_MAX, Math.round(v * 100) / 100) : 0; }
   function readJ(k) { try { return JSON.parse(localStorage.getItem(k) || 'null'); } catch (e) { return null; } }
   function writeJ(k, v) { try { if (v == null) localStorage.removeItem(k); else localStorage.setItem(k, JSON.stringify(v)); } catch (e) {} }
@@ -16076,7 +16092,7 @@ input.bprange[type=range]::-moz-range-thumb { width: 20px; height: 20px; border-
     addStats(b, w, Math.max(co, h), !!h);
     if (net > 0 && window.JAR) window.JAR.add(net);
     if (net > 0) PR.emit('win', { game: 'crash', amount: w, net: net });
-    PR.emit('crash:round', { bet: b, cashout: co, half: h, crash: cleanM(r.crash), inst: !!r.inst, net: net, online: !!r.online });
+    PR.emit('crash:round', { bet: b, cashout: co, half: h, crash: cleanM(r.crash), inst: !!r.inst, moon: !!r.mo, land: !!r.ld, net: net, online: !!r.online });
     if (r.online) PR.emit('online:round', { game: 'crash' });
   }
   /* App mitten im Flug geschlossen: Einsatz ist weg, Ausgezahltes blieb im Guthaben; die Runde zaehlt jetzt */
@@ -16087,14 +16103,16 @@ input.bprange[type=range]::-moz-range-thumb { width: 20px; height: 20px; border-
   })();
 
   /* ---------- Zustand ----------
-     R: was alle sehen. ph 'bet' (Einsaetze), 'fly' (Rakete fliegt), 'boom' (abgestuerzt, Pause); rd Runde, el ms im Flug,
-     sd Samen der Kurve (ab 'fly'), ct Absturzzeit in ms und crash Absturzpunkt (beide erst ab 'boom', sonst 0),
+     R: was alle sehen. ph 'bet' (Einsaetze), 'fly' (Rakete fliegt), 'fall' (faellt zurueck, Landung per Tippen),
+     'boom' (abgestuerzt, gelandet oder im Mond, Pause); rd Runde, el ms im Flug, sd Kennung des Flugs (ab 'fly'),
+     ct Absturzzeit in ms und crash Absturzpunkt (beide erst ab 'fall'/'boom', sonst 0), fl Rueckfall-Runde, mo Mondlandung,
      dl ms bis zum naechsten Abschnitt, hist letzte 20,
-     pl Spieler { id, name, color, st, cos, bot, b Einsatz, au Auto, co ausgezahlt bei (Rest), h Haelfte ausgezahlt bei }.
+     pl Spieler { id, name, color, st, cos, bot, b Einsatz, au Auto, co ausgezahlt bei (Rest), h Haelfte ausgezahlt bei,
+       ld gelandet (co = Absturzpunkt), mo im Mond (co = PAYMAX) }.
      H: nur beim Ersteller (Zeitgeber, Absturzzeit T, Plaene der Bots). */
   var R = null, H = null, ME = 'me';
   var NB = { peer: null, role: '', code: '', conns: [], conn: null, gen: 0 };
-  var V = { betRd: -1, flyRd: -1, boomRd: -1, f0: 0, dlAt: 0, rs: false, placed: false, q: false, cur: null, pend: null, finT: 0, seen: {}, botSet: [], nBots: 4, au: 0, lastTick: 0 };
+  var V = { betRd: -1, flyRd: -1, boomRd: -1, fallRd: -1, tap: null, f0: 0, dlAt: 0, rs: false, placed: false, q: false, cur: null, pend: null, finT: 0, seen: {}, botSet: [], nBots: 4, au: 0, lastTick: 0 };
   var amt = 100, auOn = false, auV = 2;
   (function () {
     var a = +(readJ('pr-crbet') || 0); if (a >= 1 && a <= 1e9) amt = Math.round(a);
@@ -16120,11 +16138,14 @@ input.bprange[type=range]::-moz-range-thumb { width: 20px; height: 20px; border-
   /* gerade angezeigter Multiplikator */
   function curM() {
     if (!R) return 0;
-    if (R.ph === 'boom') return R.crash || 0;
+    if (R.ph === 'boom' || R.ph === 'fall') return R.crash || 0;
     if (R.ph !== 'fly' || !R.sd) return 0;
     return mAt(flyMs());
   }
   function inRound() { return !!(V.cur && R && V.cur.rd === R.rd && R.ph === 'fly' && !V.cur.co); }
+  /* Rueckfall: ich bin noch drin und habe noch nicht getippt; fallT ms seit dem Kippen auf meinem Bildschirm */
+  function inFall() { return !!(V.cur && R && V.cur.rd === R.rd && R.ph === 'fall' && !V.cur.co && !V.tap); }
+  function fallT() { return R && V.flyRd === R.rd ? performance.now() - (V.f0 + (R.ct || 0)) : 1e9; }
 
   /* ---------- Ersteller (auch allein): Runden ---------- */
   function clearHost() {
@@ -16134,9 +16155,9 @@ input.bprange[type=range]::-moz-range-thumb { width: 20px; height: 20px; border-
   function hostStart() {
     clearHost();
     var hist = R && Array.isArray(R.hist) ? R.hist.slice() : [], rd = R ? R.rd : 0;
-    H = { bt: 0, tk: 0, bts: [], t0: 0, sd: 0, T: 0, crash: 0, boomAt: 0, dl: 0, bots: {}, n: 0 };
+    H = { bt: 0, tk: 0, bts: [], t0: 0, sd: 0, T: 0, crash: 0, endAt: 0, dl: 0, bots: {}, n: 0, fall: false, moon: false, tries: {} };
     ME = 'me';
-    R = { ph: 'boom', rd: Math.max(rd, V.betRd, V.flyRd), el: 0, sd: 0, ct: 0, dl: 0, crash: 0, hist: hist, pl: [meEntry()] };
+    R = { ph: 'boom', rd: Math.max(rd, V.betRd, V.flyRd), el: 0, sd: 0, ct: 0, dl: 0, crash: 0, fl: 0, mo: 0, hist: hist, pl: [meEntry()] };
     hBet();
   }
   function botBet(s) {
@@ -16152,9 +16173,9 @@ input.bprange[type=range]::-moz-range-thumb { width: 20px; height: 20px; border-
   }
   function hBet() {
     clearHost(); H.bts = [];
-    R.ph = 'bet'; R.rd++; R.crash = 0; R.sd = 0; R.ct = 0; H.crash = 0; H.sd = 0; H.T = 0;
+    R.ph = 'bet'; R.rd++; R.crash = 0; R.sd = 0; R.ct = 0; R.fl = 0; R.mo = 0; H.crash = 0; H.sd = 0; H.T = 0; H.fall = false; H.moon = false; H.tries = {};
     R.pl = R.pl.filter(function (p) { return !p.bot; });
-    R.pl.forEach(function (p) { p.b = 0; p.au = 0; p.co = 0; p.h = 0; });
+    R.pl.forEach(function (p) { p.b = 0; p.au = 0; p.co = 0; p.h = 0; p.ld = 0; p.mo = 0; });
     var nb = Math.max(1, V.nBots - (R.pl.length - 1));
     H.bots = {};
     V.botSet.slice(0, nb).forEach(function (bt, i) {
@@ -16180,7 +16201,9 @@ input.bprange[type=range]::-moz-range-thumb { width: 20px; height: 20px; border-
   }
   function hFly() {
     clearTimeout(H.bt); H.bts.forEach(clearTimeout); H.bts = [];
-    H.sd = drawSeed(); H.T = H.next != null ? Math.max(0, +H.next || 0) : drawT(); H.next = null;
+    H.sd = drawSeed(); H.T = H.next != null ? Math.max(0, Math.min(T_END, Math.round(+H.next) || 0)) : drawT(); H.next = null;
+    H.moon = H.T >= T_END;
+    H.fall = !H.moon && mAt(H.T) >= FALL_MIN && (H.nextFall != null ? !!H.nextFall : rnd01() < FALL_P); H.nextFall = null;
     R.ph = 'fly'; R.sd = H.sd; H.crash = 0; H.t0 = Date.now(); H.dl = 0; H.n = 0;
     R.pl.forEach(function (p) { if (!(p.b > 0)) { p.b = 0; p.au = 0; } });
     var h = H;
@@ -16191,7 +16214,7 @@ input.bprange[type=range]::-moz-range-thumb { width: 20px; height: 20px; border-
   function hTick() {
     if (!R || !H || R.ph !== 'fly') return;
     var e = Date.now() - H.t0, ch = false;
-    if (e >= H.T) { hBoom(); return; }
+    if (e >= H.T) { if (H.fall) hFall(); else hBoom(); return; }
     var m = mAt(e);
     R.pl.forEach(function (p) {
       if (!(p.b > 0) || p.co) return;
@@ -16203,10 +16226,36 @@ input.bprange[type=range]::-moz-range-thumb { width: 20px; height: 20px; border-
     });
     if (ch || ++H.n % 30 === 0) push();   // sonst etwa jede Sekunde ein Stand fuer den Gleichlauf
   }
-  function hBoom() {
+  /* Rueckfall: die Rakete kippt und faellt; wer noch drin ist, kann einmal beim Aufprall tippen (hLand), Bots schaffen es zur Haelfte */
+  function hFall() {
     clearInterval(H.tk); H.tk = 0;
-    H.crash = cleanM(mAt(H.T));
-    R.ph = 'boom'; R.crash = H.crash; R.ct = H.T; H.boomAt = Date.now();
+    H.crash = cleanM(mAt(H.T)); H.endAt = Date.now(); H.tries = {};
+    R.ph = 'fall'; R.fl = 1; R.crash = H.crash; R.ct = H.T; H.dl = 0;
+    var h = H;
+    R.pl.forEach(function (p) {
+      if (!p.bot || !(p.b > 0) || p.co || Math.random() < 0.5) return;
+      H.bts.push(setTimeout(function () { if (H === h && R.ph === 'fall' && !p.co) { p.co = H.crash; p.ld = 1; push(); } }, FALL_MS + rnd(0, 60)));
+    });
+    H.bt = setTimeout(function () { if (H === h) hBoom(); }, FALL_MS + LAND_WAIT);
+    push();
+  }
+  /* Landung: d = Abstand des Tippens zum Aufprall in ms, gemessen auf dem Handy des Spielers */
+  function hLand(id, d) {
+    var p = plOf(id);
+    if (!R || !H || R.ph !== 'fall' || !p || p.bot || !(p.b > 0) || p.co || H.tries[id]) return false;
+    H.tries[id] = 1; d = +d;
+    if (!isFinite(d) || d < -LAND_E || d > LAND_L) return false;
+    p.co = H.crash; p.ld = 1;
+    push();
+    return true;
+  }
+  function hBoom() {
+    clearInterval(H.tk); H.tk = 0; clearTimeout(H.bt);
+    if (R.ph !== 'fall') { H.crash = cleanM(mAt(H.T)); H.endAt = Date.now(); }
+    /* bis in den Mond: wer noch drin ist, bekommt den Jackpot */
+    R.mo = H.moon ? 1 : 0;
+    if (H.moon) R.pl.forEach(function (p) { if (p.b > 0 && !p.co) { p.co = PAYMAX; p.mo = 1; } });
+    R.ph = 'boom'; R.crash = H.crash; R.ct = H.T;
     R.hist.unshift(H.crash); if (R.hist.length > 20) R.hist.length = 20;
     H.dl = Date.now() + BOOM_MS;
     var h = H;
@@ -16237,7 +16286,7 @@ input.bprange[type=range]::-moz-range-thumb { width: 20px; height: 20px; border-
     if (half && (p.h || p.b < 2)) return false;
     var now = Date.now(), eh;
     if (R.ph === 'fly') eh = now - H.t0;
-    else if (R.ph === 'boom' && id !== ME && now - H.boomAt <= LATE_MS) eh = H.T;   // knapp zu spaet angekommen
+    else if ((R.ph === 'boom' || R.ph === 'fall') && id !== ME && now - H.endAt <= LATE_MS) eh = H.T;   // knapp zu spaet angekommen
     else return false;
     var e = id === ME ? eh : +eReq;
     if (!isFinite(e) || e < 0 || e >= H.T || e > eh + TOL_MS) { push(); return false; }
@@ -16262,13 +16311,14 @@ input.bprange[type=range]::-moz-range-thumb { width: 20px; height: 20px; border-
     if (!nb && R.ph === 'bet' && V.dlAt && dlAt > V.dlAt + 1500) V.rs = true;   // Countdown lief neu: keiner hatte gesetzt
     V.dlAt = dlAt;
     settle();
+    if (R.ph === 'fall' && V.fallRd !== R.rd) { V.fallRd = R.rd; if (V.flyRd === R.rd) A.fall(); }
     if (R.ph === 'boom' && V.boomRd !== R.rd) { V.boomRd = R.rd; onBoom(); }
     seenCheck();
     view();
   }
   function onBet() {
     finish();
-    V.placed = false; V.pend = null; V.cur = null; V.seen = {}; V.rs = false;
+    V.placed = false; V.pend = null; V.cur = null; V.seen = {}; V.rs = false; V.tap = null;
     A.reset();
     if (V.q) { V.q = false; place(true); }
   }
@@ -16294,7 +16344,7 @@ input.bprange[type=range]::-moz-range-thumb { width: 20px; height: 20px; border-
     if (!c || !me || c.rd !== R.rd) return;
     var half = Math.floor(c.b / 2);
     if (me.h && !c.h && c.b >= 2) { c.h = cleanM(me.h); credit(Math.floor(half * c.h), c.h, true); }
-    if (me.co && !c.co) { c.co = cleanM(me.co); credit(Math.floor((c.h ? c.b - half : c.b) * c.co), c.co, false); }
+    if (me.co && !c.co) { c.co = cleanM(me.co); c.ld = !!me.ld; c.mo = !!me.mo; credit(Math.floor((c.h ? c.b - half : c.b) * c.co), c.co, false); }
     if (V.pend && (c.co || (V.pend.h && c.h))) V.pend = null;
   }
   function credit(w, m, half) {
@@ -16310,7 +16360,7 @@ input.bprange[type=range]::-moz-range-thumb { width: 20px; height: 20px; border-
     }
   }
   function onBoom() {
-    if (V.flyRd === R.rd) A.boom();
+    if (V.flyRd === R.rd) { if (R.mo) A.moon(); else if (!R.fl) A.boom(); }
     var c = V.cur;
     if (c && c.rd === R.rd && !c.co) Snd.knock();
     clearTimeout(V.finT);
@@ -16323,7 +16373,7 @@ input.bprange[type=range]::-moz-range-thumb { width: 20px; height: 20px; border-
     c.fin = true;
     var here = R && R.rd === c.rd && R.ph === 'boom', crash = here ? R.crash : (H && H.crash) || 0;
     if (V.pend && !c.co) { toast('Zu spät – abgestürzt bei ' + fmtM(crash || 0)); V.pend = null; }
-    record({ b: c.b, w: c.w, co: c.co, h: c.h, crash: crash, inst: here && !R.ct, online: c.on || others() });
+    record({ b: c.b, w: c.w, co: c.co, h: c.h, crash: crash, inst: here && !R.ct, mo: c.mo, ld: c.ld, online: c.on || others() });
     broke();
   }
   /* pleite: wie an den Slots gibt es ein paar Chips zum Weiterspielen */
@@ -16366,8 +16416,21 @@ input.bprange[type=range]::-moz-range-thumb { width: 20px; height: 20px; border-
       view();
     } else if (!hOut(ME, 0, half)) toast('Zu spät – abgestürzt');
   }
+  /* beim Aufprall tippen: Zeitpunkt moeglichst vom Beruehren (Ereignis-Zeitstempel), Abstand zum Aufprall auf meinem Bildschirm */
+  function land(ev) {
+    if (!inFall()) return;
+    var now = performance.now(), ts = ev && ev.timeStamp;
+    if (ts > 0 && Math.abs(ts - now) < 500) now = ts;
+    var d = Math.round(now - (V.f0 + R.ct + FALL_MS));
+    V.tap = { d: d, ok: d >= -LAND_E && d <= LAND_L };
+    if (NB.role === 'guest') { try { NB.conn.send({ t: 'land', d: d }); } catch (e) {} }
+    else hLand(ME, d);
+    Snd.chip(2, 0); view();
+  }
+  function landTap(e) { if (inFall()) { e.preventDefault(); land(e); } }
   function go() {
     if (!R) return;
+    if (R.ph === 'fall' && V.cur && V.cur.rd === R.rd && !V.cur.co) { land(null); return; }
     if (R.ph === 'bet') { if (V.placed) unplace(); else place(false); return; }
     if (inRound()) { cashOut(false); return; }
     if (!(amt >= 1)) { toast('Erst Chips antippen'); return; }
@@ -16394,6 +16457,8 @@ input.bprange[type=range]::-moz-range-thumb { width: 20px; height: 20px; border-
   });
   $('#crClear').addEventListener('click', function () { if (amt) setAmt(0); });
   $('#crGo').addEventListener('click', go);
+  $('#crGo').addEventListener('pointerdown', landTap);
+  $('#crSky').addEventListener('pointerdown', landTap);
   $('#crHalf').addEventListener('click', second);
   /* Auto-Auszahlen: Schalter, − / + springen auf feste Stufen, ins Feld kann man auch selbst schreiben (z. B. 2,37) */
   function autoTxt() { return auV.toFixed(2).replace('.', ',') + '×'; }
@@ -16468,7 +16533,7 @@ input.bprange[type=range]::-moz-range-thumb { width: 20px; height: 20px; border-
       if (p.bot) { var t = document.createElement('em'); t.textContent = 'Bot'; n.appendChild(t); }
       var am = document.createElement('span'); am.className = 'am'; am.textContent = p.b > 0 ? short(p.b) : '–';
       var st = document.createElement('span'); st.className = 'st';
-      st.textContent = p.co ? fmtM(p.co) : p.h ? '½ ' + fmtM(p.h) : R.ph === 'bet' ? (p.b > 0 ? '✓' : '') : boom && p.b > 0 ? '💥' : p.b > 0 ? '…' : '';
+      st.textContent = p.co ? (p.mo ? '🌕 ' : p.ld ? '🪂 ' : '') + fmtM(p.co) : p.h ? '½ ' + fmtM(p.h) : R.ph === 'bet' ? (p.b > 0 ? '✓' : '') : boom && p.b > 0 ? '💥' : p.b > 0 ? '…' : '';
       el.appendChild(a); el.appendChild(n); el.appendChild(am); el.appendChild(st);
       host.appendChild(el);
     });
@@ -16510,6 +16575,10 @@ input.bprange[type=range]::-moz-range-thumb { width: 20px; height: 20px; border-
       if (V.placed) { cls = 'btn on'; gs = 'Gesetzt ✓'; gm = fmt(amt) + ' · antippen zum Zurücknehmen'; }
       else { gs = 'Setzen'; gm = amt ? 'Einsatz ' + fmt(amt) : 'erst Chips antippen'; gdis = !amt; }
       hdis = !amt || amt >= bank();
+    } else if (ph === 'fall' && c && c.rd === R.rd && !c.co) {
+      if (!V.tap) { cls = 'btn cash'; gs = 'Jetzt landen!'; gm = 'tippen, wenn sie aufschlägt'; }
+      else { cls = 'btn wait'; gs = 'Getippt'; gm = fallT() < FALL_MS ? 'gleich schlägt sie auf …' : V.tap.ok ? 'Treffer!' : V.tap.d < 0 ? 'zu früh' : 'zu spät'; gdis = true; }
+      hs = 'Halb auszahlen'; hm = 'geht nicht mehr'; hdis = true;
     } else if (inr) {
       var rest = c.h ? c.b - half : c.b;
       if (V.pend && !V.pend.h) { cls = 'btn wait'; gs = 'Auszahlen …'; gm = fmtM(m); }
@@ -16545,9 +16614,14 @@ input.bprange[type=range]::-moz-range-thumb { width: 20px; height: 20px; border-
       if (inr) s = c.h ? 'Hälfte sicher: <b class="g">' + fmt(Math.floor(half * c.h)) + ' Chips</b> · Rest fliegt weiter' : 'Einsatz <b>' + fmt(c.b) + '</b>' + (me && me.au ? ' · Auto bei <b>' + fmtM(me.au) + '</b>' : ' · rechtzeitig auszahlen!');
       else if (c && c.rd === R.rd && c.co) s = 'Ausgezahlt bei <b class="g">' + fmtM(c.co) + '</b> · <b class="g">' + fmt(c.w) + ' Chips</b>';
       else s = 'Die Rakete fliegt – nächste Runde kannst du setzen';
+    } else if (ph === 'fall') {
+      if (c && c.rd === R.rd && c.ld) s = 'Gelandet! <b class="g">' + fmt(c.w) + ' Chips</b> gerettet';
+      else if (c && c.rd === R.rd && c.co) s = 'Ausgezahlt bei <b class="g">' + fmtM(c.co) + '</b> · <b class="g">' + fmt(c.w) + ' Chips</b>';
+      else if (c && c.rd === R.rd) s = 'Die Rakete fällt! Tipp genau, wenn sie den Boden berührt';
+      else s = 'Die Rakete fällt zurück …';
     } else {
       var lostNow = c && c.rd === R.rd && !c.co, won = c && c.rd === R.rd ? c.w - c.b : 0;
-      s = 'Abgestürzt bei <b class="r">' + fmtM(R.crash || 0) + '</b>' + (c && c.rd === R.rd ? (won >= 0 ? ' · <b class="g">+' + fmt(won) + '</b>' : lostNow && !c.h ? ' · Einsatz weg' : ' · <b class="r">−' + fmt(-won) + '</b>') : '') + (sec ? ' · weiter in ' + Math.ceil(sec) + ' s' : '');
+      s = (R.mo ? '<b class="g">Mondlandung!</b> Jackpot ×' + MOONX : (R.fl ? 'Zurückgefallen bei ' : 'Abgestürzt bei ') + '<b class="r">' + fmtM(R.crash || 0) + '</b>') + (c && c.rd === R.rd ? (won >= 0 ? ' · <b class="g">+' + fmt(won) + '</b>' : lostNow && !c.h ? ' · Einsatz weg' : ' · <b class="r">−' + fmt(-won) + '</b>') : '') + (sec ? ' · weiter in ' + Math.ceil(sec) + ' s' : '');
     }
     setHtml($('#crStatus'), s);
     $('#crInvBtn').hidden = NB.role === 'guest';
@@ -16562,10 +16636,19 @@ input.bprange[type=range]::-moz-range-thumb { width: 20px; height: 20px; border-
       bar.hidden = false; var f = Math.max(0, Math.min(1, sec * 1000 / BET_MS)), tf = 'scaleX(' + f.toFixed(3) + ')';
       if (bar.firstChild.style.transform !== tf) bar.firstChild.style.transform = tf;
     } else if (R.ph === 'fly') {
-      bar.hidden = true; setTxt(sm, m >= BOOST ? 'Booster' : m < 1 ? 'unter Einsatz' : ''); setTxt(b, fmtM(m));
-      if (m >= BOOST) cls += ' boost'; else if (m >= 2) cls += ' hot';
+      bar.hidden = true; setTxt(sm, m >= 7 ? 'Gleich am Mond!' : m < 1 ? 'unter Einsatz' : ''); setTxt(b, fmtM(m));
+      if (m >= 2) cls += ' hot';
+    } else if (R.ph === 'fall') {
+      var ft = fallT(), saved = (V.tap && V.tap.ok) || (V.cur && V.cur.rd === R.rd && V.cur.ld);
+      bar.hidden = true; cls += saved && ft >= FALL_MS ? ' saved' : ' fall';
+      setTxt(sm, ft < FALL_MS ? (inFall() ? 'Tippen beim Aufprall!' : V.tap ? 'Getippt …' : 'Sie fällt zurück!')
+        : saved ? 'Gerettet!' : V.tap ? (V.tap.d < 0 ? 'Zu früh!' : 'Zu spät!') : 'Aufgeschlagen');
+      setTxt(b, fmtM(R.crash || 0));
     } else {
-      cls += ' boom'; bar.hidden = true; setTxt(sm, R.crash >= MAXC ? 'In die Sonne gekracht' : 'Abgestürzt'); setTxt(b, fmtM(R.crash || 0));
+      var sv = R.fl && V.cur && V.cur.rd === R.rd && V.cur.ld;
+      cls += R.mo ? ' moon' : sv ? ' saved' : ' boom'; bar.hidden = true;
+      setTxt(sm, R.mo ? 'Mondlandung · Jackpot ×' + MOONX : sv ? 'Gerettet!' : R.fl ? 'Aufgeschlagen' : 'Abgestürzt');
+      setTxt(b, fmtM(R.crash || 0));
     }
     if (el.className !== cls) el.className = cls;
   }
@@ -16577,23 +16660,22 @@ input.bprange[type=range]::-moz-range-thumb { width: 20px; height: 20px; border-
 
   /* ---------- Bild: Startrampe, Himmel, Wolken, Ozonschicht, Sterne, Planeten, Rakete, Explosion (Canvas, laeuft nur, solange
      Crash offen ist). Die Hoehe kommt aus dem Multiplikator: Stufe lvl(m) = m; eine Stufe ist eine
-     Bildhoehe LV (1x = Stufe 1 knapp ueber den Wolken, 2x Ozonschicht, ab 2,5x Booster, ab etwa 3x Planeten, bei 8x stoesst
-     die Spitze an die Sonne). Weltkoordinate w = Pixel ueber
+     Bildhoehe LV (1x = Stufe 1 knapp ueber den Wolken, 2x Ozonschicht, ab etwa 3x Planeten, bei 8x stoesst die Spitze an
+     den Mond, ab 7,2x geht dort die Klappe auf). Rueckfall: fallPos, Mondlandung: Rakete fliegt durch die Klappe hinein. Weltkoordinate w = Pixel ueber
      dem Boden, auf dem Bildschirm y = G + cam - w; die Kamera folgt der Rakete, sobald sie bei FLY_Y steht. ---------- */
   var A = (function () {
     var cv = $('#crCv'), ctx = cv.getContext('2d'), sky = $('#crSky'), fly = $('#crFly');
     var W = 0, Hh = 0, dpr = 1, raf = 0, last = 0, tx = 0, ty = 0, cam = 0, lastCam = 0, fade = 0, acc = 0, font = '600 10px sans-serif';
-    var bst = 0, bstT = 0, streaks = [];   // Booster: an (1) seit bstT ms, Tempo-Streifen
+    var fxRd = -1;   // Runde, deren Aufprall (Landung oder Explosion) schon gezeigt wurde
     var G = 0, LV = 0, S = 1, RX = 0, PAD = 5, FLY_Y = 0.62;
     var stars = [], clouds = [], deck = [], parts = [], boomFx = null;
-    var PLAN = [{ k: 'moon', l: 3.6, x: 0.17, r: 0.075 }, { k: 'mars', l: 4.5, x: 0.55, r: 0.045 }, { k: 'sat', l: 5.5, x: 0.26, r: 0.07 },
+    var PLAN = [{ k: 'ven', l: 3.6, x: 0.17, r: 0.075 }, { k: 'mars', l: 4.5, x: 0.55, r: 0.045 }, { k: 'sat', l: 5.5, x: 0.26, r: 0.07 },
                 { k: 'jup', l: 6.6, x: 0.08, r: 0.17 }, { k: 'nep', l: 7.5, x: 0.5, r: 0.06 }];
     var SKY = [[-0.3, 196, 228, 250], [0.4, 118, 186, 242], [1, 64, 138, 222], [1.6, 30, 74, 168], [2, 15, 28, 92], [2.5, 8, 10, 40], [3.2, 4, 4, 16], [9, 3, 3, 12]];
     var MARKS = [0.5, 1, 1.5, 2, 2.5, 3, 3.5, 4, 5, 6, 7, 8];
     function reduced() { return !!(window.PRFx && window.PRFx.reduced && window.PRFx.reduced()); }
     function lvl(m) { return Math.max(0, m); }
     function clamp01(v) { return v < 0 ? 0 : v > 1 ? 1 : v; }
-    for (var si = 0; si < 16; si++) streaks.push({ x: Math.random(), y: Math.random(), l: rnd(0.08, 0.22) });
     for (var i = 0; i < 110; i++) stars.push({ x: Math.random(), y: Math.random(), r: Math.random() < 0.12 ? 1.5 : Math.random() < 0.5 ? 1 : 0.6, z: 0.25 + Math.random() * 0.75, p: Math.random() * 6.28 });
     /* Wolken fuer eine Runde: einzelne Wolken zwischen Stufe 0,3 und 1, darueber die Wolkendecke (0,75 bis 0,95) */
     function scenery() {
@@ -16642,7 +16724,7 @@ input.bprange[type=range]::-moz-range-thumb { width: 20px; height: 20px; border-
     function planet(p, a) {
       var r = p.r * W, x = p.x * W, y = Hh * 0.5 - (p.l * LV - (G + cam - Hh * 0.5)) * 0.7;
       if (a <= 0 || y < -r * 2.5 || y > Hh + r * 2.5) return;
-      var C = { moon: ['#f1efe8', '#b9b6ae', '#6f6c68'], mars: ['#ffb08a', '#d2603a', '#6e2614'], sat: ['#fbe7b8', '#d9b36d', '#7d5a2a'], jup: ['#ffe9cf', '#d9a77a', '#7c5135'], nep: ['#d6f4ff', '#5fb3e0', '#1d4f7a'] }[p.k];
+      var C = { ven: ['#fff4d6', '#e8c27a', '#8a6a3a'], mars: ['#ffb08a', '#d2603a', '#6e2614'], sat: ['#fbe7b8', '#d9b36d', '#7d5a2a'], jup: ['#ffe9cf', '#d9a77a', '#7c5135'], nep: ['#d6f4ff', '#5fb3e0', '#1d4f7a'] }[p.k];
       ctx.save(); ctx.globalAlpha = a;
       ctx.lineWidth = r * 0.24;
       if (p.k === 'sat') { ctx.strokeStyle = 'rgba(232,208,150,.8)'; ctx.beginPath(); ctx.ellipse(x, y, r * 2, r * 0.5, -0.35, 0, 6.283); ctx.stroke(); }
@@ -16651,10 +16733,7 @@ input.bprange[type=range]::-moz-range-thumb { width: 20px; height: 20px; border-
       g.addColorStop(0, C[0]); g.addColorStop(0.55, C[1]); g.addColorStop(1, C[2]);
       ctx.fillStyle = g; ctx.fill();
       ctx.save(); ctx.clip();
-      if (p.k === 'moon') {
-        ctx.fillStyle = 'rgba(90,88,84,.35)';
-        [[-0.3, -0.2, 0.2], [0.28, 0.1, 0.15], [-0.05, 0.42, 0.11], [0.36, -0.38, 0.09], [-0.5, 0.25, 0.08]].forEach(function (c) { ctx.beginPath(); ctx.arc(x + c[0] * r, y + c[1] * r, c[2] * r, 0, 6.283); ctx.fill(); });
-      } else if (p.k === 'mars') {
+      if (p.k === 'mars') {
         ctx.fillStyle = 'rgba(110,40,20,.35)';
         ctx.beginPath(); ctx.ellipse(x - r * 0.2, y + r * 0.1, r * 0.5, r * 0.22, 0.4, 0, 6.283); ctx.fill();
         ctx.fillStyle = 'rgba(255,255,255,.75)'; ctx.beginPath(); ctx.ellipse(x, y - r * 0.92, r * 0.42, r * 0.16, 0, 0, 6.283); ctx.fill();
@@ -16679,38 +16758,57 @@ input.bprange[type=range]::-moz-range-thumb { width: 20px; height: 20px; border-
       ctx.font = font; ctx.textAlign = 'left'; ctx.textBaseline = 'alphabetic'; ctx.fillStyle = 'rgba(200,245,255,.75)';
       ctx.fillText('Ozonschicht', 8, y - 5);
     }
-    /* Riesensonne: ihr unterer Rand liegt genau an der Raketenspitze bei 8x */
-    function sunR() { return Math.max(W, Hh) * 0.8; }
-    function drawSun(now, rm) {
-      var R0 = sunR(), x = W * 0.5, y = sy(PAD * S + lvl(MAXC) * LV + 100 * S + R0);
-      if (y - R0 * 1.7 > Hh) return;
-      var co = ctx.createRadialGradient(x, y, R0 * 0.9, x, y, R0 * 1.7);
-      co.addColorStop(0, 'rgba(255,190,80,.55)'); co.addColorStop(1, 'rgba(255,120,40,0)');
-      ctx.fillStyle = co; ctx.beginPath(); ctx.arc(x, y, R0 * 1.7, 0, 6.283); ctx.fill();
-      var g = ctx.createRadialGradient(x, y, 0, x, y, R0);
-      g.addColorStop(0, '#fffbe6'); g.addColorStop(0.6, '#ffe07a'); g.addColorStop(0.9, '#ffb03a'); g.addColorStop(1, '#ff7a1f');
+    /* Riesenmond: sein unterer Rand liegt genau an der Raketenspitze bei 8x, dort die Klappe (op 0 zu, 1 offen) */
+    function moonBot() { return sy(PAD * S + lvl(MAXC) * LV + 100 * S); }
+    function drawMoon(op, now) {
+      var R0 = Math.max(W, Hh) * 0.8, x = RX, yb = moonBot(), y = yb - R0, i;
+      if (yb + R0 * 0.5 < 0 || y - R0 * 1.4 > Hh) return;
+      var gl = ctx.createRadialGradient(x, y, R0 * 0.94, x, y, R0 * 1.4);
+      gl.addColorStop(0, 'rgba(225,232,255,.35)'); gl.addColorStop(1, 'rgba(200,210,255,0)');
+      ctx.fillStyle = gl; ctx.beginPath(); ctx.arc(x, y, R0 * 1.4, 0, 6.283); ctx.fill();
+      var g = ctx.createRadialGradient(x - R0 * 0.3, y - R0 * 0.3, R0 * 0.2, x, y, R0);
+      g.addColorStop(0, '#fbfaf5'); g.addColorStop(0.75, '#d9d6cd'); g.addColorStop(1, '#a6a299');
       ctx.fillStyle = g; ctx.beginPath(); ctx.arc(x, y, R0, 0, 6.283); ctx.fill();
-      /* Flecken und Flammenboegen am Rand */
+      /* Krater am unteren Rand */
       ctx.save(); ctx.beginPath(); ctx.arc(x, y, R0, 0, 6.283); ctx.clip();
-      ctx.fillStyle = 'rgba(255,140,30,.25)';
-      for (var i = 0; i < 9; i++) { var a = 1.9 + i * 0.6, d = R0 * (0.82 + 0.12 * Math.sin(i * 2.3)); ctx.beginPath(); ctx.arc(x + Math.cos(a) * d, y + Math.sin(a) * d, R0 * (0.04 + 0.03 * Math.sin(i + now / (rm ? 1e9 : 900))), 0, 6.283); ctx.fill(); }
+      for (i = 0; i < 14; i++) {
+        var a = Math.PI / 2 + (i - 6.5) * 0.075 + 0.02 * Math.sin(i * 7.1), d = R0 * (0.8 + 0.17 * ((i * 0.618) % 1)), cr2 = R0 * (0.012 + 0.03 * ((i * 0.37) % 1));
+        var cx = x + Math.cos(a) * d, cy = y + Math.sin(a) * d;
+        if (Math.abs(cx - x) < 40 * S && cy > yb - 40 * S) continue;   // um die Klappe frei lassen
+        ctx.fillStyle = 'rgba(120,116,108,.35)'; ctx.beginPath(); ctx.ellipse(cx, cy, cr2, cr2 * 0.8, 0, 0, 6.283); ctx.fill();
+        ctx.fillStyle = 'rgba(255,255,255,.35)'; ctx.beginPath(); ctx.ellipse(cx + cr2 * 0.15, cy + cr2 * 0.2, cr2 * 0.8, cr2 * 0.55, 0, 0, 6.283); ctx.fill();
+      }
       ctx.restore();
-      ctx.strokeStyle = 'rgba(255,170,60,.7)'; ctx.lineWidth = Math.max(2, R0 * 0.012);
-      for (var j = 0; j < 5; j++) {
-        var b = 3.6 + j * 0.55 + (rm ? 0 : 0.04 * Math.sin(now / 500 + j)), h = R0 * (0.06 + 0.03 * Math.sin(now / (rm ? 1e9 : 700) + j * 1.7));
-        ctx.beginPath(); ctx.arc(x + Math.cos(b) * (R0 + h * 0.2), y + Math.sin(b) * (R0 + h * 0.2), h, b - 1.9, b + 1.9); ctx.stroke();
+      /* Klappe: Rahmen, dunkles Loch mit warmem Licht, zwei Tueren, die nach unten aufschwingen */
+      var hw = 24 * S, dep = 18 * S;
+      ctx.fillStyle = '#7a7e89'; ctx.fillRect(x - hw - 6 * S, yb - 4 * S, (hw + 6 * S) * 2, 4 * S);
+      ctx.fillStyle = '#14161f'; ctx.beginPath(); ctx.moveTo(x - hw, yb); ctx.lineTo(x - hw, yb - dep); ctx.quadraticCurveTo(x, yb - dep * 1.7, x + hw, yb - dep); ctx.lineTo(x + hw, yb); ctx.closePath(); ctx.fill();
+      if (op > 0) {
+        ctx.fillStyle = 'rgba(255,214,130,' + (0.7 * op).toFixed(3) + ')';
+        ctx.beginPath(); ctx.moveTo(x - hw * 0.8, yb); ctx.lineTo(x - hw * 0.8, yb - dep * 0.8); ctx.quadraticCurveTo(x, yb - dep * 1.4, x + hw * 0.8, yb - dep * 0.8); ctx.lineTo(x + hw * 0.8, yb); ctx.closePath(); ctx.fill();
       }
+      for (var sd = -1; sd <= 1; sd += 2) {
+        ctx.save(); ctx.translate(x + sd * hw, yb); ctx.rotate(-sd * op * 1.4);
+        ctx.fillStyle = '#b4bac6'; ctx.fillRect(sd < 0 ? 0 : -hw, -1, hw, 4 * S);
+        ctx.fillStyle = '#e8c547'; for (i = 0; i < 3; i++) ctx.fillRect((sd < 0 ? 0 : -hw) + (i + 0.3) * hw / 3, -1, hw / 7, 4 * S);
+        ctx.restore();
+      }
+      if (op > 0) { ctx.fillStyle = Math.floor(now / 250) % 2 ? '#ffd23f' : '#7a5a10'; for (sd = -1; sd <= 1; sd += 2) { ctx.beginPath(); ctx.arc(x + sd * (hw + 10 * S), yb - 6 * S, 2.6 * S, 0, 6.283); ctx.fill(); } }
     }
-    function drawStreaks(a, v, dt) {
-      if (a <= 0) return;
-      ctx.strokeStyle = 'rgba(220,235,255,' + (0.35 * a).toFixed(3) + ')'; ctx.lineWidth = 1.2;
-      ctx.beginPath();
-      for (var i = 0; i < streaks.length; i++) {
-        var s2 = streaks[i]; s2.y += v * dt / 1000 / Hh * (0.6 + s2.l * 3);
-        if (s2.y > 1.2) { s2.y -= 1.4; s2.x = Math.random(); }
-        ctx.moveTo(s2.x * W, s2.y * Hh); ctx.lineTo(s2.x * W, (s2.y - s2.l) * Hh);
-      }
-      ctx.stroke();
+    /* Rueckfall nach t ms seit dem Kippen: Mitte der Rakete wc (Weltpunkte), x, Drehung rot, k Kamera-Uebergang (0..1),
+       after ms seit dem Aufprall (0 = faellt noch). Erst kippt sie (Spitze nach unten, leicht schraeg), dann schnell nach unten,
+       die letzten FH Bildhoehen gleichmaessig, damit man den Aufprall abpassen kann. */
+    var TILT = 0.14;
+    function fallPos(L0, t) {
+      var h0 = PAD * S + L0 * LV + 50 * S, hg = Hh * 0.02 + 50 * S, h1 = hg + FH * LV, v = FV * LV / 1000, tb = FH / FV * 1000;
+      var o = { x: RX, rot: Math.PI + TILT, wc: hg, k: 1, after: 0 };
+      if (t < FLIP) { var q = Math.max(0, t) / FLIP, e = q * q * (3 - 2 * q); o.rot = e * (Math.PI + TILT); o.wc = h0 + 18 * S * Math.sin(q * Math.PI); o.k = e; return o; }
+      var t1 = t - FLIP;
+      if (t1 < FA) { var a = t1 / FA, a2 = a * a, a3 = a2 * a; o.wc = (2 * a3 - 3 * a2 + 1) * h0 + (3 * a2 - 2 * a3) * h1 - (a3 - a2) * v * FA; }
+      else if (t1 < FA + tb) o.wc = h1 - (t1 - FA) * v;
+      else o.after = t1 - FA - tb;
+      o.x = RX - W * 0.05 * Math.min(1, t1 / (FA + tb));   // driftet etwas zur Seite
+      return o;
     }
     function cloud(c) {
       var wp = c.w * W, cx = c.x * W, cy = sy(c.l * LV);
@@ -16731,7 +16829,7 @@ input.bprange[type=range]::-moz-range-thumb { width: 20px; height: 20px; border-
       ctx.fillStyle = 'rgba(255,255,255,.95)';
       deck.forEach(function (d) { ctx.beginPath(); ctx.arc(d[0] * W, yt + d[2] * LV + d[1] * W * 0.35, d[1] * W, 0, 6.283); ctx.fill(); });
     }
-    function drawGround(armA, now) {
+    function drawGround(armA, now, noTower) {
       var gY = sy(0);
       if (gY > Hh + 4) return;
       var k, x;
@@ -16748,7 +16846,8 @@ input.bprange[type=range]::-moz-range-thumb { width: 20px; height: 20px; border-
       ctx.fillStyle = '#5e6676'; ctx.fillRect(RX - 30 * S, gY - PAD * S, 60 * S, PAD * S + 3);
       ctx.fillStyle = '#868ea0'; ctx.fillRect(RX - 30 * S, gY - PAD * S, 60 * S, 1.5 * S);
       ctx.fillStyle = '#2b2f3a'; ctx.fillRect(RX - 8 * S, gY - PAD * S + 1.5 * S, 16 * S, PAD * S);
-      /* Startturm mit Arm (klappt kurz vor dem Start weg) */
+      /* Startturm mit Arm (klappt kurz vor dem Start weg); nicht bei Rueckfall-Runden, dort landet die Rakete */
+      if (noTower) return;
       var tx0 = RX - 27 * S, tw = 8 * S, top = gY - PAD * S - 112 * S;
       ctx.strokeStyle = '#3a4152'; ctx.lineWidth = Math.max(1, 1.3 * S);
       ctx.beginPath(); ctx.moveTo(tx0 - tw, gY); ctx.lineTo(tx0 - tw, top); ctx.moveTo(tx0, gY); ctx.lineTo(tx0, top);
@@ -16770,8 +16869,10 @@ input.bprange[type=range]::-moz-range-thumb { width: 20px; height: 20px; border-
       }
     }
     /* Rakete senkrecht, Fuss der Duese bei (x, yb), Hoehe 100 Einheiten * S */
-    function rocket(x, yb, flame, now, boost) {
-      ctx.save(); ctx.translate(x, yb); ctx.scale(S, S);
+    function rocket(x, yb, flame, now, boost, rot) {
+      ctx.save(); ctx.translate(x, yb);
+      if (rot) { ctx.translate(0, -50 * S); ctx.rotate(rot); ctx.translate(0, 50 * S); }   // um die Mitte gedreht
+      ctx.scale(S, S);
       if (boost > 0) {   // Booster: zwei Seitenflammen an den Flossen, blau-weiss
         for (var sdx = -1; sdx <= 1; sdx += 2) {
           var bl = (26 + 18 * Math.random()) * boost, bx = sdx * 19;
@@ -16853,38 +16954,36 @@ input.bprange[type=range]::-moz-range-thumb { width: 20px; height: 20px; border-
       if (!size()) return;
       var dt = last ? Math.min(50, now - last) : 16; last = now;
       var rm = reduced(), ph = R ? R.ph : 'bet', seen = !!(R && V.flyRd === R.rd), m = 0, u = 0, tf = 0, i;
+      /* isF Rueckfall-Runde, isM Mondlandung; ft ms seit dem Kippen bzw. seit die Rakete am Mond ist */
+      var end = ph === 'boom' || ph === 'fall', isF = !!(end && seen && R.fl), isM = !!(ph === 'boom' && seen && R.mo);
+      var ft = isF || isM ? now - (V.f0 + (R.ct || 0)) : 0;
       if (ph === 'fly') { tf = flyMs(); m = curM(); }
-      else if (ph === 'boom' && seen) { tf = R.ct || 0; m = R.crash || 0; }
+      else if (end && seen) { tf = R.ct || 0; m = R.crash || 0; }
       if (ph === 'bet') u = clamp01(1 - secs() * 1000 / BET_MS);
-      var air = ph === 'fly' || (ph === 'boom' && seen), L = air ? lvl(m) : 0, wr = PAD * S + L * LV;
-      cam = Math.max(0, wr - (G - FLY_Y * Hh));
+      var air = ph === 'fly' || (end && seen), L = air ? lvl(m) : 0, wr = PAD * S + L * LV, F = isF ? fallPos(L, ft) : null;
+      /* Kamera: im Flug steht der Fuss der Rakete bei FLY_Y, beim Fallen wandert die Spitze nach oben (0,32), damit man den Boden kommen sieht */
+      if (F) cam = Math.max(0, FLY_Y * Hh - 50 * S + (0.32 - FLY_Y) * Hh * F.k + F.wc - G);
+      else cam = Math.max(0, wr - (G - FLY_Y * Hh));
       var dc = cam - lastCam; lastCam = cam;
       if (dc) for (i = 0; i < parts.length; i++) parts[i].y += dc;
       if (boomFx) boomFx.y += dc;
       /* Wackeln: in der letzten Sekunde des Countdowns und beim Abheben */
-      var shk = rm ? 0 : ph === 'bet' ? Math.max(0, u - 0.82) * 6 : ph === 'fly' ? Math.max(0, 1 - tf / 1500) * 1.6 + (m >= BOOST ? Math.max(0.6, 2.5 - (tf / 1000 - TB) * 2) : 0) : 0;
+      var shk = rm ? 0 : ph === 'bet' ? Math.max(0, u - 0.82) * 6 : ph === 'fly' ? Math.max(0, 1 - tf / 1500) * 1.6 : 0;
       ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
       if (shk) ctx.translate(rnd(-shk, shk), rnd(-shk, shk));
       var lc = (G + cam - Hh * 0.5) / LV, space = clamp01((lc - 1.5) / 1);
       drawSky();
       drawStars(space, now, rm);
       for (i = 0; i < PLAN.length; i++) planet(PLAN[i], space);
-      drawSun(now, rm);
+      /* Klappe im Mond: geht ab 7,2x auf, bei der Mondlandung schliesst sie sich hinter der Rakete */
+      drawMoon(isM ? 1 - clamp01((ft - 1100) / 450) : air && !isF ? clamp01((m - 7.2) / 0.6) : 0, now);
       drawOzone();
-      /* Booster ab 2,5x: einmal Zuenden (Ton, Einblendung), dann Tempo-Streifen */
-      if (ph === 'fly' && m >= BOOST && !bst) {
-        bst = 1; bstT = 0;
-        Snd.fx(function (a) { a.noise(a.t, 0.8, 'bandpass', 900, 0.6, 0.22, 0.02); a.tone(a.t, 180, 0.6, 0.06, 'sawtooth', 900); });
-        try { if (navigator.vibrate && Snd.vibOn && Snd.vibOn()) navigator.vibrate(60); } catch (e) {}
-      }
-      var boost = bst && air ? Math.min(1, (bstT += dt) / 400) : 0;
-      if (!rm) drawStreaks(ph === 'fly' ? boost : 0, ph === 'fly' ? LV * K2 * m * 0.9 : 0, dt);
       for (i = 0; i < clouds.length; i++) if (!clouds[i].fg) cloud(clouds[i]);
       drawDeck();
-      drawGround(ph === 'bet' ? -1.3 * clamp01((u - 0.7) / 0.15) : -1.3, now);
+      drawGround(ph === 'bet' ? -1.3 * clamp01((u - 0.7) / 0.15) : -1.3, now, isF);
       drawMarks();
       /* Rakete: auf der Rampe (Countdown, oder Absturz nicht mitbekommen), im Flug, nach der Explosion weg */
-      var show = ph === 'bet' || ph === 'fly' || !seen, yb = sy(wr), rx = RX;
+      var show = ph === 'bet' || ph === 'fly' || !seen, yb = sy(wr), rx = RX, rot = 0, flm = ph === 'fly' ? 1 : 0;
       if (ph === 'bet') {
         var rs = rm ? 0 : 0.15 + 2.3 * u * u * u;
         rx += rnd(-rs, rs); yb += rnd(-rs, rs) * 0.4;
@@ -16900,26 +16999,62 @@ input.bprange[type=range]::-moz-range-thumb { width: 20px; height: 20px; border-
         for (i = 0; i < n; i++) puff(RX + rnd(-3, 3) * S, yb + rnd(14, 26) * S, rnd(-22, 22), rnd(50, 120), rnd(3, 5) * S, rnd(10, 24), rnd(800, 1500), 0.12 + 0.45 * dens, dens > 0.3 ? '#f2f4f8' : '#c9c6de');
         if (L < 0.12 && !rm) puff(RX + rnd(-1, 1) * 10 * S, sy(0) - PAD * S, rnd(-120, 120), -rnd(0, 18), rnd(4, 7) * S, rnd(14, 26), rnd(1000, 1800), 0.5);
       }
+      if (ph === 'bet' && u > 0.86) flm = 0.15 + 0.5 * (u - 0.86) / 0.14;
+      tx = RX; ty = yb - 50 * S;
+      if (F) {
+        /* Rueckfall: Spitze voran nach unten; beim Aufprall gelandet (kippt um und bleibt liegen) oder Explosion */
+        var landed = !!((V.tap && V.tap.ok) || (V.cur && V.cur.rd === R.rd && V.cur.ld)), cy = sy(F.wc), cx = F.x;
+        var nx = cx + 50 * S * Math.sin(F.rot), ny = cy - 50 * S * Math.cos(F.rot);   // Spitze
+        show = true; rot = F.rot; flm = 0;
+        if (!F.after) {
+          if (!rm && F.k >= 1 && Math.random() < dt / 1000 * 22) puff(cx - 50 * S * Math.sin(F.rot), cy + 50 * S * Math.cos(F.rot), rnd(-15, 15), -rnd(20, 60), rnd(3, 5) * S, rnd(10, 20), rnd(600, 1000), 0.35, '#c9c6de');
+        } else {
+          if (fxRd !== R.rd) {
+            fxRd = R.rd;
+            if (landed) {
+              for (i = 0; i < (rm ? 6 : 22); i++) { var dd = Math.random() < 0.5 ? -1 : 1; puff(nx + dd * rnd(0, 10) * S, ny, dd * rnd(30, 140), -rnd(5, 40), rnd(3, 6) * S, rnd(12, 24), rnd(700, 1300), 0.55, '#c8b89a'); }
+              Snd.fx(function (a) { a.noise(a.t, 0.3, 'lowpass', 260, 0.7, 0.32, 0.004); a.tone(a.t, 95, 0.25, 0.14, 'sine', 45); a.tone(a.t + 0.2, 70, 0.15, 0.06, 'sine', 40); });
+            } else {
+              boomAt(nx, ny);
+              Snd.fx(function (a) { a.noise(a.t, 1.1, 'lowpass', 520, 0.6, 0.5, 0.005); a.noise(a.t, 0.35, 'bandpass', 2400, 0.8, 0.18, 0.003); a.tone(a.t, 110, 0.6, 0.12, 'sine', 38); });
+              try { if (navigator.vibrate && Snd.vibOn && Snd.vibOn() && V.cur && V.cur.rd === R.rd && !V.cur.co) navigator.vibrate(120); } catch (e) {}
+            }
+          }
+          if (landed) {
+            /* kippt um die Spitze und legt sich hin, kurzer Hopser */
+            var pg = clamp01(F.after / 650), eg = pg * pg * (3 - 2 * pg), hop = rm ? 0 : 16 * S * Math.abs(Math.sin(F.after / 240 * Math.PI)) * Math.exp(-F.after / 220);
+            rot = Math.PI + TILT + eg * (Math.PI / 2 - TILT - 0.06);
+            cx = nx - 50 * S * Math.sin(rot); cy = ny + 50 * S * Math.cos(rot) - 12 * S * eg - hop;
+          } else show = false;
+        }
+        rx = cx; yb = cy + 50 * S; tx = cx; ty = cy;
+      } else if (isM) {
+        /* Mondlandung: durch die offene Klappe hinein, oben abgeschnitten (drinnen) */
+        var rise = clamp01(ft / 1000); rise = rise * rise * 150 * S;
+        yb = sy(wr) - rise; show = ft < 1100; flm = 1; ty = moonBot();
+      }
       stepParts(dt);
       if (show) {
-        var fl = ph === 'fly' ? 1 : ph === 'bet' && u > 0.86 ? 0.15 + 0.5 * (u - 0.86) / 0.14 : 0;
-        rocket(rx, yb, fl, now, ph === 'fly' ? boost : 0);
+        if (isM) { ctx.save(); ctx.beginPath(); ctx.rect(-8, moonBot(), W + 16, Hh + 16); ctx.clip(); }
+        rocket(rx, yb, flm, now, 0, rot);
+        if (isM) ctx.restore();
       }
-      tx = RX; ty = yb - 50 * S;
-      if (air && m >= MAXC - 0.005) ty = yb - 92 * S;   // in die Sonne gekracht: an der Spitze
       for (i = 0; i < clouds.length; i++) if (clouds[i].fg) cloud(clouds[i]);
-      /* Einblendung beim Zuenden des Boosters */
-      if (bst && ph === 'fly' && bstT < 1400) {
-        var ba = bstT < 200 ? bstT / 200 : 1 - (bstT - 200) / 1200;
-        ctx.save(); ctx.globalAlpha = Math.max(0, ba); ctx.textAlign = 'center'; ctx.textBaseline = 'middle';
-        ctx.font = '900 ' + Math.round(Math.min(34, W * 0.085)) + 'px ' + font.replace(/^600 10px /, '');
-        ctx.fillStyle = '#9fe2ff'; ctx.shadowColor = 'rgba(80,170,255,.9)'; ctx.shadowBlur = 18;
-        ctx.fillText('BOOSTER!', W * 0.43, Hh * 0.3 - bstT * 0.02);
+      /* Mondlandung: Lichtblitz an der Klappe, dann Jackpot-Schrift */
+      if (isM && ft > 900) {
+        var fa = clamp01((ft - 900) / 300) * (1 - clamp01((ft - 1900) / 900)), mb = moonBot();
+        if (fa > 0) {
+          var jg = ctx.createRadialGradient(RX, mb, 0, RX, mb, 150 * S);
+          jg.addColorStop(0, 'rgba(255,240,190,' + (0.9 * fa).toFixed(3) + ')'); jg.addColorStop(1, 'rgba(255,200,90,0)');
+          ctx.fillStyle = jg; ctx.beginPath(); ctx.arc(RX, mb, 150 * S, 0, 6.283); ctx.fill();
+        }
+        var ta = clamp01((ft - 1100) / 300);
+        ctx.save(); ctx.globalAlpha = ta; ctx.textAlign = 'center'; ctx.textBaseline = 'middle';
+        ctx.font = '900 ' + Math.round(Math.min(32, W * 0.08)) + 'px ' + font.replace(/^600 10px /, '');
+        ctx.fillStyle = '#ffe9a8'; ctx.shadowColor = 'rgba(255,200,80,.9)'; ctx.shadowBlur = 18;
+        ctx.fillText('MONDLANDUNG!', W * 0.43, Hh * 0.28);
         ctx.restore();
       }
-      /* nah an der Sonne wird alles hell und warm */
-      var heat = air ? clamp01((L - 6.6) / 1.4) : 0;
-      if (heat > 0) { ctx.globalCompositeOperation = 'screen'; ctx.fillStyle = 'rgba(255,150,60,' + (0.35 * heat).toFixed(3) + ')'; ctx.fillRect(-8, -8, W + 16, Hh + 16); ctx.globalCompositeOperation = 'source-over'; }
       if (boomFx) {
         boomFx.t += dt;
         var q = boomFx.t / 700;
@@ -16933,16 +17068,16 @@ input.bprange[type=range]::-moz-range-thumb { width: 20px; height: 20px; border-
       }
       if (fade > 0) { ctx.fillStyle = 'rgba(6,8,22,' + fade.toFixed(3) + ')'; ctx.fillRect(-8, -8, W + 16, Hh + 16); fade = Math.max(0, fade - dt / 450); }
       renderMult();
-      if (ph === 'fly' || ph === 'bet' || V.dlAt) renderCtl();
+      if (ph === 'fly' || ph === 'bet' || ph === 'fall' || V.dlAt) renderCtl();
     }
     function start() { if (!raf) { last = 0; raf = requestAnimationFrame(frame); } }
     function stop() { if (raf) cancelAnimationFrame(raf); raf = 0; }
     var tickM = 0;
     return {
       size: size, start: start, stop: stop,
-      reset: function () { boomFx = null; parts.length = 0; fly.innerHTML = ''; tickM = 0; fade = 1; cam = lastCam = 0; bst = 0; scenery(); },
+      reset: function () { boomFx = null; parts.length = 0; fly.innerHTML = ''; tickM = 0; fade = 1; cam = lastCam = 0; scenery(); },
       launch: function () {
-        boomFx = null; tickM = 1; bst = 0;
+        boomFx = null; tickM = 1;
         if (W) for (var i = 0; i < (reduced() ? 10 : 36); i++) { var sd = Math.random() < 0.5 ? -1 : 1; puff(RX + sd * rnd(2, 12) * S, sy(0) - PAD * S, sd * rnd(60, 220), -rnd(0, 30), rnd(4, 8) * S, rnd(16, 30), rnd(1200, 2200), 0.6); }
         Snd.fx(function (a) { a.noise(a.t, 0.9, 'lowpass', 700, 0.8, 0.16, 0.08); a.tone(a.t, 120, 0.7, 0.05, 'sawtooth', 320); });
       },
@@ -16950,6 +17085,15 @@ input.bprange[type=range]::-moz-range-thumb { width: 20px; height: 20px; border-
         boomAt(tx || RX, ty || G - 50 * S);
         Snd.fx(function (a) { a.noise(a.t, 1.1, 'lowpass', 520, 0.6, 0.5, 0.005); a.noise(a.t, 0.35, 'bandpass', 2400, 0.8, 0.18, 0.003); a.tone(a.t, 110, 0.6, 0.12, 'sine', 38); });
         try { if (navigator.vibrate && Snd.vibOn && Snd.vibOn() && V.cur && V.cur.rd === R.rd && !V.cur.co) navigator.vibrate(120); } catch (e) {}
+      },
+      /* Rueckfall beginnt: Triebwerk aus, absteigender Ton */
+      fall: function () {
+        Snd.fx(function (a) { a.tone(a.t, 520, 0.9, 0.06, 'sawtooth', 140); a.noise(a.t + 0.3, 1.6, 'bandpass', 700, 0.5, 0.08, 0.6); });
+        try { if (navigator.vibrate && Snd.vibOn && Snd.vibOn() && V.cur && V.cur.rd === R.rd && !V.cur.co) navigator.vibrate([40, 60, 40]); } catch (e) {}
+      },
+      /* Mondlandung: kleine Fanfare */
+      moon: function () {
+        Snd.fx(function (a) { [523, 659, 784, 1047].forEach(function (f, k) { a.tone(a.t + 1 + k * 0.13, f, 0.35, 0.07, 'triangle'); }); a.noise(a.t, 0.9, 'lowpass', 600, 0.6, 0.1, 0.05); });
       },
       /* bei jedem vollen Multiplikator (1x, 2x … 7x) ein kurzer Ton */
       tick: function (m) {
@@ -16991,7 +17135,7 @@ input.bprange[type=range]::-moz-range-thumb { width: 20px; height: 20px; border-
     cr.hidden = false; $('#crPause').hidden = true; $('#crInvDlg').hidden = true; $('#crToast').classList.remove('on');
     if (was) PR.emit('game:open', { game: 'crash' });
     V.botSet = shuffle(BOTS); V.nBots = Math.random() < 0.5 ? 3 : 4;
-    V.placed = false; V.q = false; V.pend = null; V.cur = null; V.seen = {}; V.betRd = -1; V.flyRd = -1; V.boomRd = -1;
+    V.placed = false; V.q = false; V.pend = null; V.cur = null; V.seen = {}; V.betRd = -1; V.flyRd = -1; V.boomRd = -1; V.fallRd = -1; V.tap = null;
     histKey = null; plKey = ''; frKey = '';
     if (amt > bank()) amt = Math.min(amt, Math.max(0, bank()));
     A.reset(); A.size(); A.start();
@@ -17190,6 +17334,7 @@ input.bprange[type=range]::-moz-range-thumb { width: 20px; height: 20px; border-
       if (conn._cr) {
         if (d.t === 'bet') hBetOf(conn.peer, d.a, d.au);
         else if (d.t === 'out') hOut(conn.peer, d.e, !!d.h);
+        else if (d.t === 'land') hLand(conn.peer, d.d);
         else if (d.t === 'react') hTalk(conn.peer, String(d.e));
         else if (d.t === 'chat') hTalk(conn.peer, '', +d.q);
         else if (d.t === 'tom') hCrTom(conn.peer, d);
@@ -17227,19 +17372,18 @@ input.bprange[type=range]::-moz-range-thumb { width: 20px; height: 20px; border-
   }
   function cleanSnap(s) {
     if (!s || typeof s !== 'object' || !Array.isArray(s.pl) || !Array.isArray(s.hist)) return null;
-    var ph = s.ph === 'fly' ? 'fly' : s.ph === 'boom' ? 'boom' : 'bet', crash = cleanM(s.crash);
-    var sd = Math.round(+s.sd) >>> 0, ct = Math.max(0, Math.min(T_MAX * 1000, Math.round(+s.ct) || 0));
-    if (ph === 'boom' && !crash) return null;
+    var ph = s.ph === 'fly' ? 'fly' : s.ph === 'fall' ? 'fall' : s.ph === 'boom' ? 'boom' : 'bet', end = ph === 'fall' || ph === 'boom';
+    var crash = Math.min(MAXC, cleanM(s.crash)), sd = Math.round(+s.sd) >>> 0, ct = Math.max(0, Math.min(T_END, Math.round(+s.ct) || 0));
     if (ph !== 'bet' && !sd) return null;   // ohne Kennung kein Flug
     return {
       ph: ph, rd: Math.max(0, Math.round(+s.rd) || 0), el: Math.max(0, Math.min(T_MAX * 1000 + 5000, +s.el || 0)),
-      sd: ph === 'bet' ? 0 : sd, ct: ph === 'boom' ? ct : 0,
-      dl: Math.max(0, Math.min(60000, +s.dl || 0)), crash: ph === 'boom' ? crash : 0,
+      sd: ph === 'bet' ? 0 : sd, ct: end ? ct : 0,
+      dl: Math.max(0, Math.min(60000, +s.dl || 0)), crash: end ? crash : 0, fl: end && s.fl ? 1 : 0, mo: ph === 'boom' && s.mo ? 1 : 0,
       hist: s.hist.map(function (v) { v = +v; return isFinite(v) && v >= 0 ? Math.min(MAXC, m2(v)) : -1; }).filter(function (v) { return v >= 0; }).slice(0, 20),
       pl: s.pl.slice(0, MAX_PL + 8).filter(function (p) { return p && typeof p.id === 'string'; }).map(function (p) {
         var c = cleanProf(p), b = Math.round(+p.b);
         return { id: p.id.slice(0, 64), name: c.name, color: c.color, st: c.st, cos: p.bot ? null : c.cos, bot: p.bot ? 1 : 0,
-                 b: isFinite(b) && b > 0 ? Math.min(b, 1e9) : 0, au: cleanAuto(p.au), co: cleanM(p.co), h: cleanM(p.h) };
+                 b: isFinite(b) && b > 0 ? Math.min(b, 1e9) : 0, au: cleanAuto(p.au), co: cleanM(p.co), h: cleanM(p.h), ld: p.ld ? 1 : 0, mo: p.mo ? 1 : 0 };
       })
     };
   }
@@ -17289,6 +17433,7 @@ input.bprange[type=range]::-moz-range-thumb { width: 20px; height: 20px; border-
           /* laufende Runde nur zuschauen: nicht als neu starten (kein Abbuchen, keine Explosion ohne Flug);
              im Countdown kommt man noch mit (der Countdown kann in derselben Runde neu laufen) */
           V.betRd = s.ph === 'bet' ? -1 : s.rd; V.flyRd = s.ph === 'boom' ? s.rd : -1; V.boomRd = s.ph === 'boom' ? s.rd : -1;
+          V.fallRd = s.ph === 'fall' || s.ph === 'boom' ? s.rd : -1; V.tap = null;
           A.reset();
           toast('Du bist im Crash-Raum deines Freundes'); Snd.ping();
         }
@@ -17308,11 +17453,13 @@ input.bprange[type=range]::-moz-range-thumb { width: 20px; height: 20px; border-
   /* ---------- Erfolge und Aufgaben ---------- */
   function topM(d) { return Math.max(+d.cashout || 0, +d.half || 0); }
   if (window.PRAch) [
-    { id: 'crash-10x', icon: '🌙', name: 'Mondlandung', desc: 'Zahle bei Crash bei 3× oder mehr aus', ev: 'crash:round', f: function (d) { return topM(d) >= 3; } },
+    { id: 'crash-10x', icon: '🌙', name: 'Hoch hinaus', desc: 'Zahle bei Crash bei 3× oder mehr aus', ev: 'crash:round', f: function (d) { return topM(d) >= 3; } },
     { id: 'crash-mutig', icon: '🧊', name: 'Nerven aus Stahl', desc: 'Zahle bei Crash erst über 4× aus', ev: 'crash:round', f: function (d) { return topM(d) > 4; } },
     { id: 'crash-100x', icon: '🪐', name: 'Ins All', desc: 'Zahle bei Crash bei 4,5× oder mehr aus', title: 'Astronaut', ev: 'crash:round', f: function (d) { return topM(d) >= 4.5; } },
     { id: 'crash-halb', icon: '✂️', name: 'Halbe-Halbe', desc: 'Nutze bei Crash „Halb auszahlen“', ev: 'crash:round', f: function (d) { return +d.half > 0; } },
-    { id: 'crash-sofort', icon: '💥', name: 'Fehlstart', desc: 'Sei mit Einsatz dabei, wenn die Rakete gleich beim Start abstürzt', ev: 'crash:round', f: function (d) { return !!d.inst; } }
+    { id: 'crash-sofort', icon: '💥', name: 'Fehlstart', desc: 'Sei mit Einsatz dabei, wenn die Rakete gleich beim Start abstürzt', ev: 'crash:round', f: function (d) { return !!d.inst; } },
+    { id: 'crash-mond', icon: '🌕', name: 'Mondlandung', desc: 'Flieg bei Crash bis in den Mond (Jackpot ×3)', title: 'Mondfahrer', ev: 'crash:round', f: function (d) { return !!d.moon; } },
+    { id: 'crash-landung', icon: '🪂', name: 'Sanfte Landung', desc: 'Rette bei Crash die zurückfallende Rakete mit dem richtigen Tipp', ev: 'crash:round', f: function (d) { return !!d.land; } }
   ].forEach(function (d) { window.PRAch.add(d); });
   if (window.PRQ && window.PRQ.addQuest) {
     window.PRQ.addQuest({ id: 'cr10', d: 'e', t: 'Spiele 10 Crash-Runden', n: 10, ev: 'crash:round', f: function () { return 1; } });
@@ -17327,7 +17474,7 @@ input.bprange[type=range]::-moz-range-thumb { width: 20px; height: 20px; border-
     host: hostNow,
     join: join
   };
-  if (window.PR_TESTHOOKS) window.CR._dbg = { R: function () { return R; }, H: function () { return H; }, V: V, force: function (ms) { if (H && R && R.ph === 'fly') { H.T = ms; } else if (H) H.next = ms; }, mAt: mAt, fly: function () { if (H && R && R.ph === 'bet') hFly(); }, send: function (m) { if (NB.conn) NB.conn.send(m); } };
+  if (window.PR_TESTHOOKS) window.CR._dbg = { R: function () { return R; }, H: function () { return H; }, V: V, force: function (ms, fall) { if (H && R && R.ph === 'fly') { H.T = ms; } else if (H) { H.next = ms; H.nextFall = fall == null ? null : !!fall; } }, FALL_MS: FALL_MS, T_END: T_END, drawT: drawT, mAt: mAt, fly: function () { if (H && R && R.ph === 'bet') hFly(); }, send: function (m) { if (NB.conn) NB.conn.send(m); } };
 })();
 </script>
 
