@@ -2603,7 +2603,7 @@ input.bprange[type=range]::-moz-range-thumb { width: 20px; height: 20px; border-
         <button class="btn wide" id="lkHelpBtn" type="button" style="margin-top:10px" aria-expanded="false">Spielerklärung</button>
         <div id="lkHelp" hidden>
           <p style="margin-top:14px">Der rote Balken läuft im Kreis. Drück den grünen Knopf unten genau dann, wenn er über dem gelben Punkt ist. Es zählt nur der grüne Knopf. Nach jedem Treffer dreht er die Richtung um und wird etwas schneller. Mit der Zeit liegen die Punkte enger, manchmal direkt hintereinander – dann schnell nachdrücken.</p>
-          <p>Knackst du das Schloss, bekommst du den ganzen Jackpot aus den Gläsern, danach fängt es wieder bei 0 an. Für einzelne Treffer gibt es nichts – entweder Jackpot oder nichts. Liegt bis 300 im Glas, brauchst du 50 Treffer, bis 500 sind es 60, darüber 70.</p>
+          <p>Knackst du das Schloss, bekommst du den ganzen Jackpot aus den Gläsern, danach fängt es wieder bei 0 an. Für einzelne Treffer gibt es nichts – entweder Jackpot oder nichts. Du brauchst immer 50 Treffer, egal wie viel im Glas liegt.</p>
           <p>Im Shop (Hauptmenü, Knopf unter dem Profil) gibt es unter „Pop the Lock“ Upgrades: einen größeren Knopf (10.000 Chips pro Stufe), 5 Treffer weniger (8.000 Chips pro Stufe) und einen langsameren Balken (8.000 Chips pro Stufe, je 10 % langsamer).</p>
           <p>Das Glas füllt sich, wenn du in den anderen Spielen gewinnst (Slots, Blackjack, Roulette, Poker): 2 % von jedem Gewinn kommen obendrauf ins Glas, dein Gewinn bleibt ganz bei dir. Bis 300 zählt jeder Gewinn. Danach nur noch große Gewinne am Stück: bis 800 zählen Gewinne ab 500, bis 1.000 Gewinne ab 1.000 (jeweils 2 %), und bis 1.500 nur noch Gewinne ab 5.000, davon 1 %. Bei 1.500 ist der Jackpot voll. Das große Glas fasst 300, ab 300 kommt davor ein mittleres Glas dazu (bis 500), ab 500 ein kleines (bis 600), danach läuft alles drumherum über. Auch was überläuft, gehört weiter zum Jackpot. Neue Münzen fallen ins Glas, sobald du wieder hier bist.</p>
           <p>Drückst du daneben oder lässt du den Punkt vorbeiziehen, ist die Runde vorbei. Der Jackpot bleibt im Glas, und spielen kostet nichts.</p>
@@ -10875,7 +10875,7 @@ input.bprange[type=range]::-moz-range-thumb { width: 20px; height: 20px; border-
    LED-Schloss, gedrueckt wird der grosse gruene Knopf unten, wenn er ueber dem gelben Punkt steht. Nach jedem
    Treffer dreht er die Richtung um und wird langsam schneller; die Abstaende werden enger, und ab und zu liegt der
    naechste Punkt ganz kurz dahinter (schnell nachdruecken). Spielen ist kostenlos, Treffer allein bringen nichts:
-   wer das Schloss knackt (50 Treffer, bei mehr als 300 im Glas 60, ueber 500 70), bekommt den Jackpot aus dem Glas
+   wer das Schloss knackt (immer 50 Treffer, egal wie voll das Glas ist), bekommt den Jackpot aus dem Glas
    oben rechts. Das Glas fuellt sich mit den Gewinnen aus den anderen Spielen (window.JAR.add).
    Daneben gedrueckt oder den Punkt vorbeiziehen lassen = Runde vorbei, der Jackpot bleibt im Glas.
    Im Shop gibt es Upgrades (window.LKUP): groesserer Knopf, 5 Treffer weniger, langsamerer Balken. */
@@ -10941,7 +10941,8 @@ input.bprange[type=range]::-moz-range-thumb { width: 20px; height: 20px; border-
     g.style.setProperty('--gw', GW[b] + 'px'); g.style.setProperty('--gh', GH[b] + 'px'); g.style.setProperty('--gf', GF[b] + 'px');
   }
   sizeGo();
-  function needOf(v) { v = Math.floor(v); return Math.max(20, (v <= 300 ? 50 : v <= 500 ? 60 : 70) - 5 * ups().h); }
+  /* immer gleich schwer: 50 Treffer, egal wie voll das Glas ist (nur das Upgrade zieht ab) */
+  function needOf() { return Math.max(20, 50 - 5 * ups().h); }
   function coinsOf(v, i) { var p = PARTS[i], x = Math.max(0, Math.min(p[1], Math.floor(v) - p[0])); return Math.round(x / p[1] * p[2]); }
   /* kleine Betraege mit einer Nachkommastelle (5 % von 10 sind 0,5) */
   function amt(a) { return a >= 10 ? fmt(Math.round(a)) : String(Math.round(a * 10) / 10).replace('.', ','); }
